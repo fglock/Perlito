@@ -91,6 +91,27 @@ sub lookup_variable_inner {
         my $look = lookup_variable_inner($var, $block->[-1], $depth + 1);
         return $look if $look;
     }
+
+    if ( ($scope->{compacted} + 100) < @$block ) {
+        # garbage-collect the scope
+        my %seen;
+        my @out;
+        my $start = $#$block - 500;
+        $start = 1 if $start < 1;
+        for my $i ($start .. $#{$block}) {
+            my $item = $block->[$i];
+            my $s = join(':', map {;
+                $_ . '=' . $item->{$_}
+            } sort {;
+                $a cmp $b
+            } keys(%{$item}));
+            $seen{$s}++ || push(@out, $item)
+        }
+        # print STDERR:: 'block ', scalar(@{$block}), ' ', scalar(@out), ' ', $scope->{compacted}, "\n";
+        $scope->{'block'} = [ @{$block}[ 0 .. $start - 1 ], @out ];
+        $scope->{compacted} += 100;
+    }
+
     for my $item (reverse @$block) {
         if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl}
             && $item->{_decl} ne 'global'
