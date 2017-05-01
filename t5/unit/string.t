@@ -157,12 +157,12 @@ print 'not ' if $v ne '-Z';  say "ok 36 - string negative - $v";
 
 $v = '-NAN';
 $r = -$v;
-print 'not ' unless $r eq '+NAN' || $r eq 'nan';  
+print 'not ' unless $r eq '+NAN' || $r eq 'nan' || $r eq 'NaN';  
                              say "ok 37 - string negative - $r";
 
 $v = '-INF';
 $r = -$v;
-print 'not ' unless $r eq '+INF' || $r eq 'inf'; 
+print 'not ' unless $r eq '+INF' || $r eq 'inf' || $r eq 'Inf'; 
                              say "ok 38 - string negative - $r";
 
 
