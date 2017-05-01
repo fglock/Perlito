@@ -4787,10 +4787,12 @@ use feature 'say';
                 }) && (do {
                     my $version = $MATCH->{'version_string'}->[0]->{'capture'}->{'buf'};
                     my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::exp_parse'});
-                    if ($list) {
+                    if (ref($list) eq 'Perlito5::AST::Buf') {;
+                        $list = $list->{'buf'}
+                    }
+                    elsif ($list) {
                         Perlito5::Grammar::Scope::check_variable_declarations();
-                        my $m = $MATCH->{'Perlito5::Grammar::Expression::exp_parse'};
-                        my $ast = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<[ ]>', 'arguments' => [Perlito5::Match::flat($m)])]);
+                        my $ast = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<[ ]>', 'arguments' => [$list])]);
                         $list = Perlito5::Grammar::Block::eval_begin_block($ast)
                     }
                     else {;

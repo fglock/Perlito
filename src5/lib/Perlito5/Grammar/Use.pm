@@ -86,15 +86,18 @@ token stmt_use {
             my $version = $MATCH->{"version_string"}[0]{capture}{buf};
 
             my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::exp_parse"});
-            if ($list) {
+            if (ref($list) eq 'Perlito5::AST::Buf') {
+                # use feature 'say';
+                $list = $list->{buf};
+            }
+            elsif ($list) {
                 # evaluate the parameter list in a BEGIN-block context
                 Perlito5::Grammar::Scope::check_variable_declarations();
-                my $m = $MATCH->{"Perlito5::Grammar::Expression::exp_parse"};
                 my $ast = Perlito5::AST::Block::->new(
                     'stmts' => [
                         Perlito5::AST::Apply->new(
                             code      => 'circumfix:<[ ]>',
-                            arguments => [ Perlito5::Match::flat($m) ],
+                            arguments => [ $list ],
                         )
                     ]
                 );
