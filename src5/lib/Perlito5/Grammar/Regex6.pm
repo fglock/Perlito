@@ -23,7 +23,7 @@ token term_token {
                 'my $tmp = ( ' .
                     Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex6::rule"})->emit_perl5() .
                 '); ' .
-                '$tmp ? $MATCH : 0; '
+                '$tmp ? $MATCH : undef; '
             . '}';
         $source = [ split //, $source ];
         my $ast = Perlito5::Grammar::Block::named_sub_def( $source, 0 );

@@ -377,7 +377,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Bareword::term_bareword {
         my $str = $_[0];
@@ -430,14 +430,16 @@ use feature 'say';
         elsif (exists($Perlito5::PROTO->{$effective_name}) || ((!$namespace || $namespace eq 'CORE') && exists($Perlito5::CORE_PROTO->{'CORE::' . $name}))) {
             $is_subroutine_name = 1;
             $invocant = Perlito5::Grammar::full_ident($str, $p);
-            my $package = Perlito5::Match::flat($invocant);
-            if ($package) {
-                $invocant->{'capture'} = Perlito5::AST::Var::->new('sigil' => '::', 'name' => '', 'namespace' => $package);
-                if ($str->[$invocant->{'to'}] eq ':' && $str->[$invocant->{'to'} + 1] eq ':') {;
-                    $invocant->{'to'} = $invocant->{'to'} + 2
-                }
-                elsif (!$Perlito5::PACKAGES->{$package}) {;
-                    $invocant = undef
+            if ($invocant) {
+                my $package = Perlito5::Match::flat($invocant);
+                if ($package) {
+                    $invocant->{'capture'} = Perlito5::AST::Var::->new('sigil' => '::', 'name' => '', 'namespace' => $package);
+                    if ($str->[$invocant->{'to'}] eq ':' && $str->[$invocant->{'to'} + 1] eq ':') {;
+                        $invocant->{'to'} = $invocant->{'to'} + 2
+                    }
+                    elsif (!$Perlito5::PACKAGES->{$package}) {;
+                        $invocant = undef
+                    }
                 }
             }
         }
@@ -754,7 +756,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     1
 }
@@ -1215,7 +1217,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::AST::Apply::->new('code' => 'die', 'namespace' => '', 'arguments' => [Perlito5::AST::Buf::->new('buf' => 'Unimplemented')]);
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Statement::stmt_format {
         my $str = $_[0];
@@ -1275,7 +1277,7 @@ use feature 'say';
                 0
             }
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Statement::stmt_package {
         my $str = $_[0];
@@ -1352,7 +1354,7 @@ use feature 'say';
                 })
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Statement::exp_stmt {
         my $str = $_[0];
@@ -1908,7 +1910,7 @@ use feature 'say';
                 }))
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_ternary {
         my $str = $_[0];
@@ -1928,7 +1930,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['op', '? :', Perlito5::Match::flat($MATCH->{'ternary5_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_paren {
         my $str = $_[0];
@@ -1948,7 +1950,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['postfix_or_term', '( )', Perlito5::Match::flat($MATCH->{'paren_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_square {
         my $str = $_[0];
@@ -1968,7 +1970,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['postfix_or_term', '[ ]', Perlito5::Match::flat($MATCH->{'square_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_curly {
         my $str = $_[0];
@@ -2072,7 +2074,7 @@ use feature 'say';
                 }))
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_pos {
         my $str = $_[0];
@@ -2118,7 +2120,7 @@ use feature 'say';
                 }))
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::declarator {
         my $str = $_[0];
@@ -2136,7 +2138,7 @@ use feature 'say';
                 (('o' eq $str->[$MATCH->{'to'} + 0]) && ('u' eq $str->[$MATCH->{'to'} + 1]) && ('r' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_declarator {
         my $str = $_[0];
@@ -2245,7 +2247,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', $decl];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_not {
         my $str = $_[0];
@@ -2274,7 +2276,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'prefix:<not>', 'arguments' => expand_list(Perlito5::Match::flat($MATCH->{'paren_parse'})), 'namespace' => '')];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_local {
         my $str = $_[0];
@@ -2316,7 +2318,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', $decl];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_return {
         my $str = $_[0];
@@ -2346,7 +2348,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => $args eq '*undef*' ? [] : [$args], 'namespace' => '', 'bareword' => $args eq '*undef*' ? 1 : 0)];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Expression::term_eval {
         my $str = $_[0];
@@ -2366,7 +2368,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'eval', 'arguments' => [Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'})], 'namespace' => '')];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     my $Expr_end_token_chars = [7, 6, 5, 4, 3, 2, 1];
     my $Expr_end_token = {']' => 1, ')' => 1, '}' => 1, ';' => 1, 'if' => 1, 'for' => 1, 'else' => 1, 'when' => 1, 'while' => 1, 'until' => 1, 'elsif' => 1, 'unless' => 1, 'foreach' => 1};
@@ -2630,7 +2632,7 @@ use feature 'say';
             Perlito5::Grammar::Scope::end_compile_time_scope();
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::if_ {
         my $str = $_[0];
@@ -2739,7 +2741,7 @@ use feature 'say';
             Perlito5::Grammar::Scope::end_compile_time_scope();
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::when {
         my $str = $_[0];
@@ -2793,7 +2795,7 @@ use feature 'say';
             Perlito5::Grammar::Scope::end_compile_time_scope();
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::is_bareword {
         my $term = shift;
@@ -3092,7 +3094,7 @@ use feature 'say';
             Perlito5::Grammar::Scope::end_compile_time_scope();
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::while {
         my $str = $_[0];
@@ -3154,7 +3156,7 @@ use feature 'say';
             Perlito5::Grammar::Scope::end_compile_time_scope();
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::until {
         my $str = $_[0];
@@ -3213,7 +3215,7 @@ use feature 'say';
             Perlito5::Grammar::Scope::end_compile_time_scope();
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::given {
         my $str = $_[0];
@@ -3260,7 +3262,7 @@ use feature 'say';
             Perlito5::Grammar::Scope::end_compile_time_scope();
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     Perlito5::Grammar::Statement::add_statement('if' => \&if_);
     Perlito5::Grammar::Statement::add_statement('for' => \&for);
@@ -3323,7 +3325,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'q_quote_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::String::term_qq_quote {
         my $str = $_[0];
@@ -3374,7 +3376,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'qq_quote_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::String::term_qw_quote {
         my $str = $_[0];
@@ -3417,7 +3419,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'qw_quote_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::String::term_m_quote {
         my $str = $_[0];
@@ -3468,7 +3470,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'m_quote_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::String::term_s_quote {
         my $str = $_[0];
@@ -3511,7 +3513,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'s_quote_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::String::term_qx {
         my $str = $_[0];
@@ -3562,7 +3564,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'qx_quote_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::String::term_glob {
         my $str = $_[0];
@@ -3582,7 +3584,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'glob_quote_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::String::term_tr_quote {
         my $str = $_[0];
@@ -3633,7 +3635,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'tr_quote_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::String::term_qr_quote {
         my $str = $_[0];
@@ -3676,7 +3678,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'qr_quote_parse'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     my %pair = ('{' => '}', '(' => ')', '[' => ']', '<' => '>');
     my %escape_sequence = ('a', 7, 'b', 8, 'e', 27, 'f', 12, 'n', 10, 'r', 13, 't', 9);
@@ -4140,7 +4142,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::String::here_doc {
         my $str = $_[0];
@@ -4539,7 +4541,7 @@ use feature 'say';
                 (('n' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Use::version_string {
         my $str = $_[0];
@@ -4581,7 +4583,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Use::term_require {
         my $str = $_[0];
@@ -4635,7 +4637,7 @@ use feature 'say';
                 }))
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Use::stmt_use {
         my $str = $_[0];
@@ -4851,7 +4853,7 @@ use feature 'say';
                 })
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Use::parse_time_eval {
         my $ast = shift;
@@ -5931,7 +5933,7 @@ use feature 'say';
                 })
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Block::anon_block {
         my $str = $_[0];
@@ -6155,7 +6157,7 @@ use feature 'say';
             }
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Block::named_sub {
         my $str = $_[0];
@@ -6199,7 +6201,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block::anon_sub_def'})];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Block::term_do {
         my $str = $_[0];
@@ -6219,7 +6221,7 @@ use feature 'say';
             $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'})])];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Block::args_sig {
         my $str = $_[0];
@@ -6275,7 +6277,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             1
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Block::prototype_ {
         my $str = $_[0];
@@ -6366,7 +6368,7 @@ use feature 'say';
                 })
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Block::anon_sub_def {
         my $str = $_[0];
@@ -6427,7 +6429,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::AST::Sub::->new('name' => undef, 'namespace' => undef, 'sig' => $sig, 'block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'}), 'attributes' => $attributes);
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     Perlito5::Grammar::Precedence::add_term('do' => \&term_do);
     Perlito5::Grammar::Precedence::add_term('sub' => \&term_anon_sub);
@@ -6563,7 +6565,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             1
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Space::pod_pod_begin {
         my $str = $_[0];
@@ -6614,7 +6616,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Space::pod_begin {
         my $str = $_[0];
@@ -6665,7 +6667,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Space::start_of_line {
         my $str = $_[0];
@@ -6889,7 +6891,7 @@ use feature 'say';
                 1
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Space::ws {
         my $str = $_[0];
@@ -6948,7 +6950,7 @@ use feature 'say';
                 (('s' eq $str->[$MATCH->{'to'} + 0]) && ('y' eq $str->[$MATCH->{'to'} + 1]) && ('s' eq $str->[$MATCH->{'to'} + 2]) && ('t' eq $str->[$MATCH->{'to'} + 3]) && ('e' eq $str->[$MATCH->{'to'} + 4]) && ('m' eq $str->[$MATCH->{'to'} + 5]) && ($MATCH->{'to'} += 6))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Print::the_object {
         my $str = $_[0];
@@ -7077,7 +7079,7 @@ use feature 'say';
             }
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Print::typeglob {
         my $str = $_[0];
@@ -7240,7 +7242,7 @@ use feature 'say';
                 }))
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     Perlito5::Grammar::Precedence::add_term('print' => \&term_print);
     Perlito5::Grammar::Precedence::add_term('printf' => \&term_print);
@@ -7265,7 +7267,7 @@ use feature 'say';
                 (('g' eq $str->[$MATCH->{'to'} + 0]) && ('r' eq $str->[$MATCH->{'to'} + 1]) && ('e' eq $str->[$MATCH->{'to'} + 2]) && ('p' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Map::term_map_or_grep {
         my $str = $_[0];
@@ -7354,7 +7356,7 @@ use feature 'say';
                 }))
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Map::non_core_ident {
         my $str = $_[0];
@@ -7375,7 +7377,7 @@ use feature 'say';
             (exists($Perlito5::CORE_PROTO->{$name}) || exists($Perlito5::CORE_PROTO->{'CORE::' . $name})) && return;
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Map::term_sort {
         my $str = $_[0];
@@ -7567,7 +7569,7 @@ use feature 'say';
                 }))
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     Perlito5::Grammar::Precedence::add_term('map' => \&term_map_or_grep);
     Perlito5::Grammar::Precedence::add_term('grep' => \&term_map_or_grep);
@@ -7648,7 +7650,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     Perlito5::Grammar::Precedence::add_term($_ => \&term_digit)
         for '.', 0 .. 9;
@@ -7717,7 +7719,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             $count > 0
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Number::val_num {
         my $str = $_[0];
@@ -7910,7 +7912,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::AST::Num::->new('num' => $s);
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Number::digits {
         my $str = $_[0];
@@ -7945,7 +7947,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             $count > 0
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Number::digits_underscore {
         my $str = $_[0];
@@ -7995,7 +7997,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Number::val_octal {
         my $str = $_[0];
@@ -8126,7 +8128,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::AST::Int::->new('int' => oct(lc(Perlito5::Match::flat($MATCH))));
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Number::val_int {
         my $str = $_[0];
@@ -8147,7 +8149,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::AST::Int::->new('int' => $s);
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Number::val_vstring {
         my $str = $_[0];
@@ -8207,7 +8209,7 @@ use feature 'say';
             } $MATCH->{'val_int'}->{'capture'}->{'int'}, @parts));
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Number::val_version {
         my $str = $_[0];
@@ -8279,7 +8281,7 @@ use feature 'say';
             } $MATCH->{'val_int'}->{'capture'}->{'int'}, @parts));
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     1
 }
@@ -8360,7 +8362,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::namespace_before_ident {
         my $str = $_[0];
@@ -8414,7 +8416,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::optional_namespace_before_ident {
         my $str = $_[0];
@@ -8480,7 +8482,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::exp_stmts2 {
         my $str = $_[0];
@@ -8500,7 +8502,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'exp_stmts'});
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::exp {
         my $str = $_[0];
@@ -8520,7 +8522,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::exp_parse'});
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::exp2 {
         my $str = $_[0];
@@ -8540,7 +8542,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::exp_parse'});
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::opt_type {
         my $str = $_[0];
@@ -8577,7 +8579,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::var_sigil {
         my $str = $_[0];
@@ -8601,7 +8603,7 @@ use feature 'say';
                 (('*' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::var_name {
         my $str = $_[0];
@@ -8636,7 +8638,7 @@ use feature 'say';
                 })
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::var_ident {
         my $str = $_[0];
@@ -8676,7 +8678,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::AST::Var::->new('sigil' => Perlito5::Match::flat($MATCH->{'var_sigil'}), 'namespace' => Perlito5::Match::flat($MATCH->{'optional_namespace_before_ident'}), 'name' => Perlito5::Match::flat($MATCH->{'var_name'}));
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::block {;
         Perlito5::Grammar::Block::block(@_)
@@ -9344,13 +9346,13 @@ use feature 'say';
                 0
             }
         }) && (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
-            my $source = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}) . '{ ' . 'my $str     = $_[0]; ' . 'my $pos     = $_[1]; ' . 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' . 'my $tmp = ( ' . Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Regex6::rule'})->emit_perl5() . '); ' . '$tmp ? $MATCH : 0; ' . '}';
+            my $source = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}) . '{ ' . 'my $str     = $_[0]; ' . 'my $pos     = $_[1]; ' . 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' . 'my $tmp = ( ' . Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Regex6::rule'})->emit_perl5() . '); ' . '$tmp ? $MATCH : undef; ' . '}';
             $source = [split(m//, $source)];
             my $ast = Perlito5::Grammar::Block::named_sub_def($source, 0);
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($ast)];
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     Perlito5::Grammar::Precedence::add_term('token', \&term_token);
     sub Perlito5::Grammar::Regex6::any {
@@ -9358,7 +9360,7 @@ use feature 'say';
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
         my $tmp = (('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::literal {
         my $str = $_[0];
@@ -9396,7 +9398,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             1
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::metasyntax_exp {
         my $str = $_[0];
@@ -9428,7 +9430,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             $count > 0
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::string_code {
         my $str = $_[0];
@@ -9492,7 +9494,7 @@ use feature 'say';
             $MATCH->{'to'} = $to;
             $count > 0
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::parsed_code {
         my $str = $_[0];
@@ -9511,7 +9513,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::Match::flat($MATCH);
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::rule_term {
         my $str = $_[0];
@@ -9698,7 +9700,7 @@ use feature 'say';
                 }))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::quant_exp {
         my $str = $_[0];
@@ -9716,7 +9718,7 @@ use feature 'say';
                 (('+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::quantifier {
         my $str = $_[0];
@@ -9787,7 +9789,7 @@ use feature 'say';
                 })
             })
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::concat_list {
         my $str = $_[0];
@@ -9839,7 +9841,7 @@ use feature 'say';
                 })
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::concat_exp {
         my $str = $_[0];
@@ -9859,7 +9861,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::Rul::Concat::->new('concat' => Perlito5::Match::flat($MATCH->{'concat_list'}));
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::or_list_exp {
         my $str = $_[0];
@@ -9911,7 +9913,7 @@ use feature 'say';
                 })
             })
         }));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::rule {
         my $str = $_[0];
@@ -9954,7 +9956,7 @@ use feature 'say';
             $MATCH->{'capture'} = Perlito5::Rul::Or::->new('or_list' => Perlito5::Match::flat($MATCH->{'or_list_exp'}));
             1
         })));
-        $tmp ? $MATCH : 0
+        $tmp ? $MATCH : undef
     }
 }
 {

@@ -117,25 +117,27 @@ sub term_bareword {
         # this can be an indirect-object if the next term is a bareword ending with '::'
 
         $invocant = Perlito5::Grammar::full_ident( $str, $p );
-        my $package = Perlito5::Match::flat($invocant);
-        if ( $package ) {
-            $invocant->{capture} = Perlito5::AST::Var->new(
-                                     sigil => '::',
-                                     name  => '',
-                                     namespace => $package,
-                                 );
-            if ( $str->[$invocant->{to}] eq ':' && $str->[$invocant->{to}+1] eq ':' ) {
-                # ::X::y::
-                $invocant->{to} = $invocant->{to} + 2;
-            }
-            else {
-                # is this a known package name?
-                if ( ! $Perlito5::PACKAGES->{ $package } ) {
-                    # not a known package name
-                    $invocant = undef;
+        if ($invocant) {
+            my $package = Perlito5::Match::flat($invocant);
+            if ( $package ) {
+                $invocant->{capture} = Perlito5::AST::Var->new(
+                                         sigil => '::',
+                                         name  => '',
+                                         namespace => $package,
+                                     );
+                if ( $str->[$invocant->{to}] eq ':' && $str->[$invocant->{to}+1] eq ':' ) {
+                    # ::X::y::
+                    $invocant->{to} = $invocant->{to} + 2;
                 }
                 else {
-                    # valid package name - this is indirect-object
+                    # is this a known package name?
+                    if ( ! $Perlito5::PACKAGES->{ $package } ) {
+                        # not a known package name
+                        $invocant = undef;
+                    }
+                    else {
+                        # valid package name - this is indirect-object
+                    }
                 }
             }
         }
