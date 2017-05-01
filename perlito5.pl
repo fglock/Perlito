@@ -21105,11 +21105,11 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{'arguments'}->[0];
             if ($arg->isa('Perlito5::AST::Int')) {
-                $arg->{'int'} = -$arg->{'int'};
+                $arg = Perlito5::AST::Int::->new('int' => -$arg->{'int'});
                 return $arg->emit_java($level, 'scalar')
             }
             if ($arg->isa('Perlito5::AST::Num')) {
-                $arg->{'num'} = -$arg->{'num'};
+                $arg = Perlito5::AST::Num::->new('num' => -$arg->{'num'});
                 return $arg->emit_java($level, 'scalar')
             }
             if ($arg->isa('Perlito5::AST::Apply') && $arg->{'bareword'}) {;
