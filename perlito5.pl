@@ -31707,20 +31707,20 @@ class PlString extends PlObject {
                                     default:
                                         // return integer
                                         if (signal < 0) {
-                                            return new PlInt(-Integer.parseInt(this.s.substring(offset, offset2)));
+                                            return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
                                         }
                                         else {
-                                            return new PlInt(Integer.parseInt(this.s.substring(offset, offset2)));
+                                            return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
                                         }
                                 }
                                 offset2++;
                             }
                             // integer
                             if (signal < 0) {
-                                return new PlInt(-Integer.parseInt(this.s.substring(offset, offset2)));
+                                return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
                             }
                             else {
-                                return new PlInt(Integer.parseInt(this.s.substring(offset, offset2)));
+                                return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
                             }
                 case ' . chr(39) . '+' . chr(39) . ':   // starts with +
                             if (signal != 0) {
