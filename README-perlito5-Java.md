@@ -57,10 +57,15 @@ Perlito5-Java work-in-progress
     $ java Main -v
     This is Perlito5 9.021, an implementation of the Perl language.
 
+    # create the perlito5.jar file
     $ jar -cfe perlito5.jar Main *.class
 
     $ java -jar perlito5.jar -v
     This is Perlito5 9.021, an implementation of the Perl language.
+
+    # run a test
+    $ java -jar perlito5.jar --bootstrapping -Isrc5/lib -Cjava t5/unit/array.t > x.java ; javac -source 7 x.java ; java Main
+    ok 1 ...
 ~~~
 
       - other compiler options that don't seem to work:
