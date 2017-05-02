@@ -26,8 +26,9 @@ import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
+// import Perlito5.*;
 
-public class Closures
+public class JavaCompiler5
 {
     static ArrayList<SourceCode> compilationUnits;
     static ExtendedStandardJavaFileManager fileManager;
