@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..34';
+say '1..35';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
