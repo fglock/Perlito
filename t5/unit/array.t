@@ -226,3 +226,16 @@ print "ok 27 - unique_elements $v\n";
     }
     say "ok 34 - slice set # " . scalar(@$a) . " - " . join(",", @$a);
 
+{
+    # array copy using [ ]
+
+    my @a = (6,7,8);
+    my $v = [ @a ];
+    $v->[1] = 3;
+
+    if ( $a[1] != 7 ) {
+        print 'not '
+    }
+    say "ok 35 - array copy # " . join(",", @a);
+}
+
