@@ -20917,8 +20917,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }, 'wantarray' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             '(want == PlCx.VOID ? PlCx.UNDEF : new PlInt(want-1))'
-        }, 'package' => sub {;
-            ''
         }, 'uc' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             'new PlString(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().toUpperCase())'
@@ -21842,7 +21840,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
                 return $self->{'code'}->emit_java($level) . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_param_list($items, $level + 1) . ')'
             }
-            exists($emit_js{$code}) && return $emit_js{$code}->($self, $level, $wantarray, $autovivification_type);
+            $code eq 'package' && return '';
+            exists($emit_js{$code}) && ($self->{'namespace'} eq '' || $self->{'namespace'} eq 'GLOBAL') && return $emit_js{$code}->($self, $level, $wantarray, $autovivification_type);
             if (exists($Perlito5::Java::op_prefix_js_str{$code})) {;
                 return $Perlito5::Java::op_prefix_js_str{$code} . '(' . Perlito5::Java::to_str($self->{'arguments'}->[0]) . ')'
             }

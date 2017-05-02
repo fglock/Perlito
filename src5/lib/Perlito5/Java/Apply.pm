@@ -209,9 +209,6 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             '(want == PlCx.VOID ? PlCx.UNDEF : new PlInt(want-1))';
         },
-        'package' => sub {
-            '';
-        },
         'uc' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlString('
@@ -1694,8 +1691,10 @@ package Perlito5::AST::Apply;
                   . ')';
         }
 
+        return ''
+            if $code eq 'package';
         return $emit_js{$code}->($self, $level, $wantarray, $autovivification_type)
-            if exists $emit_js{$code};
+            if exists $emit_js{$code} && ($self->{namespace} eq '' || $self->{namespace} eq 'GLOBAL');
 
         if (exists $Perlito5::Java::op_prefix_js_str{$code}) {
             return $Perlito5::Java::op_prefix_js_str{$code} . '(' 
