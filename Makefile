@@ -165,6 +165,9 @@ test-5js-parallel ::
 test-5java ::
 	prove -r -e 'perl run_java_test.pl' t5
 
+test-5jar ::
+	prove -r -e 'perl run_java_jar_test.pl' t5
+
 test-5javaunit ::
 	prove -r -e 'perl run_java_test.pl' t5/unit
 
