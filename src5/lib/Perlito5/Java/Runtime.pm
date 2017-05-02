@@ -2414,7 +2414,19 @@ EOT
     }
     public PlObject quotemeta() {
         String s = this.toString();
-        return new PlString(Matcher.quoteReplacement(s));
+        final int length = s.length();
+        StringBuilder sb = new StringBuilder();
+        for (int offset = 0; offset < length; offset++) {
+            final int c = s.codePointAt(offset);
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+                // good
+            }
+            else {
+                sb.append("\\");
+            }
+            sb.append(Character.toChars(c));
+        }
+        return new PlString(sb.toString());
     }
     public PlInt index(PlObject substr) {
         String s = this.toString();

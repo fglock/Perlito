@@ -27955,7 +27955,19 @@ class PlObject {
     }
     public PlObject quotemeta() {
         String s = this.toString();
-        return new PlString(Matcher.quoteReplacement(s));
+        final int length = s.length();
+        StringBuilder sb = new StringBuilder();
+        for (int offset = 0; offset < length; offset++) {
+            final int c = s.codePointAt(offset);
+            if ((c >= ' . chr(39) . 'A' . chr(39) . ' && c <= ' . chr(39) . 'Z' . chr(39) . ') || (c >= ' . chr(39) . 'a' . chr(39) . ' && c <= ' . chr(39) . 'z' . chr(39) . ') || (c >= ' . chr(39) . '0' . chr(39) . ' && c <= ' . chr(39) . '9' . chr(39) . ')) {
+                // good
+            }
+            else {
+                sb.append("\\\\");
+            }
+            sb.append(Character.toChars(c));
+        }
+        return new PlString(sb.toString());
     }
     public PlInt index(PlObject substr) {
         String s = this.toString();
