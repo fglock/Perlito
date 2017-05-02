@@ -20819,7 +20819,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $replace_java;
                 if (ref($replace) eq 'Perlito5::AST::Buf') {
                     $replace_java = $replace->{'buf'};
-                    $replace_java =~ s/\\/\\\\/g;
                     $replace_java = Perlito5::Java::escape_string($replace_java)
                 }
                 else {
