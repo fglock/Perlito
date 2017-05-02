@@ -33,18 +33,11 @@ Perlito5-Java platform differences
       - file permissions for setuid, setgid, and sticky bit are not implemented
       - some signals are not available in Java.
 
+  - eval-string not yet implemented, some operations will die()
 
-Perlito5-Java work-in-progress
-------------------------------
 
-  - bootstrapping the compiler
-      - eval-string not implemented, some operations will die()
-      - it seems to trigger this problem:
-          http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
-          http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
-
-          - "The workaround is to compile at Java 7-compatibility level: javac -source 7, or just to use simpler constructions.
-          - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
+Compiling the compiler into a jar file
+--------------------------------------
 
 ~~~sh
     $ make clean
@@ -72,6 +65,19 @@ Perlito5-Java work-in-progress
     $ diff x.java perlito5.java
     [ no differences ]
 ~~~
+
+
+Perlito5-Java work-in-progress
+------------------------------
+
+  - Problems compiling with Java 8
+
+      - it seems to trigger this problem:
+          http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
+          http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
+
+          - "The workaround is to compile at Java 7-compatibility level: javac -source 7, or just to use simpler constructions.
+          - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
 
       - other compiler options that don't seem to work:
 

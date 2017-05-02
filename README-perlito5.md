@@ -20,6 +20,13 @@ Build using make
 - See [Makefile](Makefile) for more options
 
 
+Compiling and running using Java
+--------------------------------
+
+- plase see:
+
+      - [README-perlito5-Java](README-perlito5-Java.md)
+
 Running the tests using "node.js"
 ---------------------------------
 
