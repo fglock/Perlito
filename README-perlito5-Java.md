@@ -47,12 +47,19 @@ Perlito5-Java work-in-progress
           - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
 
 ~~~sh
+    $ make clean
+
     $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
 
     $ time javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 perlito5.java
     warning: [options] bootstrap class path not set in conjunction with -source 1.7
 
     $ java Main -v
+    This is Perlito5 9.021, an implementation of the Perl language.
+
+    $ jar -cfe perlito5.jar Main *.class
+
+    $ java -jar perlito5.jar -v
     This is Perlito5 9.021, an implementation of the Perl language.
 ~~~
 
