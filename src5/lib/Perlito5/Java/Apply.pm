@@ -638,7 +638,7 @@ package Perlito5::AST::Apply;
         },
         'circumfix:<[ ]>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'new PlArrayRef(' . Perlito5::Java::to_list( $self->{arguments}, $level ) . ')';
+            'new PlArrayRef(new PlArray(' . Perlito5::Java::to_list( $self->{arguments}, $level ) . '))';
         },
         'circumfix:<{ }>' => sub {
             my ($self, $level, $wantarray) = @_;

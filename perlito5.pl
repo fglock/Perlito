@@ -21169,7 +21169,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             return Perlito5::Java::to_filehandle($arg, $level + 1)
         }, 'circumfix:<[ ]>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
-            'new PlArrayRef(' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
+            'new PlArrayRef(new PlArray(' . Perlito5::Java::to_list($self->{'arguments'}, $level) . '))'
         }, 'circumfix:<{ }>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             '(new PlHashRef(new PlHash(' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')))'
