@@ -66,6 +66,11 @@ Perlito5-Java work-in-progress
     # run a test
     $ java -jar perlito5.jar --bootstrapping -Isrc5/lib -Cjava t5/unit/array.t > x.java ; javac -source 7 x.java ; java Main
     ok 1 ...
+
+    # test the bootstrapping
+    $ java -jar perlito5.jar --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > x.java
+    $ diff x.java perlito5.java
+    [ no differences ]
 ~~~
 
       - other compiler options that don't seem to work:
