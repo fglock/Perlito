@@ -121,10 +121,41 @@ public class JavaCompiler5
         // PlObject[] Main.apply(String functionName, PlObject... args)
 
         System.out.println("calling Perlito5::Grammar::exp_stmts");
-        PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(" 1 + 1 "), new PlInt(0) );
+        PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(
+            " for (4,5,6) { say $_ + 1 } "
+        ), new PlInt(0) );
 
         PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
         System.out.println(out[0]);
+
+        // $ast->emit_java(0);
+        PlObject outJava = PerlOp.call(
+            ast[0].hget("capture").aget(0),
+            "emit_java",
+            new PlArray(new PlInt(0)),
+            PlCx.SCALAR);
+        System.out.println(outJava);
+
+        StringBuffer source5 = new StringBuffer();
+        source5.append(" import org.perlito.Perlito5.*;");
+        source5.append(" public class Eval {");
+        source5.append("     public Eval() {");
+        source5.append("     }");
+        source5.append("     public static void run() {");
+        source5.append(          outJava.toString() );
+        source5.append("     }");
+        source5.append(" }");
+        String cls5 = source5.toString();
+
+        System.out.println(cls5);
+
+        String name5 = "Eval";
+        Class<?> class5 = compileClassInMemory(
+            name5,
+            cls5
+        );
+        Method method5 = class5.getMethod("run");
+        method5.invoke(null);
 
     }
 }
