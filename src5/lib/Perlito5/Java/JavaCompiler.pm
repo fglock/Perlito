@@ -57,9 +57,9 @@ class PlJavaCompiler {
 
     public static void init() throws Exception
     {
-        // System.out.println("initializing Perlito5.Main");
+        // System.out.println("initializing Perlito5.LibPerl");
         // try {
-        //     Main.main( new String[]{} );
+        //     LibPerl.main( new String[]{} );
         // }
         // catch(Exception e) {
         //     System.out.println("Errors in main()");
@@ -81,12 +81,12 @@ class PlJavaCompiler {
 
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
-            PlObject[] ast = org.perlito.Perlito5.Main.apply(
+            PlObject[] ast = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Grammar::exp_stmts",
                 "{; " + source + " }"
             );
 
-            // PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
+            // PlObject[] out = LibPerl.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
             // System.out.println(out[0]);
 
             // TODO - retrieve errors in Perl->Java
@@ -100,16 +100,16 @@ class PlJavaCompiler {
 
             // TODO - test local(); initialize local() stack if needed
             StringBuffer source5 = new StringBuffer();
-            source5.append(" import org.perlito.Perlito5.*;");
-            source5.append(" public class PlEval {");
-            source5.append("     public PlEval() {");
-            source5.append("     }");
-            source5.append("     public static PlObject run(int want) {");
-            source5.append(          outJava.toString() );
-            source5.append("     }");
-            source5.append(" }");
+            source5.append("import org.perlito.Perlito5.*;\n");
+            source5.append("public class PlEval {\n");
+            source5.append("    public PlEval() {\n");
+            source5.append("    }\n");
+            source5.append("    public static PlObject run(int want) {\n");
+            source5.append("        " + outJava.toString() + "\n");
+            source5.append("    }\n");
+            source5.append("}\n");
             String cls5 = source5.toString();
-            System.out.println("\neval_string: " + cls5 + "\n");
+            System.out.println("\neval_string:\n" + cls5 + "\n");
 
             // TODO - retrieve errors in Java->bytecode
             String name5 = "PlEval";

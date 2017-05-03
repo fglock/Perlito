@@ -1421,10 +1421,16 @@ package Perlito5::AST::CompUnit;
             );
         }
 
+        my $main_class = "Main";
+        $main_class = "LibPerl" if $Perlito5::BOOTSTRAP_JAVA_EVAL;
+
         $str .= Perlito5::Java::emit_wrap_java(-1,
-             "class Main {",
+             "class $main_class {",
                [ "public static void main(String[] args) {",
-                   [ "PlV.init(args);",
+                   [
+                     ( $Perlito5::JAVA_EVAL ? "org.perlito.Perlito5.LibPerl.main( new String[]{} );" : ()),
+
+                     "PlV.init(args);",
                      "int want = PlCx.VOID;",
                      "PlArray List__ = new PlArray();",
                      "Exception ee = null;",

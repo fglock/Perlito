@@ -22681,7 +22681,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
             }
-            $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlV.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'Exception ee = null;', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['ee = new PlDieException(new PlString("Can' . chr(39) . 't return outside a subroutine"));'], '}', 'catch(PlNextException e) {', ['ee = new PlDieException(new PlString("Can' . chr(39) . 't \\"next\\" outside a loop block"));'], '}', 'catch(PlLastException e) {', ['ee = new PlDieException(new PlString("Can' . chr(39) . 't \\"last\\" outside a loop block"));'], '}', 'catch(PlRedoException e) {', ['ee = new PlDieException(new PlString("Can' . chr(39) . 't \\"redo\\" outside a loop block"));'], '}', 'catch(Exception e) {', ['ee = e;'], '}', 'if (ee != null) {', ['ee.printStackTrace(System.err);'], '}', 'for (PlObject code : PlV.array_get("Perlito5::END_BLOCK")) {', ['code.apply(PlCx.VOID, new PlArray());'], '}', 'if (ee != null) {', ['System.exit(1);'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . '
+            my $main_class = 'Main';
+            $Perlito5::BOOTSTRAP_JAVA_EVAL && ($main_class = 'LibPerl');
+            $str .= Perlito5::Java::emit_wrap_java(-1, 'class ' . $main_class . ' {', ['public static void main(String[] args) {', [($Perlito5::JAVA_EVAL ? 'org.perlito.Perlito5.LibPerl.main( new String[]{} );' : ()), 'PlV.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'Exception ee = null;', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['ee = new PlDieException(new PlString("Can' . chr(39) . 't return outside a subroutine"));'], '}', 'catch(PlNextException e) {', ['ee = new PlDieException(new PlString("Can' . chr(39) . 't \\"next\\" outside a loop block"));'], '}', 'catch(PlLastException e) {', ['ee = new PlDieException(new PlString("Can' . chr(39) . 't \\"last\\" outside a loop block"));'], '}', 'catch(PlRedoException e) {', ['ee = new PlDieException(new PlString("Can' . chr(39) . 't \\"redo\\" outside a loop block"));'], '}', 'catch(Exception e) {', ['ee = e;'], '}', 'if (ee != null) {', ['ee.printStackTrace(System.err);'], '}', 'for (PlObject code : PlV.array_get("Perlito5::END_BLOCK")) {', ['code.apply(PlCx.VOID, new PlArray());'], '}', 'if (ee != null) {', ['System.exit(1);'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . '
 ';
             return $str
         }
@@ -25717,9 +25719,9 @@ class PlJavaCompiler {
 
     public static void init() throws Exception
     {
-        // System.out.println("initializing Perlito5.Main");
+        // System.out.println("initializing Perlito5.LibPerl");
         // try {
-        //     Main.main( new String[]{} );
+        //     LibPerl.main( new String[]{} );
         // }
         // catch(Exception e) {
         //     System.out.println("Errors in main()");
@@ -25741,12 +25743,12 @@ class PlJavaCompiler {
 
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
-            PlObject[] ast = org.perlito.Perlito5.Main.apply(
+            PlObject[] ast = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Grammar::exp_stmts",
                 "{; " + source + " }"
             );
 
-            // PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
+            // PlObject[] out = LibPerl.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
             // System.out.println(out[0]);
 
             // TODO - retrieve errors in Perl->Java
@@ -25760,16 +25762,16 @@ class PlJavaCompiler {
 
             // TODO - test local(); initialize local() stack if needed
             StringBuffer source5 = new StringBuffer();
-            source5.append(" import org.perlito.Perlito5.*;");
-            source5.append(" public class PlEval {");
-            source5.append("     public PlEval() {");
-            source5.append("     }");
-            source5.append("     public static PlObject run(int want) {");
-            source5.append(          outJava.toString() );
-            source5.append("     }");
-            source5.append(" }");
+            source5.append("import org.perlito.Perlito5.*;\\n");
+            source5.append("public class PlEval {\\n");
+            source5.append("    public PlEval() {\\n");
+            source5.append("    }\\n");
+            source5.append("    public static PlObject run(int want) {\\n");
+            source5.append("        " + outJava.toString() + "\\n");
+            source5.append("    }\\n");
+            source5.append("}\\n");
             String cls5 = source5.toString();
-            System.out.println("\\neval_string: " + cls5 + "\\n");
+            System.out.println("\\neval_string:\\n" + cls5 + "\\n");
 
             // TODO - retrieve errors in Java->bytecode
             String name5 = "PlEval";
@@ -25986,6 +25988,13 @@ class SourceCode extends SimpleJavaFileObject {
     }
     sub Perlito5::Java::Runtime::emit_java {
         (my($self), my(%args)) = @_;
+        if ($Perlito5::JAVA_EVAL) {;
+            return '
+// use perlito5-lib.jar
+import org.perlito.Perlito5.*;
+
+'
+        }
         my %java_classes = %{$args{'java_classes'} // {}};
         my @number_unary = ('op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log');
         my %number_binop = ('add' => {'op' => '+', 'returns' => 'PlInt', 'num_returns' => 'PlDouble'}, 'sub' => {'op' => '-', 'returns' => 'PlInt', 'num_returns' => 'PlDouble'}, 'mul' => {'op' => '*', 'returns' => 'PlInt', 'num_returns' => 'PlDouble'}, 'div' => {'op' => '/', 'returns' => 'PlDouble', 'num_returns' => 'PlDouble'}, 'num_eq' => {'op' => '==', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_ne' => {'op' => '!=', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_lt' => {'op' => '<', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_le' => {'op' => '<=', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_gt' => {'op' => '>', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_ge' => {'op' => '>=', 'returns' => 'PlBool', 'num_returns' => 'PlBool'});

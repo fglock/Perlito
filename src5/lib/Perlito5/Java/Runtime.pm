@@ -138,6 +138,16 @@ sub emit_java_extends {
 
 sub emit_java {
     my ($self, %args) = @_;
+
+    if ($Perlito5::JAVA_EVAL) {
+        return <<'EOT';
+
+// use perlito5-lib.jar
+import org.perlito.Perlito5.*;
+
+EOT
+    }
+
     my %java_classes = %{ $args{java_classes} // {} };
 
     my @number_unary = qw/ op_int neg abs sqrt cos sin exp log /;

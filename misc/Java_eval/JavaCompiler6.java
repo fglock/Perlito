@@ -21,9 +21,9 @@ public class JavaCompiler6
             }
         }
 
-        System.out.println("initializing Perlito5.Main");
+        System.out.println("initializing Perlito5.LibPerl");
         try {
-            org.perlito.Perlito5.Main.main( new String[]{} );
+            org.perlito.Perlito5.LibPerl.main( new String[]{} );
         }
         catch(Exception e) {
             System.out.println("Errors in main()");
