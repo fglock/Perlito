@@ -105,7 +105,7 @@ public class JavaCompiler5
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("calling Perlito5::Grammar::exp_stmts");
             PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(
-                "{ " + source + " }"
+                "{; " + source + " }"
             ), new PlInt(0) );
 
             // PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
