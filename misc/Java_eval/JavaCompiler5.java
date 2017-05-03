@@ -1,8 +1,8 @@
 //
-//
+//  $ . make_jar.sh
+//  $ cd misc/Java_eval
 //  $ cp ../../perlito5.jar .
 //  $ javac -cp perlito5.jar JavaCompiler5.java
-//  $ java  -cp '.:perlito5.jar' JavaCompiler5
 //
 //  $ java -cp '.:perlito5.jar' JavaCompiler5 -e ' my $x = 123; say ($x * 3 ) '
 //
@@ -91,8 +91,7 @@ public class JavaCompiler5
 
         System.out.println("initializing Perlito5.Main");
         try {
-            // TODO - create Java-specific lib (this uses perlito5.jar)
-            Main.main( new String[]{"-v"} );
+            Main.main( new String[]{} );
         }
         catch(Exception e) {
             System.out.println("Errors in main()");
