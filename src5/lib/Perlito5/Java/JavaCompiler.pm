@@ -1,22 +1,10 @@
-//
-//  $ . make_jar.sh
-//  $ javac -cp perlito5-lib.jar src5/java/PlJavaCompiler.java
-//
-// Credits:
-//
-// http://udn.yyuap.com/doc/jdk6-api-zh/javax/tools/JavaCompiler.html         
-//  * idea to reuse the same file manager to allow caching of jar files
-// https://github.com/turpid-monkey/InMemoryJavaCompiler
-// https://github.com/trung/InMemoryJavaCompiler
-//  * provided a working example
-//  * Apache License, Version 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
-// http://stackoverflow.com/questions/1563909/how-to-set-classpath-when-i-use-javax-tools-javacompiler-compile-the-source
-//  * set classpath
-//
+use v5;
 
-package org.perlito.Perlito5;
+package Perlito5::Java::JavaCompiler;
+use strict;
 
-import org.perlito.Perlito5.*;
+sub emit_java_imports {
+    return <<'EOT'
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,13 +22,31 @@ import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+EOT
+}
 
-public class PlJavaCompiler
-{
+sub emit_java {
+    return <<'EOT'
+
+/****************************************************************************/
+// Credits for the JavaCompiler idea:
+//
+// http://udn.yyuap.com/doc/jdk6-api-zh/javax/tools/JavaCompiler.html         
+//  * idea to reuse the same file manager to allow caching of jar files
+// https://github.com/turpid-monkey/InMemoryJavaCompiler
+// https://github.com/trung/InMemoryJavaCompiler
+//  * provided a working example
+//  * Apache License, Version 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
+// http://stackoverflow.com/questions/1563909/how-to-set-classpath-when-i-use-javax-tools-javacompiler-compile-the-source
+//  * set classpath
+/****************************************************************************/
+
+class PlJavaCompiler {
+    private PlJavaCompiler() {} // defined so class can't be instantiated.
+
     static ArrayList<SourceCode> compilationUnits;
     static ExtendedStandardJavaFileManager fileManager;
     static DynamicClassLoader classLoader;
@@ -222,4 +228,11 @@ class SourceCode extends SimpleJavaFileObject {
         return contents;
     }
 }
+
+EOT
+
+} # end of emit_java()
+
+1;
+
 

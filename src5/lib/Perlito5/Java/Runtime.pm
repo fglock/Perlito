@@ -5,6 +5,7 @@ use strict;
 
 use Perlito5::Java::CORE;
 use Perlito5::Java::Crypt;
+use Perlito5::Java::JavaCompiler;
 
 sub emit_java_extends {
     my ($class, $java_classes) = @_;
@@ -189,6 +190,8 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
 EOT
+    . Perlito5::Java::JavaCompiler->emit_java_imports()
+
         # import the Java classes
         # that were declared with
         #
@@ -284,6 +287,7 @@ EOT
 EOT
 
     . Perlito5::Java::Crypt->emit_java()
+    . Perlito5::Java::JavaCompiler->emit_java()
 
     . <<'EOT'
 class PerlCompare implements Comparator<PlObject> {

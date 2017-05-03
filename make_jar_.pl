@@ -49,6 +49,7 @@ import org.perlito.Perlito5.PlGlobRef;
 import org.perlito.Perlito5.PlHash;
 import org.perlito.Perlito5.PlHashRef;
 import org.perlito.Perlito5.PlInt;
+import org.perlito.Perlito5.PlJavaCompiler;
 import org.perlito.Perlito5.PlLastException;
 import org.perlito.Perlito5.PlLazyIndex;
 import org.perlito.Perlito5.PlLazyLookup;
