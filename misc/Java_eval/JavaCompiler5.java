@@ -4,6 +4,8 @@
 //  $ javac -cp perlito5.jar JavaCompiler5.java
 //  $ java  -cp '.:perlito5.jar' JavaCompiler5
 //
+//  $ java -cp '.:perlito5.jar' JavaCompiler5 -e ' my $x = 123; say ($x * 3 ) '
+//
 // Credits:
 //
 // http://udn.yyuap.com/doc/jdk6-api-zh/javax/tools/JavaCompiler.html         
@@ -78,6 +80,15 @@ public class JavaCompiler5
 
     public static void main(String[] args) throws Exception
     {
+        String source = "for my $x (4,5,6) { say $x + 1 }";
+        if (args.length > 0) {
+            System.out.println("args " + args[0]);
+            if (args[0].equals("-e")) {
+                System.out.println("args " + args[1]);
+                source = args[1];
+            }
+        }
+
         System.out.println("initializing Perlito5.Main");
         try {
             // TODO - create Java-specific lib (this uses perlito5.jar)
@@ -91,11 +102,11 @@ public class JavaCompiler5
         classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
 
-        for (int i = 0; i < 3; i++) {
+        // for (int i = 0; i < 3; i++) {
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("calling Perlito5::Grammar::exp_stmts");
             PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(
-                " { for my $x (4,5,6) { say $x + 1 }  } "
+                "{ " + source + " }"
             ), new PlInt(0) );
 
             // PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
@@ -132,7 +143,7 @@ public class JavaCompiler5
             );
             Method method5 = class5.getMethod("run");
             method5.invoke(null);
-        }
+        // }
 
     }
 }
