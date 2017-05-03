@@ -1,10 +1,10 @@
 //
 //  $ . make_jar.sh
 //  $ cd misc/Java_eval
-//  $ cp ../../perlito5.jar .
-//  $ javac -cp perlito5.jar JavaCompiler5.java
+//  $ cp ../../perlito5-lib.jar .
+//  $ javac -cp perlito5-lib.jar JavaCompiler5.java
 //
-//  $ java -cp '.:perlito5.jar' JavaCompiler5 -e ' my $x = 123; say ($x * 3 ) '
+//  $ java -cp '.:perlito5-lib.jar' JavaCompiler5 -e ' my $x = 123; say ($x * 3 ) '
 //
 // Credits:
 //

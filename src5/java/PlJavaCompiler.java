@@ -1,10 +1,6 @@
 //
 //  $ . make_jar.sh
-//  $ cd misc/Java_eval
-//  $ cp ../../perlito5.jar .
-//  $ javac -cp perlito5.jar JavaCompiler5.java
-//
-//  $ java -cp '.:perlito5.jar' JavaCompiler5 -e ' my $x = 123; say ($x * 3 ) '
+//  $ javac -cp perlito5-lib.jar src5/java/PlJavaCompiler.java
 //
 // Credits:
 //
@@ -18,6 +14,9 @@
 //  * set classpath
 //
 
+package org.perlito.Perlito5;
+
+import org.perlito.Perlito5.*;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,7 +38,6 @@ import javax.tools.ToolProvider;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.perlito.Perlito5.*;
 
 public class PlJavaCompiler
 {
@@ -48,59 +46,23 @@ public class PlJavaCompiler
     static DynamicClassLoader classLoader;
     static JavaCompiler javac;
 
-    static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
+    public static void init() throws Exception
     {
-        SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
-        classLoader.customCompiledCode.put(className, new CompiledCode(className));
-        if (fileManager == null) {
-            // initializing the file manager
-            compilationUnits.add(sourceCodeObj);
-            fileManager = new ExtendedStandardJavaFileManager(
-                    javac.getStandardFileManager(null, null, null), classLoader);
-        }
-        else {
-            // reusing the file manager; replace the source code
-            compilationUnits.set(0, sourceCodeObj);
-        }
-
-        List<String> optionList = new ArrayList<String>();
-        // set compiler's classpath to be same as the runtime's
-        optionList.addAll(Arrays.asList("-classpath",System.getProperty("java.class.path")));
-        // optionList.addAll(Arrays.asList("-classpath", "."));
-        optionList.addAll(Arrays.asList("-classpath", "perlito5.jar"));
-
-        // run the compiler
-        JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
-                null, optionList, null, compilationUnits);
-        boolean result = task.call();
-        if (!result)
-            throw new RuntimeException("Unknown error during compilation.");
-        return classLoader.loadClass(className);
-    }
-
-    public static void main(String[] args) throws Exception
-    {
-        String source = "for my $x (4,5,6) { say $x + 1 }";
-        if (args.length > 0) {
-            System.out.println("args " + args[0]);
-            if (args[0].equals("-e")) {
-                System.out.println("args " + args[1]);
-                source = args[1];
-            }
-        }
-
-        System.out.println("initializing Perlito5.Main");
-        try {
-            Main.main( new String[]{} );
-        }
-        catch(Exception e) {
-            System.out.println("Errors in main()");
-        }
+        // System.out.println("initializing Perlito5.Main");
+        // try {
+        //     Main.main( new String[]{} );
+        // }
+        // catch(Exception e) {
+        //     System.out.println("Errors in main()");
+        // }
 
         javac = ToolProvider.getSystemJavaCompiler();
         classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
+    }
 
+    public static PlObject eval_string(String source) throws Exception
+    {
         // # $m = Perlito5::Grammar::exp_stmts($source, 0);
         System.out.println("calling Perlito5::Grammar::exp_stmts");
         PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(
@@ -139,9 +101,39 @@ public class PlJavaCompiler
             cls5
         );
         Method method5 = class5.getMethod("run", new Class[]{int.class});
-        method5.invoke(null, PlCx.VOID);
-
+        return (PlObject)method5.invoke(null, PlCx.VOID);
     }
+
+    static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
+    {
+        SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
+        classLoader.customCompiledCode.put(className, new CompiledCode(className));
+        if (fileManager == null) {
+            // initializing the file manager
+            compilationUnits.add(sourceCodeObj);
+            fileManager = new ExtendedStandardJavaFileManager(
+                    javac.getStandardFileManager(null, null, null), classLoader);
+        }
+        else {
+            // reusing the file manager; replace the source code
+            compilationUnits.set(0, sourceCodeObj);
+        }
+
+        List<String> optionList = new ArrayList<String>();
+        // set compiler's classpath to be same as the runtime's
+        optionList.addAll(Arrays.asList("-classpath",System.getProperty("java.class.path")));
+        // optionList.addAll(Arrays.asList("-classpath", "."));
+        optionList.addAll(Arrays.asList("-classpath", "perlito5.jar"));
+
+        // run the compiler
+        JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
+                null, optionList, null, compilationUnits);
+        boolean result = task.call();
+        if (!result)
+            throw new RuntimeException("Unknown error during compilation.");
+        return classLoader.loadClass(className);
+    }
+
 }
 
 class ExtendedStandardJavaFileManager extends ForwardingJavaFileManager<JavaFileManager> {
