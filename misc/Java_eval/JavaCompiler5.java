@@ -28,6 +28,27 @@ import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
 // import Perlito5.*;
 
+class PlObject {
+    public static final PlString REF = new PlString("");
+    public PlObject() {
+    }
+    public String toString() {
+        return "";
+    }
+}
+class PlString extends PlObject {
+    private java.lang.String s;
+    public PlString(String s) {
+        this.s = s;
+    }
+    public PlString(char s) {
+        this.s = "" + s;
+    }
+    public String toString() {
+        return s;
+    }
+}
+
 public class JavaCompiler5
 {
     static ArrayList<SourceCode> compilationUnits;
@@ -63,27 +84,31 @@ public class JavaCompiler5
         javac = ToolProvider.getSystemJavaCompiler();
         classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
-        // set up the global Interface
-        StringBuffer source4 = new StringBuffer();
-        source4.append("public interface PlInterface {");
-        source4.append("    int add(int x, int y);");
-        source4.append("}");
-        String cls4 = source4.toString();
-        String name4 = "PlInterface";
-        compilationUnits.add(new SourceCode(name4, cls4));
-        classLoader.customCompiledCode.put(name4, new CompiledCode(name4));
 
+
+        // set up PlObject
+        StringBuffer source10 = new StringBuffer();
+        source10.append(" class PlObject {");
+        source10.append("     public static final PlString REF = new PlString(\"\");");
+        source10.append("     public PlObject() {");
+        source10.append("     }");
+        source10.append("     public String toString() {");
+        source10.append("         return \"\";");
+        source10.append("     }");
+        source10.append(" }");
+        String cls10 = source10.toString();
+        String name10 = "PlObject";
+        compilationUnits.add(new SourceCode(name10, cls10));
+        classLoader.customCompiledCode.put(name10, new CompiledCode(name10));
+        Class<?> EvalObject = classLoader.loadClass("PlObject");
 
 
         StringBuffer source3 = new StringBuffer();
-        source3.append("public class Adder implements PlInterface {");
+        source3.append("public class Adder {");
         source3.append("    public Adder() {");
         source3.append("    }");
-        source3.append("    public int add(int x, int y) {");
-        source3.append("        return x + y;");
-        source3.append("    }");
-        source3.append("    public static Adder getAdder() {");
-        source3.append("        return new Adder();");
+        source3.append("    public static String doSomething(PlObject o) {");
+        source3.append("        return \"[[\" + o.toString() + \"]]\";");
         source3.append("    }");
         source3.append("}");
         String cls3 = source3.toString();
@@ -92,36 +117,14 @@ public class JavaCompiler5
             name3,
             cls3
         );
-        Class<?> PlInterface = classLoader.loadClass("PlInterface");
-        Method method3 = helloClass3.getMethod("getAdder", new Class[]{});
-        Object aaa = method3.invoke(null);
 
 
+        Method method3 = helloClass3.getMethod("doSomething", new Class[]{EvalObject});
+        String aaa = (String)(method3.invoke(null,
+            EvalObject.cast( new PlString("xyz") )
+        ));
 
-        StringBuffer sourceCode = new StringBuffer();
-        sourceCode.append("public class HelloClass {\n");
-        sourceCode.append("   public static void hello(int wait, PlInterface x) { System.out.print(\"hello \" + x.add(3,4) + \"\\n\"); }");
-        sourceCode.append("}");
-        String cls1 = sourceCode.toString();
-        Class<?> helloClass = compileClassInMemory(
-            "HelloClass",
-            cls1
-        );
-
-        Method method = helloClass.getMethod("hello", new Class[]{ int.class, PlInterface });
-        // Adder aaa = new Adder();
-        method.invoke(null, 1, aaa);
-
-
-
-        helloClass = compileClassInMemory(
-            "HelloClass2",
-            "public class HelloClass2 {\n" +
-            "   public static void hello(int wait, PlInterface x) { System.out.println(\"hello2\"); }" +
-            "}"
-        );
-        method = helloClass.getMethod("hello", new Class[]{ int.class, PlInterface });
-        method.invoke(null, 1, aaa);
+        System.out.println(aaa);
     }
 }
 
