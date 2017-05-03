@@ -90,8 +90,8 @@ public class JavaCompiler5
         source3.append("     public static PlObject createObject() {");
         source3.append("        return new PlString(\"HERE!!!\");");
         source3.append("     }");
-        source3.append("     public static String doSomething(PlObject o) {");
-        source3.append("         return \"[[\" + o.toString() + \"]]\";");
+        source3.append("     public static PlObject doSomething(PlObject o) {");
+        source3.append("         return new PlString(\"[[\" + o.toString() + \"]]\");");
         source3.append("     }");
         source3.append(" }");
         String cls3 = source3.toString();
@@ -102,10 +102,12 @@ public class JavaCompiler5
         );
 
         Method method3 = class3.getMethod("createObject");
-
         PlObject aaa = (PlObject)method3.invoke(null);
- 
         System.out.println(aaa);
+
+        Method method4 = class3.getMethod("doSomething", new Class[]{PlObject.class});
+        PlObject bbb = (PlObject)method4.invoke(null, new PlString("TEST"));
+        System.out.println(bbb);
     }
 }
 
