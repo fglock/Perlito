@@ -90,39 +90,39 @@ public class JavaCompiler5
         classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
 
-        StringBuffer source3 = new StringBuffer();
-        source3.append(" import org.perlito.Perlito5.*;");
-        source3.append(" public class Adder {");
-        source3.append("     public Adder() {");
-        source3.append("     }");
-        source3.append("     public static PlObject createObject() {");
-        source3.append("        return new PlString(\"HERE!!!\");");
-        source3.append("     }");
-        source3.append("     public static PlObject doSomething(PlObject o) {");
-        source3.append("         return new PlString(\"[[\" + o.toString() + \"]]\");");
-        source3.append("     }");
-        source3.append(" }");
-        String cls3 = source3.toString();
-        String name3 = "Adder";
-        Class<?> class3 = compileClassInMemory(
-            name3,
-            cls3
-        );
+        // // StringBuffer source3 = new StringBuffer();
+        // // source3.append(" import org.perlito.Perlito5.*;");
+        // // source3.append(" public class Adder {");
+        // // source3.append("     public Adder() {");
+        // // source3.append("     }");
+        // // source3.append("     public static PlObject createObject() {");
+        // // source3.append("        return new PlString(\"HERE!!!\");");
+        // // source3.append("     }");
+        // // source3.append("     public static PlObject doSomething(PlObject o) {");
+        // // source3.append("         return new PlString(\"[[\" + o.toString() + \"]]\");");
+        // // source3.append("     }");
+        // // source3.append(" }");
+        // // String cls3 = source3.toString();
+        // // String name3 = "Adder";
+        // // Class<?> class3 = compileClassInMemory(
+        // //     name3,
+        // //     cls3
+        // // );
 
-        Method method3 = class3.getMethod("createObject");
-        PlObject aaa = (PlObject)method3.invoke(null);
-        System.out.println(aaa);
+        // // Method method3 = class3.getMethod("createObject");
+        // // PlObject aaa = (PlObject)method3.invoke(null);
+        // // System.out.println(aaa);
 
-        Method method4 = class3.getMethod("doSomething", new Class[]{PlObject.class});
-        PlObject bbb = (PlObject)method4.invoke(null, new PlString("TEST"));
-        System.out.println(bbb);
+        // // Method method4 = class3.getMethod("doSomething", new Class[]{PlObject.class});
+        // // PlObject bbb = (PlObject)method4.invoke(null, new PlString("TEST"));
+        // // System.out.println(bbb);
 
         // $m = Perlito5::Grammar::exp_stmts($source, 0);
         // PlObject[] Main.apply(String functionName, PlObject... args)
 
         System.out.println("calling Perlito5::Grammar::exp_stmts");
         PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(
-            " for (4,5,6) { say $_ + 1 } "
+            " { for my $x (4,5,6) { say $x + 1 }  } "
         ), new PlInt(0) );
 
         PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
@@ -141,13 +141,14 @@ public class JavaCompiler5
         source5.append(" public class Eval {");
         source5.append("     public Eval() {");
         source5.append("     }");
-        source5.append("     public static void run() {");
+        source5.append("     public static PlObject run() {");
+        source5.append("         int want = 0;");
         source5.append(          outJava.toString() );
         source5.append("     }");
         source5.append(" }");
         String cls5 = source5.toString();
 
-        System.out.println(cls5);
+        System.out.println("\n" + cls5 + "\n");
 
         String name5 = "Eval";
         Class<?> class5 = compileClassInMemory(
