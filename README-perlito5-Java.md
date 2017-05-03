@@ -54,8 +54,10 @@ Compiling the compiler into a jar file
     # create the perlito5.jar file
     $ mkdir org
     $ mkdir org/perlito
-    $ mv *.class org/perlito/
-    $ jar -cfe perlito5.jar org.perlito.Main org/perlito/*.class
+    $ mkdir org/perlito/Perlito5
+    $ mv *.class org/perlito/Perlito5
+    $ jar -cfe perlito5.jar org.perlito.Perlito5.Main org/perlito/Perlito5/*.class
+    $ rm -rf org
 
 
     $ java -jar perlito5.jar -v
