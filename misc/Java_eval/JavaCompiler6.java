@@ -1,10 +1,9 @@
 //
 //  $ . make_jar.sh
 //  $ cd misc/Java_eval
-//  $ cp ../../perlito5-lib.jar .
-//  $ javac -cp perlito5-lib.jar JavaCompiler6.java
+//  $ javac -cp ../../perlito5-lib.jar JavaCompiler6.java
 //
-//  $ java -cp '.:perlito5-lib.jar' JavaCompiler6 -e ' my $x = 123; say ($x * 3 ) '
+//  $ java -cp '.:../../perlito5-lib.jar' JavaCompiler6 -e ' my $x = 123; say ($x * 3 ) '
 //
 
 import org.perlito.Perlito5.*;
@@ -24,8 +23,7 @@ public class JavaCompiler6
 
         System.out.println("initializing Perlito5.Main");
         try {
-            Main.main( new String[]{} );
-            PlJavaCompiler.init();
+            org.perlito.Perlito5.Main.main( new String[]{} );
         }
         catch(Exception e) {
             System.out.println("Errors in main()");

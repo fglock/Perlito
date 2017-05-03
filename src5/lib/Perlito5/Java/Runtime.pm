@@ -190,7 +190,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
 EOT
-    . Perlito5::Java::JavaCompiler->emit_java_imports()
+    . ( $Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler->emit_java_imports() : () )
 
         # import the Java classes
         # that were declared with
@@ -287,7 +287,7 @@ EOT
 EOT
 
     . Perlito5::Java::Crypt->emit_java()
-    . Perlito5::Java::JavaCompiler->emit_java()
+    . ( $Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler->emit_java() : () )
 
     . <<'EOT'
 class PerlCompare implements Comparator<PlObject> {

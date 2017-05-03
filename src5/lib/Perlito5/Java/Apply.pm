@@ -1003,10 +1003,24 @@ package Perlito5::AST::Apply;
                 );
                 return $ast->emit_java( $level + 1, $wantarray );
             }
-            else {
-                # eval string
+
+            # eval string
+
+            if (!$Perlito5::JAVA_EVAL) {
                 return q{PlCORE.die("Java eval string not yet implemented")};
             }
+
+            return 'PlJavaCompiler.eval_string(' . $arg->emit_java( $level, $wantarray ) . '.toString())';
+
+            # TODO - move sentence inside a do-block
+
+            return
+                   'try { '
+                .   'PlObject res = PlJavaCompiler.eval_string(source); '
+                . '} '
+                . 'catch(Exception e) { '
+                . '    System.out.println("Errors in eval_string()"); '
+                . '} ';
 
             # TODO - test return() from inside eval
 

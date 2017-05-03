@@ -3,7 +3,7 @@ make clean
 rm perlito5-lib.jar
 rm -rf org
 
-perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5-javalib.pl > perlito5-javalib.java
+perl perlito5.pl --bootstrapping --bootstrap_java_eval -Isrc5/lib -Cjava src5/util/perlito5-javalib.pl > perlito5-javalib.java
 
 mkdir org
 mkdir org/perlito

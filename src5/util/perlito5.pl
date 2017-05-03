@@ -63,6 +63,8 @@ my @Use;
 my $i_switch = 0;
 my $i_switch_extension = '';
 my @e_switch;
+$Perlito5::BOOTSTRAP_JAVA_EVAL = 0;
+$Perlito5::JAVA_EVAL = 0;
 $Perlito5::FILE_NAME = '';
 
 if ($verbose) {
@@ -93,6 +95,7 @@ perlito5 [switches] [programfile]
                     emits or not boilerplate code
     --bootstrapping set this when compiling the compiler,
                     otherwise the new subroutine definitions will overwrite the current compiler
+    --java_eval     enable java eval (experimental)
 ";
 my $copyright_message = <<"EOT";
 This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
@@ -273,6 +276,14 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
     }
     elsif ($ARGV[0] eq '--bootstrapping') {
         $bootstrapping = 1;
+        shift @ARGV;
+    }
+    elsif ($ARGV[0] eq '--bootstrap_java_eval') {
+        $Perlito5::BOOTSTRAP_JAVA_EVAL = 1;
+        shift @ARGV;
+    }
+    elsif ($ARGV[0] eq '--java_eval') {
+        $Perlito5::JAVA_EVAL = 1;
         shift @ARGV;
     }
     elsif ($ARGV[0] eq '-') {

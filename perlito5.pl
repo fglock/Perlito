@@ -21397,9 +21397,11 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $ast = Perlito5::AST::Call::->new('method' => 'postcircumfix:<( )>', 'invocant' => Perlito5::AST::Sub::->new('block' => $arg, 'attributes' => [], '_eval_block' => 1), 'arguments' => [Perlito5::AST::Var::LIST_ARG()]);
                 return $ast->emit_java($level + 1, $wantarray)
             }
-            else {;
+            if (!$Perlito5::JAVA_EVAL) {;
                 return 'PlCORE.die("Java eval string not yet implemented")'
             }
+            return 'PlJavaCompiler.eval_string(' . $arg->emit_java($level, $wantarray) . '.toString())';
+            return 'try { ' . 'PlObject res = PlJavaCompiler.eval_string(source); ' . '} ' . 'catch(Exception e) { ' . '    System.out.println("Errors in eval_string()"); ' . '} ';
             my $context = Perlito5::Java::to_context($wantarray);
             Perlito5::Java::emit_wrap_java($level, ($context eq 'p5want' ? () : 'var want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\\n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\\n" + err.stack + "\\n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
         }, 'length' => sub {
@@ -25685,6 +25687,8 @@ import javax.tools.ToolProvider;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.perlito.Perlito5.*;
+
 '
     }
     sub Perlito5::Java::JavaCompiler::emit_java {;
@@ -25709,6 +25713,7 @@ class PlJavaCompiler {
     static ExtendedStandardJavaFileManager fileManager;
     static DynamicClassLoader classLoader;
     static JavaCompiler javac;
+    static Boolean initDone;
 
     public static void init() throws Exception
     {
@@ -25725,47 +25730,63 @@ class PlJavaCompiler {
         compilationUnits = new ArrayList<SourceCode>();
     }
 
-    public static PlObject eval_string(String source) throws Exception
+    public static PlObject eval_string(String source)
     {
-        // # $m = Perlito5::Grammar::exp_stmts($source, 0);
-        System.out.println("calling Perlito5::Grammar::exp_stmts");
-        PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(
-            "{; " + source + " }"
-        ), new PlInt(0) );
+        try {
+            if (initDone == null) {
+                PlJavaCompiler.init();
+                System.out.println("eval_string: init");
+                initDone = true;
+            }
 
-        // PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
-        // System.out.println(out[0]);
+            // # $m = Perlito5::Grammar::exp_stmts($source, 0);
+            System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
+            PlObject[] ast = org.perlito.Perlito5.Main.apply(
+                "Perlito5::Grammar::exp_stmts",
+                "{; " + source + " }"
+            );
 
-        // TODO - retrieve errors in Perl->Java
-        // # $ast->emit_java(0);
-        PlObject outJava = PerlOp.call(
-            ast[0].hget("capture").aget(0),
-            "emit_java",
-            new PlArray(new PlInt(0)),
-            PlCx.SCALAR);
-        // System.out.println(outJava);
+            // PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
+            // System.out.println(out[0]);
 
-        // TODO - test local(); initialize local() stack if needed
-        StringBuffer source5 = new StringBuffer();
-        source5.append(" import org.perlito.Perlito5.*;");
-        source5.append(" public class PlEval {");
-        source5.append("     public PlEval() {");
-        source5.append("     }");
-        source5.append("     public static PlObject run(int want) {");
-        source5.append(          outJava.toString() );
-        source5.append("     }");
-        source5.append(" }");
-        String cls5 = source5.toString();
-        // System.out.println("\\n" + cls5 + "\\n");
+            // TODO - retrieve errors in Perl->Java
+            // # $ast->emit_java(0);
+            PlObject outJava = org.perlito.Perlito5.PerlOp.call(
+                ast[0].hget("capture").aget(0),
+                "emit_java",
+                new PlArray(new PlInt(0)),
+                PlCx.SCALAR);
+            // System.out.println("eval_string: " + outJava);
 
-        // TODO - retrieve errors in Java->bytecode
-        String name5 = "PlEval";
-        Class<?> class5 = compileClassInMemory(
-            name5,
-            cls5
-        );
-        Method method5 = class5.getMethod("run", new Class[]{int.class});
-        return (PlObject)method5.invoke(null, PlCx.VOID);
+            // TODO - test local(); initialize local() stack if needed
+            StringBuffer source5 = new StringBuffer();
+            source5.append(" import org.perlito.Perlito5.*;");
+            source5.append(" public class PlEval {");
+            source5.append("     public PlEval() {");
+            source5.append("     }");
+            source5.append("     public static PlObject run(int want) {");
+            source5.append(          outJava.toString() );
+            source5.append("     }");
+            source5.append(" }");
+            String cls5 = source5.toString();
+            System.out.println("\\neval_string: " + cls5 + "\\n");
+
+            // TODO - retrieve errors in Java->bytecode
+            String name5 = "PlEval";
+            Class<?> class5 = compileClassInMemory(
+                name5,
+                cls5
+            );
+            Method method5 = class5.getMethod("run", new Class[]{int.class});
+            return (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            System.out.println("Exception in eval_string: " + message);
+            PlV.sset("main::@", new PlString(message));
+        }
+        return PlCx.UNDEF;
     }
 
     static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
@@ -25988,7 +26009,7 @@ import static java.nio.file.attribute.PosixFilePermission.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
-' . Perlito5::Java::JavaCompiler::->emit_java_imports() . join('', (map {
+' . ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java_imports() : ()) . join('', (map {
             my $class = $java_classes{$_};
             $class->{'import'} ? 'import ' . $class->{'import'} . ';
 ' : ()
@@ -26064,7 +26085,7 @@ class PlCx {
 ' . '    ' . join('
     ', @{$args{'java_constants'} // []}) . '
 ' . '}
-' . Perlito5::Java::Crypt::->emit_java() . Perlito5::Java::JavaCompiler::->emit_java() . 'class PerlCompare implements Comparator<PlObject> {
+' . Perlito5::Java::Crypt::->emit_java() . ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java() : ()) . 'class PerlCompare implements Comparator<PlObject> {
     public PlClosure sorter;
     public PlLvalue v_a;
     public PlLvalue v_b;
@@ -32194,6 +32215,8 @@ class PlString extends PlObject {
     my $i_switch = 0;
     my $i_switch_extension = '';
     my @e_switch;
+    $Perlito5::BOOTSTRAP_JAVA_EVAL = 0;
+    $Perlito5::JAVA_EVAL = 0;
     $Perlito5::FILE_NAME = '';
     if ($verbose) {
         warn('// Perlito5 compiler');
@@ -32222,6 +32245,7 @@ perlito5 [switches] [programfile]
                     emits or not boilerplate code
     --bootstrapping set this when compiling the compiler,
                     otherwise the new subroutine definitions will overwrite the current compiler
+    --java_eval     enable java eval (experimental)
 ';
     my $copyright_message = 'This is Perlito5 ' . $_V5_COMPILER_VERSION . ', an implementation of the Perl language.
 
@@ -32393,6 +32417,14 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
         }
         elsif ($ARGV[0] eq '--bootstrapping') {
             $bootstrapping = 1;
+            shift(@ARGV)
+        }
+        elsif ($ARGV[0] eq '--bootstrap_java_eval') {
+            $Perlito5::BOOTSTRAP_JAVA_EVAL = 1;
+            shift(@ARGV)
+        }
+        elsif ($ARGV[0] eq '--java_eval') {
+            $Perlito5::JAVA_EVAL = 1;
             shift(@ARGV)
         }
         elsif ($ARGV[0] eq '-') {
