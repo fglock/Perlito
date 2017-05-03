@@ -1,4 +1,9 @@
 //
+//
+//  $ cp ../../perlito5.jar .
+//  $ javac -cp perlito5.jar JavaCompiler5.java
+//  $ java  -cp '.:perlito5.jar' JavaCompiler5
+//
 // Credits:
 //
 // http://udn.yyuap.com/doc/jdk6-api-zh/javax/tools/JavaCompiler.html         
@@ -7,6 +12,8 @@
 // https://github.com/trung/InMemoryJavaCompiler
 //  * provided a working example
 //  * Apache License, Version 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
+// http://stackoverflow.com/questions/1563909/how-to-set-classpath-when-i-use-javax-tools-javacompiler-compile-the-source
+//  * set classpath
 //
 
 import java.io.ByteArrayOutputStream;
@@ -30,7 +37,7 @@ import javax.tools.ToolProvider;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-// import org.perlito.Perlito5.*;
+import org.perlito.Perlito5.*;
 
 public class JavaCompiler5
 {
@@ -57,7 +64,7 @@ public class JavaCompiler5
         List<String> optionList = new ArrayList<String>();
         // set compiler's classpath to be same as the runtime's
         optionList.addAll(Arrays.asList("-classpath",System.getProperty("java.class.path")));
-        optionList.addAll(Arrays.asList("-classpath", "."));
+        // optionList.addAll(Arrays.asList("-classpath", "."));
         optionList.addAll(Arrays.asList("-classpath", "perlito5.jar"));
 
         // run the compiler
@@ -75,32 +82,13 @@ public class JavaCompiler5
         classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
 
-
-        // set up PlObject
-        // StringBuffer source10 = new StringBuffer();
-        // source10.append(" import org.perlito.Perlito5.*;");
-        // source10.append(" class PlObject {");
-        // source10.append("     public static final PlString REF = new PlString(\"\");");
-        // source10.append("     public PlObject() {");
-        // source10.append("     }");
-        // source10.append("     public String toString() {");
-        // source10.append("         return \"\";");
-        // source10.append("     }");
-        // source10.append(" }");
-        // String cls10 = source10.toString();
-        // String name10 = "PlObject";
-        // compilationUnits.add(new SourceCode(name10, cls10));
-        // classLoader.customCompiledCode.put(name10, new CompiledCode(name10));
-        // Class<?> EObject = classLoader.loadClass("PlObject");
-
-
         StringBuffer source3 = new StringBuffer();
         source3.append(" import org.perlito.Perlito5.*;");
         source3.append(" public class Adder {");
         source3.append("     public Adder() {");
         source3.append("     }");
-        source3.append("     public static Object createObject() {");
-        source3.append("        return new PlObject();");
+        source3.append("     public static PlObject createObject() {");
+        source3.append("        return new PlString(\"HERE!!!\");");
         source3.append("     }");
         source3.append("     public static String doSomething(PlObject o) {");
         source3.append("         return \"[[\" + o.toString() + \"]]\";");
@@ -113,27 +101,10 @@ public class JavaCompiler5
             cls3
         );
 
-        // Class<?> EObject = classLoader.loadClass("PlObject");
-
-        // Method method3 = class3.getMethod("createObject", new Class[]{});
         Method method3 = class3.getMethod("createObject");
 
-        if (method3 == null) {
-            System.out.println("no method!!!");
-        }
-
-        Object aaa = method3.invoke(null);
-            // new PlObject()
-            // (EObject.class)(new PlObject())
-            // );
-
-
-        // Method method3 = class3.getMethod("doSomething", new Class[]{EObject});
-        // String aaa = (String)(method3.invoke(null,
-        //     new PlObject()
-        //     // (EObject.class)(new PlObject())
-        // ));
-
+        PlObject aaa = (PlObject)method3.invoke(null);
+ 
         System.out.println(aaa);
     }
 }
