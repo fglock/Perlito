@@ -50,8 +50,13 @@ Compiling the compiler into a jar file
     $ java Main -v
     This is Perlito5 9.021, an implementation of the Perl language.
 
+
     # create the perlito5.jar file
-    $ jar -cfe perlito5.jar Main *.class
+    $ mkdir org
+    $ mkdir org/perlito
+    $ mv *.class org/perlito/
+    $ jar -cfe perlito5.jar org.perlito.Main org/perlito/*.class
+
 
     $ java -jar perlito5.jar -v
     This is Perlito5 9.021, an implementation of the Perl language.
