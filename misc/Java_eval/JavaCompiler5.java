@@ -26,7 +26,7 @@ import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
-// import Perlito5.*;
+import org.perlito.Perlito5.*;
 
 class PlObject {
     public static final PlString REF = new PlString("");

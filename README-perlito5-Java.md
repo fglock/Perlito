@@ -39,6 +39,10 @@ Perlito5-Java platform differences
 Compiling the compiler into a jar file
 --------------------------------------
 
+See also: make_jar.sh
+
+TODO: add to Makefile
+
 ~~~sh
     $ make clean
 
@@ -52,10 +56,11 @@ Compiling the compiler into a jar file
 
 
     # create the perlito5.jar file
+    $ rm perlito5.jar
     $ mkdir org
     $ mkdir org/perlito
     $ mkdir org/perlito/Perlito5
-    $ mv *.class org/perlito/Perlito5
+    $ mv *.class org/perlito/Perlito5/
     $ jar -cfe perlito5.jar org.perlito.Perlito5.Main org/perlito/Perlito5/*.class
     $ rm -rf org
 
