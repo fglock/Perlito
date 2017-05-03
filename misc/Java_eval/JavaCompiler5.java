@@ -26,28 +26,11 @@ import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
-import org.perlito.Perlito5.*;
 
-class PlObject {
-    public static final PlString REF = new PlString("");
-    public PlObject() {
-    }
-    public String toString() {
-        return "";
-    }
-}
-class PlString extends PlObject {
-    private java.lang.String s;
-    public PlString(String s) {
-        this.s = s;
-    }
-    public PlString(char s) {
-        this.s = "" + s;
-    }
-    public String toString() {
-        return s;
-    }
-}
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+// import org.perlito.Perlito5.*;
 
 public class JavaCompiler5
 {
@@ -70,9 +53,16 @@ public class JavaCompiler5
             // reusing the file manager; replace the source code
             compilationUnits.set(1, sourceCodeObj);
         }
+
+        List<String> optionList = new ArrayList<String>();
+        // set compiler's classpath to be same as the runtime's
+        optionList.addAll(Arrays.asList("-classpath",System.getProperty("java.class.path")));
+        optionList.addAll(Arrays.asList("-classpath", "."));
+        optionList.addAll(Arrays.asList("-classpath", "perlito5.jar"));
+
         // run the compiler
         JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
-                null, null, null, compilationUnits);
+                null, optionList, null, compilationUnits);
         boolean result = task.call();
         if (!result)
             throw new RuntimeException("Unknown error during compilation.");
@@ -87,42 +77,62 @@ public class JavaCompiler5
 
 
         // set up PlObject
-        StringBuffer source10 = new StringBuffer();
-        source10.append(" class PlObject {");
-        source10.append("     public static final PlString REF = new PlString(\"\");");
-        source10.append("     public PlObject() {");
-        source10.append("     }");
-        source10.append("     public String toString() {");
-        source10.append("         return \"\";");
-        source10.append("     }");
-        source10.append(" }");
-        String cls10 = source10.toString();
-        String name10 = "PlObject";
-        compilationUnits.add(new SourceCode(name10, cls10));
-        classLoader.customCompiledCode.put(name10, new CompiledCode(name10));
-        Class<?> EvalObject = classLoader.loadClass("PlObject");
+        // StringBuffer source10 = new StringBuffer();
+        // source10.append(" import org.perlito.Perlito5.*;");
+        // source10.append(" class PlObject {");
+        // source10.append("     public static final PlString REF = new PlString(\"\");");
+        // source10.append("     public PlObject() {");
+        // source10.append("     }");
+        // source10.append("     public String toString() {");
+        // source10.append("         return \"\";");
+        // source10.append("     }");
+        // source10.append(" }");
+        // String cls10 = source10.toString();
+        // String name10 = "PlObject";
+        // compilationUnits.add(new SourceCode(name10, cls10));
+        // classLoader.customCompiledCode.put(name10, new CompiledCode(name10));
+        // Class<?> EObject = classLoader.loadClass("PlObject");
 
 
         StringBuffer source3 = new StringBuffer();
-        source3.append("public class Adder {");
-        source3.append("    public Adder() {");
-        source3.append("    }");
-        source3.append("    public static String doSomething(PlObject o) {");
-        source3.append("        return \"[[\" + o.toString() + \"]]\";");
-        source3.append("    }");
-        source3.append("}");
+        source3.append(" import org.perlito.Perlito5.*;");
+        source3.append(" public class Adder {");
+        source3.append("     public Adder() {");
+        source3.append("     }");
+        source3.append("     public static Object createObject() {");
+        source3.append("        return new PlObject();");
+        source3.append("     }");
+        source3.append("     public static String doSomething(PlObject o) {");
+        source3.append("         return \"[[\" + o.toString() + \"]]\";");
+        source3.append("     }");
+        source3.append(" }");
         String cls3 = source3.toString();
         String name3 = "Adder";
-        Class<?> helloClass3 = compileClassInMemory(
+        Class<?> class3 = compileClassInMemory(
             name3,
             cls3
         );
 
+        // Class<?> EObject = classLoader.loadClass("PlObject");
 
-        Method method3 = helloClass3.getMethod("doSomething", new Class[]{EvalObject});
-        String aaa = (String)(method3.invoke(null,
-            EvalObject.cast( new PlString("xyz") )
-        ));
+        // Method method3 = class3.getMethod("createObject", new Class[]{});
+        Method method3 = class3.getMethod("createObject");
+
+        if (method3 == null) {
+            System.out.println("no method!!!");
+        }
+
+        Object aaa = method3.invoke(null);
+            // new PlObject()
+            // (EObject.class)(new PlObject())
+            // );
+
+
+        // Method method3 = class3.getMethod("doSomething", new Class[]{EObject});
+        // String aaa = (String)(method3.invoke(null,
+        //     new PlObject()
+        //     // (EObject.class)(new PlObject())
+        // ));
 
         System.out.println(aaa);
     }
