@@ -78,6 +78,15 @@ TODO: add to Makefile
     [ no differences ]
 ~~~
 
+  - Using the jar file
+
+~~~java
+    import org.perlito.Perlito5.*;
+~~~
+
+~~~sh
+    $ javac -cp perlito5.jar JavaCompiler5.java
+~~~
 
 Perlito5-Java work-in-progress
 ------------------------------
