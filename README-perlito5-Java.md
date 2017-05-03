@@ -39,7 +39,7 @@ Perlito5-Java platform differences
 Compiling the compiler into a jar file
 --------------------------------------
 
-See also: make_jar.sh
+See also: make_perlito5-lib-jar.sh
 
 TODO: add to Makefile
 
@@ -202,6 +202,36 @@ Regex differences
 
   - TODO - check this error message, this may need to be implemented for compatibility:
       Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\G{ <-- HERE / at (eval 2) line 20.
+
+
+Eval-string (work in progress)
+------------------------------
+
+Limitations
+
+  - eval executes in a new scope
+
+  - Java extensions are disabled (only plain-perl)
+
+Instructions
+
+  - create the "perlito5-lib.jar" file
+
+~~~sh
+    $ . make_perlito5-lib-jar.sh
+~~~
+
+  - compile the Perl script to Java with the "--java_eval" option
+
+  - compile the Java script with perlito5-lib.jar in the classpath
+
+  - run the class with perlito5-lib.jar in the classpath
+
+~~~sh
+    $ time perl perlito5.pl -Isrc5/lib/ --java_eval -Cjava -e ' say eval "123"; ' > x.java ; javac -cp perlito5-lib.jar -source 7 x.java ; java -cp '.:perlito5-lib.jar' Main
+~~~
+
+See also: misc/Java_eval$ vim JavaCompiler6.java
 
 
 Perlito5-Java extensibility

@@ -146,9 +146,7 @@ class PlJavaCompiler {
 
         List<String> optionList = new ArrayList<String>();
         // set compiler's classpath to be same as the runtime's
-        optionList.addAll(Arrays.asList("-classpath",System.getProperty("java.class.path")));
-        // optionList.addAll(Arrays.asList("-classpath", "."));
-        optionList.addAll(Arrays.asList("-classpath", "perlito5.jar"));
+        optionList.addAll(Arrays.asList("-classpath", System.getProperty("java.class.path")));
 
         // run the compiler
         JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
