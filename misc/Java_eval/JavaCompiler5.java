@@ -78,6 +78,14 @@ public class JavaCompiler5
 
     public static void main(String[] args) throws Exception
     {
+        System.out.println("initializing Perlito5.Main");
+        try {
+            Main.main( new String[]{"-v"} );
+        }
+        catch(Exception e) {
+            System.out.println("Errors in main()");
+        }
+
         javac = ToolProvider.getSystemJavaCompiler();
         classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
@@ -108,6 +116,16 @@ public class JavaCompiler5
         Method method4 = class3.getMethod("doSomething", new Class[]{PlObject.class});
         PlObject bbb = (PlObject)method4.invoke(null, new PlString("TEST"));
         System.out.println(bbb);
+
+        // $m = Perlito5::Grammar::exp_stmts($source, 0);
+        // PlObject[] Main.apply(String functionName, PlObject... args)
+
+        System.out.println("calling Perlito5::Grammar::exp_stmts");
+        PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(" 1 + 1 "), new PlInt(0) );
+
+        PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
+        System.out.println(out[0]);
+
     }
 }
 
