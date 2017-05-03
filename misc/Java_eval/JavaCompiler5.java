@@ -101,48 +101,45 @@ public class JavaCompiler5
         classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
 
-        // for (int i = 0; i < 3; i++) {
-            // # $m = Perlito5::Grammar::exp_stmts($source, 0);
-            System.out.println("calling Perlito5::Grammar::exp_stmts");
-            PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(
-                "{; " + source + " }"
-            ), new PlInt(0) );
+        // # $m = Perlito5::Grammar::exp_stmts($source, 0);
+        System.out.println("calling Perlito5::Grammar::exp_stmts");
+        PlObject[] ast = Main.apply( "Perlito5::Grammar::exp_stmts", new PlString(
+            "{; " + source + " }"
+        ), new PlInt(0) );
 
-            // PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
-            // System.out.println(out[0]);
+        // PlObject[] out = Main.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
+        // System.out.println(out[0]);
 
-            // TODO - retrieve errors in Perl->Java
-            // # $ast->emit_java(0);
-            PlObject outJava = PerlOp.call(
-                ast[0].hget("capture").aget(0),
-                "emit_java",
-                new PlArray(new PlInt(0)),
-                PlCx.SCALAR);
-            // System.out.println(outJava);
+        // TODO - retrieve errors in Perl->Java
+        // # $ast->emit_java(0);
+        PlObject outJava = PerlOp.call(
+            ast[0].hget("capture").aget(0),
+            "emit_java",
+            new PlArray(new PlInt(0)),
+            PlCx.SCALAR);
+        // System.out.println(outJava);
 
-            // TODO - test local(); initialize local() stack if needed
-            StringBuffer source5 = new StringBuffer();
-            source5.append(" import org.perlito.Perlito5.*;");
-            source5.append(" public class Eval {");
-            source5.append("     public Eval() {");
-            source5.append("     }");
-            source5.append("     public static PlObject run() {");
-            source5.append("         int want = 0;");
-            source5.append(          outJava.toString() );
-            source5.append("     }");
-            source5.append(" }");
-            String cls5 = source5.toString();
-            // System.out.println("\n" + cls5 + "\n");
+        // TODO - test local(); initialize local() stack if needed
+        StringBuffer source5 = new StringBuffer();
+        source5.append(" import org.perlito.Perlito5.*;");
+        source5.append(" public class PlEval {");
+        source5.append("     public PlEval() {");
+        source5.append("     }");
+        source5.append("     public static PlObject run(int want) {");
+        source5.append(          outJava.toString() );
+        source5.append("     }");
+        source5.append(" }");
+        String cls5 = source5.toString();
+        // System.out.println("\n" + cls5 + "\n");
 
-            // TODO - retrieve errors in Java->bytecode
-            String name5 = "Eval";
-            Class<?> class5 = compileClassInMemory(
-                name5,
-                cls5
-            );
-            Method method5 = class5.getMethod("run");
-            method5.invoke(null);
-        // }
+        // TODO - retrieve errors in Java->bytecode
+        String name5 = "PlEval";
+        Class<?> class5 = compileClassInMemory(
+            name5,
+            cls5
+        );
+        Method method5 = class5.getMethod("run", new Class[]{int.class});
+        method5.invoke(null, PlCx.VOID);
 
     }
 }
