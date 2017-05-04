@@ -115,13 +115,15 @@ class PlJavaCompiler {
         return PlCx.UNDEF;
     }
 
-    public static PlObject eval_string(String source)
+    public static PlObject eval_perl_string(String source, int want, int strict)
     {
         try {
             System.out.println("eval_string: enter");
             (new Throwable()).printStackTrace();
 
             // TODO - the eval expression should be:  "( sub { " + source + " } )->()"
+
+            PlV.sset("Perlito5::STRICT", new PlInt(strict));
 
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
@@ -138,7 +140,7 @@ class PlJavaCompiler {
                 ast[0].hget("capture").aget(0),
                 "emit_java",
                 new PlArray(new PlInt(0)),
-                PlCx.SCALAR);
+                want);
             // System.out.println("eval_string: " + outJava);
             return eval_java_string(outJava.toString());
         }

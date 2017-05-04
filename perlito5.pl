@@ -21398,12 +21398,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return $ast->emit_java($level + 1, $wantarray)
             }
             if (!$Perlito5::JAVA_EVAL) {;
-                return 'PlCORE.die("Java eval string not yet implemented")'
+                return 'PlCORE.die("This script has eval string disabled - the ' . chr(39) . 'java_eval' . chr(39) . ' switch is turned off")'
             }
-            return 'PlJavaCompiler.eval_string(' . $arg->emit_java($level, $wantarray) . '.toString())';
-            return 'try { ' . 'PlObject res = PlJavaCompiler.eval_string(source); ' . '} ' . 'catch(Exception e) { ' . '    System.out.println("Errors in eval_string()"); ' . '} ';
-            my $context = Perlito5::Java::to_context($wantarray);
-            Perlito5::Java::emit_wrap_java($level, ($context eq 'p5want' ? () : 'var want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\\n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\\n" + err.stack + "\\n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
+            my $want = Perlito5::Java::to_context($wantarray);
+            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . (0 + $want) . ', ' . (0 + $Perlito5::STRICT) . ')'
         }, 'length' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = shift(@{$self->{'arguments'}});
@@ -25782,13 +25780,15 @@ class PlJavaCompiler {
         return PlCx.UNDEF;
     }
 
-    public static PlObject eval_string(String source)
+    public static PlObject eval_perl_string(String source, int want, int strict)
     {
         try {
             System.out.println("eval_string: enter");
             (new Throwable()).printStackTrace();
 
             // TODO - the eval expression should be:  "( sub { " + source + " } )->()"
+
+            PlV.sset("Perlito5::STRICT", new PlInt(strict));
 
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
@@ -25805,7 +25805,7 @@ class PlJavaCompiler {
                 ast[0].hget("capture").aget(0),
                 "emit_java",
                 new PlArray(new PlInt(0)),
-                PlCx.SCALAR);
+                want);
             // System.out.println("eval_string: " + outJava);
             return eval_java_string(outJava.toString());
         }

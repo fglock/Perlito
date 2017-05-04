@@ -1007,61 +1007,20 @@ package Perlito5::AST::Apply;
             # eval string
 
             if (!$Perlito5::JAVA_EVAL) {
-                return q{PlCORE.die("Java eval string not yet implemented")};
+                return q{PlCORE.die("This script has eval string disabled - the 'java_eval' switch is turned off")};
             }
 
-            return 'PlJavaCompiler.eval_string(' . $arg->emit_java( $level, $wantarray ) . '.toString())';
-
             # TODO - move sentence inside a do-block
-
-            return
-                   'try { '
-                .   'PlObject res = PlJavaCompiler.eval_string(source); '
-                . '} '
-                . 'catch(Exception e) { '
-                . '    System.out.println("Errors in eval_string()"); '
-                . '} ';
-
             # TODO - test return() from inside eval
+            # TODO - enumerate lexicals
 
-            my $context = Perlito5::Java::to_context($wantarray);
+            my $want = Perlito5::Java::to_context($wantarray);
 
-            Perlito5::Java::emit_wrap_java($level,
-                ( $context eq 'p5want'
-                  ? ()
-                  : "var want = " . $context . ";",
-                ),
-                "var r;",
-                'p5pkg["main"]["v_@"] = "";',
-                'var p5strict = p5pkg["Perlito5"]["v_STRICT"];',
-                'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';',
-                "try {",
-                    [ 'r = ' . $eval . "",
-                    ],
-                "}",
-                "catch(err) {",
-                [  "if ( err instanceof p5_error || err instanceof Error ) {",
-                     [ 'p5pkg["main"]["v_@"] = err;',
-                       'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\n") {',
-                           [ # try to add a stack trace
-                             'try {' . "",
-                                 [ 'p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\n" + err.stack + "\n";',
-                                 ],
-                             '}',
-                             'catch(err) { }',
-                           ],
-                       '}',
-                     ],
-                   "}",
-                   "else {",
-                     [ "return(err);",
-                     ],
-                   "}",
-                 ],
-                "}",
-                'p5pkg["Perlito5"]["v_STRICT"] = p5strict;',
-                "return r;",
-            );
+            return 'PlJavaCompiler.eval_perl_string('
+                . $arg->emit_java( $level, $wantarray ) . '.toString(), '
+                . ( 0 + $want ) . ', '
+                . ( 0 + $Perlito5::STRICT )
+                . ')';
         },
 
         'length' => sub {
