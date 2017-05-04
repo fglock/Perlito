@@ -54,6 +54,7 @@ class PlJavaCompiler {
     static DynamicClassLoader classLoader;
     static JavaCompiler javac;
     static Boolean initDone;
+    static int invocationCount = 0;
 
     public static void init() throws Exception
     {
@@ -130,10 +131,13 @@ class PlJavaCompiler {
             // System.out.println("eval_string: " + outJava);
 
             // TODO - test local(); initialize local() stack if needed
+            String className = "PlEval" + invocationCount;
+            invocationCount++;
+
             StringBuffer source5 = new StringBuffer();
             source5.append("import org.perlito.Perlito5.*;\n");
-            source5.append("public class PlEval {\n");
-            source5.append("    public PlEval() {\n");
+            source5.append("public class " + className + " {\n");
+            source5.append("    public " + className + "() {\n");
             source5.append("    }\n");
             source5.append("    public static PlObject runEval(int want) {\n");
             source5.append("        " + outJava.toString() + "\n");
@@ -143,9 +147,8 @@ class PlJavaCompiler {
             System.out.println("\neval_string:\n" + cls5 + "\n");
 
             // TODO - retrieve errors in Java->bytecode
-            String name5 = "PlEval";
             Class<?> class5 = compileClassInMemory(
-                name5,
+                className,
                 cls5
             );
             Method method5 = class5.getMethod("runEval", new Class[]{int.class});
