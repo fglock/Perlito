@@ -21400,8 +21400,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if (!$Perlito5::JAVA_EVAL) {;
                 return 'PlCORE.die("This script has eval string disabled - the ' . chr(39) . 'java_eval' . chr(39) . ' switch is turned off")'
             }
-            my $want = Perlito5::Java::to_context($wantarray);
-            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . (0 + $want) . ', ' . (0 + $Perlito5::STRICT) . ')'
+            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ')'
         }, 'length' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = shift(@{$self->{'arguments'}});
@@ -25780,7 +25779,7 @@ class PlJavaCompiler {
         return PlCx.UNDEF;
     }
 
-    public static PlObject eval_perl_string(String source, int want, int strict)
+    public static PlObject eval_perl_string(String source, String wantarray, int strict)
     {
         try {
             System.out.println("eval_string: enter");
@@ -25804,8 +25803,8 @@ class PlJavaCompiler {
             PlObject outJava = org.perlito.Perlito5.PerlOp.call(
                 ast[0].hget("capture").aget(0),
                 "emit_java",
-                new PlArray(new PlInt(0)),
-                want);
+                new PlArray(new PlInt(0), new PlString(wantarray)),
+                PlCx.SCALAR);
             // System.out.println("eval_string: " + outJava);
             return eval_java_string(outJava.toString());
         }

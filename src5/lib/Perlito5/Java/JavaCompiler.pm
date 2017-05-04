@@ -115,7 +115,7 @@ class PlJavaCompiler {
         return PlCx.UNDEF;
     }
 
-    public static PlObject eval_perl_string(String source, int want, int strict)
+    public static PlObject eval_perl_string(String source, String wantarray, int strict)
     {
         try {
             System.out.println("eval_string: enter");
@@ -139,8 +139,8 @@ class PlJavaCompiler {
             PlObject outJava = org.perlito.Perlito5.PerlOp.call(
                 ast[0].hget("capture").aget(0),
                 "emit_java",
-                new PlArray(new PlInt(0)),
-                want);
+                new PlArray(new PlInt(0), new PlString(wantarray)),
+                PlCx.SCALAR);
             // System.out.println("eval_string: " + outJava);
             return eval_java_string(outJava.toString());
         }

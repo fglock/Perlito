@@ -1014,11 +1014,9 @@ package Perlito5::AST::Apply;
             # TODO - test return() from inside eval
             # TODO - enumerate lexicals
 
-            my $want = Perlito5::Java::to_context($wantarray);
-
             return 'PlJavaCompiler.eval_perl_string('
                 . $arg->emit_java( $level, $wantarray ) . '.toString(), '
-                . ( 0 + $want ) . ', '
+                . Perlito5::Java::escape_string($wantarray) . ', '
                 . ( 0 + $Perlito5::STRICT )
                 . ')';
         },
