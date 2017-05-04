@@ -34,7 +34,7 @@ sub emit_java {
     return <<'EOT'
 
 /****************************************************************************/
-// Credits for the JavaCompiler idea:
+// Credits for the PlJavaCompiler idea:
 //
 // http://udn.yyuap.com/doc/jdk6-api-zh/javax/tools/JavaCompiler.html         
 //  * idea to reuse the same file manager to allow caching of jar files
@@ -70,6 +70,29 @@ class PlJavaCompiler {
         compilationUnits = new ArrayList<SourceCode>();
     }
 
+    public static PlObject eval_java_string(String source)
+    {
+        PlCORE.die("eval_java_string: not implemented");
+
+        try {
+            if (initDone == null) {
+                PlJavaCompiler.init();
+                System.out.println("eval_string: init");
+                initDone = true;
+            }
+
+            // TODO
+
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            System.out.println("Exception in eval_string: " + message);
+            PlV.sset("main::@", new PlString(message));
+        }
+        return PlCx.UNDEF;
+    }
+
     public static PlObject eval_string(String source)
     {
         try {
@@ -78,6 +101,8 @@ class PlJavaCompiler {
                 System.out.println("eval_string: init");
                 initDone = true;
             }
+
+            // TODO - the eval expression should be:  "( sub { " + source + " } )->()"
 
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");

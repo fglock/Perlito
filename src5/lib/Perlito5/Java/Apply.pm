@@ -1739,6 +1739,11 @@ package Perlito5::AST::Apply;
                     die "Java::inline needs a string constant, got:", Perlito5::Dumper::Dumper(\@args);
                 }
             }
+            if ($self->{namespace} eq 'Perlito5') {
+                if ($code eq 'eval_ast') {
+                    $self->{namespace} = 'Perlito5::Java::Runtime';
+                }
+            }
             $code = 'PlV.cget(' . Perlito5::Java::escape_string($self->{namespace} . '::' . $code ) . ')'
         }
         else {

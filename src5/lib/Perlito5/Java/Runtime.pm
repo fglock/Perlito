@@ -7,6 +7,19 @@ use Perlito5::Java::CORE;
 use Perlito5::Java::Crypt;
 use Perlito5::Java::JavaCompiler;
 
+sub eval_ast {
+    my ($ast) = @_;
+    my $want = 0;
+
+    my $js_code = $ast->emit_java(0, $want);
+    # say STDERR "js-source: [" . $js_code . "]";
+    Perlito5::set_global_phase("UNITCHECK");
+    $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
+    # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    $_ = $js_code;
+    return Java::inline('PlJavaCompiler.eval_java_string(PlV.sget("main::_").toString())');
+}
+
 sub emit_java_extends {
     my ($class, $java_classes) = @_;
     # extends the imported Java classes
