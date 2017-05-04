@@ -236,12 +236,12 @@ See also: misc/Java_eval$ vim JavaCompiler6.java
 Compiling the compiler with BEGIN capabilities
 
 ~~~sh
-    $ perl perlito5.pl --bootstrapping --java_eval -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
+    $ perl perlito5.pl --bootstrapping --java_eval -Isrc5/lib -Cjava src5/util/jperl.pl > jperl.java
 
-    $ time javac -cp .:perlito5-lib.jar -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 perlito5.java
+    $ time javac -cp .:perlito5-lib.jar -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 jperl.java
 
     # test
-    $ java -cp '.:perlito5-lib.jar' Main -v
+    $ java -cp '.:perlito5-lib.jar' Main -e ' say 123 '
 ~~~
 
 
