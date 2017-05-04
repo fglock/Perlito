@@ -1010,9 +1010,30 @@ package Perlito5::AST::Apply;
                 return q{PlCORE.die("This script has eval string disabled - the 'java_eval' switch is turned off")};
             }
 
+            # See: Perlito5::JavaScript2::Runtime::perl5_to_js()
+            # TODO - enumerate lexicals
+            #   $self->{_scope} =
+            #       {
+            #           'block' => [
+            #               bless({
+            #                   '_decl' => 'global',
+            #                   '_namespace' => 'main',
+            #                   'name' => 'XX',
+            #                   'namespace' => '',
+            #                   'sigil' => '$',
+            #               }, 'Perlito5::AST::Var'),
+            #               bless({
+            #                   '_decl' => 'my',
+            #                   '_id' => 101,
+            #                   'name' => 'y',
+            #                   'namespace' => '',
+            #                   'sigil' => '$',
+            #               }, 'Perlito5::AST::Var'),
+            #           ],
+            #       }
             # TODO - move sentence inside a do-block
             # TODO - test return() from inside eval
-            # TODO - enumerate lexicals
+
 
             return 'PlJavaCompiler.eval_perl_string('
                 . $arg->emit_java( $level, $wantarray ) . '.toString(), '
