@@ -123,9 +123,6 @@ class PlJavaCompiler {
 
             // TODO - the eval expression should be:  "( sub { " + source + " } )->()"
 
-            // $Perlito5::JAVA_EVAL = 1;
-            PlV.sset("Perlito5::JAVA_EVAL", PlCx.INT1);
-
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
             PlObject[] ast = org.perlito.Perlito5.LibPerl.apply(
