@@ -25824,6 +25824,7 @@ class PlJavaCompiler {
     static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
     {
         SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
+        System.out.println("PlJavaCompiler.compileClassInMemory: name=" + className);
         classLoader.customCompiledCode.put(className, new CompiledCode(className));
         if (fileManager == null) {
             // initializing the file manager
@@ -25861,11 +25862,21 @@ class ExtendedStandardJavaFileManager extends ForwardingJavaFileManager<JavaFile
 
     @Override
     public JavaFileObject getJavaFileForOutput(JavaFileManager.Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
+        System.out.println("ExtendedStandardJavaFileManager.getJavaFileForOutput: name=" + className);
         CompiledCode cc = cl.customCompiledCode.get(className);
         if (cc != null) {
             return cc;
         }
-        throw new FileNotFoundException("Missing source code for class " + className );
+        // source file not found for this output class: this is ok, because we can have a class like ' . chr(39) . 'PlEval$1' . chr(39) . '
+        System.out.println("ExtendedStandardJavaFileManager.getJavaFileForOutput: create name=" + className);
+        try {
+            cc = new CompiledCode(className);
+        }
+        catch(Exception e) {
+            throw new FileNotFoundException("Error creating output file for class " + className );
+        }
+        cl.customCompiledCode.put(className, cc);
+        return cc;
     }
 
     @Override
@@ -25884,11 +25895,13 @@ class CompiledCode extends SimpleJavaFileObject {
     }
     
     public String getClassName() {
+        System.out.println("CompiledCode.getClassName: name=" + className);
         return className;
     }
 
     @Override
     public OutputStream openOutputStream() throws IOException {
+        System.out.println("CompiledCode.openOutputStream()");
         return baos;
     }
 
@@ -25905,11 +25918,13 @@ class DynamicClassLoader extends ClassLoader {
     }
 
     public void addCode(CompiledCode cc) {
+        System.out.println("DynamicClassLoader.addCode: name=" + cc.getName());
         customCompiledCode.put(cc.getName(), cc);
     }
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
+        System.out.println("DynamicClassLoader.findClass: name=" + name);
         CompiledCode cc = customCompiledCode.get(name);
         if (cc == null) {
             return super.findClass(name);
