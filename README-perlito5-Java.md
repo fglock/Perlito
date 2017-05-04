@@ -211,6 +211,8 @@ Limitations
 
   - eval executes in a new scope
 
+  - eval bytecode is cached - this will leak memory
+
   - Java extensions are disabled (only plain-perl)
 
 Instructions
