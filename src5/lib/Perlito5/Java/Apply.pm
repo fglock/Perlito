@@ -22,7 +22,7 @@ package Perlito5::AST::Apply;
             # precompile regex
             my $label = Perlito5::Java::get_label();
             push @Perlito5::Java::Java_constants, "public static final PlRegex $label = $s;";
-            return 'PlCx.' . $label;
+            return $label;
         }
         return $s;
     }

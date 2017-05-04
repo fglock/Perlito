@@ -1417,7 +1417,7 @@ package Perlito5::AST::CompUnit;
             my $Java_class = Perlito5::Java::get_java_class_info();
             $str .= Perlito5::Java::Runtime->emit_java(
                 java_classes => $Java_class,
-                java_constants => \@Perlito5::Java::Java_constants,
+                java_constants => [],  # \@Perlito5::Java::Java_constants,
             );
         }
 
@@ -1425,8 +1425,9 @@ package Perlito5::AST::CompUnit;
         $main_class = "LibPerl" if $Perlito5::BOOTSTRAP_JAVA_EVAL;
 
         $str .= Perlito5::Java::emit_wrap_java(-1,
-             "class $main_class {",
-               [ "public static void main(String[] args) {",
+               "class $main_class {",
+               [ @Perlito5::Java::Java_constants,
+                 "public static void main(String[] args) {",
                    [
                      ( $Perlito5::JAVA_EVAL ? "org.perlito.Perlito5.LibPerl.main( new String[]{} );" : ()),
 
