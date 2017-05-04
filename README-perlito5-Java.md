@@ -233,6 +233,19 @@ Instructions
 
 See also: misc/Java_eval$ vim JavaCompiler6.java
 
+Compiling the compiler with BEGIN capabilities
+
+~~~sh
+    $ perl perlito5.pl --bootstrapping --java_eval -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
+
+    $ javac -cp .:perlito5-lib.jar perlito5.java
+    [ TODO - errors ]
+    [ constants in PlCx were moved to "perlito5-lib", we need a new place to store pre-compiled regex ]
+
+    # test
+    $ java -cp .:../../perlito5-lib.jar Main -v
+~~~
+
 
 Perlito5-Java extensibility
 ===========================
