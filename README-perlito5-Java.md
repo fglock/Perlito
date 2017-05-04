@@ -238,7 +238,7 @@ Compiling the compiler with BEGIN capabilities
 ~~~sh
     $ perl perlito5.pl --bootstrapping --java_eval -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
 
-    $ javac -cp .:perlito5-lib.jar perlito5.java
+    $ time javac -cp .:perlito5-lib.jar -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 perlito5.java
     [ TODO - errors ]
     [ constants in PlCx were moved to "perlito5-lib", we need a new place to store pre-compiled regex ]
 

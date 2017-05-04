@@ -157,6 +157,7 @@ sub emit_java {
 
 // use perlito5-lib.jar
 import org.perlito.Perlito5.*;
+import java.util.regex.Pattern;
 
 EOT
     }

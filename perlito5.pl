@@ -26045,6 +26045,7 @@ class SourceCode extends SimpleJavaFileObject {
             return '
 // use perlito5-lib.jar
 import org.perlito.Perlito5.*;
+import java.util.regex.Pattern;
 
 '
         }
