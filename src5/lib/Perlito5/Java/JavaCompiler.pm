@@ -73,8 +73,6 @@ class PlJavaCompiler {
 
     public static PlObject eval_java_string(String source)
     {
-        PlCORE.die("eval_java_string: not implemented");
-
         try {
             if (initDone == null) {
                 PlJavaCompiler.init();
@@ -82,8 +80,31 @@ class PlJavaCompiler {
                 initDone = true;
             }
 
-            // TODO
+            // TODO - test local(); initialize local() stack if needed
+            String className = "PlEval" + invocationCount;
+            invocationCount++;
 
+            StringBuffer source5 = new StringBuffer();
+            source5.append("import org.perlito.Perlito5.*;\n");
+            source5.append("public class " + className + " {\n");
+            source5.append("    public " + className + "() {\n");
+            source5.append("    }\n");
+            source5.append("    public static PlObject runEval(int want) {\n");
+            source5.append("        " + source + "\n");
+            source5.append("    }\n");
+            source5.append("}\n");
+            String cls5 = source5.toString();
+            System.out.println("\neval_string:\n" + cls5 + "\n");
+
+            // TODO - retrieve errors in Java->bytecode
+            Class<?> class5 = compileClassInMemory(
+                className,
+                cls5
+            );
+            Method method5 = class5.getMethod("runEval", new Class[]{int.class});
+            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID);
+            System.out.println("eval_string result: " + out.toString());
+            return out;
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -97,12 +118,6 @@ class PlJavaCompiler {
     public static PlObject eval_string(String source)
     {
         try {
-            if (initDone == null) {
-                PlJavaCompiler.init();
-                System.out.println("eval_string: init");
-                initDone = true;
-            }
-
             System.out.println("eval_string: enter");
             (new Throwable()).printStackTrace();
 
@@ -121,7 +136,6 @@ class PlJavaCompiler {
             // PlObject[] out = LibPerl.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
             // System.out.println(out[0]);
 
-            // TODO - retrieve errors in Perl->Java
             // # $ast->emit_java(0);
             PlObject outJava = org.perlito.Perlito5.PerlOp.call(
                 ast[0].hget("capture").aget(0),
@@ -129,32 +143,7 @@ class PlJavaCompiler {
                 new PlArray(new PlInt(0)),
                 PlCx.SCALAR);
             // System.out.println("eval_string: " + outJava);
-
-            // TODO - test local(); initialize local() stack if needed
-            String className = "PlEval" + invocationCount;
-            invocationCount++;
-
-            StringBuffer source5 = new StringBuffer();
-            source5.append("import org.perlito.Perlito5.*;\n");
-            source5.append("public class " + className + " {\n");
-            source5.append("    public " + className + "() {\n");
-            source5.append("    }\n");
-            source5.append("    public static PlObject runEval(int want) {\n");
-            source5.append("        " + outJava.toString() + "\n");
-            source5.append("    }\n");
-            source5.append("}\n");
-            String cls5 = source5.toString();
-            System.out.println("\neval_string:\n" + cls5 + "\n");
-
-            // TODO - retrieve errors in Java->bytecode
-            Class<?> class5 = compileClassInMemory(
-                className,
-                cls5
-            );
-            Method method5 = class5.getMethod("runEval", new Class[]{int.class});
-            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID);
-            System.out.println("eval_string result: " + out.toString());
-            return out;
+            return eval_java_string(outJava.toString());
         }
         catch(Exception e) {
             e.printStackTrace();
