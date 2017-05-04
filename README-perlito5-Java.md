@@ -91,6 +91,10 @@ TODO: add to Makefile
 Perlito5-Java work-in-progress
 ------------------------------
 
+  - "Java Scripting API"
+
+      - https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/prog_guide/api.html
+
   - Problems compiling with Java 8
 
       - it seems to trigger this problem:
