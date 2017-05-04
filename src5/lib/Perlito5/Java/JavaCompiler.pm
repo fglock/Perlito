@@ -102,7 +102,13 @@ class PlJavaCompiler {
                 initDone = true;
             }
 
+            System.out.println("eval_string: enter");
+            (new Throwable()).printStackTrace();
+
             // TODO - the eval expression should be:  "( sub { " + source + " } )->()"
+
+            // $Perlito5::JAVA_EVAL = 1;
+            PlV.sset("Perlito5::JAVA_EVAL", PlCx.INT1);
 
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
@@ -129,7 +135,7 @@ class PlJavaCompiler {
             source5.append("public class PlEval {\n");
             source5.append("    public PlEval() {\n");
             source5.append("    }\n");
-            source5.append("    public static PlObject run(int want) {\n");
+            source5.append("    public static PlObject runEval(int want) {\n");
             source5.append("        " + outJava.toString() + "\n");
             source5.append("    }\n");
             source5.append("}\n");
@@ -142,8 +148,10 @@ class PlJavaCompiler {
                 name5,
                 cls5
             );
-            Method method5 = class5.getMethod("run", new Class[]{int.class});
-            return (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID);
+            Method method5 = class5.getMethod("runEval", new Class[]{int.class});
+            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID);
+            System.out.println("eval_string result: " + out.toString());
+            return out;
         }
         catch(Exception e) {
             e.printStackTrace();
