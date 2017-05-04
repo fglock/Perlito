@@ -1,5 +1,5 @@
 
-# this is called from make_jar.sh
+# this is called from make_perlito5-lib-jar.sh
 
 use strict;
 
