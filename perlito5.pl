@@ -32256,10 +32256,6 @@ class PlString extends PlObject {
 }
 {
     package main;
-    {
-        package header;
-        'java_path' => 'org.perlito.Perlito5'
-    }
     package Perlito5;
     my $_V5_COMPILER_NAME = Perlito5::Compiler::compiler_name();
     my $_V5_COMPILER_VERSION = $Perlito5::VERSION;

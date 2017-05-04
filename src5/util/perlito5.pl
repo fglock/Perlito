@@ -2,8 +2,6 @@
 
 use v5;
 
-package header { java_path => 'org.perlito.Perlito5' };
-
 package Perlito5;
 use feature 'say';
 use Perlito5;
