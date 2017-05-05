@@ -73,6 +73,10 @@ class PlJavaCompiler {
 
     public static PlObject eval_java_string(String source)
     {
+        if (source.equals("")) {
+            return PlCx.UNDEF;
+        }
+
         try {
             if (initDone == null) {
                 PlJavaCompiler.init();

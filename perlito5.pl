@@ -25737,6 +25737,10 @@ class PlJavaCompiler {
 
     public static PlObject eval_java_string(String source)
     {
+        if (source.equals("")) {
+            return PlCx.UNDEF;
+        }
+
         try {
             if (initDone == null) {
                 PlJavaCompiler.init();
@@ -25989,11 +25993,11 @@ class SourceCode extends SimpleJavaFileObject {
     sub Perlito5::Java::Runtime::eval_ast {
         (my($ast)) = @_;
         my $want = 0;
-        my $js_code = $ast->emit_java(0, $want);
+        my $java_code = $ast->emit_java(0, $want);
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
-        $_ = $js_code;
+        $_ = $java_code;
         return Java::inline('PlJavaCompiler.eval_java_string(PlV.sget("main::_").toString())')
     }
     sub Perlito5::Java::Runtime::emit_java_extends {
