@@ -141,9 +141,9 @@ class PlJavaCompiler {
         String      namespace, 
         String      wantarray, 
         int         strict,
-        PlObject    scope,
-        String[]    scalar_name,    // new String[]{"x_100"};
-        PlLvalue[]  scalar_val,     // new PlLvalue[]{x_100};
+        PlObject    scope,          // "my" declarations
+        String[]    scalar_name,    // new String[]{"x_100"};   capture name
+        PlLvalue[]  scalar_val,     // new PlLvalue[]{x_100};   capture value
         String[]    array_name,     // new String[]{"xx_101"};
         PlArray[]   array_val,      // new PlArray[]{xx_101};
         String[]    hash_name,      // new String[]{};
@@ -220,7 +220,16 @@ class PlJavaCompiler {
             source5.append("public class " + className + " {\n");
             source5.append("    public " + className + "() {\n");
             source5.append("    }\n");
-            source5.append("    public static PlObject runEval(int want) {\n");
+            source5.append("    public static PlObject runEval(int want, Object scalar_val, Object array_val, Object hash_val) {\n");
+            for (int i = 0; i < scalar_name.length; i++) {
+            source5.append("        PlLvalue " + scalar_name[i] + " = ((PlLvalue[])(scalar_val))[" + i + "];\n");
+            }
+            for (int i = 0; i < array_name.length; i++) {
+            source5.append("        PlArray " + array_name[i] + " = ((PlArray[])(array_val))[" + i + "];\n");
+            }
+            for (int i = 0; i < hash_name.length; i++) {
+            source5.append("        PlHash " + hash_name[i] + " = ((PlHash[])(hash_val))[" + i + "];\n");
+            }
             source5.append("        try {\n");
             source5.append("        " + outJava.toString() + "\n");
             source5.append("        }\n");
@@ -237,8 +246,8 @@ class PlJavaCompiler {
                 className,
                 cls5
             );
-            Method method5 = class5.getMethod("runEval", new Class[]{int.class});
-            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID);
+            Method method5 = class5.getMethod("runEval", new Class[]{int.class, Object.class, Object.class, Object.class});
+            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID, scalar_val, array_val, hash_val);
             // System.out.println("eval_string result: " + out.toString());
             return out;
         }
