@@ -25744,7 +25744,7 @@ class PlJavaCompiler {
         try {
             if (initDone == null) {
                 PlJavaCompiler.init();
-                System.out.println("eval_string: init");
+                // System.out.println("eval_string: init");
                 initDone = true;
             }
 
@@ -25776,7 +25776,7 @@ class PlJavaCompiler {
             );
             Method method5 = class5.getMethod("runEval", new Class[]{int.class});
             PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID);
-            System.out.println("eval_string result: " + out.toString());
+            // System.out.println("eval_string result: " + out.toString());
             return out;
         }
         catch(PlReturnException e) {
@@ -25804,14 +25804,16 @@ class PlJavaCompiler {
     {
         PlObject outJava;
         try {
-            System.out.println("eval_string: enter");
+            // System.out.println("eval_string: enter");
             (new Throwable()).printStackTrace();
 
             PlV.sset("Perlito5::STRICT", new PlInt(strict));
             PlV.sset("Perlito5::PKG_NAME", new PlString(namespace));
 
+            // TODO - do not wrap into a block, because this breaks:  ' . chr(39) . ' eval "next" ' . chr(39) . '
+
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
-            System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
+            // System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
             PlObject[] ast = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Grammar::exp_stmts",
                 "{; " + source + " }"
