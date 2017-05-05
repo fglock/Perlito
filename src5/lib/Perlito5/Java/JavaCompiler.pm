@@ -197,7 +197,70 @@ class PlJavaCompiler {
             PlV.sset("main::@", new PlString(message));
             return PlCx.UNDEF;
         }
-        return eval_java_string(outJava.toString());
+
+        // return eval_java_string(outJava.toString());
+
+        if (source.equals("")) {
+            return PlCx.UNDEF;
+        }
+
+        try {
+            if (initDone == null) {
+                PlJavaCompiler.init();
+                // System.out.println("eval_string: init");
+                initDone = true;
+            }
+
+            // TODO - test local(); initialize local() stack if needed
+            String className = "PlEval" + invocationCount;
+            invocationCount++;
+
+            StringBuffer source5 = new StringBuffer();
+            source5.append("import org.perlito.Perlito5.*;\n");
+            source5.append("public class " + className + " {\n");
+            source5.append("    public " + className + "() {\n");
+            source5.append("    }\n");
+            source5.append("    public static PlObject runEval(int want) {\n");
+            source5.append("        try {\n");
+            source5.append("        " + outJava.toString() + "\n");
+            source5.append("        }\n");
+            source5.append("        catch(PlReturnException e) {\n");
+            source5.append("            return e.ret;\n");
+            source5.append("        }\n");
+            source5.append("    }\n");
+            source5.append("}\n");
+            String cls5 = source5.toString();
+            System.out.println("\neval_string:\n" + cls5 + "\n");
+
+            // TODO - retrieve errors in Java->bytecode
+            Class<?> class5 = compileClassInMemory(
+                className,
+                cls5
+            );
+            Method method5 = class5.getMethod("runEval", new Class[]{int.class});
+            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID);
+            // System.out.println("eval_string result: " + out.toString());
+            return out;
+        }
+        catch(PlReturnException e) {
+            return e.ret;
+        }
+        catch(PlNextException e) {
+            throw(e);
+        }
+        catch(PlLastException e) {
+            throw(e);
+        }
+        catch(PlRedoException e) {
+            throw(e);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            System.out.println("Exception in eval_string: " + message);
+            PlV.sset("main::@", new PlString(message));
+        }
+        return PlCx.UNDEF;
     }
 
     static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
