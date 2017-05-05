@@ -655,6 +655,11 @@ class PerlOp {
         PlClass pClass = invocant.blessed_class();
 
         if ( pClass == null ) {
+            if (!invocant.is_ref()) {
+                // invocant can be a package name
+                return call( invocant.toString(), method, args, context );
+            }
+
             PlCORE.die( "Can't call method \"" + method
                 + "\" on unblessed reference" );
             return PlCx.UNDEF;
