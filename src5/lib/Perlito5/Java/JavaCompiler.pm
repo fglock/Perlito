@@ -146,6 +146,8 @@ class PlJavaCompiler {
             PlV.sset("Perlito5::STRICT", new PlInt(strict));
             PlV.sset("Perlito5::PKG_NAME", new PlString(namespace));
 
+            // TODO - do not wrap into a block, because this breaks:  ' eval "next" '
+
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
             PlObject[] ast = org.perlito.Perlito5.LibPerl.apply(
