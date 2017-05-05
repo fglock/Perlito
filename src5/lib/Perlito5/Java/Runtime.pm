@@ -7,6 +7,58 @@ use Perlito5::Java::CORE;
 use Perlito5::Java::Crypt;
 use Perlito5::Java::JavaCompiler;
 
+sub perl5_to_java {
+    # TODO - work in progress
+    # items with "###" need to be implemented
+
+    my ($source, $namespace, $want, $strict, $scope_java) = @_;
+
+    # say "source: [" . $source . "]";
+
+    my    $strict_old         = $Perlito5::STRICT;
+    local $_;
+    local ${^GLOBAL_PHASE};
+    ### local $Perlito5::BASE_SCOPE = $scope_java->[0];
+    ### local @Perlito5::SCOPE_STMT;
+    ### local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
+    ### local $Perlito5::SCOPE_DEPTH = 0;
+    local $Perlito5::PKG_NAME = $namespace;
+    local @Perlito5::UNITCHECK_BLOCK;
+    # warn "in eval enter\n";
+    # warn "External scope ", Data::Dumper::Dumper($scope_java);
+    # warn "BASE_SCOPE ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    # warn "SCOPE_STMT ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
+    # warn "SCOPE ", Data::Dumper::Dumper($Perlito5::SCOPE);
+    # warn "SCOPE_DEPTH ", Data::Dumper::Dumper($Perlito5::SCOPE_DEPTH);
+
+    my $match = Perlito5::Grammar::exp_stmts( $source, 0 );
+
+    if ( !$match || $match->{to} != length($source) ) {
+        die "Syntax error in eval near pos ", $match->{to};
+    }
+
+    my $ast = Perlito5::AST::Apply->new(
+                code => 'do',
+                arguments => [ Perlito5::AST::Block->new(
+                            stmts => $match->{capture},
+                         ) ],
+              );
+
+    ### # use lexicals from BEGIN scratchpad
+    ### $ast = $ast->emit_begin_scratchpad();
+
+    # say "ast: [" . ast . "]";
+    my $java_code = $ast->emit_java(0, $want);
+    # say "java-source: [" . $java_code . "]";
+
+    Perlito5::set_global_phase("UNITCHECK");
+    $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
+
+    # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    $Perlito5::STRICT   = $strict_old;
+    return $java_code;
+}
+
 sub eval_ast {
     my ($ast) = @_;
     my $want = 0;

@@ -25802,6 +25802,13 @@ class PlJavaCompiler {
             PlObject[] out = LibPerl.apply( "Perlito5::Dumper::ast_dumper", ast[0].hget("capture") );
             System.out.println(out[0]);
 
+            // TODO - use this API:
+            // 
+            // use Perlito5::Java::JavaCompiler;
+            // sub perl5_to_java {
+            //     my ($source, $namespace, $want, $strict, $scope_java) = @_;
+            // 
+
             // # $ast->emit_java(0);
             PlObject outJava = org.perlito.Perlito5.PerlOp.call(
                 ast[0].hget("capture").aget(0),
@@ -25959,6 +25966,25 @@ class SourceCode extends SimpleJavaFileObject {
 {
     package main;
     package Perlito5::Java::Runtime;
+    sub Perlito5::Java::Runtime::perl5_to_java {
+        (my($source), my($namespace), my($want), my($strict), my($scope_java)) = @_;
+        my $strict_old = $Perlito5::STRICT;
+        local $_;
+        local ${'^GLOBAL_PHASE'};
+        local $Perlito5::PKG_NAME = $namespace;
+        local @Perlito5::UNITCHECK_BLOCK;
+        my $match = Perlito5::Grammar::exp_stmts($source, 0);
+        if (!$match || $match->{'to'} != length($source)) {;
+            die('Syntax error in eval near pos ', $match->{'to'})
+        }
+        my $ast = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => $match->{'capture'})]);
+        my $java_code = $ast->emit_java(0, $want);
+        Perlito5::set_global_phase('UNITCHECK');
+        $_->()
+            while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
+        $Perlito5::STRICT = $strict_old;
+        return $java_code
+    }
     sub Perlito5::Java::Runtime::eval_ast {
         (my($ast)) = @_;
         my $want = 0;
