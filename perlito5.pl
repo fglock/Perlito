@@ -25796,8 +25796,8 @@ class PlJavaCompiler {
                 "{; " + source + " }"
             );
 
-            // PlObject[] out = LibPerl.apply( "Perlito5::JSON::ast_dumper", ast[0].hget("capture") );
-            // System.out.println(out[0]);
+            PlObject[] out = LibPerl.apply( "Perlito5::Dumper::ast_dumper", ast[0].hget("capture") );
+            System.out.println(out[0]);
 
             // # $ast->emit_java(0);
             PlObject outJava = org.perlito.Perlito5.PerlOp.call(
