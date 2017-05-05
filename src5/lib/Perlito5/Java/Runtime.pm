@@ -8,7 +8,7 @@ use Perlito5::Java::Crypt;
 use Perlito5::Java::JavaCompiler;
 
 sub perl5_to_java {
-    # TODO - work in progress
+    # TODO - work in progress - this sub is not used.
     # items with "###" need to be implemented
 
     my ($source, $namespace, $want, $strict, $scope_java) = @_;

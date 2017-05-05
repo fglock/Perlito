@@ -172,8 +172,8 @@ class PlJavaCompiler {
                 "{; " + source + " }"
             );
 
-            PlObject[] out = LibPerl.apply( "Perlito5::Dumper::ast_dumper", ast[0].hget("capture") );
-            System.out.println(out[0]);
+            // PlObject[] out = LibPerl.apply( "Perlito5::Dumper::ast_dumper", ast[0].hget("capture") );
+            // System.out.println(out[0]);
 
             // TODO - use this API:
             // 
@@ -186,7 +186,7 @@ class PlJavaCompiler {
             outJava = org.perlito.Perlito5.PerlOp.call(
                 ast[0].hget("capture").aget(0),
                 "emit_java",
-                new PlArray(new PlInt(0), new PlString(wantarray)),
+                new PlArray(new PlInt(2), new PlString(wantarray)),
                 PlCx.SCALAR);
             // System.out.println("eval_string: " + outJava);
         }
