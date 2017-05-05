@@ -25779,6 +25779,18 @@ class PlJavaCompiler {
             System.out.println("eval_string result: " + out.toString());
             return out;
         }
+        catch(PlReturnException e) {
+            return e.ret;
+        }
+        catch(PlNextException e) {
+            throw(e);
+        }
+        catch(PlLastException e) {
+            throw(e);
+        }
+        catch(PlRedoException e) {
+            throw(e);
+        }
         catch(Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
@@ -25790,6 +25802,7 @@ class PlJavaCompiler {
 
     public static PlObject eval_perl_string(String source, String namespace, String wantarray, int strict)
     {
+        PlObject outJava;
         try {
             System.out.println("eval_string: enter");
             (new Throwable()).printStackTrace();
@@ -25815,27 +25828,27 @@ class PlJavaCompiler {
             // 
 
             // # $ast->emit_java(0);
-            PlObject outJava = org.perlito.Perlito5.PerlOp.call(
+            outJava = org.perlito.Perlito5.PerlOp.call(
                 ast[0].hget("capture").aget(0),
                 "emit_java",
                 new PlArray(new PlInt(0), new PlString(wantarray)),
                 PlCx.SCALAR);
             // System.out.println("eval_string: " + outJava);
-            return eval_java_string(outJava.toString());
         }
         catch(Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
             System.out.println("Exception in eval_string: " + message);
             PlV.sset("main::@", new PlString(message));
+            return PlCx.UNDEF;
         }
-        return PlCx.UNDEF;
+        return eval_java_string(outJava.toString());
     }
 
     static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
     {
         SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
-        System.out.println("PlJavaCompiler.compileClassInMemory: name=" + className);
+        // System.out.println("PlJavaCompiler.compileClassInMemory: name=" + className);
         classLoader.customCompiledCode.put(className, new CompiledCode(className));
         if (fileManager == null) {
             // initializing the file manager
@@ -25873,13 +25886,13 @@ class ExtendedStandardJavaFileManager extends ForwardingJavaFileManager<JavaFile
 
     @Override
     public JavaFileObject getJavaFileForOutput(JavaFileManager.Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
-        System.out.println("ExtendedStandardJavaFileManager.getJavaFileForOutput: name=" + className);
+        // System.out.println("ExtendedStandardJavaFileManager.getJavaFileForOutput: name=" + className);
         CompiledCode cc = cl.customCompiledCode.get(className);
         if (cc != null) {
             return cc;
         }
         // source file not found for this output class: this is ok, because we can have a class like ' . chr(39) . 'PlEval$1' . chr(39) . '
-        System.out.println("ExtendedStandardJavaFileManager.getJavaFileForOutput: create name=" + className);
+        // System.out.println("ExtendedStandardJavaFileManager.getJavaFileForOutput: create name=" + className);
         try {
             cc = new CompiledCode(className);
         }
@@ -25906,13 +25919,13 @@ class CompiledCode extends SimpleJavaFileObject {
     }
     
     public String getClassName() {
-        System.out.println("CompiledCode.getClassName: name=" + className);
+        // System.out.println("CompiledCode.getClassName: name=" + className);
         return className;
     }
 
     @Override
     public OutputStream openOutputStream() throws IOException {
-        System.out.println("CompiledCode.openOutputStream()");
+        // System.out.println("CompiledCode.openOutputStream()");
         return baos;
     }
 
@@ -25929,13 +25942,13 @@ class DynamicClassLoader extends ClassLoader {
     }
 
     public void addCode(CompiledCode cc) {
-        System.out.println("DynamicClassLoader.addCode: name=" + cc.getName());
+        // System.out.println("DynamicClassLoader.addCode: name=" + cc.getName());
         customCompiledCode.put(cc.getName(), cc);
     }
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        System.out.println("DynamicClassLoader.findClass: name=" + name);
+        // System.out.println("DynamicClassLoader.findClass: name=" + name);
         CompiledCode cc = customCompiledCode.get(name);
         if (cc == null) {
             return super.findClass(name);
