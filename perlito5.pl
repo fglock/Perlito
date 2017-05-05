@@ -21400,7 +21400,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if (!$Perlito5::JAVA_EVAL) {;
                 return 'PlCORE.die("This script has eval string disabled - the ' . chr(39) . 'java_eval' . chr(39) . ' switch is turned off")'
             }
-            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ')'
+            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ')'
         }, 'length' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = shift(@{$self->{'arguments'}});
@@ -25784,13 +25784,14 @@ class PlJavaCompiler {
         return PlCx.UNDEF;
     }
 
-    public static PlObject eval_perl_string(String source, String wantarray, int strict)
+    public static PlObject eval_perl_string(String source, String namespace, String wantarray, int strict)
     {
         try {
             System.out.println("eval_string: enter");
             (new Throwable()).printStackTrace();
 
             PlV.sset("Perlito5::STRICT", new PlInt(strict));
+            PlV.sset("Perlito5::PKG_NAME", new PlString(namespace));
 
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");

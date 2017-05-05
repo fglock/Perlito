@@ -1037,6 +1037,7 @@ package Perlito5::AST::Apply;
 
             return 'PlJavaCompiler.eval_perl_string('
                 . $arg->emit_java( $level, $wantarray ) . '.toString(), '
+                . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
                 . Perlito5::Java::escape_string($wantarray) . ', '
                 . ( 0 + $Perlito5::STRICT )
                 . ')';

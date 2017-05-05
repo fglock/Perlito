@@ -120,13 +120,14 @@ class PlJavaCompiler {
         return PlCx.UNDEF;
     }
 
-    public static PlObject eval_perl_string(String source, String wantarray, int strict)
+    public static PlObject eval_perl_string(String source, String namespace, String wantarray, int strict)
     {
         try {
             System.out.println("eval_string: enter");
             (new Throwable()).printStackTrace();
 
             PlV.sset("Perlito5::STRICT", new PlInt(strict));
+            PlV.sset("Perlito5::PKG_NAME", new PlString(namespace));
 
             // # $m = Perlito5::Grammar::exp_stmts($source, 0);
             System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
