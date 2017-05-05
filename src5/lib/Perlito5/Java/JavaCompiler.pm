@@ -141,6 +141,7 @@ class PlJavaCompiler {
         String      namespace, 
         String      wantarray, 
         int         strict,
+        PlObject    scope,
         String[]    scalar_name,    // new String[]{"x_100"};
         PlLvalue[]  scalar_val,     // new PlLvalue[]{x_100};
         String[]    array_name,     // new String[]{"xx_101"};
@@ -156,6 +157,11 @@ class PlJavaCompiler {
 
             PlV.sset("Perlito5::STRICT", new PlInt(strict));
             PlV.sset("Perlito5::PKG_NAME", new PlString(namespace));
+
+            PlV.sset("Perlito5::BASE_SCOPE", scope);
+            PlV.array_set("Perlito5::SCOPE_STMT", new PlArray());
+            PlV.sset("Perlito5::SCOPE", scope);
+            PlV.sset("Perlito5::SCOPE_DEPTH", new PlInt(0));
 
             // TODO - do not wrap into a block, because this breaks:  ' eval "next" '
 

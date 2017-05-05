@@ -1,3 +1,5 @@
+use Perlito5::DumpToAST;
+
 package Perlito5::AST::Apply;
 {
     use strict;
@@ -1055,11 +1057,16 @@ package Perlito5::AST::Apply;
             # new String[]{};
             # new PlHash[]{}
 
+            # "$scope" contains the "my" declarations
+            my $scope = Perlito5::DumpToAST::dump_to_ast( $self->{_scope}, {}, "s" )->emit_java(0);
+            # print STDERR "SCOPE [ $scope ]\n";
+
             return 'PlJavaCompiler.eval_perl_string('
                 . $arg->emit_java( $level, $wantarray ) . '.toString(), '
                 . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
                 . Perlito5::Java::escape_string($wantarray) . ', '
                 . ( 0 + $Perlito5::STRICT ) . ', '
+                . $scope . ', '
                 . join( ', ', @out )
                 . ')';
         },

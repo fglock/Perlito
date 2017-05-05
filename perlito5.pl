@@ -21419,7 +21419,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 push(@out, 'new String[]{' . join(', ', @str) . '}');
                 push(@out, 'new ' . $type{$sigil} . '[]{' . join(', ', @val) . '}')
             }
-            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ', ' . join(', ', @out) . ')'
+            my $scope = Perlito5::DumpToAST::dump_to_ast($self->{'_scope'}, {}, 's')->emit_java(0);
+            print STDERR:: 'SCOPE [ ' . $scope . ' ]
+';
+            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ', ' . $scope . ', ' . join(', ', @out) . ')'
         }, 'length' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = shift(@{$self->{'arguments'}});
@@ -25824,6 +25827,7 @@ class PlJavaCompiler {
         String      namespace, 
         String      wantarray, 
         int         strict,
+        PlObject    scope,
         String[]    scalar_name,    // new String[]{"x_100"};
         PlLvalue[]  scalar_val,     // new PlLvalue[]{x_100};
         String[]    array_name,     // new String[]{"xx_101"};
@@ -25839,6 +25843,11 @@ class PlJavaCompiler {
 
             PlV.sset("Perlito5::STRICT", new PlInt(strict));
             PlV.sset("Perlito5::PKG_NAME", new PlString(namespace));
+
+            PlV.sset("Perlito5::BASE_SCOPE", scope);
+            PlV.array_set("Perlito5::SCOPE_STMT", new PlArray());
+            PlV.sset("Perlito5::SCOPE", scope);
+            PlV.sset("Perlito5::SCOPE_DEPTH", new PlInt(0));
 
             // TODO - do not wrap into a block, because this breaks:  ' . chr(39) . ' eval "next" ' . chr(39) . '
 
