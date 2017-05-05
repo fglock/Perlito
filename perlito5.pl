@@ -21400,7 +21400,25 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if (!$Perlito5::JAVA_EVAL) {;
                 return 'PlCORE.die("This script has eval string disabled - the ' . chr(39) . 'java_eval' . chr(39) . ' switch is turned off")'
             }
-            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ')'
+            my %vars;
+            for my $var (@{$self->{'_scope'}->{'block'}}) {;
+                if ($var->{'_decl'} && $var->{'_decl'} ne 'global') {;
+                    $vars{$var->{'_real_sigil'} || $var->{'sigil'}}->{$var->emit_java(0)} = 1
+                }
+            }
+            my @out;
+            my %type = ('$' => 'PlLvalue', '@' => 'PlArray', '%' => 'PlHash');
+            for my $sigil ('$', '@', '%') {
+                my @str;
+                my @val;
+                for my $var (keys(%{$vars{$sigil}})) {
+                    push(@str, Perlito5::Java::escape_string($var));
+                    push(@val, $var)
+                }
+                push(@out, 'new String[]{' . join(', ', @str) . '}');
+                push(@out, 'new ' . $type{$sigil} . '[]{' . join(', ', @val) . '}')
+            }
+            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ', ' . join(', ', @out) . ')'
         }, 'length' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = shift(@{$self->{'arguments'}});
@@ -25800,7 +25818,18 @@ class PlJavaCompiler {
         return PlCx.UNDEF;
     }
 
-    public static PlObject eval_perl_string(String source, String namespace, String wantarray, int strict)
+    public static PlObject eval_perl_string(
+        String      source, 
+        String      namespace, 
+        String      wantarray, 
+        int         strict,
+        String[]    scalar_name,    // new String[]{"x_100"};
+        PlLvalue[]  scalar_val,     // new PlLvalue[]{x_100};
+        String[]    array_name,     // new String[]{"xx_101"};
+        PlArray[]   array_val,      // new PlArray[]{xx_101};
+        String[]    hash_name,      // new String[]{};
+        PlHash[]    hash_val        // new PlHash[]{}         
+    )
     {
         PlObject outJava;
         try {

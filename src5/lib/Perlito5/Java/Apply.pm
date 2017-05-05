@@ -1012,34 +1012,52 @@ package Perlito5::AST::Apply;
 
             # See: Perlito5::JavaScript2::Runtime::perl5_to_js()
             # TODO - enumerate lexicals
-            #   $self->{_scope} =
-            #       {
-            #           'block' => [
-            #               bless({
-            #                   '_decl' => 'global',
-            #                   '_namespace' => 'main',
-            #                   'name' => 'XX',
-            #                   'namespace' => '',
-            #                   'sigil' => '$',
-            #               }, 'Perlito5::AST::Var'),
-            #               bless({
-            #                   '_decl' => 'my',
-            #                   '_id' => 101,
-            #                   'name' => 'y',
-            #                   'namespace' => '',
-            #                   'sigil' => '$',
-            #               }, 'Perlito5::AST::Var'),
-            #           ],
-            #       }
             # TODO - move sentence inside a do-block
             # TODO - test return() from inside eval
+            # TODO - test next() from inside eval
 
+            my %vars;
+            for my $var (@{ $self->{_scope}{block} }) {
+                if ( $var->{_decl} && $var->{_decl} ne 'global' ) {
+                    $vars{ $var->{_real_sigil} || $var->{sigil} }{ $var->emit_java(0) } = 1;
+                }
+            }
+
+            # %vars = {
+            #   '@' => {
+            #            'xx_101' => 1
+            #          },
+            #   '$' => {
+            #            'x_100' => 1
+            #          }
+            # };
+
+            my @out;
+            my %type = ( '$' => 'PlLvalue', '@' => 'PlArray', '%' => 'PlHash' );
+            for my $sigil ( '$', '@', '%' ) {
+                my @str;
+                my @val;
+                for my $var ( keys %{ $vars{$sigil} } ) {
+                    push @str, Perlito5::Java::escape_string($var);
+                    push @val, $var;
+                }
+                push @out, 'new String[]{' . join(", ", @str) . '}';
+                push @out, 'new ' . $type{$sigil} . '[]{' . join(", ", @val) . '}';
+            }
+
+            # new String[]{"x_100"};
+            # new PlLvalue[]{x_100};
+            # new String[]{"xx_101"};
+            # new PlArray[]{xx_101};
+            # new String[]{};
+            # new PlHash[]{}
 
             return 'PlJavaCompiler.eval_perl_string('
                 . $arg->emit_java( $level, $wantarray ) . '.toString(), '
                 . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
                 . Perlito5::Java::escape_string($wantarray) . ', '
-                . ( 0 + $Perlito5::STRICT )
+                . ( 0 + $Perlito5::STRICT ) . ', '
+                . join( ', ', @out )
                 . ')';
         },
 

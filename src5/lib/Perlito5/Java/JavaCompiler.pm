@@ -136,7 +136,18 @@ class PlJavaCompiler {
         return PlCx.UNDEF;
     }
 
-    public static PlObject eval_perl_string(String source, String namespace, String wantarray, int strict)
+    public static PlObject eval_perl_string(
+        String      source, 
+        String      namespace, 
+        String      wantarray, 
+        int         strict,
+        String[]    scalar_name,    // new String[]{"x_100"};
+        PlLvalue[]  scalar_val,     // new PlLvalue[]{x_100};
+        String[]    array_name,     // new String[]{"xx_101"};
+        PlArray[]   array_val,      // new PlArray[]{xx_101};
+        String[]    hash_name,      // new String[]{};
+        PlHash[]    hash_val        // new PlHash[]{}         
+    )
     {
         PlObject outJava;
         try {
