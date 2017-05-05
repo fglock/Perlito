@@ -304,6 +304,17 @@ Parser
         Missing right curly or square bracket at -e line 1, within string
 ~~~
 
+- __DATA__ and __END__ can be anywhere in the line
+
+~~~sh
+    $ perl -e 'print 123 __END__ x xx + '
+    123
+
+    $ perl -e 'print 123 + __END__ x xx + '
+    syntax error at -e line 1, at EOF
+~~~
+
+
 Add tests for fixed bugs
 ------------------------
 
