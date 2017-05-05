@@ -1019,18 +1019,21 @@ package Perlito5::AST::Apply;
             my %vars;
             for my $var (@{ $self->{_scope}{block} }) {
                 if ( $var->{_decl} && $var->{_decl} ne 'global' ) {
-                    $vars{ $var->{_real_sigil} || $var->{sigil} }{ $var->emit_java(0) } = 1;
+                    $vars{ $var->{_real_sigil} || $var->{sigil} }{ $var->emit_java(0) } = $var;
                 }
             }
 
             # %vars = {
             #   '@' => {
-            #            'xx_101' => 1
+            #            'xx_101' => (ast)
             #          },
             #   '$' => {
-            #            'x_100' => 1
+            #            'x_100' => (ast)
             #          }
             # };
+
+            # set the new variable names inside the closure
+            local %Perlito5::Java::Java_var_name;
 
             my @out;
             my %type = ( '$' => 'PlLvalue', '@' => 'PlArray', '%' => 'PlHash' );
@@ -1038,7 +1041,7 @@ package Perlito5::AST::Apply;
                 my @str;
                 my @val;
                 for my $var ( keys %{ $vars{$sigil} } ) {
-                    push @str, Perlito5::Java::escape_string($var);
+                    push @str, Perlito5::Java::escape_string( $vars{$sigil}{$var}->emit_java(0) );
                     push @val, $var;
                 }
                 push @out, 'new String[]{' . join(", ", @str) . '}';

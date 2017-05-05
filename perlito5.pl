@@ -21403,16 +21403,17 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my %vars;
             for my $var (@{$self->{'_scope'}->{'block'}}) {;
                 if ($var->{'_decl'} && $var->{'_decl'} ne 'global') {;
-                    $vars{$var->{'_real_sigil'} || $var->{'sigil'}}->{$var->emit_java(0)} = 1
+                    $vars{$var->{'_real_sigil'} || $var->{'sigil'}}->{$var->emit_java(0)} = $var
                 }
             }
+            local %Perlito5::Java::Java_var_name;
             my @out;
             my %type = ('$' => 'PlLvalue', '@' => 'PlArray', '%' => 'PlHash');
             for my $sigil ('$', '@', '%') {
                 my @str;
                 my @val;
                 for my $var (keys(%{$vars{$sigil}})) {
-                    push(@str, Perlito5::Java::escape_string($var));
+                    push(@str, Perlito5::Java::escape_string($vars{$sigil}->{$var}->emit_java(0)));
                     push(@val, $var)
                 }
                 push(@out, 'new String[]{' . join(', ', @str) . '}');
