@@ -25754,7 +25754,12 @@ class PlJavaCompiler {
             source5.append("    public " + className + "() {\\n");
             source5.append("    }\\n");
             source5.append("    public static PlObject runEval(int want) {\\n");
+            source5.append("        try {\\n");
             source5.append("        " + source + "\\n");
+            source5.append("        }\\n");
+            source5.append("        catch(PlReturnException e) {\\n");
+            source5.append("            return e.ret;\\n");
+            source5.append("        }\\n");
             source5.append("    }\\n");
             source5.append("}\\n");
             String cls5 = source5.toString();
@@ -25784,8 +25789,6 @@ class PlJavaCompiler {
         try {
             System.out.println("eval_string: enter");
             (new Throwable()).printStackTrace();
-
-            // TODO - the eval expression should be:  "( sub { " + source + " } )->()"
 
             PlV.sset("Perlito5::STRICT", new PlInt(strict));
 
