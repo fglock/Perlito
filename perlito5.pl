@@ -4871,23 +4871,23 @@ use feature 'say';
                 if ($use_or_not eq 'use') {
                     my $code = $module_name->can('import');
                     if (defined($code)) {
-                        unshift(@{$Perlito5::CALLER}, [$current_module_name]);
+                        unshift(@Perlito5::CALLER, [$current_module_name]);
                         eval {
                             $module_name->import(@{$arguments});
                             1
                         } or ${'@'}->Perlito5::Compiler::error();
-                        shift(@{$Perlito5::CALLER})
+                        shift(@Perlito5::CALLER)
                     }
                 }
                 elsif ($use_or_not eq 'no') {
                     my $code = $module_name->can('unimport');
                     if (defined($code)) {
-                        unshift(@{$Perlito5::CALLER}, [$current_module_name]);
+                        unshift(@Perlito5::CALLER, [$current_module_name]);
                         eval {
                             $module_name->unimport(@{$arguments});
                             1
                         } or ${'@'}->Perlito5::Compiler::error();
-                        shift(@{$Perlito5::CALLER})
+                        shift(@Perlito5::CALLER)
                     }
                 }
             }
@@ -8752,7 +8752,7 @@ use feature 'say';
     our $WARNINGS = 0;
     our $UTF8 = 0;
     our $BYTES = 0;
-    our $CALLER = [];
+    our @CALLER = ();
     our %DATA_SECTION = ();
     our $PKG_NAME = '';
     our $LINE_NUMBER = 0;
@@ -14309,9 +14309,9 @@ CORE.bless = function(List__) {
 };
 
 CORE.caller = function(List__, want) {
-    if (p5pkg["Perlito5"].v_CALLER && p5pkg["Perlito5"].v_CALLER._array_ && p5pkg["Perlito5"].v_CALLER._array_.p5aget(0) ) {
+    if ( p5pkg["Perlito5"].List_CALLER[0] ) {
         // TODO
-        return p5pkg["Perlito5"].v_CALLER._array_.p5aget(0)._array_
+        return p5pkg["Perlito5"].List_CALLER[0]._array_
     }
     return p5context([], want);
 };
@@ -26758,8 +26758,9 @@ class PerlOp {
     public static final PlObject caller(int ctx, PlObject s) {
         int item = s.to_int();
 
-        if (PlV.array_get("Perlito5::CALLER").length_of_array().to_boolean()) {
-            return PerlOp.context(ctx, PlV.array_get("Perlito5::CALLER").aget_arrayref(0).array_deref());
+        PlArray caller = PlV.array_get("Perlito5::CALLER");
+        if (caller.length_of_array().to_boolean()) {
+            return PerlOp.context(ctx, caller.aget(item).array_deref());
         };
 
         // PlCORE.die("caller() not implemented");

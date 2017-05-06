@@ -826,8 +826,9 @@ class PerlOp {
     public static final PlObject caller(int ctx, PlObject s) {
         int item = s.to_int();
 
-        if (PlV.array_get("Perlito5::CALLER").length_of_array().to_boolean()) {
-            return PerlOp.context(ctx, PlV.array_get("Perlito5::CALLER").aget_arrayref(0).array_deref());
+        PlArray caller = PlV.array_get("Perlito5::CALLER");
+        if (caller.length_of_array().to_boolean()) {
+            return PerlOp.context(ctx, caller.aget(item).array_deref());
         };
 
         // PlCORE.die("caller() not implemented");

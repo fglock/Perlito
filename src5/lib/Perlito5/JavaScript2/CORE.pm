@@ -158,9 +158,9 @@ CORE.bless = function(List__) {
 };
 
 CORE.caller = function(List__, want) {
-    if (p5pkg["Perlito5"].v_CALLER && p5pkg["Perlito5"].v_CALLER._array_ && p5pkg["Perlito5"].v_CALLER._array_.p5aget(0) ) {
+    if ( p5pkg["Perlito5"].List_CALLER[0] ) {
         // TODO
-        return p5pkg["Perlito5"].v_CALLER._array_.p5aget(0)._array_
+        return p5pkg["Perlito5"].List_CALLER[0]._array_
     }
     return p5context([], want);
 };
