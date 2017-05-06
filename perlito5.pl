@@ -26755,12 +26755,15 @@ class PerlOp {
         return PlCORE.die("goto() not implemented");
     }
 
-    public static final PlObject caller(int ctx, PlObject s) {
-        int item = s.to_int();
+    public static final PlObject caller(int ctx, PlArray List__) {
+        int item = List__.aget(0).to_int();
 
         PlArray caller = PlV.array_get("Perlito5::CALLER");
         if (caller.length_of_array().to_boolean()) {
-            return PerlOp.context(ctx, caller.aget(item).array_deref());
+            if (ctx == 2) {
+                return caller.aget(item).array_deref();
+            }
+            return caller.aget(item).aget(0);
         };
 
         // PlCORE.die("caller() not implemented");
