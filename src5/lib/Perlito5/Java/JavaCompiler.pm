@@ -71,7 +71,7 @@ class PlJavaCompiler {
         compilationUnits = new ArrayList<SourceCode>();
     }
 
-    public static PlObject eval_java_string(String source)
+    public static PlObject eval_java_string(String source, String constants)
     {
         if (source.equals("")) {
             return PlCx.UNDEF;
@@ -91,6 +91,7 @@ class PlJavaCompiler {
             StringBuffer source5 = new StringBuffer();
             source5.append("import org.perlito.Perlito5.*;\n");
             source5.append("public class " + className + " {\n");
+            source5.append(constants);
             source5.append("    public " + className + "() {\n");
             source5.append("    }\n");
             source5.append("    public static PlObject runEval(int want) {\n");

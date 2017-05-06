@@ -25759,7 +25759,7 @@ class PlJavaCompiler {
         compilationUnits = new ArrayList<SourceCode>();
     }
 
-    public static PlObject eval_java_string(String source)
+    public static PlObject eval_java_string(String source, String constants)
     {
         if (source.equals("")) {
             return PlCx.UNDEF;
@@ -25779,6 +25779,7 @@ class PlJavaCompiler {
             StringBuffer source5 = new StringBuffer();
             source5.append("import org.perlito.Perlito5.*;\\n");
             source5.append("public class " + className + " {\\n");
+            source5.append(constants);
             source5.append("    public " + className + "() {\\n");
             source5.append("    }\\n");
             source5.append("    public static PlObject runEval(int want) {\\n");
@@ -26095,6 +26096,7 @@ class SourceCode extends SimpleJavaFileObject {
         local $Perlito5::SCOPE_DEPTH = 0;
         local $Perlito5::PKG_NAME = $namespace;
         local @Perlito5::UNITCHECK_BLOCK;
+        local @Perlito5::Java::Java_constants;
         my $match = Perlito5::Grammar::exp_stmts($source, 0);
         if (!$match || $match->{'to'} != length($source)) {;
             die('Syntax error in eval near pos ', $match->{'to'})
@@ -26120,8 +26122,13 @@ class SourceCode extends SimpleJavaFileObject {
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
-        $_ = $java_code;
-        return Java::inline('PlJavaCompiler.eval_java_string(PlV.sget("main::_").toString())')
+        my $constants = '';
+        for my $s (@Perlito5::Java::Java_constants) {;
+            $constants .= '    ' . $s . ';
+'
+        }
+        @_ = ($java_code, $constants);
+        return Java::inline('PlJavaCompiler.eval_java_string(List__.aget(0).toString(), List__.aget(1).toString())')
     }
     sub Perlito5::Java::Runtime::emit_java_extends {
         (my($class), my($java_classes)) = @_;

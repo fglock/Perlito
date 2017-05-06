@@ -21,7 +21,7 @@ sub perl5_to_java {
     local $Perlito5::SCOPE_DEPTH = 0;
     local $Perlito5::PKG_NAME = $namespace;
     local @Perlito5::UNITCHECK_BLOCK;
-    # local @Perlito5::Java::Java_constants;
+    local @Perlito5::Java::Java_constants;
 
     # warn "in eval enter\n";
     # warn "External scope ", Data::Dumper::Dumper($scope_java);
@@ -74,8 +74,15 @@ sub eval_ast {
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
-    $_ = $java_code;
-    return Java::inline('PlJavaCompiler.eval_java_string(PlV.sget("main::_").toString())');
+
+    my $constants = "";
+    for my $s ( @Perlito5::Java::Java_constants ) {
+        # say "s: [[$s]] ", ref($s), "\n";
+        $constants .= "    " . $s . ";\n";
+    }
+
+    @_ = ($java_code, $constants);
+    return Java::inline('PlJavaCompiler.eval_java_string(List__.aget(0).toString(), List__.aget(1).toString())');
 }
 
 sub emit_java_extends {
