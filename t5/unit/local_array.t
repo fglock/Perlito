@@ -22,7 +22,7 @@ if (1) {
 
     @X::v = (15);
     print "not " if "@X::v" ne "15";
-    say "ok 4";
+    say "ok 4 # [ @X::v ]";
 
     print "not " if "@$vv" ne $str;
     say "ok 5 # @$vv";
@@ -30,7 +30,7 @@ if (1) {
 }
 
 print "not " if "@X::v" ne $str;
-say "ok 6 - exit scope retrieves old value";
+say "ok 6 - exit scope retrieves old value [ @X::v ]";
 
 print "not " if "@$vv" ne $str;
 say "ok 7";
