@@ -23567,6 +23567,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 @js_block = $block->emit_java($level + 3, 'runtime');
                 $Perlito5::THROW_RETURN = $outer_throw
             }
+            if (!@js_block) {;
+                push(@js_block, 'return PerlOp.context(want, PerlOp.context(want));')
+            }
             my @s = ('new PlClosure(' . $prototype . ', ' . 'new PlObject[]{ ' . join(', ', @captures_java) . ' }, ' . Perlito5::Java::pkg() . ') {', ['public PlObject apply(int want, PlArray List__) {', [@js_block], '}'], '}');
             if ($self->{'name'}) {
                 my $idx = Perlito5::JavaScript2::get_label();

@@ -2800,6 +2800,10 @@ package Perlito5::AST::Sub;
             $Perlito5::THROW_RETURN = $outer_throw;
         }
 
+        if (!@js_block) {
+            push @js_block, 'return PerlOp.context(want, PerlOp.context(want));';
+        }
+
         my @s = (
             "new PlClosure("
                     . "$prototype, "
