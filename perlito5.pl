@@ -4872,8 +4872,10 @@ use feature 'say';
                     my $code = $module_name->can('import');
                     if (defined($code)) {
                         unshift(@{$Perlito5::CALLER}, [$current_module_name]);
-                        eval('package ' . $current_module_name . ';
-' . '$module_name->import(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
+                        eval {
+                            $module_name->import(@{$arguments});
+                            1
+                        } or ${'@'}->Perlito5::Compiler::error();
                         shift(@{$Perlito5::CALLER})
                     }
                 }
@@ -4881,8 +4883,10 @@ use feature 'say';
                     my $code = $module_name->can('unimport');
                     if (defined($code)) {
                         unshift(@{$Perlito5::CALLER}, [$current_module_name]);
-                        eval('package ' . $current_module_name . ';
-' . '$module_name->unimport(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
+                        eval {
+                            $module_name->unimport(@{$arguments});
+                            1
+                        } or ${'@'}->Perlito5::Compiler::error();
                         shift(@{$Perlito5::CALLER})
                     }
                 }
@@ -21420,7 +21424,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 push(@out, 'new ' . $type{$sigil} . '[]{' . join(', ', @val) . '}')
             }
             my $scope = Perlito5::DumpToAST::dump_to_ast($self->{'_scope'}, {}, 's')->emit_java(0);
-            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ', ' . $scope . ', ' . join(', ', @out) . ')'
+            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ', ' . $scope . ', ' . join(', ', @out) . ', ' . 'List__' . ')'
         }, 'length' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = shift(@{$self->{'arguments'}});
@@ -25831,48 +25835,27 @@ class PlJavaCompiler {
         String[]    array_name,     // new String[]{"xx_101"};
         PlArray[]   array_val,      // new PlArray[]{xx_101};
         String[]    hash_name,      // new String[]{};
-        PlHash[]    hash_val        // new PlHash[]{}         
+        PlHash[]    hash_val,       // new PlHash[]{}         
+        PlArray     List__
     )
     {
-        PlObject outJava;
+        // System.out.println("eval_string: enter");
+        (new Throwable()).printStackTrace();
+
+        String outJava;
         try {
-            // System.out.println("eval_string: enter");
-            (new Throwable()).printStackTrace();
 
-            PlV.sset("Perlito5::STRICT", new PlInt(strict));
-            PlV.sset("Perlito5::PKG_NAME", new PlString(namespace));
-
-            PlV.sset("Perlito5::BASE_SCOPE", scope);
-            PlV.array_set("Perlito5::SCOPE_STMT", new PlArray());
-            PlV.sset("Perlito5::SCOPE", scope);
-            PlV.sset("Perlito5::SCOPE_DEPTH", new PlInt(0));
-
-            // TODO - do not wrap into a block, because this breaks:  ' . chr(39) . ' eval "next" ' . chr(39) . '
-
-            // # $m = Perlito5::Grammar::exp_stmts($source, 0);
-            // System.out.println("eval_string: calling Perlito5::Grammar::exp_stmts");
-            PlObject[] ast = org.perlito.Perlito5.LibPerl.apply(
-                "Perlito5::Grammar::exp_stmts",
-                "{; " + source + " }"
+            // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $strict, $scope_java)
+            PlObject code[] = org.perlito.Perlito5.LibPerl.apply(
+                "Perlito5::Java::Runtime::perl5_to_java",
+                new PlString(source),
+                new PlString(namespace),
+                new PlString(wantarray),
+                new PlInt(strict),
+                scope
             );
-
-            // PlObject[] out = LibPerl.apply( "Perlito5::Dumper::ast_dumper", ast[0].hget("capture") );
-            // System.out.println(out[0]);
-
-            // TODO - use this API:
-            // 
-            // use Perlito5::Java::JavaCompiler;
-            // sub perl5_to_java {
-            //     my ($source, $namespace, $want, $strict, $scope_java) = @_;
-            // 
-
-            // # $ast->emit_java(0);
-            outJava = org.perlito.Perlito5.PerlOp.call(
-                ast[0].hget("capture").aget(0),
-                "emit_java",
-                new PlArray(new PlInt(2), new PlString(wantarray)),
-                PlCx.SCALAR);
-            // System.out.println("eval_string: " + outJava);
+            outJava = code[0].toString();
+            System.out.println("eval_string: from Perlito5::Java::JavaCompiler::perl5_to_java \\n[[[ " + outJava + " ]]");
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -25902,9 +25885,14 @@ class PlJavaCompiler {
             StringBuffer source5 = new StringBuffer();
             source5.append("import org.perlito.Perlito5.*;\\n");
             source5.append("public class " + className + " {\\n");
+
+            for (PlObject cc : PlV.array_get("Perlito5::Java::Java_constants")) {
+            source5.append("    " + cc.toString() + "\\n");
+            }
+
             source5.append("    public " + className + "() {\\n");
             source5.append("    }\\n");
-            source5.append("    public static PlObject runEval(int want, Object scalar_val, Object array_val, Object hash_val) {\\n");
+            source5.append("    public static PlObject runEval(int want, Object scalar_val, Object array_val, Object hash_val, PlArray List__) {\\n");
             for (int i = 0; i < scalar_name.length; i++) {
             source5.append("        PlLvalue " + scalar_name[i] + " = ((PlLvalue[])(scalar_val))[" + i + "];\\n");
             }
@@ -25915,7 +25903,7 @@ class PlJavaCompiler {
             source5.append("        PlHash " + hash_name[i] + " = ((PlHash[])(hash_val))[" + i + "];\\n");
             }
             source5.append("        try {\\n");
-            source5.append("        " + outJava.toString() + "\\n");
+            source5.append("            return " + outJava + ";\\n");
             source5.append("        }\\n");
             source5.append("        catch(PlReturnException e) {\\n");
             source5.append("            return e.ret;\\n");
@@ -25930,8 +25918,8 @@ class PlJavaCompiler {
                 className,
                 cls5
             );
-            Method method5 = class5.getMethod("runEval", new Class[]{int.class, Object.class, Object.class, Object.class});
-            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID, scalar_val, array_val, hash_val);
+            Method method5 = class5.getMethod("runEval", new Class[]{int.class, Object.class, Object.class, Object.class, PlArray.class});
+            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID, scalar_val, array_val, hash_val, List__);
             // System.out.println("eval_string result: " + out.toString());
             return out;
         }
@@ -26100,6 +26088,10 @@ class SourceCode extends SimpleJavaFileObject {
         my $strict_old = $Perlito5::STRICT;
         local $_;
         local ${'^GLOBAL_PHASE'};
+        local $Perlito5::BASE_SCOPE = $scope_java;
+        local @Perlito5::SCOPE_STMT;
+        local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
+        local $Perlito5::SCOPE_DEPTH = 0;
         local $Perlito5::PKG_NAME = $namespace;
         local @Perlito5::UNITCHECK_BLOCK;
         my $match = Perlito5::Grammar::exp_stmts($source, 0);
@@ -26107,6 +26099,7 @@ class SourceCode extends SimpleJavaFileObject {
             die('Syntax error in eval near pos ', $match->{'to'})
         }
         my $ast = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => $match->{'capture'})]);
+        $ast = $ast->emit_begin_scratchpad();
         my $java_code = $ast->emit_java(0, $want);
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
@@ -26591,6 +26584,11 @@ class PerlOp {
         PlClass pClass = invocant.blessed_class();
 
         if ( pClass == null ) {
+            if (!invocant.is_ref()) {
+                // invocant can be a package name
+                return call( invocant.toString(), method, args, context );
+            }
+
             PlCORE.die( "Can' . chr(39) . 't call method \\"" + method
                 + "\\" on unblessed reference" );
             return PlCx.UNDEF;

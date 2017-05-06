@@ -1067,7 +1067,8 @@ package Perlito5::AST::Apply;
                 . Perlito5::Java::escape_string($wantarray) . ', '
                 . ( 0 + $Perlito5::STRICT ) . ', '
                 . $scope . ', '
-                . join( ', ', @out )
+                . join( ', ', @out ) . ', '
+                . 'List__'
                 . ')';
         },
 

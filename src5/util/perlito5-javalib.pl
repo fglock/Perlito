@@ -8,6 +8,7 @@ use Perlito5::Java::Runtime;
 use Perlito5::Java::Lib;
 
 $Perlito5::JAVA_EVAL = 1;
+$Perlito5::ID = 100000;
 
 # sub compile_p5_to_java {
 #     my $s = shift;

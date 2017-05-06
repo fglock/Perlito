@@ -219,8 +219,11 @@ sub parse_time_eval {
                 if (defined($code)) {
                     # make sure that caller() points to the current module under compilation
                     unshift @{ $Perlito5::CALLER }, [ $current_module_name ];
-                    eval "package $current_module_name;\n"
-                       . '$module_name->import(@$arguments); 1'
+                    eval {
+                        # "package $current_module_name;\n"
+                        $module_name->import(@$arguments);
+                        1
+                    }
                     or Perlito5::Compiler::error $@;
                     shift @{ $Perlito5::CALLER };
                 }
@@ -230,8 +233,11 @@ sub parse_time_eval {
                 if (defined($code)) {
                     # make sure that caller() points to the current module under compilation
                     unshift @{ $Perlito5::CALLER }, [ $current_module_name ];
-                    eval "package $current_module_name;\n"
-                       . '$module_name->unimport(@$arguments); 1'
+                    eval {
+                        # "package $current_module_name;\n"
+                        $module_name->unimport(@$arguments);
+                        1
+                    }
                     or Perlito5::Compiler::error $@;
                     shift @{ $Perlito5::CALLER };
                 }

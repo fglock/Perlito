@@ -8,9 +8,6 @@ use Perlito5::Java::Crypt;
 use Perlito5::Java::JavaCompiler;
 
 sub perl5_to_java {
-    # TODO - work in progress - this sub is not used.
-    # items with "###" need to be implemented
-
     my ($source, $namespace, $want, $strict, $scope_java) = @_;
 
     # say "source: [" . $source . "]";
@@ -18,10 +15,10 @@ sub perl5_to_java {
     my    $strict_old         = $Perlito5::STRICT;
     local $_;
     local ${^GLOBAL_PHASE};
-    ### local $Perlito5::BASE_SCOPE = $scope_java->[0];
-    ### local @Perlito5::SCOPE_STMT;
-    ### local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
-    ### local $Perlito5::SCOPE_DEPTH = 0;
+    local $Perlito5::BASE_SCOPE = $scope_java;  # ->[0];
+    local @Perlito5::SCOPE_STMT;
+    local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
+    local $Perlito5::SCOPE_DEPTH = 0;
     local $Perlito5::PKG_NAME = $namespace;
     local @Perlito5::UNITCHECK_BLOCK;
     # warn "in eval enter\n";
@@ -44,8 +41,8 @@ sub perl5_to_java {
                          ) ],
               );
 
-    ### # use lexicals from BEGIN scratchpad
-    ### $ast = $ast->emit_begin_scratchpad();
+    # use lexicals from BEGIN scratchpad
+    $ast = $ast->emit_begin_scratchpad();
 
     # say "ast: [" . ast . "]";
     my $java_code = $ast->emit_java(0, $want);
