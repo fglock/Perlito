@@ -21,6 +21,8 @@ sub perl5_to_java {
     local $Perlito5::SCOPE_DEPTH = 0;
     local $Perlito5::PKG_NAME = $namespace;
     local @Perlito5::UNITCHECK_BLOCK;
+    # local @Perlito5::Java::Java_constants;
+
     # warn "in eval enter\n";
     # warn "External scope ", Data::Dumper::Dumper($scope_java);
     # warn "BASE_SCOPE ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
@@ -48,12 +50,19 @@ sub perl5_to_java {
     my $java_code = $ast->emit_java(0, $want);
     # say "java-source: [" . $java_code . "]";
 
+    # warn "in perl_to_java: ", Perlito5::Dumper::Dumper( \@Perlito5::Java::Java_constants );
+    my $constants = "";
+    for my $s ( @Perlito5::Java::Java_constants ) {
+        # say "s: [[$s]] ", ref($s), "\n";
+        $constants .= "    " . $s . ";\n";
+    }
+
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
     $Perlito5::STRICT   = $strict_old;
-    return $java_code;
+    return ($java_code, $constants);
 }
 
 sub eval_ast {
@@ -1856,10 +1865,13 @@ class PlV {
 
     // hash
     public static final PlHash hash_get(String name) {
-        return (PlHash)hvar.hget_hashref(name).get();
+        return (PlHash)hvar.hget_hashref(name).hash_deref();
     }
     public static final PlHash hash_get_local(String name) {
-        return (PlHash)hvar.hget_lvalue_local(name).get_hashref().get();
+        PlLvalue o = (PlLvalue)hvar.hget_lvalue_local(name);
+        PlHashRef hr = new PlHashRef();
+        o.set(hr);
+        return hr.hash_deref();
     }
     public static final PlObject hash_set(String name, PlObject v) {
         return hvar.hget_hashref(name).hash_deref_set(v);
@@ -1885,10 +1897,13 @@ class PlV {
 
     // array
     public static final PlArray array_get(String name) {
-        return (PlArray)avar.hget_arrayref(name).get();
+        return (PlArray)avar.hget_arrayref(name).array_deref();
     }
     public static final PlArray array_get_local(String name) {
-        return (PlArray)avar.hget_lvalue_local(name).get_arrayref().get();
+        PlLvalue o = (PlLvalue)avar.hget_lvalue_local(name);
+        PlArrayRef ar = new PlArrayRef();
+        o.set(ar);
+        return ar.array_deref();
     }
     public static final PlObject array_set(String name, PlObject v) {
         return avar.hget_arrayref(name).array_deref_set(v);
@@ -3140,7 +3155,7 @@ class PlHashRef extends PlHash {
         o.h = this.h;
         return o;
     }
-    public PlObject hash_deref() {
+    public PlHash hash_deref() {
         PlHash o = new PlHash();
         o.h = this.h;
         return o;
@@ -4334,13 +4349,13 @@ class PlLvalue extends PlObject {
     }
     public PlObject hget_arrayref(String i) {
         if (this.o.is_undef()) {
-            this.o = new PlHashRef();
+            this.o = new PlArrayRef();
         }
         return this.o.hget_arrayref(i);
     }
     public PlObject hget_arrayref(PlObject i) {
         if (this.o.is_undef()) {
-            this.o = new PlHashRef();
+            this.o = new PlArrayRef();
         }
         return this.o.hget_arrayref(i);
     }

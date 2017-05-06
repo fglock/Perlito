@@ -25843,6 +25843,7 @@ class PlJavaCompiler {
         (new Throwable()).printStackTrace();
 
         String outJava;
+        String constants;
         try {
 
             // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $strict, $scope_java)
@@ -25855,7 +25856,9 @@ class PlJavaCompiler {
                 scope
             );
             outJava = code[0].toString();
+            constants = code[1].toString();
             System.out.println("eval_string: from Perlito5::Java::JavaCompiler::perl5_to_java \\n[[[ " + outJava + " ]]");
+            System.out.println("eval_string: constants \\n[[[ " + constants + " ]]");
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -25886,9 +25889,7 @@ class PlJavaCompiler {
             source5.append("import org.perlito.Perlito5.*;\\n");
             source5.append("public class " + className + " {\\n");
 
-            for (PlObject cc : PlV.array_get("Perlito5::Java::Java_constants")) {
-            source5.append("    " + cc.toString() + "\\n");
-            }
+            source5.append(constants);
 
             source5.append("    public " + className + "() {\\n");
             source5.append("    }\\n");
@@ -26101,11 +26102,16 @@ class SourceCode extends SimpleJavaFileObject {
         my $ast = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => $match->{'capture'})]);
         $ast = $ast->emit_begin_scratchpad();
         my $java_code = $ast->emit_java(0, $want);
+        my $constants = '';
+        for my $s (@Perlito5::Java::Java_constants) {;
+            $constants .= '    ' . $s . ';
+'
+        }
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
         $Perlito5::STRICT = $strict_old;
-        return $java_code
+        return ($java_code, $constants)
     }
     sub Perlito5::Java::Runtime::eval_ast {
         (my($ast)) = @_;
@@ -27788,10 +27794,13 @@ class PlV {
 
     // hash
     public static final PlHash hash_get(String name) {
-        return (PlHash)hvar.hget_hashref(name).get();
+        return (PlHash)hvar.hget_hashref(name).hash_deref();
     }
     public static final PlHash hash_get_local(String name) {
-        return (PlHash)hvar.hget_lvalue_local(name).get_hashref().get();
+        PlLvalue o = (PlLvalue)hvar.hget_lvalue_local(name);
+        PlHashRef hr = new PlHashRef();
+        o.set(hr);
+        return hr.hash_deref();
     }
     public static final PlObject hash_set(String name, PlObject v) {
         return hvar.hget_hashref(name).hash_deref_set(v);
@@ -27817,10 +27826,13 @@ class PlV {
 
     // array
     public static final PlArray array_get(String name) {
-        return (PlArray)avar.hget_arrayref(name).get();
+        return (PlArray)avar.hget_arrayref(name).array_deref();
     }
     public static final PlArray array_get_local(String name) {
-        return (PlArray)avar.hget_lvalue_local(name).get_arrayref().get();
+        PlLvalue o = (PlLvalue)avar.hget_lvalue_local(name);
+        PlArrayRef ar = new PlArrayRef();
+        o.set(ar);
+        return ar.array_deref();
     }
     public static final PlObject array_set(String name, PlObject v) {
         return avar.hget_arrayref(name).array_deref_set(v);
@@ -29044,7 +29056,7 @@ class PlHashRef extends PlHash {
         o.h = this.h;
         return o;
     }
-    public PlObject hash_deref() {
+    public PlHash hash_deref() {
         PlHash o = new PlHash();
         o.h = this.h;
         return o;
@@ -30200,13 +30212,13 @@ class PlLvalue extends PlObject {
     }
     public PlObject hget_arrayref(String i) {
         if (this.o.is_undef()) {
-            this.o = new PlHashRef();
+            this.o = new PlArrayRef();
         }
         return this.o.hget_arrayref(i);
     }
     public PlObject hget_arrayref(PlObject i) {
         if (this.o.is_undef()) {
-            this.o = new PlHashRef();
+            this.o = new PlArrayRef();
         }
         return this.o.hget_arrayref(i);
     }

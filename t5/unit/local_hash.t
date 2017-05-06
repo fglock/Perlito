@@ -23,7 +23,7 @@ if (1) {
 
     %X::v = (15, 20);
     print "not " if "@{[ %X::v ]}" ne "15 20";
-    say "ok 4";
+    say "ok 4 # @{[ %X::v ]}";
 
     print "not " if "@{[ %$vv ]}" ne $str1 && "@{[ %$vv ]}" ne $str2;
     say "ok 5";

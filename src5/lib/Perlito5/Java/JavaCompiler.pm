@@ -155,6 +155,7 @@ class PlJavaCompiler {
         (new Throwable()).printStackTrace();
 
         String outJava;
+        String constants;
         try {
 
             // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $strict, $scope_java)
@@ -167,7 +168,9 @@ class PlJavaCompiler {
                 scope
             );
             outJava = code[0].toString();
+            constants = code[1].toString();
             System.out.println("eval_string: from Perlito5::Java::JavaCompiler::perl5_to_java \n[[[ " + outJava + " ]]");
+            System.out.println("eval_string: constants \n[[[ " + constants + " ]]");
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -198,9 +201,7 @@ class PlJavaCompiler {
             source5.append("import org.perlito.Perlito5.*;\n");
             source5.append("public class " + className + " {\n");
 
-            for (PlObject cc : PlV.array_get("Perlito5::Java::Java_constants")) {
-            source5.append("    " + cc.toString() + "\n");
-            }
+            source5.append(constants);
 
             source5.append("    public " + className + "() {\n");
             source5.append("    }\n");
