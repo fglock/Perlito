@@ -104,7 +104,7 @@ class PlJavaCompiler {
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
-            System.out.println("\neval_string:\n" + cls5 + "\n");
+            // System.out.println("\neval_string:\n" + cls5 + "\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -131,7 +131,7 @@ class PlJavaCompiler {
         catch(Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
-            System.out.println("Exception in eval_string: " + message);
+            // System.out.println("Exception in eval_string: " + message);
             PlV.sset("main::@", new PlString(message));
         }
         return PlCx.UNDEF;
@@ -153,7 +153,7 @@ class PlJavaCompiler {
     )
     {
         // System.out.println("eval_string: enter");
-        (new Throwable()).printStackTrace();
+        // (new Throwable()).printStackTrace();
 
         String outJava;
         String constants;
@@ -170,13 +170,13 @@ class PlJavaCompiler {
             );
             outJava = code[0].toString();
             constants = code[1].toString();
-            System.out.println("eval_string: from Perlito5::Java::JavaCompiler::perl5_to_java \n[[[ " + outJava + " ]]");
-            System.out.println("eval_string: constants \n[[[ " + constants + " ]]");
+            // System.out.println("eval_string: from Perlito5::Java::JavaCompiler::perl5_to_java \n[[[ " + outJava + " ]]");
+            // System.out.println("eval_string: constants \n[[[ " + constants + " ]]");
         }
         catch(Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
-            System.out.println("Exception in eval_string: " + message);
+            // System.out.println("Exception in eval_string: " + message);
             PlV.sset("main::@", new PlString(message));
             return PlCx.UNDEF;
         }
@@ -225,7 +225,7 @@ class PlJavaCompiler {
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
-            System.out.println("\neval_string:\n" + cls5 + "\n");
+            // System.out.println("\neval_string:\n" + cls5 + "\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -252,7 +252,7 @@ class PlJavaCompiler {
         catch(Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
-            System.out.println("Exception in eval_string: " + message);
+            // System.out.println("Exception in eval_string: " + message);
             PlV.sset("main::@", new PlString(message));
         }
         return PlCx.UNDEF;
