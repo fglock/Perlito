@@ -751,14 +751,20 @@ package Perlito5::AST::Apply;
                 # eval string
 
                 # retrieve the parse-time env
-                # TODO - use "dump_to_ast"
-                my $scope_perl5 = Perlito5::Dumper::ast_dumper( [$self->{_scope}] );
-                my $m = Perlito5::Grammar::Expression::term_square( [ split "", $scope_perl5 ], 0 );
-                if (!$m || $m->{to} < length($scope_perl5) ) {
-                    die "invalid internal scope in eval\n";
+
+                my %vars;
+                for my $var (@{ $self->{_scope}{block} }, @Perlito5::CAPTURES) {
+                    if ( $var->{_decl} && $var->{_decl} ne 'global' ) {
+                        $vars{$var->{_id}} = $var
+                    }
                 }
-                $m = Perlito5::Grammar::Expression::expand_list( Perlito5::Match::flat($m)->[2] );
-                my $scope_js = '(new p5ArrayRef(' . Perlito5::JavaScript2::to_list($m) . '))';
+
+                # "$scope" contains the "my" declarations
+                # scope only contains variables captured by the current subroutine,
+                # and variables declared since the 'sub' started.
+
+                my $scope = Perlito5::DumpToAST::dump_to_ast({'block' => [values(%vars)], }, {}, 's');
+                my $scope_js = '(new p5ArrayRef(' . Perlito5::JavaScript2::to_list([$scope]) . '))';
 
                 $eval ='eval(p5pkg["Perlito5::JavaScript2::Runtime"].perl5_to_js([' 
                             . Perlito5::JavaScript2::to_str($arg) . ", "

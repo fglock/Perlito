@@ -2745,7 +2745,6 @@ package Perlito5::AST::Sub;
         for my $stmt (@{$self->{block}{stmts}}) {
             push @captured, $stmt->get_captures();
         }
-
         my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
         my %capture = map { $_->{dont} ? ()
                           : $dont_capture{ $_->{_id} } ? ()
@@ -2757,6 +2756,7 @@ package Perlito5::AST::Sub;
         # warn Data::Dumper::Dumper(\%capture);
         my @captures_ast  = map { $capture{$_} }
                             sort keys %capture;
+        local @Perlito5::CAPTURES = @captures_ast;
         my @captures_java = map { $_->emit_java( $level, 'list' ) } @captures_ast;
 
         # set the new variable names inside the closure

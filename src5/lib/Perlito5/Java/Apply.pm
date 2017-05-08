@@ -1019,7 +1019,7 @@ package Perlito5::AST::Apply;
             # TODO - test next() from inside eval
 
             my %vars;
-            for my $var (@{ $self->{_scope}{block} }) {
+            for my $var (@{ $self->{_scope}{block} }, @Perlito5::CAPTURES) {
                 if ( $var->{_decl} && $var->{_decl} ne 'global' ) {
                     $vars{ $var->{_real_sigil} || $var->{sigil} }{ $var->emit_java(0) } = $var;
                 }
@@ -1058,8 +1058,7 @@ package Perlito5::AST::Apply;
             # new PlHash[]{}
 
             # "$scope" contains the "my" declarations
-
-            # TODO - scope only contains variables captured by the current subroutine,
+            # scope only contains variables captured by the current subroutine,
             # and variables declared since the 'sub' started.
 
             my $scope = Perlito5::DumpToAST::dump_to_ast( $self->{_scope}, {}, "s" )->emit_java(0);

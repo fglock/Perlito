@@ -499,7 +499,10 @@ sub term_bareword {
                     );
             if ($name eq 'eval' && !$namespace) {
                 # add scope information to eval-string
-                $ast->{_scope} = Perlito5::Grammar::Scope::get_snapshot();
+                # - here we add the variables declared so far in the current closure
+                # - other variables captured by the current closure need to be added when the closure finishes compiling
+
+                $ast->{_scope} = Perlito5::Grammar::Scope::get_snapshot( $Perlito5::CLOSURE_SCOPE );
             }
             $m->{capture} = [ 'term', $ast ];
             return $m;

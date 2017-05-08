@@ -1810,8 +1810,26 @@ package Perlito5::AST::Sub;
         my $sub_ref = Perlito5::JavaScript2::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
         local $Perlito5::JavaScript2::is_inside_subroutine = 1;
-        my $js_block = Perlito5::JavaScript2::LexicalBlock->new( block => $self->{block}{stmts} )->emit_javascript2_subroutine_body( $level + 2, 'runtime' );
 
+        # get list of captured variables, including inner blocks
+        my @captured;
+        for my $stmt (@{$self->{block}{stmts}}) {
+            push @captured, $stmt->get_captures();
+        }
+        my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
+        my %capture = map { $_->{dont} ? ()
+                          : $dont_capture{ $_->{_id} } ? ()
+                          : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
+                          : ( $_->{_id} => $_ )
+                          } @captured;
+        # warn Data::Dumper::Dumper(\@captured);
+        # warn Data::Dumper::Dumper(\%dont_capture);
+        # warn Data::Dumper::Dumper(\%capture);
+        my @captures_ast  = map { $capture{$_} }
+                            sort keys %capture;
+        local @Perlito5::CAPTURES = @captures_ast;
+
+        my $js_block = Perlito5::JavaScript2::LexicalBlock->new( block => $self->{block}{stmts} )->emit_javascript2_subroutine_body( $level + 2, 'runtime' );
         my @s = (
             "var $sub_ref;",
             "$sub_ref = function (List__, p5want) {",

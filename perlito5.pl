@@ -592,7 +592,7 @@ use feature 'say';
                 }
                 my $ast = Perlito5::AST::Apply::->new('code' => $name, 'namespace' => $namespace, 'arguments' => \@args, 'bareword' => ($has_paren == 0));
                 if ($name eq 'eval' && !$namespace) {;
-                    $ast->{'_scope'} = Perlito5::Grammar::Scope::get_snapshot()
+                    $ast->{'_scope'} = Perlito5::Grammar::Scope::get_snapshot($Perlito5::CLOSURE_SCOPE)
                 }
                 $m->{'capture'} = ['term', $ast];
                 return $m
@@ -5872,6 +5872,34 @@ use feature 'say';
         Perlito5::Grammar::Scope::end_compile_time_scope();
         return $m
     }
+    sub Perlito5::Grammar::Block::closure_block {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+        $pos = $m->{'to'};
+        if ($str->[$pos] ne '{') {;
+            return
+        }
+        $pos++;
+        Perlito5::Grammar::Scope::check_variable_declarations();
+        Perlito5::Grammar::Scope::create_new_compile_time_scope();
+        local $Perlito5::CLOSURE_SCOPE = $Perlito5::SCOPE;
+        $m = Perlito5::Grammar::exp_stmts($str, $pos);
+        if (!$m) {;
+            Perlito5::Compiler::error('syntax error')
+        }
+        $pos = $m->{'to'};
+        my $capture = Perlito5::Match::flat($m);
+        $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+        $pos = $m->{'to'};
+        if ($str->[$pos] ne '}') {;
+            Perlito5::Compiler::error('syntax error')
+        }
+        $m->{'to'} = $pos + 1;
+        $m->{'capture'} = Perlito5::AST::Block::->new('stmts' => $capture, 'sig' => undef);
+        Perlito5::Grammar::Scope::end_compile_time_scope();
+        return $m
+    }
     sub Perlito5::Grammar::Block::eval_end_block {
         (my($block), my($phase)) = @_;
         $block = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => undef, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef)]);
@@ -5974,7 +6002,7 @@ use feature 'say';
         my $ws = Perlito5::Grammar::Space::opt_ws($str, $p);
         $p = $ws->{'to'};
         my $block_start = $p;
-        my $m = Perlito5::Grammar::block($str, $p);
+        my $m = Perlito5::Grammar::Block::closure_block($str, $p);
         !$m && return;
         $p = $m->{'to'};
         my $block = Perlito5::Match::flat($m);
@@ -6083,17 +6111,17 @@ use feature 'say';
             my $pos1 = $MATCH->{'to'};
             (do {;
                 ((do {
-                    my $m2 = Perlito5::Grammar::block($str, $MATCH->{'to'});
+                    my $m2 = Perlito5::Grammar::Block::closure_block($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
-                        $MATCH->{'Perlito5::Grammar::block'} = $m2;
+                        $MATCH->{'Perlito5::Grammar::Block::closure_block'} = $m2;
                         1
                     }
                     else {;
                         0
                     }
                 }) && (do {
-                    $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'});
+                    $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block::closure_block'});
                     1
                 }))
             }) || (do {
@@ -6408,10 +6436,10 @@ use feature 'say';
                 0
             }
         }) && (do {
-            my $m2 = Perlito5::Grammar::block($str, $MATCH->{'to'});
+            my $m2 = Perlito5::Grammar::Block::closure_block($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
-                $MATCH->{'Perlito5::Grammar::block'} = $m2;
+                $MATCH->{'Perlito5::Grammar::Block::closure_block'} = $m2;
                 1
             }
             else {;
@@ -6430,7 +6458,7 @@ use feature 'say';
                 } @{$attributes}];
                 $sig = $proto->[1]
             }
-            $MATCH->{'capture'} = Perlito5::AST::Sub::->new('name' => undef, 'namespace' => undef, 'sig' => $sig, 'block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'}), 'attributes' => $attributes);
+            $MATCH->{'capture'} = Perlito5::AST::Sub::->new('name' => undef, 'namespace' => undef, 'sig' => $sig, 'block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block::closure_block'}), 'attributes' => $attributes);
             1
         })));
         $tmp ? $MATCH : undef
@@ -8759,6 +8787,7 @@ use feature 'say';
     our $FILE_NAME = '';
     our $GLOBAL = {};
     our $BASE_SCOPE = Perlito5::Grammar::Scope::->new_base_scope();
+    our $CLOSURE_SCOPE = $BASE_SCOPE;
     our $SCOPE = $BASE_SCOPE;
     our $SCOPE_DEPTH = 0;
     our @SCOPE_STMT = ();
@@ -10703,14 +10732,14 @@ use feature 'say';
                 $eval = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [$arg])->emit_javascript2($level + 1, $wantarray)
             }
             else {
-                my $scope_perl5 = Perlito5::Dumper::ast_dumper([$self->{'_scope'}]);
-                my $m = Perlito5::Grammar::Expression::term_square([split('', $scope_perl5)], 0);
-                if (!$m || $m->{'to'} < length($scope_perl5)) {;
-                    die('invalid internal scope in eval
-')
+                my %vars;
+                for my $var (@{$self->{'_scope'}->{'block'}}, @Perlito5::CAPTURES) {;
+                    if ($var->{'_decl'} && $var->{'_decl'} ne 'global') {;
+                        $vars{$var->{'_id'}} = $var
+                    }
                 }
-                $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
-                my $scope_js = '(new p5ArrayRef(' . Perlito5::JavaScript2::to_list($m) . '))';
+                my $scope = Perlito5::DumpToAST::dump_to_ast({'block' => [values(%vars)], }, {}, 's');
+                my $scope_js = '(new p5ArrayRef(' . Perlito5::JavaScript2::to_list([$scope]) . '))';
                 $eval = 'eval(p5pkg["Perlito5::JavaScript2::Runtime"].perl5_to_js([' . Perlito5::JavaScript2::to_str($arg) . ', ' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::JavaScript2::escape_string($wantarray) . ', ' . $scope_js . ']))'
             }
             my $context = Perlito5::JavaScript2::to_context($wantarray);
@@ -12254,6 +12283,22 @@ use feature 'say';
             my $sub_ref = Perlito5::JavaScript2::get_label();
             local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
             local $Perlito5::JavaScript2::is_inside_subroutine = 1;
+            my @captured;
+            for my $stmt (@{$self->{'block'}->{'stmts'}}) {;
+                push(@captured, $stmt->get_captures())
+            }
+            my %dont_capture = map {;
+                $_->{'dont'} ? ($_->{'dont'} => 1) : ()
+            } @captured;
+            my %capture = map {;
+                $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
+            } @captured;
+            my @captures_ast = map {;
+                $capture{$_}
+            } sort {;
+                $a cmp $b
+            } keys(%capture);
+            local @Perlito5::CAPTURES = @captures_ast;
             my $js_block = Perlito5::JavaScript2::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'})->emit_javascript2_subroutine_body($level + 2, 'runtime');
             my @s = ('var ' . $sub_ref . ';', $sub_ref . ' = function (List__, p5want) {', [$js_block], '};', $sub_ref . '._prototype_ = ' . $prototype . ';', 'return ' . $sub_ref);
             if ($self->{'name'}) {
@@ -17721,7 +17766,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return 'PlCORE.die("This script has eval string disabled - the ' . chr(39) . 'java_eval' . chr(39) . ' switch is turned off")'
             }
             my %vars;
-            for my $var (@{$self->{'_scope'}->{'block'}}) {;
+            for my $var (@{$self->{'_scope'}->{'block'}}, @Perlito5::CAPTURES) {;
                 if ($var->{'_decl'} && $var->{'_decl'} ne 'global') {;
                     $vars{$var->{'_real_sigil'} || $var->{'sigil'}}->{$var->emit_java(0)} = $var
                 }
@@ -19845,6 +19890,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             } sort {;
                 $a cmp $b
             } keys(%capture);
+            local @Perlito5::CAPTURES = @captures_ast;
             my @captures_java = map {;
                 $_->emit_java($level, 'list')
             } @captures_ast;

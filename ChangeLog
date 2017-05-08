@@ -17,6 +17,7 @@
 -- fix "range" special cases
 -- regex /s /x modifiers
 -- variable redeclaration
+-- fixed a performance problem in eval-string
 
 - Java:
 -- __DATA__ and <DATA> filehandle

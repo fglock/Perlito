@@ -50,6 +50,40 @@ sub block {
     return $m;
 }
 
+sub closure_block {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+    $pos = $m->{to};
+    if ( $str->[$pos] ne '{' ) {
+        return
+    }
+    $pos++;
+
+    # when parsing a command like "for my $x ..." register the loop variable
+    # before entering the block, so that it can be seen immediately
+    Perlito5::Grammar::Scope::check_variable_declarations();
+    Perlito5::Grammar::Scope::create_new_compile_time_scope();
+    local $Perlito5::CLOSURE_SCOPE = $Perlito5::SCOPE;  # this is the only diff from plain <block>
+
+    $m = Perlito5::Grammar::exp_stmts($str, $pos);
+    if (!$m) {
+        Perlito5::Compiler::error "syntax error";
+    }
+    $pos = $m->{to};
+    my $capture = Perlito5::Match::flat($m);
+    $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+    $pos = $m->{to};
+    if ( $str->[$pos] ne '}' ) {
+        Perlito5::Compiler::error "syntax error";
+    }
+    $m->{to} = $pos + 1;
+    $m->{capture} = Perlito5::AST::Block->new( stmts => $capture, sig => undef );
+    # end of lexical scope
+    Perlito5::Grammar::Scope::end_compile_time_scope();
+    return $m;
+}
+
 sub eval_end_block {
     # execute "eval" on this block,
     # without access to compile-time lexical variables.
@@ -176,7 +210,7 @@ sub special_named_block {
     $p = $ws->{to};
 
     my $block_start = $p;
-    my $m = Perlito5::Grammar::block( $str, $p );
+    my $m = Perlito5::Grammar::Block::closure_block( $str, $p );
     return if !$m;
     $p = $m->{to};
     my $block = Perlito5::Match::flat($m);
@@ -238,9 +272,9 @@ token named_sub_def {
     <Perlito5::Grammar::Block::prototype_> <.Perlito5::Grammar::Space::opt_ws>
     <Perlito5::Grammar::Attribute::opt_attribute> <.Perlito5::Grammar::Space::opt_ws>
     [
-        <Perlito5::Grammar::block>
+        <Perlito5::Grammar::Block::closure_block>
         {
-            $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::block"});
+            $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block::closure_block"});
         }
     |
         <.Perlito5::Grammar::Statement::statement_parse>
@@ -376,7 +410,7 @@ token prototype_ {
 token anon_sub_def {
     <prototype_> <.Perlito5::Grammar::Space::opt_ws> 
     <Perlito5::Grammar::Attribute::opt_attribute>
-    <Perlito5::Grammar::block>
+    <Perlito5::Grammar::Block::closure_block>
     {
         my $sig  = Perlito5::Match::flat($MATCH->{prototype_});
         $sig = undef if $sig eq '*undef*';
@@ -392,7 +426,7 @@ token anon_sub_def {
             name  => undef, 
             namespace => undef,
             sig   => $sig, 
-            block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'}),
+            block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block::closure_block'}),
             attributes => $attributes,
         ) 
     }
