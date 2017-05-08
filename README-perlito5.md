@@ -547,6 +547,29 @@ Add tests for fixed bugs
     Subroutine "Perlito5::Dumper::escape_string" is not using the hash "%safe_char".
 ~~~    
 
+- captured lexical is not initialized:
+
+~~~sh
+    
+    $ cat > X.pm
+    my %safe = (a=>1); sub dump { $safe{a} }
+    1;
+    $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
+    *main::dump = do {
+        package main;
+        my $safe = undef;   # TODO - initialize captured lexical
+        sub {
+            $safe{'a'}
+        }
+    };
+~~~
+
+- work in progress: test BEGIN time serialization
+
+~~~sh
+    $ perl perlito5.pl -I src5/lib -Cperl5 -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
+~~~
+
  
 Perl6 backend
 -------------
@@ -628,26 +651,6 @@ Perl5 backend
 Compile-time execution environment
 ----------------------------------
 
-- work in progress
-
-- test case:
-
-~~~sh
-    # captured lexical is not initialized:
-    
-    $ cat > X.pm
-    my %safe = (a=>1); sub dump { $safe{a} }
-    1;
-    $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
-    *main::dump = do {
-        package main;
-        my $safe = undef;   # TODO - initialize captured lexical
-        sub {
-            $safe{'a'}
-        }
-    };
-~~~
-
 - compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
     see README-perlito5-js near "Compile-time / Run-time interleaving"
 
@@ -669,23 +672,13 @@ Compile-time execution environment
     expected result:
     # args [ X xxx ]
 
-
-- work in progress: test BEGIN time serialization
-
-    $ perl perlito5.pl -I src5/lib -Cperl5 -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
-
-    TODO - identify aliases: [[[ BEGIN { *ccc2 = \$ccc; } ]]] dumps:
+TODO - identify aliases: [[[ BEGIN { *ccc2 = \$ccc; } ]]] dumps:
 
           $main::ccc2 = $main::ccc;
         instead of:
           *main::ccc2 = \$main::ccc;
 
-    - lexicals and closures are not dumped
-
-    TODO - lexicals are not shared
-
-         - maybe save lexical variable AST. This will help identify shared lexicals
-
+TODO - lexicals are not shared
 
 - special backend option "_comp" dumps the compile-time execution environment:
 
@@ -707,10 +700,8 @@ Compile-time execution environment
             },
         ],
     }
-
-    $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e ' local (undef, undef, @_) ; { 123 } sub x { 456; { my $x = 3 } } local $y; INIT { 123 } BEGIN { $Perlito5::SCOPE->{block}[-1]{xxx} = 3 }'
-        change the environment using a BEGIN block
 ~~~
+
 
 Nice to Have
 ------------
