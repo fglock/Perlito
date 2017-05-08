@@ -18982,6 +18982,7 @@ CORE.printf = function(List__) {
             my $out = [];
             Perlito5::Perl5::PrettyPrinter::pretty_print([$ast->emit_perl5()], 0, $out);
             my $code = join('', @{$out});
+            chomp($code);
             return $code
         }
         sub Perlito5::AST::Apply::emit_perl5 {

@@ -263,9 +263,11 @@ package Perlito5::AST::Apply;
             }
             return $s;
         }
+        # variable, lookup, index
         my $out = [];
         Perlito5::Perl5::PrettyPrinter::pretty_print([$ast->emit_perl5()], 0, $out);
         my $code = join('', @{$out});
+        chomp $code;
         return $code;
     }
     sub emit_perl5 {
