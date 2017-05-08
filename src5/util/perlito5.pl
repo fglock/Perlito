@@ -20,11 +20,11 @@ use Perlito5::JavaScript2::CORE;
 use Perlito5::JavaScript2::IO;
 use Perlito5::JavaScript2::Sprintf;
 
-use Perlito5::JavaScript3::Emitter;
-use Perlito5::JavaScript3::Runtime;
-use Perlito5::JavaScript3::CORE;
-use Perlito5::JavaScript3::IO;
-use Perlito5::JavaScript3::Sprintf;
+# use Perlito5::JavaScript3::Emitter;
+# use Perlito5::JavaScript3::Runtime;
+# use Perlito5::JavaScript3::CORE;
+# use Perlito5::JavaScript3::IO;
+# use Perlito5::JavaScript3::Sprintf;
 
 use Perlito5::Perl5::Emitter;
 use Perlito5::Perl5::PrettyPrinter;
@@ -33,7 +33,7 @@ use Perlito5::Perl5::Runtime;
 use Perlito5::Perl6::Emitter;
 use Perlito5::Perl6::PrettyPrinter;
 
-use Perlito5::XS::Emitter;      # experimental
+# use Perlito5::XS::Emitter;      # experimental
 
 use Perlito5::Java::Emitter;
 use Perlito5::Java::Runtime;
@@ -84,7 +84,7 @@ perlito5 [switches] [programfile]
     -V --version
     -v
     --verbose
-    -Ctarget        target backend: js, perl5, perl6, xs, java
+    -Ctarget        target backend: js, perl5, perl6, java
     -Cast-perl5     emits a dump of the abstract syntax tree as a Perl dump
     -Cast-json      emits a dump of the abstract syntax tree in JSON format
     --expand_use --noexpand_use
@@ -570,12 +570,12 @@ if ($backend) {
                 elsif ($backend eq 'js') {
                     print Perlito5::AST::CompUnit::emit_javascript2_program( $comp_units, expand_use => $expand_use );
                 }
-                elsif ($backend eq 'js3') {
-                    print Perlito5::AST::CompUnit::emit_javascript3_program( $comp_units, expand_use => $expand_use );
-                }
-                elsif ($backend eq 'xs') {
-                    print Perlito5::AST::CompUnit::emit_xs_program( $comp_units );
-                }
+                # elsif ($backend eq 'js3') {
+                #     print Perlito5::AST::CompUnit::emit_javascript3_program( $comp_units, expand_use => $expand_use );
+                # }
+                # elsif ($backend eq 'xs') {
+                #     print Perlito5::AST::CompUnit::emit_xs_program( $comp_units );
+                # }
                 elsif ($backend eq 'java') {
                     print Perlito5::AST::CompUnit::emit_java_program( $comp_units, expand_use => $expand_use );
                 }
