@@ -612,7 +612,7 @@ $ make test  # tests the nodejs backend
 
 "make test" should pass everything, except for the "sleep" function which requires a nodejs module
 
-"make test-5java" is just starting to pass a few tests
+"make test-5java" passes a few tests
 
 * Syntax tree
 
@@ -638,6 +638,7 @@ CPAN distribution
 -----------------
 
 This documentation should be copied to file Perlito5::Java, in the CPAN distribution.
+
 
 Java-specific command line options
 ----------------------------------
@@ -1319,4 +1320,14 @@ Optimizations
   - investigate performance of "proxy" lvalues;
     when taking an lvalue out of an array or hash, return a proxy
     with a reference to the container and index.
+
+Modules
+-------
+
+  - ported modules are in src5/lib/Perlito5X/Java
+
+  - there is a port of JSON.pm - it is pure-perl and slow. It would be nice to have a native-java version.
+
+  - TODO: DBI.pm
+
 
