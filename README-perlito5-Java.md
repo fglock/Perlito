@@ -33,8 +33,6 @@ Perlito5-Java platform differences
       - file permissions for setuid, setgid, and sticky bit are not implemented
       - some signals are not available in Java.
 
-  - eval-string not yet implemented, some operations will die()
-
 
 Build using make
 ----------------
