@@ -234,8 +234,8 @@ Regex differences
       Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\G{ <-- HERE / at (eval 2) line 20.
 
 
-Eval-string (work in progress)
-------------------------------
+Eval-string
+-----------
 
 Limitations
 
@@ -285,6 +285,17 @@ Compiling the compiler with BEGIN capabilities
     # test
     $ java -cp '.:perlito5-lib.jar' Main -e ' say 123 '
 ~~~
+
+See also:
+
+  - JS-eval-string: embedding a JavaScript-in-Java interpreter:
+        https://github.com/fglock/Perlito/blob/master/misc/Java/TestJS.pl
+
+  - Java-eval-string: using the native compiler API:
+        https://github.com/fglock/Perlito/blob/master/misc/Java_eval/JavaCompiler4.java
+
+  - ASM:
+        TODO: prototype eval-string with ASM
 
 
 Perlito5-Java extensibility
@@ -641,18 +652,6 @@ Java-specific command line options
 
     specify what we want to return: PlObject vs. array of strings, etc
   
-
-Add 'eval string' support
--------------------------
-
-  - JS-eval-string: embedding a JavaScript-in-Java interpreter:
-        https://github.com/fglock/Perlito/blob/master/misc/Java/TestJS.pl
-
-  - Java-eval-string: using the native compiler API:
-        https://github.com/fglock/Perlito/blob/master/misc/Java_eval/JavaCompiler4.java
-
-  - ASM:
-        TODO: prototype eval-string with ASM
 
 Workaround JVM bytecode size limit
 ----------------------------------
