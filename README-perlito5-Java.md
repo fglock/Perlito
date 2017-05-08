@@ -36,6 +36,26 @@ Perlito5-Java platform differences
   - eval-string not yet implemented, some operations will die()
 
 
+Build using make
+----------------
+
+Update the Perl-based compiler "perlito5.pl"
+
+~~~sh
+    $ make build-5to5
+~~~
+
+TODO: add more options to Makefile
+
+  - build-perlito5-lib-jar
+
+  - build command-line "jperl"
+
+  - build stand-alone, precompiled script
+
+  - build android script
+
+
 Compiling the compiler into a jar file
 --------------------------------------
 
@@ -212,8 +232,6 @@ Eval-string (work in progress)
 ------------------------------
 
 Limitations
-
-  - eval executes in a new scope
 
   - eval bytecode is cached - this will leak memory
 

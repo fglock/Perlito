@@ -59,8 +59,7 @@ Compile the compiler to Perl5 using perl
 Compile perlito5-in-browser using perl
 --------------------------------------
 
-    perl util-js/make-perlito5-js.sh
-
+    make build-5browser
 
 Running the tests using "perl"
 ------------------------------
@@ -112,6 +111,8 @@ CPAN distribution
 
 Command-line options
 --------------------
+
+- add tests
 
 - implement -i switch and ARGVOUT
 
