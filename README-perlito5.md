@@ -564,11 +564,36 @@ Add tests for fixed bugs
     };
 ~~~
 
-- work in progress: test BEGIN time serialization
+- test BEGIN time serialization
 
 ~~~sh
     $ perl perlito5.pl -I src5/lib -Cperl5 -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
 ~~~
+
+- fix regex delimiters, or escape the regexes
+
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cperl5 -e ' s/\$a$a/b$b/g; tr/\$c$c/d$d/; m/\$e$e/; ' 
+
+- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
+    see README-perlito5-js near "Compile-time / Run-time interleaving"
+
+    my $v;
+    BEGIN { $v = "123" }
+    use Module $v;  # $v is not accessible at compile-time
+
+
+    Test case:
+
+    $ cat > X.pm
+    package X;
+    sub import { print "args [ @_ ]\n" }
+    1;
+
+    $ perl perlito5.pl -I src5/lib -I . -Cperl5 -e ' my $v; BEGIN { $v = "xxx" } use X $v; '
+    # args [ X  ]
+
+    expected result:
+    # args [ X xxx ]
 
  
 Perl6 backend
@@ -641,42 +666,19 @@ Perl5 backend
 - ${^GLOBAL_PHASE} is not writeable
     workaround in set_global_phase()
 
-- fix regex delimiters, or escape the regexes
-
-    test case:
-
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cperl5 -e ' s/\$a$a/b$b/g; tr/\$c$c/d$d/; m/\$e$e/; ' 
-
 
 Compile-time execution environment
 ----------------------------------
 
-- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
-    see README-perlito5-js near "Compile-time / Run-time interleaving"
+TODO - identify aliases: [[[ BEGIN { $ccc = 3; *ccc2 = \$ccc; } ]]] dumps:
 
-    my $v;
-    BEGIN { $v = "123" }
-    use Module $v;  # $v is not accessible at compile-time
+      $main::ccc2 = $main::ccc;
 
+    instead of:
 
-    Test case:
+      *main::ccc2 = \$main::ccc;
 
-    $ cat > X.pm
-    package X;
-    sub import { print "args [ @_ ]\n" }
-    1;
-
-    $ perl perlito5.pl -I src5/lib -I . -Cperl5 -e ' my $v; BEGIN { $v = "xxx" } use X $v; '
-    # args [ X  ]
-
-    expected result:
-    # args [ X xxx ]
-
-TODO - identify aliases: [[[ BEGIN { *ccc2 = \$ccc; } ]]] dumps:
-
-          $main::ccc2 = $main::ccc;
-        instead of:
-          *main::ccc2 = \$main::ccc;
+    Note: $ccc is not emitted if the value is "undef".
 
 TODO - lexicals are not shared
 
