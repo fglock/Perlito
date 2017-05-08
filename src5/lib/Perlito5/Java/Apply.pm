@@ -1058,6 +1058,10 @@ package Perlito5::AST::Apply;
             # new PlHash[]{}
 
             # "$scope" contains the "my" declarations
+
+            # TODO - scope only contains variables captured by the current subroutine,
+            # and variables declared since the 'sub' started.
+
             my $scope = Perlito5::DumpToAST::dump_to_ast( $self->{_scope}, {}, "s" )->emit_java(0);
             # print STDERR "SCOPE [ $scope ]\n";
 
