@@ -12329,6 +12329,7 @@ use feature 'say';
         local ${'^GLOBAL_PHASE'};
         local $Perlito5::BASE_SCOPE = $scope_js->[0];
         local @Perlito5::SCOPE_STMT;
+        local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;
         local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
         local $Perlito5::SCOPE_DEPTH = 0;
         local $Perlito5::PKG_NAME = $namespace;
@@ -22457,6 +22458,7 @@ class SourceCode extends SimpleJavaFileObject {
         local ${'^GLOBAL_PHASE'};
         local $Perlito5::BASE_SCOPE = $scope_java;
         local @Perlito5::SCOPE_STMT;
+        local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;
         local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
         local $Perlito5::SCOPE_DEPTH = 0;
         local $Perlito5::PKG_NAME = $namespace;
