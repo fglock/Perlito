@@ -47,13 +47,19 @@ Update the Perl-based compiler "perlito5.pl"
 
 TODO: add more options to Makefile
 
-  - build-perlito5-lib-jar
+  - build-perlito5-lib-jar - integrate "make_perlito5-lib-jar.sh"
 
   - build command-line "jperl"
 
-  - build stand-alone, precompiled script
+  - build stand-alone, precompiled "secure" script without eval-string / without "perlito5-lib"
 
   - build android script
+
+  - bootstrap the compiler with Java
+
+  - create "org.perlito.Perlito5.LibPerl" source code
+
+  - integrate with Perlito5 in CPAN
 
 
 Compiling the compiler into a jar file

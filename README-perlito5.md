@@ -71,12 +71,12 @@ Running the tests using "perl"
 Bootstrap with perl
 -------------------
 
-    time perl perlito5.pl -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && diff perlito5-new.pl perlito5.pl ; cp perlito5-new.pl perlito5.pl
+    make boot-5to5
 
 Bootstrap with node.js
 ----------------------
 
-    time node perlito5.js -Isrc5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js && diff perlito5-new.js perlito5.js ; cp perlito5-new.js perlito5.js
+    make boot-5js
 
 
 Minifying the javascript output
@@ -148,6 +148,8 @@ Libraries
 
     alternately, check $^H for strictness - such that perl's own strict.pm just works
     and ${^WARNING_BITS} for warnings
+
+  - add tests for core modules
 
 
 Parser
@@ -530,7 +532,22 @@ Add tests for fixed bugs
 
 - test that "use" checks the return value of modules (the "1;" thing)
 
+- 'our' variable is not seen:
 
+~~~sh
+    
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use Data::Dumper; @x = (2..4, ";)"); print Dumper \@x '  > Main.java ; javac Main.java ; java Main
+    $VAR1 = [
+        2,
+        3,
+        4,
+        chr(59) . chr(41),
+    ];
+
+    Subroutine "Perlito5::Dumper::escape_string" is not using the hash "%safe_char".
+~~~    
+
+ 
 Perl6 backend
 -------------
 
@@ -615,20 +632,6 @@ Compile-time execution environment
 
 - test case:
 
-~~~sh
-    # 'our' variable is not seen:
-    
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use Data::Dumper; @x = (2..4, ";)"); print Dumper \@x '  > Main.java ; javac Main.java ; java Main
-    $VAR1 = [
-        2,
-        3,
-        4,
-        chr(59) . chr(41),
-    ];
-
-    Subroutine "Perlito5::Dumper::escape_string" is not using the hash "%safe_char".
-~~~    
-    
 ~~~sh
     # captured lexical is not initialized:
     
