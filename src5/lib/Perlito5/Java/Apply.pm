@@ -1034,20 +1034,30 @@ package Perlito5::AST::Apply;
             #          }
             # };
 
-            # set the new variable names inside the closure
-            local %Perlito5::Java::Java_var_name;
+            # "$scope" contains the "my" declarations
+            # scope only contains variables captured by the current subroutine,
+            # and variables declared since the 'sub' started.
+
+            my $scope = Perlito5::DumpToAST::dump_to_ast( $self->{_scope}, {}, "s" )->emit_java(0);
+            # print STDERR "SCOPE [ $scope ]\n";
+
 
             my @out;
-            my %type = ( '$' => 'PlLvalue', '@' => 'PlArray', '%' => 'PlHash' );
-            for my $sigil ( '$', '@', '%' ) {
-                my @str;
-                my @val;
-                for my $var ( keys %{ $vars{$sigil} } ) {
-                    push @str, Perlito5::Java::escape_string( $vars{$sigil}{$var}->emit_java(0) );
-                    push @val, $var;
+            {
+                # set the new variable names inside the closure
+                local %Perlito5::Java::Java_var_name;
+
+                my %type = ( '$' => 'PlLvalue', '@' => 'PlArray', '%' => 'PlHash' );
+                for my $sigil ( '$', '@', '%' ) {
+                    my @str;
+                    my @val;
+                    for my $var ( keys %{ $vars{$sigil} } ) {
+                        push @str, Perlito5::Java::escape_string( $vars{$sigil}{$var}->emit_java(0) );
+                        push @val, $var;
+                    }
+                    push @out, 'new String[]{' . join(", ", @str) . '}';
+                    push @out, 'new ' . $type{$sigil} . '[]{' . join(", ", @val) . '}';
                 }
-                push @out, 'new String[]{' . join(", ", @str) . '}';
-                push @out, 'new ' . $type{$sigil} . '[]{' . join(", ", @val) . '}';
             }
 
             # new String[]{"x_100"};
@@ -1056,13 +1066,6 @@ package Perlito5::AST::Apply;
             # new PlArray[]{xx_101};
             # new String[]{};
             # new PlHash[]{}
-
-            # "$scope" contains the "my" declarations
-            # scope only contains variables captured by the current subroutine,
-            # and variables declared since the 'sub' started.
-
-            my $scope = Perlito5::DumpToAST::dump_to_ast( $self->{_scope}, {}, "s" )->emit_java(0);
-            # print STDERR "SCOPE [ $scope ]\n";
 
             return 'PlJavaCompiler.eval_perl_string('
                 . $arg->emit_java( $level, $wantarray ) . '.toString(), '

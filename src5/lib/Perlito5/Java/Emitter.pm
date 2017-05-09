@@ -2741,22 +2741,34 @@ package Perlito5::AST::Sub;
         my $block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts}, not_a_loop => 1 );
 
         # get list of captured variables, including inner blocks
-        my @captured;
-        for my $stmt (@{$self->{block}{stmts}}) {
-            push @captured, $stmt->get_captures();
+        my @captures_ast = @Perlito5::CAPTURES;
+
+        {
+            my @captured;
+            for my $stmt (@{$self->{block}{stmts}}) {
+                push @captured, $stmt->get_captures();
+            }
+            my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
+            my %capture = map { $_->{dont} ? ()
+                              : $dont_capture{ $_->{_id} } ? ()
+                              : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
+                              : ( $_->{_id} => $_ )
+                              } @captured;
+            # warn Data::Dumper::Dumper(\@captured);
+            # warn Data::Dumper::Dumper(\%dont_capture);
+            # warn Data::Dumper::Dumper(\%capture);
+
+            my %seen = map { $_->{_id} => 1 } @captures_ast;
+
+            my @more = (
+                grep { ! $seen{ $_->{_id} } }
+                map  { $capture{$_} }
+                sort keys %capture );
+            push @captures_ast, @more;
         }
-        my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
-        my %capture = map { $_->{dont} ? ()
-                          : $dont_capture{ $_->{_id} } ? ()
-                          : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
-                          : ( $_->{_id} => $_ )
-                          } @captured;
-        # warn Data::Dumper::Dumper(\@captured);
-        # warn Data::Dumper::Dumper(\%dont_capture);
-        # warn Data::Dumper::Dumper(\%capture);
-        my @captures_ast  = map { $capture{$_} }
-                            sort keys %capture;
+
         local @Perlito5::CAPTURES = @captures_ast;
+
         my @captures_java = map { $_->emit_java( $level, 'list' ) } @captures_ast;
 
         # set the new variable names inside the closure

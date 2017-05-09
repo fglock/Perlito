@@ -106,6 +106,11 @@ package Perlito5::AST::Apply;
                 if $self->{arguments};
         push @var, $self->{special_arg}->get_captures()
             if ref($self->{special_arg});
+
+        if ($code eq 'eval' && $self->{_scope}) {;
+            push @var, @{ $self->{_scope}{block} };
+        }
+
         if ($code eq 'my' || $code eq 'our' || $code eq 'state') {
             push @var, ( map {     ref($_) eq 'Perlito5::AST::Var'
                              ? ( { dont => $_->{_id} } )

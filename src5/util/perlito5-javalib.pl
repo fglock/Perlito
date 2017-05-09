@@ -8,6 +8,7 @@ use Perlito5::Java::Runtime;
 use Perlito5::Java::Lib;
 
 $Perlito5::JAVA_EVAL = 1;
+$Perlito5::CODE_TOO_LARGE = 1;  # work around java code size limitation
 
 1;
 

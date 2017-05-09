@@ -5778,6 +5778,9 @@ use feature 'say';
                 $_->get_captures()
             } @{$self->{'arguments'}});
             ref($self->{'special_arg'}) && push(@var, $self->{'special_arg'}->get_captures());
+            if ($code eq 'eval' && $self->{'_scope'}) {;
+                push(@var, @{$self->{'_scope'}->{'block'}})
+            }
             if ($code eq 'my' || $code eq 'our' || $code eq 'state') {;
                 push(@var, (map {;
                     ref($_) eq 'Perlito5::AST::Var' ? ({'dont' => $_->{'_id'}, }) : ()
@@ -17772,20 +17775,22 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     $vars{$var->{'_real_sigil'} || $var->{'sigil'}}->{$var->emit_java(0)} = $var
                 }
             }
-            local %Perlito5::Java::Java_var_name;
-            my @out;
-            my %type = ('$' => 'PlLvalue', '@' => 'PlArray', '%' => 'PlHash');
-            for my $sigil ('$', '@', '%') {
-                my @str;
-                my @val;
-                for my $var (keys(%{$vars{$sigil}})) {
-                    push(@str, Perlito5::Java::escape_string($vars{$sigil}->{$var}->emit_java(0)));
-                    push(@val, $var)
-                }
-                push(@out, 'new String[]{' . join(', ', @str) . '}');
-                push(@out, 'new ' . $type{$sigil} . '[]{' . join(', ', @val) . '}')
-            }
             my $scope = Perlito5::DumpToAST::dump_to_ast($self->{'_scope'}, {}, 's')->emit_java(0);
+            my @out;
+            {
+                local %Perlito5::Java::Java_var_name;
+                my %type = ('$' => 'PlLvalue', '@' => 'PlArray', '%' => 'PlHash');
+                for my $sigil ('$', '@', '%') {
+                    my @str;
+                    my @val;
+                    for my $var (keys(%{$vars{$sigil}})) {
+                        push(@str, Perlito5::Java::escape_string($vars{$sigil}->{$var}->emit_java(0)));
+                        push(@val, $var)
+                    }
+                    push(@out, 'new String[]{' . join(', ', @str) . '}');
+                    push(@out, 'new ' . $type{$sigil} . '[]{' . join(', ', @val) . '}')
+                }
+            }
             return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ', ' . $scope . ', ' . join(', ', @out) . ', ' . 'List__' . ')'
         }, 'length' => sub {
             (my($self), my($level), my($wantarray)) = @_;
@@ -19876,21 +19881,30 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
             local $Perlito5::Java::is_inside_subroutine = 1;
             my $block = Perlito5::Java::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'}, 'not_a_loop' => 1);
-            my @captured;
-            for my $stmt (@{$self->{'block'}->{'stmts'}}) {;
-                push(@captured, $stmt->get_captures())
+            my @captures_ast = @Perlito5::CAPTURES;
+            {
+                my @captured;
+                for my $stmt (@{$self->{'block'}->{'stmts'}}) {;
+                    push(@captured, $stmt->get_captures())
+                }
+                my %dont_capture = map {;
+                    $_->{'dont'} ? ($_->{'dont'} => 1) : ()
+                } @captured;
+                my %capture = map {;
+                    $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
+                } @captured;
+                my %seen = map {;
+                    $_->{'_id'} => 1
+                } @captures_ast;
+                my @more = (grep {;
+                    !$seen{$_->{'_id'}}
+                } map {;
+                    $capture{$_}
+                } sort {;
+                    $a cmp $b
+                } keys(%capture));
+                push(@captures_ast, @more)
             }
-            my %dont_capture = map {;
-                $_->{'dont'} ? ($_->{'dont'} => 1) : ()
-            } @captured;
-            my %capture = map {;
-                $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
-            } @captured;
-            my @captures_ast = map {;
-                $capture{$_}
-            } sort {;
-                $a cmp $b
-            } keys(%capture);
             local @Perlito5::CAPTURES = @captures_ast;
             my @captures_java = map {;
                 $_->emit_java($level, 'list')
