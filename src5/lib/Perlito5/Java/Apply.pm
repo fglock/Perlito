@@ -1041,8 +1041,6 @@ package Perlito5::AST::Apply;
             my $scope = Perlito5::DumpToAST::dump_to_ast( $self->{_scope}, {}, "s" )->emit_java(0);
             # print STDERR "SCOPE [ $scope ]\n";
 
-    print STDERR "eval scope ", Perlito5::Dumper::ast_dumper( $scope );
-    print STDERR "eval vars ", Perlito5::Dumper::ast_dumper(\%vars);
 
             my @out;
             {

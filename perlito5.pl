@@ -5475,11 +5475,10 @@ use feature 'say';
             unshift(@result, @{$look->{'block'}})
         }
         for my $item (@{$block}) {;
-            if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} && $item->{'_decl'} ne 'global' && $item->{'_decl'} ne 'local') {;
+            if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'}) {;
                 unshift(@result, $item)
             }
         }
-        print STDERR:: 'snapshot ', Perlito5::Dumper::ast_dumper(\@result);
         return {'block' => \@result, }
     }
     1
@@ -5782,7 +5781,7 @@ use feature 'say';
             if ($code eq 'eval' && $self->{'_scope'}) {;
                 push(@var, @{$self->{'_scope'}->{'block'}})
             }
-            if ($code eq 'my' || $code eq 'our' || $code eq 'state' || $code eq 'local') {;
+            if ($code eq 'my' || $code eq 'our' || $code eq 'state') {;
                 push(@var, (map {;
                     ref($_) eq 'Perlito5::AST::Var' ? ({'dont' => $_->{'_id'}, }) : ()
                 } @{$self->{'arguments'}}))
@@ -17777,8 +17776,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
             }
             my $scope = Perlito5::DumpToAST::dump_to_ast($self->{'_scope'}, {}, 's')->emit_java(0);
-            print STDERR:: 'eval scope ', Perlito5::Dumper::ast_dumper($scope);
-            print STDERR:: 'eval vars ', Perlito5::Dumper::ast_dumper(\%vars);
             my @out;
             {
                 local %Perlito5::Java::Java_var_name;
@@ -19909,7 +19906,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 push(@captures_ast, @more)
             }
             local @Perlito5::CAPTURES = @captures_ast;
-            print STDERR:: 'captures ', Perlito5::Dumper::ast_dumper(\@captures_ast);
             my @captures_java = map {;
                 $_->emit_java($level, 'list')
             } @captures_ast;
@@ -22176,7 +22172,7 @@ class PlJavaCompiler {
             source5.append("    }\\n");
             source5.append("}\\n");
             String cls5 = source5.toString();
-            System.out.println("\\neval_java_string:\\n" + cls5 + "\\n");
+            // System.out.println("\\neval_string:\\n" + cls5 + "\\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -22231,7 +22227,6 @@ class PlJavaCompiler {
         String constants;
         try {
 
-            System.out.println("eval_perl_string: \\n[[[ " + source + " ]]");
             // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $strict, $scope_java)
             PlObject code[] = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Java::Runtime::perl5_to_java",
@@ -22243,7 +22238,7 @@ class PlJavaCompiler {
             );
             outJava = code[0].toString();
             constants = code[1].toString();
-            System.out.println("eval_perl_string: from Perlito5::Java::JavaCompiler::perl5_to_java \\n[[[ " + outJava + " ]]");
+            // System.out.println("eval_string: from Perlito5::Java::JavaCompiler::perl5_to_java \\n[[[ " + outJava + " ]]");
             // System.out.println("eval_string: constants \\n[[[ " + constants + " ]]");
         }
         catch(Exception e) {

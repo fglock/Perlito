@@ -111,7 +111,7 @@ package Perlito5::AST::Apply;
             push @var, @{ $self->{_scope}{block} };
         }
 
-        if ($code eq 'my' || $code eq 'our' || $code eq 'state' || $code eq 'local') {
+        if ($code eq 'my' || $code eq 'our' || $code eq 'state') {
             push @var, ( map {     ref($_) eq 'Perlito5::AST::Var'
                              ? ( { dont => $_->{_id} } )
                              : ()

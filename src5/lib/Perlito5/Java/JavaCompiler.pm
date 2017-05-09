@@ -104,7 +104,7 @@ class PlJavaCompiler {
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
-            System.out.println("\neval_java_string:\n" + cls5 + "\n");
+            // System.out.println("\neval_string:\n" + cls5 + "\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -159,7 +159,6 @@ class PlJavaCompiler {
         String constants;
         try {
 
-            System.out.println("eval_perl_string: \n[[[ " + source + " ]]");
             // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $strict, $scope_java)
             PlObject code[] = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Java::Runtime::perl5_to_java",
@@ -171,7 +170,7 @@ class PlJavaCompiler {
             );
             outJava = code[0].toString();
             constants = code[1].toString();
-            System.out.println("eval_perl_string: from Perlito5::Java::JavaCompiler::perl5_to_java \n[[[ " + outJava + " ]]");
+            // System.out.println("eval_string: from Perlito5::Java::JavaCompiler::perl5_to_java \n[[[ " + outJava + " ]]");
             // System.out.println("eval_string: constants \n[[[ " + constants + " ]]");
         }
         catch(Exception e) {
