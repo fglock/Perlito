@@ -192,7 +192,11 @@ sub get_snapshot {
         unshift @result, @{ $look->{block} };
     }
     for my $item (@$block) {
-        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl}) {
+        if (   ref($item) eq 'Perlito5::AST::Var'
+            && $item->{_decl}
+            && $item->{_decl} ne "global"
+            && $item->{_decl} ne "local" )
+        {
             unshift @result, $item;
         }
     }
