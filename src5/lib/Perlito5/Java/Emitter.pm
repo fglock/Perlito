@@ -2769,6 +2769,8 @@ package Perlito5::AST::Sub;
 
         local @Perlito5::CAPTURES = @captures_ast;
 
+    print STDERR "captures ", Perlito5::Dumper::ast_dumper(\@captures_ast);
+
         my @captures_java = map { $_->emit_java( $level, 'list' ) } @captures_ast;
 
         # set the new variable names inside the closure
