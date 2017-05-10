@@ -6,7 +6,6 @@ package Perlito5;
 use feature 'say';
 use Perlito5;
 use Perlito5::Compiler;
-use Perlito5::CompileTime::Dumper;
 use Perlito5::Grammar::Regex6;
 use Perlito5::Emitter::Token;
 use Perlito5::Dumper;
