@@ -246,6 +246,10 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
         $Perlito5::JAVA_EVAL = 1;
         shift @ARGV;
     }
+    elsif ($ARGV[0] eq '--nojava_eval') {
+        $Perlito5::JAVA_EVAL = 0;
+        shift @ARGV;
+    }
     elsif ($ARGV[0] eq '-') {
         shift @ARGV;
         last ARG_LOOP;
