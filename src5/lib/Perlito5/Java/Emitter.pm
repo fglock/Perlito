@@ -4,6 +4,8 @@ use Perlito5::AST;
 use Perlito5::AST::Captures;
 use Perlito5::Dumper;
 use Perlito5::Java::Apply;
+use Perlito5::Perl5::PrettyPrinter; # TODO - cleanup the dependency on Perl5 emitter
+
 use strict;
 
 package Perlito5::Java;
