@@ -22139,8 +22139,12 @@ class PlJavaCompiler {
         compilationUnits = new ArrayList<SourceCode>();
     }
 
-    public static PlObject eval_java_string(String source, String constants)
+    public static PlObject eval_java_string(PlArray List__)
     {
+
+        String source    = List__.shift().toString();
+        String constants = List__.shift().toString();
+
         if (source.equals("")) {
             return PlCx.UNDEF;
         }
@@ -22162,7 +22166,7 @@ class PlJavaCompiler {
             source5.append(constants);
             source5.append("    public " + className + "() {\\n");
             source5.append("    }\\n");
-            source5.append("    public static PlObject runEval(int want) {\\n");
+            source5.append("    public static PlObject runEval(int want, PlArray List__) {\\n");
             source5.append("        try {\\n");
             source5.append("        " + source + "\\n");
             source5.append("        }\\n");
@@ -22179,8 +22183,8 @@ class PlJavaCompiler {
                 className,
                 cls5
             );
-            Method method5 = class5.getMethod("runEval", new Class[]{int.class});
-            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID);
+            Method method5 = class5.getMethod("runEval", new Class[]{int.class, PlArray.class});
+            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID, List__);
             // System.out.println("eval_string result: " + out.toString());
             return out;
         }
@@ -22509,7 +22513,7 @@ class SourceCode extends SimpleJavaFileObject {
 '
         }
         @_ = ($java_code, $constants);
-        return Java::inline('PlJavaCompiler.eval_java_string(List__.aget(0).toString(), List__.aget(1).toString())')
+        return Java::inline('PlJavaCompiler.eval_java_string(List__)')
     }
     sub Perlito5::Java::Runtime::emit_java_extends {
         (my($class), my($java_classes)) = @_;

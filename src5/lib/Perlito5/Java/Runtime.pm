@@ -83,7 +83,7 @@ sub eval_ast {
     }
 
     @_ = ($java_code, $constants);
-    return Java::inline('PlJavaCompiler.eval_java_string(List__.aget(0).toString(), List__.aget(1).toString())');
+    return Java::inline('PlJavaCompiler.eval_java_string(List__)');
 }
 
 sub emit_java_extends {
