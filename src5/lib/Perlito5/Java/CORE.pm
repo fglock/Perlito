@@ -73,26 +73,24 @@ my %FileFunc = (
 
                 s = List__.aget(1).toString();
             }
+            path = PlV.path.resolve(s).toRealPath();
+            // PlCORE.say("path " + path.toString());
             if (mode.equals("<") || mode.equals("")) {
                 // TODO: charset
-                path = Paths.get(s);
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
             else if (mode.equals("<:encoding(UTF-8)")) {
-                path = Paths.get(s);
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
             else if (mode.equals(">")) {
                 // TODO: charset
-                path = Paths.get(s);
                 fh.reader = null;
                 fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE));
             }
             else if (mode.equals(">>")) {
                 // TODO: charset
-                path = Paths.get(s);
                 fh.reader = null;
                 fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND));
             }
@@ -341,11 +339,11 @@ EOT
     }
     public static final PlObject mkdir(int want, PlArray List__) {
         try {
-            Path file = Paths.get(List__.aget(0).toString());
+            Path path = PlV.path.resolve(List__.aget(0).toString()).toRealPath();
             int mask = List__.aget(1).to_int();
             Set<PosixFilePermission> perms = PerlOp.MaskToPermissions(mask);
             FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
-            Files.createDirectory(file, attr);
+            Files.createDirectory(path, attr);
             return PlCx.INT1;
         }
         catch(IOException e) {
@@ -358,8 +356,26 @@ EOT
     }
     public static final PlObject rmdir(int want, PlArray List__) {
         try {
-            Path file = Paths.get(List__.aget(0).toString());
-            Files.delete(file);
+            Path path = PlV.path.resolve(List__.aget(0).toString()).toRealPath();
+            Files.delete(path);
+            return PlCx.INT1;
+        }
+        catch(NoSuchFileException e) {
+            PlV.sset("main::!", new PlString("No such file or directory"));
+        }
+        catch(DirectoryNotEmptyException e) {
+            PlV.sset("main::!", new PlString("Directory not empty"));
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+        }
+        return PlCx.UNDEF;
+    }
+    public static final PlObject chdir(int want, PlArray List__) {
+        try {
+            Path path = PlV.path.resolve(List__.aget(0).toString()).toRealPath();
+            PlV.path = path;
+            // TODO - test that the destination is a directory
             return PlCx.INT1;
         }
         catch(NoSuchFileException e) {

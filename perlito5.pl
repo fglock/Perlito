@@ -18027,6 +18027,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
             }
             'PlCORE.rmdir(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
+        }, 'chdir' => sub {
+            (my($self), my($level), my($wantarray)) = @_;
+            my @arguments = @{$self->{'arguments'}};
+            if (@arguments < 1) {;
+                push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
+            }
+            'PlCORE.chdir(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
         }, 'close' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{'arguments'}};
@@ -20030,26 +20037,24 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 
                 s = List__.aget(1).toString();
             }
+            path = PlV.path.resolve(s).toRealPath();
+            // PlCORE.say("path " + path.toString());
             if (mode.equals("<") || mode.equals("")) {
                 // TODO: charset
-                path = Paths.get(s);
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
             else if (mode.equals("<:encoding(UTF-8)")) {
-                path = Paths.get(s);
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
             else if (mode.equals(">")) {
                 // TODO: charset
-                path = Paths.get(s);
                 fh.reader = null;
                 fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE));
             }
             else if (mode.equals(">>")) {
                 // TODO: charset
-                path = Paths.get(s);
                 fh.reader = null;
                 fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND));
             }
@@ -20267,11 +20272,11 @@ class PlCORE {
     }
     public static final PlObject mkdir(int want, PlArray List__) {
         try {
-            Path file = Paths.get(List__.aget(0).toString());
+            Path path = PlV.path.resolve(List__.aget(0).toString()).toRealPath();
             int mask = List__.aget(1).to_int();
             Set<PosixFilePermission> perms = PerlOp.MaskToPermissions(mask);
             FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
-            Files.createDirectory(file, attr);
+            Files.createDirectory(path, attr);
             return PlCx.INT1;
         }
         catch(IOException e) {
@@ -20284,8 +20289,26 @@ class PlCORE {
     }
     public static final PlObject rmdir(int want, PlArray List__) {
         try {
-            Path file = Paths.get(List__.aget(0).toString());
-            Files.delete(file);
+            Path path = PlV.path.resolve(List__.aget(0).toString()).toRealPath();
+            Files.delete(path);
+            return PlCx.INT1;
+        }
+        catch(NoSuchFileException e) {
+            PlV.sset("main::!", new PlString("No such file or directory"));
+        }
+        catch(DirectoryNotEmptyException e) {
+            PlV.sset("main::!", new PlString("Directory not empty"));
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+        }
+        return PlCx.UNDEF;
+    }
+    public static final PlObject chdir(int want, PlArray List__) {
+        try {
+            Path path = PlV.path.resolve(List__.aget(0).toString()).toRealPath();
+            PlV.path = path;
+            // TODO - test that the destination is a directory
             return PlCx.INT1;
         }
         catch(NoSuchFileException e) {
@@ -23281,6 +23304,11 @@ class PerlOp {
     //    ' . chr(39) . 'prefix:<-e>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5file_exists' . chr(39) . ',
     //    ' . chr(39) . 'prefix:<-f>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5is_file' . chr(39) . ',
     //    ' . chr(39) . 'prefix:<-s>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5size' . chr(39) . ',
+
+    public static final Path resolve_file(PlObject s) throws IOException {
+        return PlV.path.resolve(s.toString()).toRealPath();
+    }
+
     public static final PlObject p5atime(PlObject s) {
         return PlCORE.die("-A not implemented");
     }
@@ -23290,7 +23318,11 @@ class PerlOp {
     public static final PlObject p5mtime(PlObject s) {
         try {
             // TODO - "Script start time minus file modification time, in days"
-            return new PlDouble(new File(s.toString()).lastModified() / 86400.0);
+            return new PlDouble(new File(resolve_file(s).toString()).lastModified() / 86400.0);
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
             PlV.sset("main::!", new PlString(e.getMessage()));
@@ -23299,7 +23331,11 @@ class PerlOp {
     }
     public static final PlObject p5is_directory(PlObject s) {
         try {
-            return new PlBool(new File(s.toString()).isDirectory());
+            return new PlBool(new File(resolve_file(s).toString()).isDirectory());
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
             PlV.sset("main::!", new PlString(e.getMessage()));
@@ -23311,7 +23347,11 @@ class PerlOp {
     }
     public static final PlObject p5is_file(PlObject s) {
         try {
-            return new PlBool(new File(s.toString()).isFile());
+            return new PlBool(new File(resolve_file(s).toString()).isFile());
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
             PlV.sset("main::!", new PlString(e.getMessage()));
@@ -23320,7 +23360,11 @@ class PerlOp {
     }
     public static final PlObject p5size(PlObject s) {
         try {
-            return new PlInt(new File(s.toString()).length());
+            return new PlInt(new File(resolve_file(s).toString()).length());
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
             PlV.sset("main::!", new PlString(e.getMessage()));
@@ -24093,6 +24137,13 @@ class PlV {
         PlCx.STDERR.outputStream = System.err;
         PlCx.STDERR.typeglob_name = "main::STDERR";
 
+        try {
+            PlV.path = Paths.get(".").toRealPath();
+        }
+        catch (IOException e) {
+            // don' . chr(39) . 't know what to do
+        }
+
         PlV.fset("main::STDIN",  PlCx.STDIN);                             // "GLOB"
         PlV.fset("main::STDOUT", PlCx.STDOUT);
         PlV.fset("main::STDERR", PlCx.STDERR);
@@ -24279,6 +24330,8 @@ class PlV {
     }
 
     // filehandle
+    public static Path path;
+
     public static final PlLvalue fget(String name) {
         PlLvalue v = (PlLvalue)fvar.hget_lvalue(name);
         if (v.is_undef()) {

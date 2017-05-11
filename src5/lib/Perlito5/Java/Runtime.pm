@@ -965,6 +965,11 @@ class PerlOp {
     //    'prefix:<-e>' => 'PerlOp.p5file_exists',
     //    'prefix:<-f>' => 'PerlOp.p5is_file',
     //    'prefix:<-s>' => 'PerlOp.p5size',
+
+    public static final Path resolve_file(PlObject s) throws IOException {
+        return PlV.path.resolve(s.toString()).toRealPath();
+    }
+
     public static final PlObject p5atime(PlObject s) {
         return PlCORE.die("-A not implemented");
     }
@@ -974,7 +979,11 @@ class PerlOp {
     public static final PlObject p5mtime(PlObject s) {
         try {
             // TODO - "Script start time minus file modification time, in days"
-            return new PlDouble(new File(s.toString()).lastModified() / 86400.0);
+            return new PlDouble(new File(resolve_file(s).toString()).lastModified() / 86400.0);
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
             PlV.sset("main::!", new PlString(e.getMessage()));
@@ -983,7 +992,11 @@ class PerlOp {
     }
     public static final PlObject p5is_directory(PlObject s) {
         try {
-            return new PlBool(new File(s.toString()).isDirectory());
+            return new PlBool(new File(resolve_file(s).toString()).isDirectory());
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
             PlV.sset("main::!", new PlString(e.getMessage()));
@@ -995,7 +1008,11 @@ class PerlOp {
     }
     public static final PlObject p5is_file(PlObject s) {
         try {
-            return new PlBool(new File(s.toString()).isFile());
+            return new PlBool(new File(resolve_file(s).toString()).isFile());
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
             PlV.sset("main::!", new PlString(e.getMessage()));
@@ -1004,7 +1021,11 @@ class PerlOp {
     }
     public static final PlObject p5size(PlObject s) {
         try {
-            return new PlInt(new File(s.toString()).length());
+            return new PlInt(new File(resolve_file(s).toString()).length());
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
             PlV.sset("main::!", new PlString(e.getMessage()));
@@ -1777,6 +1798,13 @@ class PlV {
         PlCx.STDERR.outputStream = System.err;
         PlCx.STDERR.typeglob_name = "main::STDERR";
 
+        try {
+            PlV.path = Paths.get(".").toRealPath();
+        }
+        catch (IOException e) {
+            // don't know what to do
+        }
+
         PlV.fset("main::STDIN",  PlCx.STDIN);                             // "GLOB"
         PlV.fset("main::STDOUT", PlCx.STDOUT);
         PlV.fset("main::STDERR", PlCx.STDERR);
@@ -1963,6 +1991,8 @@ class PlV {
     }
 
     // filehandle
+    public static Path path;
+
     public static final PlLvalue fget(String name) {
         PlLvalue v = (PlLvalue)fvar.hget_lvalue(name);
         if (v.is_undef()) {

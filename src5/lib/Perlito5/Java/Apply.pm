@@ -1382,6 +1382,14 @@ package Perlito5::AST::Apply;
             }
             'PlCORE.rmdir(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}, $level) . ')';
         },
+        'chdir' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @arguments = @{$self->{arguments}};
+            if (@arguments < 1) {
+                push @arguments, Perlito5::AST::Var::SCALAR_ARG();
+            }
+            'PlCORE.chdir(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}, $level) . ')';
+        },
         'close' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
