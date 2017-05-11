@@ -1865,7 +1865,7 @@ class PlV {
     }
 
     public static final PlLvalue cget(String name) {
-        // TODO - maybe drop this method
+        // this implements " \&name "
         PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);
         if ( code.is_coderef() ) {
             return code;

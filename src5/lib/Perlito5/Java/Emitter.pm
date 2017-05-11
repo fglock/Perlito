@@ -2017,8 +2017,8 @@ package Perlito5::AST::Var;
         }
         if ( $sigil eq '&' ) {
             my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
-            return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $str_name ) . ')'
-                . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
+            return 'PlV.apply(' . Perlito5::Java::escape_string($namespace . '::' . $str_name ) . ', '
+                . Perlito5::Java::to_context($wantarray) . ', List__)';
         }
         if ($sigil eq '@') {
             if ($self->{sigil} eq '$#') {
@@ -2094,7 +2094,7 @@ package Perlito5::AST::Var;
                 . ')';
         }
         if ( $sigil eq '&' ) {
-            # return 'PlV.cget(' . $index . ').apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
+            # return 'PlV.apply(' . $index . ', ' . Perlito5::Java::to_context($wantarray) . ', List__)';
         }
         die "don't know how to assign to variable ", $sigil, $self->name;
     }

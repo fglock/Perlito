@@ -19380,7 +19380,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             if ($sigil eq '&') {
                 my $namespace = $self->{'namespace'} || $Perlito5::PKG_NAME;
-                return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $str_name) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)'
+                return 'PlV.apply(' . Perlito5::Java::escape_string($namespace . '::' . $str_name) . ', ' . Perlito5::Java::to_context($wantarray) . ', List__)'
             }
             if ($sigil eq '@') {
                 if ($self->{'sigil'} eq '$#') {;
@@ -24181,7 +24181,7 @@ class PlV {
     }
 
     public static final PlLvalue cget(String name) {
-        // TODO - maybe drop this method
+        // this implements " \\&name "
         PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);
         if ( code.is_coderef() ) {
             return code;
