@@ -63,6 +63,10 @@ Perlito5-Java work-in-progress
 
       - build stand-alone, precompiled "secure" script without eval-string / without "perlito5-lib"
 
+~~~sh
+    $ java -jar perlito5.jar -I src5/lib --nojava_eval -Cjava t5/unit/array.t > test.java
+~~~
+
       - build android script
 
       - bootstrap the compiler with Java

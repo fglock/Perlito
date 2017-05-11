@@ -2830,7 +2830,7 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            my $idx  = Perlito5::JavaScript2::get_label();
+            my $idx  = Perlito5::Java::get_label();
             return Perlito5::Java::emit_wrap_java($level,
                    'if (!PlV.sget("main::init_' . $idx . '").to_boolean()) {',
                      [  'PlV.sset("main::init_' . $idx . '", (PlCx.INT1));',
