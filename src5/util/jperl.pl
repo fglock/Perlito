@@ -24,7 +24,7 @@ my $i_switch = 0;
 my $i_switch_extension = '';
 my @e_switch;
 $Perlito5::BOOTSTRAP_JAVA_EVAL = 0;
-$Perlito5::JAVA_EVAL = 0;
+$Perlito5::JAVA_EVAL = 1;
 $Perlito5::FILE_NAME = '';
 
 if ($verbose) {
