@@ -1493,7 +1493,7 @@ package Perlito5::AST::CompUnit;
                [ "public static PlObject[] apply(String functionName, String... args) {",
                  [
                      "PlArray list = new PlArray(args);",
-                     "PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);",
+                     "PlObject result = PlV.apply(functionName, PlCx.LIST, list);",
                      "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",
@@ -1508,7 +1508,7 @@ package Perlito5::AST::CompUnit;
                [ "public static PlObject[] apply(String functionName, PlObject... args) {",
                  [
                      "PlArray list = new PlArray(args);",
-                     "PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);",
+                     "PlObject result = PlV.apply(functionName, PlCx.LIST, list);",
                      "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",

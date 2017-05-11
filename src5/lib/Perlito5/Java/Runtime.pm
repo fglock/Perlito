@@ -1848,7 +1848,7 @@ class PlV {
 
     // code
     public static final PlObject apply(String name, int want, PlArray List__) {
-        PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);
+        PlObject code = cvar.hget(name);
         if ( code.is_coderef() ) {
             return code.apply(want, List__);
         }
@@ -1865,6 +1865,7 @@ class PlV {
     }
 
     public static final PlLvalue cget(String name) {
+        // TODO - maybe drop this method
         PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);
         if ( code.is_coderef() ) {
             return code;
