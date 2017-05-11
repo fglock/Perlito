@@ -94,6 +94,7 @@ class PlJavaCompiler {
 
             StringBuffer source5 = new StringBuffer();
             source5.append("import org.perlito.Perlito5.*;\n");
+            source5.append("import java.util.regex.Pattern;\n");
             source5.append("public class " + className + " {\n");
             source5.append(constants);
             source5.append("    public " + className + "() {\n");
@@ -204,6 +205,7 @@ class PlJavaCompiler {
 
             StringBuffer source5 = new StringBuffer();
             source5.append("import org.perlito.Perlito5.*;\n");
+            source5.append("import java.util.regex.Pattern;\n");
             source5.append("public class " + className + " {\n");
 
             source5.append(constants);
