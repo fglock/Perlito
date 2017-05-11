@@ -43,58 +43,34 @@ Update the Perl-based compiler "perlito5.pl"
     $ make build-5to5
 ~~~
 
-TODO: add more options to Makefile
-
-  - build-perlito5-lib-jar - integrate "make_perlito5-lib-jar.sh"
-
-  - build command-line "jperl"
-
-  - build stand-alone, precompiled "secure" script without eval-string / without "perlito5-lib"
-
-  - build android script
-
-  - bootstrap the compiler with Java
-
-  - create "org.perlito.Perlito5.LibPerl" source code
-
-  - integrate with Perlito5 in CPAN
-
-
 Compiling the compiler into a jar file
---------------------------------------
-
-See also: make_perlito5-lib-jar.sh
-
-TODO: add to Makefile
 
 ~~~sh
-    $ make clean
-
-    $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
-
-    $ time javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 perlito5.java
-    warning: [options] bootstrap class path not set in conjunction with -source 1.7
-
-    $ java Main -v
-    This is Perlito5 9.021, an implementation of the Perl language.
-
-
-    # create the perlito5.jar file
-    $ rm perlito5.jar
-    $ mkdir org
-    $ mkdir org/perlito
-    $ mkdir org/perlito/Perlito5
-    $ mv *.class org/perlito/Perlito5/
-    $ jar -cfe perlito5.jar org.perlito.Perlito5.Main org/perlito/Perlito5/*.class
-    $ rm -rf org
-
+    $ make build-5java
 
     $ java -jar perlito5.jar -v
     This is Perlito5 9.021, an implementation of the Perl language.
 
     # run a test
-    $ java -jar perlito5.jar --bootstrapping -Isrc5/lib -Cjava t5/unit/array.t > x.java ; javac -source 7 x.java ; java Main
+    $ java -jar perlito5.jar -Isrc5/lib t5/unit/array.t
     ok 1 ...
+~~~
+
+Perlito5-Java work-in-progress
+------------------------------
+
+  - add more options to Makefile
+
+      - build stand-alone, precompiled "secure" script without eval-string / without "perlito5-lib"
+
+      - build android script
+
+      - bootstrap the compiler with Java
+
+      - integrate with Perlito5 in CPAN
+
+
+  - using the jar files and bootstrapping
 
     # test the bootstrapping
     $ java -jar perlito5.jar --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > x.java
@@ -102,18 +78,12 @@ TODO: add to Makefile
     [ no differences ]
 ~~~
 
-  - Using the jar file
+      - Using the perlito5-lib.jar file
 
 ~~~java
     import org.perlito.Perlito5.*;
 ~~~
 
-~~~sh
-    $ javac -cp perlito5.jar JavaCompiler5.java
-~~~
-
-Perlito5-Java work-in-progress
-------------------------------
 
   - "Java Scripting API"
 

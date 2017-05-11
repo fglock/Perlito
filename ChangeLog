@@ -20,6 +20,7 @@
 -- fixed a performance problem in eval-string
 
 - Java:
+-- eval-string
 -- __DATA__ and <DATA> filehandle
 -- TIESCALAR, AUTOLOAD
 -- "Encode.pm" encode_utf8, decode_utf8

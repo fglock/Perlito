@@ -92,7 +92,8 @@ perlito5 [switches] [programfile]
                     emits or not boilerplate code
     --bootstrapping set this when compiling the compiler,
                     otherwise the new subroutine definitions will overwrite the current compiler
-    --java_eval     enable java eval (experimental)
+    --java_eval     enable java eval, using perlito5-lib.jar
+    --nojava_eval   disable java eval, creates a standalone file that doesn't depend on perlito5-lib.jar
 ";
 my $copyright_message = <<"EOT";
 This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
@@ -281,6 +282,10 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
     }
     elsif ($ARGV[0] eq '--java_eval') {
         $Perlito5::JAVA_EVAL = 1;
+        shift @ARGV;
+    }
+    elsif ($ARGV[0] eq '--nojava_eval') {
+        $Perlito5::JAVA_EVAL = 0;
         shift @ARGV;
     }
     elsif ($ARGV[0] eq '-') {
