@@ -18259,10 +18259,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                         $self->{'namespace'} = 'Perlito5::Java::Runtime'
                     }
                 }
-                $code = 'PlV.cget(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $code) . ')'
+                $code = $self->{'namespace'} . '::' . $code
             }
             else {;
-                $code = 'PlV.cget(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $code) . ')'
+                $code = $Perlito5::PKG_NAME . '::' . $code
             }
             my $sig;
             my $may_need_autoload;
@@ -18336,10 +18336,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     }
                     $sig = substr($sig, 1)
                 }
-                return $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', PlArray.construct_list_of_aliases(' . join(', ', @out) . ')' . ')'
+                return 'PlV.apply(' . Perlito5::Java::escape_string($code) . ', ' . Perlito5::Java::to_context($wantarray) . ', PlArray.construct_list_of_aliases(' . join(', ', @out) . ')' . ')'
             }
             my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
-            $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_param_list($items, $level + 1) . ')'
+            'PlV.apply(' . Perlito5::Java::escape_string($code) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_param_list($items, $level + 1) . ')'
         }
         sub Perlito5::AST::Apply::emit_java_get_decl {
             my $self = shift;
@@ -24163,6 +24163,23 @@ class PlV {
     }
 
     // code
+    public static final PlObject apply(String name, int want, PlArray List__) {
+        PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);
+        if ( code.is_coderef() ) {
+            return code.apply(want, List__);
+        }
+        int pos = name.lastIndexOf("::");
+        if (pos != -1) {
+            String namespace = name.substring(0, pos);
+            PlLvalue autoload = PlV.cget_no_autoload(namespace + "::AUTOLOAD");
+            if ( autoload.is_coderef() ) {
+                PlV.sset(namespace + "::AUTOLOAD", new PlString(name));
+                return autoload.apply(want, List__);
+            }
+        }
+        return PlCORE.die("Undefined subroutine &" + name + " called");
+    }
+
     public static final PlLvalue cget(String name) {
         PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);
         if ( code.is_coderef() ) {

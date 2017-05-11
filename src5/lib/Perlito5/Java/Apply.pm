@@ -1758,10 +1758,10 @@ package Perlito5::AST::Apply;
                     $self->{namespace} = 'Perlito5::Java::Runtime';
                 }
             }
-            $code = 'PlV.cget(' . Perlito5::Java::escape_string($self->{namespace} . '::' . $code ) . ')'
+            $code = $self->{namespace} . '::' . $code;
         }
         else {
-            $code = 'PlV.cget(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $code ) . ')'
+            $code = $Perlito5::PKG_NAME . '::' . $code;
         }
 
         my $sig;
@@ -1862,7 +1862,8 @@ package Perlito5::AST::Apply;
                 $sig = substr($sig, 1);
             }
 
-            return $code . '.apply('
+            return 
+                'PlV.apply(' . Perlito5::Java::escape_string( $code ) . ', '
                         . Perlito5::Java::to_context($wantarray)
                         . ', PlArray.construct_list_of_aliases(' . join(', ', @out) . ')'
                         # . Perlito5::Java::to_param_list(\@in, $level+1)  # TODO
@@ -1884,7 +1885,7 @@ package Perlito5::AST::Apply;
         #          . ')';
         # }
 
-        $code . '.apply('
+        'PlV.apply(' . Perlito5::Java::escape_string( $code ) . ', '
                 . Perlito5::Java::to_context($wantarray) . ', '
                 . Perlito5::Java::to_param_list($items, $level+1)
               . ')';
