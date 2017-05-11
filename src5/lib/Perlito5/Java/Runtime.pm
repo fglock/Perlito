@@ -6236,22 +6236,28 @@ class PlString extends PlObject {
         return PlV.sget(s);
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
+        // TODO - concatenate current namespace if needed
         return PlV.sset(s, v);
     }
     public PlArray array_deref_lvalue() {
+        // TODO - concatenate current namespace if needed
         return PlV.array_get(s);
     }
     public PlArray array_deref() {
+        // TODO - concatenate current namespace if needed
         return PlV.array_get(s);
     }
     public PlObject array_deref_set(PlObject v) {
+        // TODO - concatenate current namespace if needed
         return PlV.aset(s, v);
     }
     public PlObject hash_deref() {
-        return PlV.hget(s);
+        // TODO - concatenate current namespace if needed
+        return PlV.hash_get(s);
     }
     public PlObject hash_deref_set(PlObject v) {
-        return PlV.hset(s, v);
+        // TODO - concatenate current namespace if needed
+        return PlV.hash_set(s, v);
     }
 
     public PlObject to_num() {
