@@ -1441,7 +1441,8 @@ package Perlito5::AST::CompUnit;
                        ],
                      "}",
                      "catch(PlReturnException e) {",
-                         [ 'ee = new PlDieException(new PlString("Can\'t return outside a subroutine"));' ],
+                         # TODO - fix blocks and re-enable this error message
+                         # [ 'ee = new PlDieException(new PlString("Can\'t return outside a subroutine"));' ],
                      "}",
                      "catch(PlNextException e) {",
                          [ 'ee = new PlDieException(new PlString("Can\'t \\"next\\" outside a loop block"));' ],

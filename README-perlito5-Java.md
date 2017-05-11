@@ -69,20 +69,28 @@ Perlito5-Java work-in-progress
 
       - build android script
 
-      - bootstrap the compiler with Java
-
       - integrate with Perlito5 in CPAN
 
 
-  - using the jar files and bootstrapping
+  - bootstrapping
+
+      - bootstrapping is not possible with perlito5.jar, because it is built without the grammar modules.
+
+~~~sh
+    $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main.java
+
+    $ javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 Main.java
+    # errors - TODO - fixme
 
     # test the bootstrapping
-    $ java -jar perlito5.jar --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > x.java
-    $ diff x.java perlito5.java
+    $ java Main --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main2.java
+    $ diff Main.java Main2.java
     [ no differences ]
 ~~~
 
       - Using the perlito5-lib.jar file
+
+        - TODO - explain this
 
 ~~~java
     import org.perlito.Perlito5.*;
