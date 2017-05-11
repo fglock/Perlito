@@ -22349,6 +22349,7 @@ class PlJavaCompiler {
         List<String> optionList = new ArrayList<String>();
         // set compiler' . chr(39) . 's classpath to be same as the runtime' . chr(39) . 's
         optionList.addAll(Arrays.asList("-classpath", System.getProperty("java.class.path")));
+        optionList.addAll(Arrays.asList("-source",    "7"));
 
         // run the compiler
         JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
