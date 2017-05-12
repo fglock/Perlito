@@ -19117,11 +19117,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::AST::Int::emit_java {
             (my($self), my($level), my($wantarray)) = @_;
             my $v = $self->{'int'};
-            if ($v > 2**62) {
-                $v = sprintf('%0.0f', $v);
-                my $max_value = 9223372036854775806;
-                if (length($v) > length($max_value) || $v gt $max_value) {;
-                    return 'new PlDouble(' . $v . '.0)'
+            if (length($v) > 19 || $v > 2**62) {
+                if (length($v) > 19 || $v >= 9223372036854775806.0) {;
+                    return 'new PlDouble(' . $v . '.0d)'
                 }
                 return 'new PlInt(' . $v . 'L)'
             }
@@ -19147,7 +19145,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
     {
         sub Perlito5::AST::Num::emit_java {
             (my($self), my($level), my($wantarray)) = @_;
-            'new PlDouble(' . $self->{'num'} . ')'
+            'new PlDouble(' . $self->{'num'} . 'd)'
         }
         sub Perlito5::AST::Num::emit_java_set {;
             die('Can' . chr(39) . 't modify constant item in scalar assignment')
@@ -28703,21 +28701,31 @@ class PlString extends PlObject {
                                         return _parse_exp(length, signal, offset, offset2+1);
                                     default:
                                         // return integer
-                                        if (signal < 0) {
-                                            return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
+                                        try {
+                                            if (signal < 0) {
+                                                return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
+                                            }
+                                            else {
+                                                return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
+                                            }
                                         }
-                                        else {
-                                            return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
+                                        catch (NumberFormatException e) {
+                                            return new PlDouble(Double.parseDouble(this.s.substring(offset, offset2)));
                                         }
                                 }
                                 offset2++;
                             }
                             // integer
-                            if (signal < 0) {
-                                return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
+                            try {
+                                if (signal < 0) {
+                                    return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
+                                }
+                                else {
+                                    return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
+                                }
                             }
-                            else {
-                                return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
+                            catch (NumberFormatException e) {
+                                return new PlDouble(Double.parseDouble(this.s.substring(offset, offset2)));
                             }
                 case ' . chr(39) . '+' . chr(39) . ':   // starts with +
                             if (signal != 0) {

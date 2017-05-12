@@ -1535,12 +1535,10 @@ package Perlito5::AST::Int;
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $v = $self->{int};
-        if ( $v > 2**62 ) {
-            # this is near numeric precision overflow, use string compare
-            $v = sprintf("%0.0f", $v);
-            my $max_value = "9223372036854775806";  # 2**63 - 1
-            if ( length($v) > length($max_value) || $v gt $max_value ) {
-                return "new PlDouble(" . $v . ".0)";
+        if ( length($v) > 19 || $v > 2**62 ) {
+            # max value is 2**63 - 1
+            if ( length($v) > 19 || $v >= 9223372036854775806.0 ) {
+                return "new PlDouble(" . $v . ".0d)";
             }
             return "new PlInt(" . $v . "L)";
         }
@@ -1563,7 +1561,7 @@ package Perlito5::AST::Num;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        "new PlDouble(" . $self->{num} . ")";
+        "new PlDouble(" . $self->{num} . "d)";
     }
     sub emit_java_set {
         die "Can't modify constant item in scalar assignment";

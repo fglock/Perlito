@@ -6433,21 +6433,31 @@ class PlString extends PlObject {
                                         return _parse_exp(length, signal, offset, offset2+1);
                                     default:
                                         // return integer
-                                        if (signal < 0) {
-                                            return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
+                                        try {
+                                            if (signal < 0) {
+                                                return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
+                                            }
+                                            else {
+                                                return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
+                                            }
                                         }
-                                        else {
-                                            return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
+                                        catch (NumberFormatException e) {
+                                            return new PlDouble(Double.parseDouble(this.s.substring(offset, offset2)));
                                         }
                                 }
                                 offset2++;
                             }
                             // integer
-                            if (signal < 0) {
-                                return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
+                            try {
+                                if (signal < 0) {
+                                    return new PlInt(-Long.parseLong(this.s.substring(offset, offset2)));
+                                }
+                                else {
+                                    return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
+                                }
                             }
-                            else {
-                                return new PlInt(Long.parseLong(this.s.substring(offset, offset2)));
+                            catch (NumberFormatException e) {
+                                return new PlDouble(Double.parseDouble(this.s.substring(offset, offset2)));
                             }
                 case '+':   // starts with +
                             if (signal != 0) {
