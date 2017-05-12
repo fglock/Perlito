@@ -4969,9 +4969,12 @@ use feature 'say';
         my $source = do_file($filename);
         local $Perlito5::FILE_NAME = $filename;
         local $Perlito5::STRICT = 0;
+        Perlito5::Grammar::Scope::check_variable_declarations();
+        Perlito5::Grammar::Scope::create_new_compile_time_scope();
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         my $ast = Perlito5::AST::Block::->new('stmts' => Perlito5::Match::flat($m));
         my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
+        Perlito5::Grammar::Scope::end_compile_time_scope();
         if (${'@'}) {
             $INC{$filename} = undef;
             ${'@'}->Perlito5::Compiler::error()
@@ -5596,6 +5599,13 @@ use feature 'say';
             }
             else {;
                 $arguments = $self->{'arguments'}
+            }
+            if ($code eq 'eval' && $self->{'_scope'}) {;
+                $self->{'_scope'}->{'block'} = [grep {;
+                    $_->{'_decl'} ne 'global'
+                } map {;
+                    $_->emit_begin_scratchpad()
+                } @{$self->{'_scope'}->{'block'}}]
             }
             if ($code eq 'my') {
                 my @arg;
@@ -22201,7 +22211,7 @@ class PlJavaCompiler {
             source5.append("    }\\n");
             source5.append("}\\n");
             String cls5 = source5.toString();
-            // System.out.println("\\neval_string:\\n" + cls5 + "\\n");
+            // System.out.println("\\neval_ast:\\n" + cls5 + "\\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -22323,7 +22333,7 @@ class PlJavaCompiler {
             source5.append("    }\\n");
             source5.append("}\\n");
             String cls5 = source5.toString();
-            // System.out.println("\\neval_string:\\n" + cls5 + "\\n");
+            // System.out.println("\\neval_perl_string:\\n" + cls5 + "\\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
