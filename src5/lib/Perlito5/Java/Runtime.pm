@@ -837,16 +837,17 @@ class PerlOp {
 
         // PlCORE.die("caller() not implemented");
 
-        // TODO
-        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        for (StackTraceElement elem : stackTraceElements) {
-            PlCORE.say(elem.getMethodName());
-        }
+        // TODO - this code works, needs some tweaks
+        // StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        // for (StackTraceElement elem : stackTraceElements) {
+        //     PlCORE.say(elem.getMethodName());
+        // }
+
         // The last element of the array represents the bottom of the stack,
         // which is the least recent method invocation in the sequence.
         // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
 
-        return null;
+        return context(ctx);
     }
 
     public static final PlObject mod(PlInt aa, PlObject bb) {

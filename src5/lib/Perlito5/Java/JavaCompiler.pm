@@ -229,6 +229,13 @@ class PlJavaCompiler {
             source5.append("        catch(PlReturnException e) {\n");
             source5.append("            return e.ret;\n");
             source5.append("        }\n");
+
+            // TODO - get error details before returning
+            // source5.append("        catch(Exception e) {\n");
+            // source5.append("            e.printStackTrace();\n");
+            // source5.append("            throw(e);\n");
+            // source5.append("        }\n");
+
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
