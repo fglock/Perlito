@@ -6,6 +6,9 @@ package Perlito5;
 use feature 'say';
 use strict;
 
+# eval in an empty lexical scope
+sub eval_string { eval $_[0] }
+
 my $_V5_COMPILER_NAME    = Perlito5::Compiler::compiler_name();
 my $_V5_COMPILER_VERSION = $Perlito5::VERSION;
 my $source      = '';
@@ -341,7 +344,7 @@ if ($backend) {
         my $init = join("; ", @Use);
         my $warnings = '';
         $warnings = "use warnings" if $use_warnings;
-        eval qq{
+        eval_string( qq{
             $warnings;
             Perlito5::set_global_phase("CHECK");
             \$_->() for \@Perlito5::CHECK_BLOCK;
@@ -356,7 +359,7 @@ if ($backend) {
             Perlito5::set_global_phase("RUN");
             $source;
             \$@ = undef
-        };
+        } );
         my $error = $@;
         warn $error if $error;
         Perlito5::set_global_phase("END");
