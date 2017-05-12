@@ -389,6 +389,25 @@ EOT
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject unlink(int want, PlArray List__) {
+        try {
+            for (int i = 0; i < List__.to_int(); i++) {
+                Path path = PlV.path.resolve(List__.aget(i).toString()).toRealPath();
+                Files.delete(path);
+            }
+            return PlCx.INT1;
+        }
+        catch(NoSuchFileException e) {
+            PlV.sset("main::!", new PlString("No such file or directory"));
+        }
+        catch(DirectoryNotEmptyException e) {
+            PlV.sset("main::!", new PlString("Directory not empty"));
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+        }
+        return PlCx.UNDEF;
+    }
     public static final PlObject exit(int want, PlArray List__) {
         int arg = List__.aget(0).to_int();
         System.exit(arg);

@@ -18045,6 +18045,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
             }
             'PlCORE.chdir(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
+        }, 'unlink' => sub {
+            (my($self), my($level), my($wantarray)) = @_;
+            my @arguments = @{$self->{'arguments'}};
+            if (@arguments < 1) {;
+                push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
+            }
+            'PlCORE.unlink(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
         }, 'close' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{'arguments'}};
@@ -20320,6 +20327,25 @@ class PlCORE {
             Path path = PlV.path.resolve(List__.aget(0).toString()).toRealPath();
             PlV.path = path;
             // TODO - test that the destination is a directory
+            return PlCx.INT1;
+        }
+        catch(NoSuchFileException e) {
+            PlV.sset("main::!", new PlString("No such file or directory"));
+        }
+        catch(DirectoryNotEmptyException e) {
+            PlV.sset("main::!", new PlString("Directory not empty"));
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+        }
+        return PlCx.UNDEF;
+    }
+    public static final PlObject unlink(int want, PlArray List__) {
+        try {
+            for (int i = 0; i < List__.to_int(); i++) {
+                Path path = PlV.path.resolve(List__.aget(i).toString()).toRealPath();
+                Files.delete(path);
+            }
             return PlCx.INT1;
         }
         catch(NoSuchFileException e) {
