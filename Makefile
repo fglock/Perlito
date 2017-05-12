@@ -169,7 +169,7 @@ test-5java ::
 	prove -r -e 'perl run_java_test.pl' t5
 
 test-5jar ::
-	prove -r -e 'java -jar perlito5.jar -I src5/lib' t5
+	prove -r -e 'java -jar perlito5.jar -I src5/lib -I t ' t5
 
 test-5javaunit ::
 	prove -r -e 'perl run_java_test.pl' t5/unit
