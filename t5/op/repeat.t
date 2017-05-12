@@ -149,7 +149,7 @@ is(77, scalar ((1,7)x2),    'stack truncation');
     for (($x =~ /./g) x 2) {
 	$y .= chop;
     }
-    is($y, 'abcdabcd');
+    is($y, 'abcd');
 }
 
 # [perl #35885]
