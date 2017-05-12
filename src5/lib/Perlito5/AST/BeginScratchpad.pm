@@ -137,6 +137,14 @@ package Perlito5::AST::Apply;
             $arguments = $self->{arguments};
         }
 
+        if ($code eq 'eval' && $self->{_scope}) {;
+            $self->{_scope}{block} = [
+                grep { $_->{_decl} ne 'global' }
+                map  { $_->emit_begin_scratchpad() }
+                     @{ $self->{_scope}{block} }
+            ];
+        }
+
         if ($code eq 'my') {
             my @arg;
             for my $var (@$arguments) {
