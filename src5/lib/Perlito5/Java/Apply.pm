@@ -956,7 +956,10 @@ package Perlito5::AST::Apply;
                     _do_block => 1,
                 );
                 return $ast->emit_java( $level + 1, $wantarray )
-                    . '.apply(want, List__)';
+                    . '.apply('
+                            . Perlito5::Java::to_context($wantarray) . ', '
+                            . 'List__'
+                    . ')';
             }
 
             # do EXPR
