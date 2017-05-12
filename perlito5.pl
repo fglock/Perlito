@@ -17760,7 +17760,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $arg = $self->{'arguments'}->[0];
             if ($arg->isa('Perlito5::AST::Block')) {
                 my $ast = Perlito5::AST::Sub::->new('block' => $arg, 'attributes' => [], '_do_block' => 1);
-                return $ast->emit_java($level + 1, $wantarray) . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)'
+                return $ast->emit_java($level + 1, $wantarray) . '.apply(want, List__)'
             }
             my $tmp_strict = $Perlito5::STRICT;
             $Perlito5::STRICT = 0;
