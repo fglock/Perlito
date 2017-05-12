@@ -1074,6 +1074,7 @@ package Perlito5::AST::Apply;
                 . ( 0 + $Perlito5::STRICT ) . ', '
                 . $scope . ', '
                 . join( ', ', @out ) . ', '
+                . Perlito5::Java::to_context($wantarray) . ', '
                 . 'List__'
                 . ')';
         },

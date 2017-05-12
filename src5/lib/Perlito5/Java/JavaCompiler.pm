@@ -154,6 +154,7 @@ class PlJavaCompiler {
         PlArray[]   array_val,      // new PlArray[]{xx_101};
         String[]    hash_name,      // new String[]{};
         PlHash[]    hash_val,       // new PlHash[]{}         
+        int         want,
         PlArray     List__
     )
     {
@@ -239,7 +240,7 @@ class PlJavaCompiler {
                 cls5
             );
             Method method5 = class5.getMethod("runEval", new Class[]{int.class, Object.class, Object.class, Object.class, PlArray.class});
-            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID, scalar_val, array_val, hash_val, List__);
+            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, want, scalar_val, array_val, hash_val, List__);
             // System.out.println("eval_string result: " + out.toString());
             return out;
         }
