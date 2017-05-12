@@ -65,10 +65,10 @@ sub _dumper {
         return 'sub { "DUMMY" }';
     }
 
-    # local $@;
     
     my @out;
     my $res;
+    local $@;
     $res = eval {
         for my $i ( 0 .. $#$obj ) {
             my $here = $pos . '->[' . $i . ']';
