@@ -15,7 +15,7 @@ sub opt_attribute {
     $ws = Perlito5::Grammar::Space::opt_ws( $str, $ws->{to} + 1 );
     my $p = $ws->{to};
     my $m = Perlito5::Grammar::ident($str, $p);
-    Perlito5::Compiler::error "syntax error" if !$m;
+    Perlito5::Compiler::error( "syntax error" ) if !$m;
 
     my $to;
     while (1) {
@@ -26,7 +26,7 @@ sub opt_attribute {
         if ($delimiter eq '(') {
             # "ident(params)"
             my $params = Perlito5::Grammar::String::string_interpolation_parse($str, $m->{to} + 1, '(', ')', 0);
-            Perlito5::Compiler::error "syntax error" if !$params;
+            Perlito5::Compiler::error( "syntax error" ) if !$params;
             $attr->[1] = Perlito5::Match::flat($params)->{buf};
             $to = $params->{to};
         }

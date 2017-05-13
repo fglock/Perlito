@@ -161,7 +161,7 @@ $op{ "prefix:<$_>" } = { fix => 'prefix', prec => 8, str => "$_ " }
     );
 $op{ "prefix:<$_>" } = { fix => 'parsed', prec => 15, str => "$_" }
     for qw( do sub my our state local
-            eval map grep sort print );
+            eval map grep sort print use );
 
 my %tab;
 sub tab {

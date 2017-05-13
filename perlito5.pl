@@ -4839,7 +4839,7 @@ use feature 'say';
                         $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => \@ast)
                     }
                     elsif ($Perlito5::EMIT_USE) {;
-                        $MATCH->{'capture'} = Perlito5::Grammar::Block::ast_nop()
+                        $MATCH->{'capture'} = Perlito5::AST::Apply::->new('code' => 'use', 'special_arg' => Perlito5::AST::Apply::->new('code' => $full_ident, 'bareword' => 1, 'arguments' => []), 'arguments' => $list)
                     }
                     else {;
                         $MATCH->{'capture'} = parse_time_eval({'mod' => $full_ident, 'code' => $use_decl, 'arguments' => $list})
@@ -15880,7 +15880,7 @@ CORE.sprintf = function(List__) {
             if ($self->{'code'} eq 'package') {;
                 return ['stmt' => 'package', ['bareword' => $self->{'namespace'}]]
             }
-            if ($code eq 'map' || $code eq 'grep' || $code eq 'sort' || $code eq 'print') {
+            if ($code eq 'map' || $code eq 'grep' || $code eq 'sort' || $code eq 'print' || $code eq 'use') {
                 if ($self->{'special_arg'}) {;
                     return ['op' => 'prefix:<' . $code . '>', $self->{'special_arg'}->emit_perl5(), ['op' => 'list:<,>', $self->emit_perl5_args()]]
                 }
@@ -16033,7 +16033,7 @@ CORE.sprintf = function(List__) {
     $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
         for '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C';
     $op{'prefix:<' . $_ . '>'} = {'fix' => 'parsed', 'prec' => 15, 'str' => $_}
-        for 'do', 'sub', 'my', 'our', 'state', 'local', 'eval', 'map', 'grep', 'sort', 'print';
+        for 'do', 'sub', 'my', 'our', 'state', 'local', 'eval', 'map', 'grep', 'sort', 'print', 'use';
     my %tab;
     sub Perlito5::Perl5::PrettyPrinter::tab {
         my $level = $_[0];
@@ -29008,8 +29008,8 @@ perlito5 [switches] [programfile]
 ';
     my $copyright_message = 'This is Perlito5 ' . $_V5_COMPILER_VERSION . ', an implementation of the Perl language.
 
-The Perl language is Copyright 1987-2012, Larry Wall
-The Perlito5 implementation is Copyright 2011, 2012 by Flavio Soibelmann Glock and others.
+The Perl language is Copyright 1987-2017, Larry Wall
+The Perlito5 implementation is Copyright 2011-2017 by Flavio Soibelmann Glock and others.
 
 Perl may be copied only under the terms of either the Artistic License or the
 GNU General Public License, which may be found in the Perl 5 source kit.

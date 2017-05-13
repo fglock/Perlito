@@ -75,7 +75,7 @@ token stmt_use {
         {   # "use v5", "use v5.8" - check perl version
             my $version = $MATCH->{"version_string"}{capture}{buf};
             Perlito5::test_perl_version($version);
-            $MATCH->{capture} = Perlito5::Grammar::Block::ast_nop;
+            $MATCH->{capture} = Perlito5::Grammar::Block::ast_nop();
         }
     |
         <Perlito5::Grammar::full_ident>  [ '-' <Perlito5::Grammar::ident> ]?
@@ -162,7 +162,17 @@ token stmt_use {
             }
             else {
                 if ($Perlito5::EMIT_USE) {
-                    $MATCH->{capture} = Perlito5::Grammar::Block::ast_nop;
+                    $MATCH->{capture} = Perlito5::AST::Apply->new(
+                        code => 'use',
+                        # namespace => 'CORE',
+                        special_arg => 
+                            Perlito5::AST::Apply->new(
+                                code => $full_ident,
+                                bareword => 1,
+                                arguments => [],
+                            ),
+                        arguments => $list,
+                    );
                 }
                 else {
                     $MATCH->{capture} = parse_time_eval(
@@ -249,7 +259,7 @@ sub parse_time_eval {
         bootstrapping_use($ast);
     }
 
-    return Perlito5::Grammar::Block::ast_nop;
+    return Perlito5::Grammar::Block::ast_nop();
 }
 
 sub emit_time_eval {

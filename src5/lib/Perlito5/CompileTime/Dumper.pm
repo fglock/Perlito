@@ -32,6 +32,7 @@ sub generate_eval_string {
 
 sub _dump_AST_from_scope {
     my ($name, $item, $vars, $dumper_seen,) = @_;
+    no strict 'refs';
 
     my $sigil = substr($name, 0, 1);
     if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
@@ -240,6 +241,7 @@ sub emit_globals_after_BEGIN {
 
     # dump @ISA
     for my $pkg (keys %{$Perlito5::PACKAGES}) {;
+        no strict 'refs';
         if (@{ $pkg . "::ISA" }) {
             $scope->{ '@' . $pkg . "::ISA" } //= {
                 'ast' => Perlito5::AST::Var->new(

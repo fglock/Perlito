@@ -389,6 +389,7 @@ package Perlito5::AST::Apply;
           || $code eq 'grep'
           || $code eq 'sort'
           || $code eq 'print'
+          || $code eq 'use'
         ) {
             if ( $self->{special_arg} ) {
                 # TODO - test 'special_arg' type (scalar, block, ...)
