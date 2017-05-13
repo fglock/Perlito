@@ -134,7 +134,7 @@ class PlJavaCompiler {
             throw(e);
         }
         catch(Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
             PlV.sset("main::@", new PlString(message));
@@ -180,7 +180,7 @@ class PlJavaCompiler {
             // System.out.println("eval_string: constants \n[[[ " + constants + " ]]");
         }
         catch(Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
             PlV.sset("main::@", new PlString(message));
@@ -229,13 +229,21 @@ class PlJavaCompiler {
             source5.append("        catch(PlReturnException e) {\n");
             source5.append("            return e.ret;\n");
             source5.append("        }\n");
-
-            // TODO - get error details before returning
-            // source5.append("        catch(Exception e) {\n");
-            // source5.append("            e.printStackTrace();\n");
-            // source5.append("            throw(e);\n");
-            // source5.append("        }\n");
-
+            source5.append("        catch(PlNextException e) {\n");
+            source5.append("            throw(e);\n");
+            source5.append("        }\n");
+            source5.append("        catch(PlLastException e) {\n");
+            source5.append("            throw(e);\n");
+            source5.append("        }\n");
+            source5.append("        catch(PlRedoException e) {\n");
+            source5.append("            throw(e);\n");
+            source5.append("        }\n");
+            source5.append("        catch(Exception e) {\n");
+            source5.append("            e.printStackTrace();\n");
+            source5.append("            String message = e.getMessage();\n");
+            source5.append("            PlV.sset(\"main::@\", new PlString(message));\n");
+            source5.append("            return PerlOp.context(want);\n");
+            source5.append("        }\n");
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
@@ -264,7 +272,7 @@ class PlJavaCompiler {
             throw(e);
         }
         catch(Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
             PlV.sset("main::@", new PlString(message));
