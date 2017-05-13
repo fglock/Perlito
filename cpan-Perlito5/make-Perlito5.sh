@@ -59,6 +59,8 @@ rm t/hash_with_map_and_fat_arrow.t  # Can't locate ./test.pl in @INC (@INC conta
 rm t/object-can.t                   # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/object-can.t line 6.
 rm t/undef-on-obj-slot-index.t      # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/undef-on-obj-slot-index.t line 6.
 rm t/state.t                # new in Perl
+rm t/index_eval.t           # Can't locate ./test.pl
+rm t/regex_escape.t         # warnings
 
 
 mkdir src

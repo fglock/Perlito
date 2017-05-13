@@ -4,6 +4,7 @@ use warnings;
 
 use Perlito5::Match;
 use Perlito5::Grammar;
+use Perlito5::Grammar::Statement;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar::Expression;

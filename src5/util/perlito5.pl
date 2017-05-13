@@ -98,8 +98,8 @@ perlito5 [switches] [programfile]
 my $copyright_message = <<"EOT";
 This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
 
-The Perl language is Copyright 1987-2012, Larry Wall
-The Perlito5 implementation is Copyright 2011, 2012 by Flavio Soibelmann Glock and others.
+The Perl language is Copyright 1987-2017, Larry Wall
+The Perlito5 implementation is Copyright 2011-2017 by Flavio Soibelmann Glock and others.
 
 Perl may be copied only under the terms of either the Artistic License or the
 GNU General Public License, which may be found in the Perl 5 source kit.
@@ -454,7 +454,11 @@ if ($backend) {
                     }
                 }
                 else {
-                    push @Perlito5::COMP_UNIT, Perlito5::Match::flat($m);
+                    push @Perlito5::COMP_UNIT,
+                      Perlito5::AST::CompUnit->new(
+                        name => 'main',
+                        body => Perlito5::Match::flat($m),
+                      );
                 }
 
                 for (0 .. $#Perlito5::COMP_UNIT) {

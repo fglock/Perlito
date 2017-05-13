@@ -8,17 +8,20 @@
 
 	BEGIN blocks (parser)
 
+    tie() and overload
+
+    XS replacement modules
+
+9.022 cpan:Perlito5  2017-05-xx
 - Parser:
 -- Implemented compile-time scratchpad, used in BEGIN blocks.
 -- "Use" is no longer an AST node, because all "use" statements
     are executed at compile-time
-
 - JavaScript:
 -- fix "range" special cases
 -- regex /s /x modifiers
 -- variable redeclaration
 -- fixed a performance problem in eval-string
-
 - Java:
 -- eval-string
 -- __DATA__ and <DATA> filehandle

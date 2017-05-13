@@ -1,6 +1,6 @@
 package Perlito5;
 
-$VERSION = '9.021';
+$VERSION = '9.022';
 
 1;
 
@@ -115,7 +115,7 @@ L<http://fglock.github.io/Perlito>
 
 =head1 COPYRIGHT
 
-Copyright 2011, 2012, 2015 by Flavio Soibelmann Glock and others.
+Copyright 2011-2017 by Flavio Soibelmann Glock and others.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
