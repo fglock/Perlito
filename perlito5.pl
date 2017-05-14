@@ -20301,7 +20301,10 @@ class PlCORE {
         return PlCx.UNDEF;
     }
     public static final PlObject require(int want, PlObject file, boolean is_bareword) {
-        return PlCORE.die("TODO - not implemented: require(file)");
+        if (is_bareword) {
+            file = PlV.apply("Perlito5::Grammar::Use::modulename_to_filename", PlCx.SCALAR, new PlArray(file));
+        }
+        return PlV.apply("Perlito5::Grammar::Use::require", want, new PlArray(file));
     }
     public static final PlObject rmdir(int want, PlArray List__) {
         try {

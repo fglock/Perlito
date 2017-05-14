@@ -12,6 +12,9 @@
 
     XS replacement modules
 
+- Java:
+-- "require"
+
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:
 -- Implemented compile-time scratchpad, used in BEGIN blocks.
