@@ -20301,6 +20301,7 @@ class PlCORE {
         return PlCx.UNDEF;
     }
     public static final PlObject require(int want, PlObject file, boolean is_bareword) {
+        // TODO - require-version
         if (is_bareword) {
             file = PlV.apply("Perlito5::Grammar::Use::modulename_to_filename", PlCx.SCALAR, new PlArray(file));
         }
@@ -22266,7 +22267,7 @@ class PlJavaCompiler {
             // e.printStackTrace();
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
-            PlV.sset("main::@", new PlString(message));
+            PlV.sset("main::@", new PlString("" + message));
         }
         return PlCx.UNDEF;
     }
@@ -22312,7 +22313,7 @@ class PlJavaCompiler {
             // e.printStackTrace();
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
-            PlV.sset("main::@", new PlString(message));
+            PlV.sset("main::@", new PlString("" + message));
             return PlCx.UNDEF;
         }
 
@@ -22370,7 +22371,7 @@ class PlJavaCompiler {
             source5.append("        catch(Exception e) {\\n");
             // source5.append("            e.printStackTrace();\\n");
             source5.append("            String message = e.getMessage();\\n");
-            source5.append("            PlV.sset(\\"main::@\\", new PlString(message));\\n");
+            source5.append("            PlV.sset(\\"main::@\\", new PlString(\\"\\" + message));\\n");
             source5.append("            return PerlOp.context(want);\\n");
             source5.append("        }\\n");
             source5.append("    }\\n");
@@ -22404,7 +22405,7 @@ class PlJavaCompiler {
             // e.printStackTrace();
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
-            PlV.sset("main::@", new PlString(message));
+            PlV.sset("main::@", new PlString("" + message));
         }
         return PlCx.UNDEF;
     }
@@ -28545,6 +28546,9 @@ class PlString extends PlObject {
     private PlObject numericValue;
 
     public PlString(String s) {
+        // if (s == null) {
+        //     s = "";
+        // }
         this.s = s;
     }
     public PlString(char s) {

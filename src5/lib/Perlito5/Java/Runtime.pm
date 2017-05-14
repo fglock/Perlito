@@ -6259,6 +6259,9 @@ class PlString extends PlObject {
     private PlObject numericValue;
 
     public PlString(String s) {
+        // if (s == null) {
+        //     s = "";
+        // }
         this.s = s;
     }
     public PlString(char s) {

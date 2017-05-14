@@ -352,7 +352,7 @@ EOT
         return PlCx.UNDEF;
     }
     public static final PlObject require(int want, PlObject file, boolean is_bareword) {
-        # TODO - require-version
+        // TODO - require-version
         if (is_bareword) {
             file = PlV.apply("Perlito5::Grammar::Use::modulename_to_filename", PlCx.SCALAR, new PlArray(file));
         }
