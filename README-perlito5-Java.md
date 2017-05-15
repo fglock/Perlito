@@ -59,6 +59,10 @@ Compiling the compiler into a jar file
 Perlito5-Java work-in-progress
 ------------------------------
 
+  - upload the perlito5 jar to a Maven repository
+
+      - See: https://maven.apache.org/guides/mini/guide-central-repository-upload.html
+
   - add more options to Makefile
 
       - build stand-alone, precompiled "secure" script without eval-string / without "perlito5-lib"
