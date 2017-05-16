@@ -370,6 +370,7 @@ if ($backend) {
         warn $error if $error;
         Perlito5::set_global_phase("END");
         $_->() for @Perlito5::END_BLOCK;
+        @Perlito5::END_BLOCK = ();
         if ( $error ) {
             exit(255);
         }
