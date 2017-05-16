@@ -5,9 +5,22 @@ use v5;
 package Perlito5;
 use feature 'say';
 use strict;
+use warnings;
 
 # eval in an empty lexical scope
 sub eval_string { eval $_[0] }
+
+
+# precompile some extra modules
+use Data::Dumper ();
+use Exporter ();
+%INC = (
+    'Perlito5X/Dumper.pm'   => 'src5/lib/Perlito5X/Dumper.pm',
+    'Perlito5X/Exporter.pm' => 'src5/lib/Perlito5X/Exporter.pm',
+    'Perlito5X/strict.pm'   => 'src5/lib/Perlito5X/strict.pm',
+    'Perlito5X/warnings.pm' => 'src5/lib/Perlito5X/warnings.pm',
+    'Perlito5X/feature.pm'  => 'src5/lib/Perlito5X/feature.pm',
+);
 
 my $_V5_COMPILER_NAME    = Perlito5::Compiler::compiler_name();
 my $_V5_COMPILER_VERSION = $Perlito5::VERSION;
@@ -381,7 +394,7 @@ if ($backend) {
 
             # since we are generating code that will run from scratch,
             # we need to start with an empty %INC so that all modules are "used"
-            %INC = ();
+            # %INC = ();
 
             @Perlito5::COMP_UNIT = ();
 
