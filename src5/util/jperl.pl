@@ -7,8 +7,9 @@ use feature 'say';
 use strict;
 use warnings;
 
-# eval in an empty lexical scope
-sub eval_string { eval $_[0] }
+# eval in an empty lexical scope;
+# shift() makes sure @_ empty
+sub eval_string { eval shift() }
 
 
 # precompile some extra modules
