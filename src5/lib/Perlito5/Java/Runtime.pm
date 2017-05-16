@@ -2033,6 +2033,7 @@ class PlV {
             // autovivification to directory handle
             PlFileHandle f = new PlFileHandle();
             f.typeglob_name = name;
+            f.is_directoryHandle = true;
             v.set(f);
         }
         return v;
@@ -2043,6 +2044,7 @@ class PlV {
             // autovivification to directory handle
             PlFileHandle f = new PlFileHandle();
             f.typeglob_name = name;
+            f.is_directoryHandle = true;
             v.set(f);
         }
         return v;
@@ -2918,15 +2920,20 @@ class PlFileHandle extends PlReference {
     public StringBuilder readlineBuffer;
     public boolean eof;
     public boolean is_argv;
+    public boolean is_directoryHandle;
 
     public PlFileHandle() {
         this.readlineBuffer = new StringBuilder();
         this.eof = true;
         this.is_argv = false;
+        this.is_directoryHandle = false;
     }
 
     public boolean is_filehandle() {
         return true;
+    }
+    public boolean is_directoryHandle() {
+        return this.is_directoryHandle;
     }
 
     public PlObject hget(String i) {
