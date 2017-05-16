@@ -19919,7 +19919,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 push(@js_block, 'return PerlOp.context(want, PerlOp.context(want));')
             }
             my @closure_args = ($prototype, 'new PlObject[]{ ' . join(', ', @captures_java) . ' }', Perlito5::Java::pkg());
-            if ($self->{'_do_block'} && $outer_sub) {;
+            if (($self->{'_do_block'} || $self->{'_eval_block'}) && $outer_sub) {;
                 push(@closure_args, $outer_sub)
             }
             my @s = ('new PlClosure(' . join(', ', @closure_args) . ') {', ['public PlObject apply(int want, PlArray List__) {', [@js_block], '}'], '}');

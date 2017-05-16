@@ -2825,7 +2825,7 @@ package Perlito5::AST::Sub;
                   "new PlObject[]{ " . join(', ', @captures_java) . " }",
                   Perlito5::Java::pkg,
             );
-        if ($self->{_do_block} && $outer_sub) {
+        if (($self->{_do_block} || $self->{_eval_block}) && $outer_sub) {
             push @closure_args, $outer_sub;
         }
 
