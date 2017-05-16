@@ -24175,6 +24175,7 @@ class PlV {
     public static final PlHash fvar = new PlHash(); // file
 
     public static PlRegexResult regex_result = new PlRegexResult();
+    public static Path path;
 
     public static final void init(String[] args) {
         PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
@@ -24386,8 +24387,6 @@ class PlV {
     }
 
     // filehandle
-    public static Path path;
-
     public static final PlLvalue fget(String name) {
         PlLvalue v = (PlLvalue)fvar.hget_lvalue(name);
         if (v.is_undef()) {
@@ -24421,7 +24420,35 @@ class PlV {
         return fvar.hget_lvalue_local(name).set(v);
     }
 
+    // directory handle
+    public static final PlLvalue dirGet(String name) {
+        PlLvalue v = (PlLvalue)fvar.hget_lvalue(name);
+        if (v.is_undef()) {
+            // autovivification to directory handle
+            PlFileHandle f = new PlFileHandle();
+            f.typeglob_name = name;
+            v.set(f);
+        }
+        return v;
+    }
+    public static final PlLvalue dirGet_local(String name) {
+        PlLvalue v = (PlLvalue)fvar.hget_lvalue_local(name);
+        if (v.is_undef()) {
+            // autovivification to directory handle
+            PlFileHandle f = new PlFileHandle();
+            f.typeglob_name = name;
+            v.set(f);
+        }
+        return v;
+    }
+    public static final PlObject dirSet(String name, PlObject v) {
+        return fvar.hset(name, v);
+    }
+    public static final PlObject dirSet_local(String name, PlObject v) {
+        return fvar.hget_lvalue_local(name).set(v);
+    }
 
+    // code
     public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {
         if (name.is_coderef()) {
             return name;
@@ -24443,6 +24470,7 @@ class PlV {
         return PlV.cget_no_autoload(s);
     }
 
+    // glob
     public static final PlObject glob_set(PlObject name, PlObject value, String nameSpace) {
         return glob_set(name.toString(), value, nameSpace);
     }
