@@ -17882,30 +17882,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
             }
             'PerlOp.pos(' . $arguments[0]->emit_java($level, 'scalar') . ')'
-        }, 'time' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.time(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'sleep' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.sleep(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'ref' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.ref(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'exit' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.exit(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'warn' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.warn(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'die' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.die(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'system' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.system(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'qx' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.qx(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
         }, 'tie' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{'arguments'}};
@@ -17991,27 +17967,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }, 'oct' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             'PlCORE.oct(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{'arguments'}->[0]->emit_java($level) . ')'
-        }, 'sprintf' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.sprintf(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'crypt' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.crypt(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'join' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.join(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'reverse' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.reverse(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
         }, 'fc' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             'PlCORE.fc(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{'arguments'}->[0]->emit_java($level) . ')'
-        }, 'pack' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.pack(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'unpack' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'PlCORE.unpack(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
         }, 'values' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             'PlCORE.values(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{'arguments'}->[0]->emit_java($level) . ')'
@@ -18052,17 +18010,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
             }
             'PlCORE.unlink(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
-        }, 'close' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            my @in = @{$self->{'arguments'}};
-            my $fun = shift(@in);
-            'PlCORE.close(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
-        }, 'open' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            my @in = @{$self->{'arguments'}};
-            my $fun = shift(@in);
-            $Perlito5::STRICT = 0;
-            'PlCORE.open(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'chomp' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             'PlCORE.chomp(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{'arguments'}->[0]->emit_java($level) . ')'
@@ -18080,27 +18027,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 $fun = 'PlCx.STDIN'
             }
             'PlCORE.getc(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
-        }, 'read' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            my @in = @{$self->{'arguments'}};
-            my $fun = shift(@in);
-            'PlCORE.read(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
-        }, 'sysread' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            my @in = @{$self->{'arguments'}};
-            my $fun = shift(@in);
-            'PlCORE.sysread(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'readline' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in) || bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => 'main'}, 'Perlito5::AST::Apply');
             my $list = Perlito5::Java::to_list(\@in, $level);
             'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . $list . ')'
-        }, 'seek' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            my @in = @{$self->{'arguments'}};
-            my $fun = shift(@in);
-            'PlCORE.seek(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'map' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{'arguments'}};
@@ -18235,6 +18167,21 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             return 'PlCORE.split(' . join(', ', Perlito5::Java::to_context($wantarray), @js, map($_->emit_java($level), @arguments)) . ')'
         });
+        for my $op ('close', 'closedir', 'open', 'opendir', 'readdir', 'seek', 'seekdir', 'read', 'sysread') {;
+            $emit_js{$op} = sub {
+                (my($self), my($level), my($wantarray)) = @_;
+                my @in = @{$self->{'arguments'}};
+                my $fun = shift(@in);
+                $Perlito5::STRICT = 0;
+                'PlCORE.' . $op . '(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
+            }
+        }
+        for my $op ('time', 'sleep', 'ref', 'exit', 'warn', 'die', 'system', 'qx', 'pack', 'unpack', 'sprintf', 'crypt', 'join', 'reverse') {;
+            $emit_js{$op} = sub {
+                (my($self), my($level), my($wantarray)) = @_;
+                'PlCORE.' . $op . '(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
+            }
+        }
         sub Perlito5::AST::Apply::emit_java {
             (my($self), my($level), my($wantarray), my($autovivification_type)) = @_;
             my $apply = $self->op_assign();
