@@ -2026,36 +2026,6 @@ class PlV {
         return fvar.hget_lvalue_local(name).set(v);
     }
 
-    // directory handle
-    public static final PlLvalue dirGet(String name) {
-        PlLvalue v = (PlLvalue)fvar.hget_lvalue(name);
-        if (v.is_undef()) {
-            // autovivification to directory handle
-            PlFileHandle f = new PlFileHandle();
-            f.typeglob_name = name;
-            f.is_directoryHandle = true;
-            v.set(f);
-        }
-        return v;
-    }
-    public static final PlLvalue dirGet_local(String name) {
-        PlLvalue v = (PlLvalue)fvar.hget_lvalue_local(name);
-        if (v.is_undef()) {
-            // autovivification to directory handle
-            PlFileHandle f = new PlFileHandle();
-            f.typeglob_name = name;
-            f.is_directoryHandle = true;
-            v.set(f);
-        }
-        return v;
-    }
-    public static final PlObject dirSet(String name, PlObject v) {
-        return fvar.hset(name, v);
-    }
-    public static final PlObject dirSet_local(String name, PlObject v) {
-        return fvar.hget_lvalue_local(name).set(v);
-    }
-
     // code
     public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {
         if (name.is_coderef()) {
@@ -2922,20 +2892,15 @@ class PlFileHandle extends PlReference {
     public StringBuilder readlineBuffer;
     public boolean eof;
     public boolean is_argv;
-    public boolean is_directoryHandle;
 
     public PlFileHandle() {
         this.readlineBuffer = new StringBuilder();
         this.eof = true;
         this.is_argv = false;
-        this.is_directoryHandle = false;
     }
 
     public boolean is_filehandle() {
         return true;
-    }
-    public boolean is_directoryHandle() {
-        return this.is_directoryHandle;
     }
 
     public PlObject hget(String i) {
@@ -6431,7 +6396,13 @@ class PlString extends PlObject {
                     // start exponential part
                     return _parse_exp(length, signal, offset, offset3+1);
                 default:    // invalid
-                    return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
+                    try {
+                        return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
+                    }
+                    catch (NumberFormatException e) {
+                        // string is "."
+                        return PlCx.INT0;   // string is "."
+                    }
             }
             offset3++;
         }

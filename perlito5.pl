@@ -20051,20 +20051,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }
         return PlCx.INT1;
 ', 'opendir' => '        try {
-            fh.is_directoryHandle = true;
-            int argCount = List__.to_int();
-            Path path = null; 
-            String s = "";
-            fh.readlineBuffer = new StringBuilder();
-            fh.eof = false;
-            if (fh.outputStream != null) {
-                fh.outputStream.close();
-            }
-            if (fh.reader != null) {
-                fh.reader.close();
-            }
-            s = List__.aget(0).toString();
-            path = PlV.path.resolve(s).toRealPath();
+            String s = List__.aget(0).toString();
+            Path path = PlV.path.resolve(s).toRealPath();
 
             fh.directoryStream = Files.newDirectoryStream(path);
             fh.directoryIterator = fh.directoryStream.iterator();
@@ -20074,39 +20062,25 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
-', 'readdir' => '        try {
-            if (!fh.is_directoryHandle) { throw(new IOException()); }
-            Iterator<Path> iter = fh.directoryIterator;
-            if (want == PlCx.LIST) {
-                // read all lines
-                PlArray res = new PlArray();
-                while (iter.hasNext()) {
-                    res.push(new PlString(iter.next().getFileName().toString()));
-                }
-                return res;
+', 'readdir' => '        Iterator<Path> iter = fh.directoryIterator;
+        if (want == PlCx.LIST) {
+            // read all lines
+            PlArray res = new PlArray();
+            while (iter.hasNext()) {
+                res.push(new PlString(iter.next().getFileName().toString()));
             }
-            if (!iter.hasNext()) {
-                return PlCx.UNDEF;
-            }
-            Path entry = iter.next();
-            return new PlString(entry.getFileName().toString());
+            return res;
         }
-        catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+        if (!iter.hasNext()) {
             return PlCx.UNDEF;
         }
+        Path entry = iter.next();
+        return new PlString(entry.getFileName().toString());
 ', 'closedir' => '        try {
             fh.readlineBuffer = new StringBuilder();
             fh.eof = true;
-            fh.is_directoryHandle = false;
             if (fh.directoryStream != null) {
                 fh.directoryStream.close();
-            }
-            if (fh.outputStream != null) {
-                fh.outputStream.close();
-            }
-            if (fh.reader != null) {
-                fh.reader.close();
             }
         }
         catch(IOException e) {
@@ -24436,36 +24410,6 @@ class PlV {
         return fvar.hget_lvalue_local(name).set(v);
     }
 
-    // directory handle
-    public static final PlLvalue dirGet(String name) {
-        PlLvalue v = (PlLvalue)fvar.hget_lvalue(name);
-        if (v.is_undef()) {
-            // autovivification to directory handle
-            PlFileHandle f = new PlFileHandle();
-            f.typeglob_name = name;
-            f.is_directoryHandle = true;
-            v.set(f);
-        }
-        return v;
-    }
-    public static final PlLvalue dirGet_local(String name) {
-        PlLvalue v = (PlLvalue)fvar.hget_lvalue_local(name);
-        if (v.is_undef()) {
-            // autovivification to directory handle
-            PlFileHandle f = new PlFileHandle();
-            f.typeglob_name = name;
-            f.is_directoryHandle = true;
-            v.set(f);
-        }
-        return v;
-    }
-    public static final PlObject dirSet(String name, PlObject v) {
-        return fvar.hset(name, v);
-    }
-    public static final PlObject dirSet_local(String name, PlObject v) {
-        return fvar.hget_lvalue_local(name).set(v);
-    }
-
     // code
     public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {
         if (name.is_coderef()) {
@@ -25310,20 +25254,15 @@ class PlFileHandle extends PlReference {
     public StringBuilder readlineBuffer;
     public boolean eof;
     public boolean is_argv;
-    public boolean is_directoryHandle;
 
     public PlFileHandle() {
         this.readlineBuffer = new StringBuilder();
         this.eof = true;
         this.is_argv = false;
-        this.is_directoryHandle = false;
     }
 
     public boolean is_filehandle() {
         return true;
-    }
-    public boolean is_directoryHandle() {
-        return this.is_directoryHandle;
     }
 
     public PlObject hget(String i) {
@@ -28734,7 +28673,13 @@ class PlString extends PlObject {
                     // start exponential part
                     return _parse_exp(length, signal, offset, offset3+1);
                 default:    // invalid
-                    return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
+                    try {
+                        return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
+                    }
+                    catch (NumberFormatException e) {
+                        // string is "."
+                        return PlCx.INT0;   // string is "."
+                    }
             }
             offset3++;
         }
