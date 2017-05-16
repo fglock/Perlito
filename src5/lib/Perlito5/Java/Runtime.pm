@@ -782,6 +782,12 @@ class PerlOp {
         }
         return args[args.length-1].scalar();
     }
+    public static final PlObject context(int want, String arg) {
+        if (want == PlCx.LIST) {
+            return new PlArray(new PlString(arg));
+        }
+        return new PlString(arg);
+    }
 
     // process id
     public static PlObject getPID() {

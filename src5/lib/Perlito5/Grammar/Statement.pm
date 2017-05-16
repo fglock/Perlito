@@ -68,9 +68,22 @@ token stmt_format {
 
 token stmt_package {
     'package' <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::full_ident>
+
+    [
+
+        # package X 1.001 ...
+        <.Perlito5::Grammar::Space::ws>
+        <Perlito5::Grammar::Use::version_string>
+        {   my $version = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Use::version_string"});
+            $MATCH->{_version} = $version;
+        }
+        <.Perlito5::Grammar::Space::opt_ws>
+    |
+        <.Perlito5::Grammar::Space::opt_ws>
+    ]
+
     [
         # package X { block }
-        <.Perlito5::Grammar::Space::opt_ws>
         {
             # set the package name before parsing the block
             my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
@@ -99,6 +112,20 @@ token stmt_package {
                 }
             }
 
+            if ($MATCH->{_version}) {
+                unshift @statements,
+                    Perlito5::AST::Apply->new(
+                        'arguments' => [
+                            Perlito5::AST::Var->new(
+                                'name' => 'VERSION',
+                                'namespace' => $namespace,
+                                'sigil' => '$',
+                            ),
+                            $MATCH->{_version},
+                        ],
+                        'code' => 'infix:<=>',
+                    );
+            }
             $MATCH->{capture} = 
                 Perlito5::AST::Block->new(
                     stmts => [

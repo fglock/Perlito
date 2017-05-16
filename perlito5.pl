@@ -1307,7 +1307,7 @@ use feature 'say';
             my $pos1 = $MATCH->{'to'};
             (do {;
                 ((do {
-                    my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                    my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
                         1
@@ -1316,6 +1316,46 @@ use feature 'say';
                         0
                     }
                 }) && (do {
+                    my $m2 = Perlito5::Grammar::Use::version_string($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        $MATCH->{'Perlito5::Grammar::Use::version_string'} = $m2;
+                        1
+                    }
+                    else {;
+                        0
+                    }
+                }) && (do {
+                    my $version = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Use::version_string'});
+                    $MATCH->{'_version'} = $version;
+                    1
+                }) && (do {
+                    my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        1
+                    }
+                    else {;
+                        0
+                    }
+                }))
+            }) || (do {
+                $MATCH->{'to'} = $pos1;
+                (do {
+                    my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        1
+                    }
+                    else {;
+                        0
+                    }
+                })
+            })
+        }) && (do {
+            my $pos1 = $MATCH->{'to'};
+            (do {;
+                ((do {
                     my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
                     $MATCH->{'_package'} = $Perlito5::PKG_NAME;
                     $Perlito5::PACKAGES->{$name} = 1;
@@ -1339,6 +1379,9 @@ use feature 'say';
                         if ($stmt && ref($stmt) eq 'Perlito5::AST::Apply' && ($stmt->{'code'} eq 'infix:<=>>' || $stmt->{'code'} eq 'list:<,>')) {;
                             push(@Perlito::ANNOTATION, [$namespace, Perlito5::AST::Apply::->new('arguments' => [$stmt], 'code' => 'circumfix:<{ }>')])
                         }
+                    }
+                    if ($MATCH->{'_version'}) {;
+                        unshift(@statements, Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::->new('name' => 'VERSION', 'namespace' => $namespace, 'sigil' => '$'), $MATCH->{'_version'}], 'code' => 'infix:<=>'))
                     }
                     $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'package', 'arguments' => [], 'namespace' => $namespace), @statements]);
                     $Perlito5::PKG_NAME = $MATCH->{'_package'};
@@ -23167,6 +23210,12 @@ class PerlOp {
             return new PlArray(args);
         }
         return args[args.length-1].scalar();
+    }
+    public static final PlObject context(int want, String arg) {
+        if (want == PlCx.LIST) {
+            return new PlArray(new PlString(arg));
+        }
+        return new PlString(arg);
     }
 
     // process id
