@@ -23271,7 +23271,7 @@ class PerlOp {
         random = new Random();
         return PlCx.UNDEF;
     }
-    public static final PlObject srand(int s) {
+    public static final PlObject srand(long s) {
         random = new Random(s);
         return new PlInt(s);
     }
