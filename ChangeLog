@@ -14,6 +14,7 @@
 
 - Java:
 -- "require"
+-- "opendir", "readdir", "closedir"
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:

@@ -2916,6 +2916,8 @@ class PlFileHandle extends PlReference {
     public String typeglob_name;
     public PrintStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
+    public Iterator<Path> directoryIterator;
+    public DirectoryStream<Path> directoryStream;
     public BufferedReader reader;       // Console.reader
     public StringBuilder readlineBuffer;
     public boolean eof;

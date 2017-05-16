@@ -20045,6 +20045,70 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
+', 'opendir' => '        try {
+            fh.is_directoryHandle = true;
+            int argCount = List__.to_int();
+            Path path = null; 
+            String s = "";
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = false;
+            if (fh.outputStream != null) {
+                fh.outputStream.close();
+            }
+            if (fh.reader != null) {
+                fh.reader.close();
+            }
+            s = List__.aget(0).toString();
+            path = PlV.path.resolve(s).toRealPath();
+
+            fh.directoryStream = Files.newDirectoryStream(path);
+            fh.directoryIterator = fh.directoryStream.iterator();
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+        return PlCx.INT1;
+', 'readdir' => '        try {
+            if (!fh.is_directoryHandle) { throw(new IOException()); }
+            Iterator<Path> iter = fh.directoryIterator;
+            if (want == PlCx.LIST) {
+                // read all lines
+                PlArray res = new PlArray();
+                while (iter.hasNext()) {
+                    res.push(new PlString(iter.next().getFileName().toString()));
+                }
+                return res;
+            }
+            if (!iter.hasNext()) {
+                return PlCx.UNDEF;
+            }
+            Path entry = iter.next();
+            return new PlString(entry.getFileName().toString());
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+', 'closedir' => '        try {
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = true;
+            fh.is_directoryHandle = false;
+            if (fh.directoryStream != null) {
+                fh.directoryStream.close();
+            }
+            if (fh.outputStream != null) {
+                fh.outputStream.close();
+            }
+            if (fh.reader != null) {
+                fh.reader.close();
+            }
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+        return PlCx.INT1;
 ', 'print' => '        for (int i = 0; i < List__.to_int(); i++) {
             fh.outputStream.print(List__.aget(i).toString());
         }
@@ -25235,6 +25299,8 @@ class PlFileHandle extends PlReference {
     public String typeglob_name;
     public PrintStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
+    public Iterator<Path> directoryIterator;
+    public DirectoryStream<Path> directoryStream;
     public BufferedReader reader;       // Console.reader
     public StringBuilder readlineBuffer;
     public boolean eof;
