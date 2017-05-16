@@ -1127,7 +1127,9 @@ package Perlito5::AST::Apply;
                && $arg->{sigil} eq '&'
                )
             {
-                $invocant = 'p5pkg[' . Perlito5::Java::escape_string(($arg->{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::Java::escape_string($arg->{name} ) . ']';
+                my $name = $arg->{name};
+                my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
+                $invocant = 'PlV.cget_no_autoload(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ')';
             }
             else {
                 $invocant = $arg->emit_java($level, 'scalar');

@@ -17830,8 +17830,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $arg2 = $arg->{'arguments'}->[0];
                 $invocant = 'PlV.code_lookup_by_name_no_autoload(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg2->emit_java($level) . ')'
             }
-            elsif (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'sigil'} eq '&') {;
-                $invocant = 'p5pkg[' . Perlito5::Java::escape_string(($arg->{'namespace'} || $Perlito5::PKG_NAME)) . '][' . Perlito5::Java::escape_string($arg->{'name'}) . ']'
+            elsif (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'sigil'} eq '&') {
+                my $name = $arg->{'name'};
+                my $namespace = $arg->{'namespace'} || $Perlito5::PKG_NAME;
+                $invocant = 'PlV.cget_no_autoload(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ')'
             }
             else {;
                 $invocant = $arg->emit_java($level, 'scalar')
