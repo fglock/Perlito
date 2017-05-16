@@ -2302,7 +2302,7 @@ package Perlito5::AST::Call;
                )
             {
                 # __SUB__->()
-                $invocant = 'this';     # "this" is the closure
+                $invocant = 'this.getCurrentSub()';     # "this" is the closure
             }
             else {
                 $invocant = $self->{invocant}->emit_java($level, 'scalar');
@@ -2737,8 +2737,10 @@ package Perlito5::AST::Sub;
                         ? 'new PlString(' . Perlito5::Java::escape_string($self->{sig}) . ')'
                         : 'PlCx.UNDEF';
 
+        my $outer_sub;
+        $outer_sub = 'this.getCurrentSub()' if $Perlito5::Java::is_inside_subroutine;
+
         my $sub_ref = Perlito5::Java::get_label();
-        local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
         local $Perlito5::Java::is_inside_subroutine = 1;
         my $block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts}, not_a_loop => 1 );
 
@@ -2818,12 +2820,17 @@ package Perlito5::AST::Sub;
             push @js_block, 'return PerlOp.context(want, PerlOp.context(want));';
         }
 
+        my @closure_args = (
+                  $prototype,
+                  "new PlObject[]{ " . join(', ', @captures_java) . " }",
+                  Perlito5::Java::pkg,
+            );
+        if ($self->{_do_block} && $outer_sub) {
+            push @closure_args, $outer_sub;
+        }
+
         my @s = (
-            "new PlClosure("
-                    . "$prototype, "
-                    . "new PlObject[]{ " . join(', ', @captures_java) . " }, "
-                    . Perlito5::Java::pkg
-            . ") {",
+            "new PlClosure(" . join( ", ", @closure_args ) . ") {",
                 [ "public PlObject apply(int want, PlArray List__) {",
                     [ @js_block ],
                   "}",

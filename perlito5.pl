@@ -17293,7 +17293,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             Perlito5::Java::escape_string($Perlito5::PKG_NAME)
         }, '__SUB__' => sub {
             (my($self), my($level), my($wantarray)) = @_;
-            $Perlito5::AST::Sub::SUB_REF // 'this'
+            'this.getCurrentSub()'
         }, 'wantarray' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             '(want == PlCx.VOID ? PlCx.UNDEF : new PlInt(want-1))'
@@ -19583,7 +19583,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($meth eq 'postcircumfix:<( )>') {
                 my $invocant;
                 if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::' && $self->{'invocant'}->{'namespace'} eq '__SUB__') {;
-                    $invocant = 'this'
+                    $invocant = 'this.getCurrentSub()'
                 }
                 else {;
                     $invocant = $self->{'invocant'}->emit_java($level, 'scalar')
@@ -19847,8 +19847,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             local $Perlito5::THROW;
             !$self->{'_do_block'} && (local $Perlito5::THROW_RETURN);
             my $prototype = defined($self->{'sig'}) ? 'new PlString(' . Perlito5::Java::escape_string($self->{'sig'}) . ')' : 'PlCx.UNDEF';
+            my $outer_sub;
+            $Perlito5::Java::is_inside_subroutine && ($outer_sub = 'this.getCurrentSub()');
             my $sub_ref = Perlito5::Java::get_label();
-            local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
             local $Perlito5::Java::is_inside_subroutine = 1;
             my $block = Perlito5::Java::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'}, 'not_a_loop' => 1);
             my @captures_ast = @Perlito5::CAPTURES;
@@ -19917,7 +19918,11 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if (!@js_block) {;
                 push(@js_block, 'return PerlOp.context(want, PerlOp.context(want));')
             }
-            my @s = ('new PlClosure(' . $prototype . ', ' . 'new PlObject[]{ ' . join(', ', @captures_java) . ' }, ' . Perlito5::Java::pkg() . ') {', ['public PlObject apply(int want, PlArray List__) {', [@js_block], '}'], '}');
+            my @closure_args = ($prototype, 'new PlObject[]{ ' . join(', ', @captures_java) . ' }', Perlito5::Java::pkg());
+            if ($self->{'_do_block'} && $outer_sub) {;
+                push(@closure_args, $outer_sub)
+            }
+            my @s = ('new PlClosure(' . join(', ', @closure_args) . ') {', ['public PlObject apply(int want, PlArray List__) {', [@js_block], '}'], '}');
             if ($self->{'name'}) {
                 my $idx = Perlito5::Java::get_label();
                 return Perlito5::Java::emit_wrap_java($level, 'if (!PlV.sget("main::init_' . $idx . '").to_boolean()) {', ['PlV.sset("main::init_' . $idx . '", (PlCx.INT1));', 'PlV.cset(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . Perlito5::Java::emit_wrap_java($level + 1, @s) . ');'], '}')
@@ -25411,12 +25416,26 @@ class PlClosure extends PlReference implements Runnable {
     public PlObject prototype;   // ' . chr(39) . '$$$' . chr(39) . '
     public String pkg_name;      // ' . chr(39) . 'main' . chr(39) . '
     public static final PlString REF = new PlString("CODE");
+    public PlClosure currentSub;
 
     public PlClosure(PlObject prototype, PlObject[] env, String pkg_name) {
         this.prototype = prototype;
         this.env = env;
         this.pkg_name = pkg_name;
+        this.currentSub = this;
     }
+    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, PlClosure currentSub) {
+        // this is the constructor for do-BLOCK; currentSub points to the "sub" outside
+        this.prototype = prototype;
+        this.env = env;
+        this.pkg_name = pkg_name;
+        this.currentSub = currentSub;
+    }
+
+    public PlClosure getCurrentSub() {
+        return this.currentSub;
+    }
+
     // Note: apply() is inherited from PlObject
     public PlObject apply(int want, PlArray List__) {
         PlCORE.die("it looks like you have a closure without a block");

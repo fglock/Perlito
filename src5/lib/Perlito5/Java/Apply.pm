@@ -205,7 +205,7 @@ package Perlito5::AST::Apply;
         },
         '__SUB__' => sub {
             my ($self, $level, $wantarray) = @_;
-            $Perlito5::AST::Sub::SUB_REF // 'this'
+            'this.getCurrentSub()'
         },
         'wantarray' => sub {
             my ($self, $level, $wantarray) = @_;

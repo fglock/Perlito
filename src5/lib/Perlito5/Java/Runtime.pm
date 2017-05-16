@@ -3028,12 +3028,26 @@ class PlClosure extends PlReference implements Runnable {
     public PlObject prototype;   // '$$$'
     public String pkg_name;      // 'main'
     public static final PlString REF = new PlString("CODE");
+    public PlClosure currentSub;
 
     public PlClosure(PlObject prototype, PlObject[] env, String pkg_name) {
         this.prototype = prototype;
         this.env = env;
         this.pkg_name = pkg_name;
+        this.currentSub = this;
     }
+    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, PlClosure currentSub) {
+        // this is the constructor for do-BLOCK; currentSub points to the "sub" outside
+        this.prototype = prototype;
+        this.env = env;
+        this.pkg_name = pkg_name;
+        this.currentSub = currentSub;
+    }
+
+    public PlClosure getCurrentSub() {
+        return this.currentSub;
+    }
+
     // Note: apply() is inherited from PlObject
     public PlObject apply(int want, PlArray List__) {
         PlCORE.die("it looks like you have a closure without a block");
