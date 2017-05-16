@@ -44,7 +44,7 @@ $v = 3;
 eval ' $r = &{"with_proto"}(4) ';
 $e = $@;
 print "not " if !$e;
-print "ok 4  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # TODO\n";
+print "ok 4  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' \n";
 
 # ampersand string
 
@@ -52,7 +52,7 @@ $v = 3;
 eval ' $r = &{"with_proto"} ';
 $e = $@;
 print "not " if !$e;
-print "ok 5  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # TODO\n";
+print "ok 5  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' \n";
 
 # ampersand string, no strict
 
@@ -82,5 +82,5 @@ $v = 3;
 eval ' $r = &{"with_proto"}->(4) ';
 $e = $@;
 print "not " if !$e;
-print "ok 8  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # TODO\n";
+print "ok 8  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' \n";
 
