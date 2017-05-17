@@ -1164,29 +1164,60 @@ use feature 'say';
         }
         return 0
     }
-    sub Perlito5::Macro::_insert_return_in_block {
-        (my($self), my($tag)) = @_;
-        my $body = $self->{$tag};
-        if (!$body) {;
-            $body = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('arguments' => [], 'code' => 'return', 'namespace' => '')])
-        }
-        elsif (ref($body) ne 'Perlito5::AST::Block') {}
-        elsif (@{$body->{'stmts'}} == 0) {;
-            push(@{$body->{'stmts'}}, Perlito5::AST::Apply::->new('arguments' => [], 'code' => 'return', 'namespace' => ''))
+    sub Perlito5::Macro::insert_return_in_block {
+        (my($self)) = @_;
+        if (@{$self->{'stmts'}} == 0) {;
+            push(@{$self->{'stmts'}}, Perlito5::AST::Apply::->new('arguments' => [], 'code' => 'return', 'namespace' => '', '_return_from_block' => 1))
         }
         else {
-            my $last_statement = $body->{'stmts'}->[-1];
-            if ($last_statement->isa('Perlito5::AST::If')) {;
-                Perlito5::Macro::insert_return_in_if($last_statement)
-            }
+            my $last_statement = pop(@{$self->{'stmts'}});
+            push(@{$self->{'stmts'}}, insert_return($last_statement))
         }
-        $self->{$tag} = $body
+        return $self
     }
     sub Perlito5::Macro::insert_return_in_if {
         my $self = $_[0];
-        ref($self) ne 'Perlito5::AST::If' && return 0;
-        _insert_return_in_block($self, 'body');
-        _insert_return_in_block($self, 'otherwise')
+        $self->{'body'} = insert_return_in_block($self->{'body'} || Perlito5::AST::Block::->new('stmts' => []));
+        $self->{'otherwise'} = insert_return_in_block($self->{'otherwise'} || Perlito5::AST::Block::->new('stmts' => []));
+        return $self
+    }
+    sub Perlito5::Macro::insert_return {
+        my $self = $_[0];
+        if ($self->isa('Perlito5::AST::If')) {;
+            return insert_return_in_if($self)
+        }
+        if ($self->isa('Perlito5::AST::Block')) {;
+            return insert_return_in_block($self)
+        }
+        if ($self->isa('Perlito5::AST::For')) {;
+            return ($self, Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Buf::->new('buf' => '')], 'code' => 'return', 'namespace' => '', '_return_from_block' => 1))
+        }
+        if ($self->isa('Perlito5::AST::While')) {
+            if ($self->{'cond'}->isa('Perlito5::AST::Int') && $self->{'cond'}->{'int'}) {;
+                return $self
+            }
+            else {;
+                return ($self, Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Int::->new('int' => 0)], 'code' => 'return', 'namespace' => '', '_return_from_block' => 1))
+            }
+        }
+        if ($self->isa('Perlito5::AST::Sub')) {
+            if (!$self->{'name'}) {;
+                return Perlito5::AST::Apply::->new('arguments' => [$self], 'code' => 'return', 'namespace' => '', '_return_from_block' => 1)
+            }
+            else {;
+                return ($self, Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Int::->new('int' => 0)], 'code' => 'return', 'namespace' => '', '_return_from_block' => 1))
+            }
+        }
+        if ($self->isa('Perlito5::AST::Int') || $self->isa('Perlito5::AST::Num') || $self->isa('Perlito5::AST::Buf') || $self->isa('Perlito5::AST::Index') || $self->isa('Perlito5::AST::Lookup') || $self->isa('Perlito5::AST::Call') || $self->isa('Perlito5::AST::Var') || $self->isa('Perlito5::AST::Decl')) {;
+            return Perlito5::AST::Apply::->new('arguments' => [$self], 'code' => 'return', 'namespace' => '', '_return_from_block' => 1)
+        }
+        if ($self->isa('Perlito5::AST::Apply')) {
+            if ($self->code() eq 'return') {;
+                return $self
+            }
+            return Perlito5::AST::Apply::->new('arguments' => [$self], 'code' => 'return', 'namespace' => '', '_return_from_block' => 1)
+        }
+        return $self
     }
     sub Perlito5::Macro::split_code_too_large {
         my @stmts = @_;
@@ -18939,31 +18970,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 for my $arg (@var_decl) {;
                     push(@str, $arg->emit_java_init($level, $wantarray))
                 }
-                if ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) {
-                    push(@str, $last_statement->emit_java($level, 'void'));
-                    if ($last_statement->isa('Perlito5::AST::While') && $last_statement->{'cond'}->isa('Perlito5::AST::Int') && $last_statement->{'cond'}->{'int'}) {}
-                    else {
-                        $str[-1] .= ';';
-                        push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
-                    }
+                my @stmt = Perlito5::Macro::insert_return($last_statement);
+                $last_statement = pop(@stmt);
+                for $_ (@stmt) {;
+                    push(@str, $_->emit_java($level, 'void') . ';')
                 }
-                elsif ($last_statement->isa('Perlito5::AST::Block')) {
-                    Perlito5::Macro::_insert_return_in_block({'block' => $last_statement, }, 'block');
-                    push(@str, $last_statement->emit_java($level, 'runtime') . '');
-                    if ($last_statement->{'label'}) {;
-                        push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
-                    }
-                }
-                elsif ($last_statement->isa('Perlito5::AST::If')) {
-                    Perlito5::Macro::insert_return_in_if($last_statement);
-                    push(@str, $last_statement->emit_java($level, 'runtime') . '')
-                }
-                elsif (Perlito5::AST::Sub::is_named_sub($last_statement)) {
-                    push(@str, $last_statement->emit_java($level, 'runtime') . ';');
-                    push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
-                }
-                elsif ($last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return') {
-                    if ($self->{'top_level'}) {
+                if ($last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return') {
+                    if ($self->{'top_level'} || $last_statement->{'_return_from_block'}) {
                         if (!@{$last_statement->{'arguments'}}) {;
                             push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
                         }
@@ -18980,8 +18993,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                         push(@str, 'return PerlOp.ret(' . Perlito5::Java::to_runtime_context([$last_statement->{'arguments'}->[0]], $level + 1) . ');')
                     }
                 }
-                else {;
-                    push(@str, emit_return($has_local, $local_label, $wantarray eq 'runtime' ? Perlito5::Java::to_runtime_context([$last_statement], $level + 1) : $wantarray eq 'scalar' ? Perlito5::Java::to_scalar([$last_statement], $level + 1) : $last_statement->emit_java($level, $wantarray)) . ';')
+                else {
+                    my $s = $last_statement->emit_java($level, 'runtime');
+                    $last_statement->isa('Perlito5::AST::If') || $last_statement->isa('Perlito5::AST::While') || $last_statement->isa('Perlito5::AST::Block') || ($s .= ';');
+                    push(@str, $s)
                 }
             }
             my $out;

@@ -5,13 +5,12 @@ say '1..3';
 my $v;
 
 sub test {
-    $_ = "abc";
-    for ($v) {
-        $v++;
+    $v = 3;
+    while ($v) {
+        $v--;
     }
 }
 
-$v = 1;
 my @res = test();
 if ( @res != 1 ) {
     print "not ";

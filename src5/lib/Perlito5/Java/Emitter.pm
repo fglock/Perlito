@@ -1077,84 +1077,56 @@ package Perlito5::Java::LexicalBlock;
                 push @str, $arg->emit_java_init($level, $wantarray);
             }
 
-            if    (  $last_statement->isa( 'Perlito5::AST::For' )
-                  || $last_statement->isa( 'Perlito5::AST::While' )
-                  )
-            {
-                push @str, $last_statement->emit_java($level, 'void');
+            my @stmt = Perlito5::Macro::insert_return($last_statement);
+            $last_statement = pop @stmt;
 
-                if ( $last_statement->isa( 'Perlito5::AST::While' )
-                    && $last_statement->{cond}->isa('Perlito5::AST::Int')
-                    && $last_statement->{cond}{int} ) {
-                    # do not emit "return" after while(1){...} because "unreachable statement"
-                }
-                else {
-                    $str[-1] .= ";";
-                    push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
-                }
+            for (@stmt) {
+                push @str, $_->emit_java($level, 'void') . ';';
             }
-            elsif ( $last_statement->isa( 'Perlito5::AST::Block' ) ) {
-                # "block" returns a value
 
-                Perlito5::Macro::_insert_return_in_block({ block => $last_statement }, 'block');
+            if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
 
-                push @str, $last_statement->emit_java($level, 'runtime') . '';
-
-                # workaround - this is only needed if the block has a THROW (next/redo/last)
-                if ($last_statement->{label}) {
-                    push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
-                }
-            }
-            elsif ( $last_statement->isa( 'Perlito5::AST::If' ) ) {
-                # "if" returns a value
-                Perlito5::Macro::insert_return_in_if($last_statement);
-                push @str, $last_statement->emit_java($level, 'runtime') . '';
-            }
-            elsif ( Perlito5::AST::Sub::is_named_sub($last_statement) ) {
-                push @str, $last_statement->emit_java($level, 'runtime') . ';';
-                push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
-            }
-            else {
-                if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
-
-                    if ( $self->{top_level} ) {
-                        if (!@{$last_statement->{arguments}}) {
-                            push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
-                        }
-                        else {
-                            push @str, emit_return($has_local, $local_label,
-                                    $wantarray eq 'runtime'
-                                  ? Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
-                                  : $wantarray eq 'scalar'
-                                  ? Perlito5::Java::to_scalar([$last_statement->{arguments}[0]], $level+1)
-                                  : $last_statement->{arguments}[0]->emit_java($level, $wantarray)
-                                ) . ';';
-                        }
+                if ( $self->{top_level} || $last_statement->{_return_from_block} ) {
+                    if (!@{$last_statement->{arguments}}) {
+                        push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
                     }
                     else {
-                        if (!@{$last_statement->{arguments}}) {
-                            $Perlito5::THROW_RETURN = 1;
-                            push @str, 'return PerlOp.ret(PerlOp.context(want));'; 
-                        }
-                        else {
-                            $Perlito5::THROW_RETURN = 1;
-                            push @str, 'return PerlOp.ret('
-                                . Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
-                                . ');';
-                        }
+                        push @str, emit_return($has_local, $local_label,
+                                $wantarray eq 'runtime'
+                              ? Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
+                              : $wantarray eq 'scalar'
+                              ? Perlito5::Java::to_scalar([$last_statement->{arguments}[0]], $level+1)
+                              : $last_statement->{arguments}[0]->emit_java($level, $wantarray)
+                            ) . ';';
                     }
                 }
                 else {
-                    push @str, emit_return($has_local, $local_label,
-                            $wantarray eq 'runtime'
-                          ? Perlito5::Java::to_runtime_context([$last_statement], $level+1)
-                          : $wantarray eq 'scalar'
-                          ? Perlito5::Java::to_scalar([$last_statement], $level+1)
-                          : $last_statement->emit_java($level, $wantarray)
-                    ) . ';';
+                    if (!@{$last_statement->{arguments}}) {
+                        $Perlito5::THROW_RETURN = 1;
+                        push @str, 'return PerlOp.ret(PerlOp.context(want));'; 
+                    }
+                    else {
+                        $Perlito5::THROW_RETURN = 1;
+                        push @str, 'return PerlOp.ret('
+                            . Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
+                            . ');';
+                    }
                 }
             }
+            else {
+                my $s = $last_statement->emit_java($level, 'runtime');
+                $s .= ';'
+                  unless $last_statement->isa('Perlito5::AST::If')
+                  || $last_statement->isa('Perlito5::AST::While')
+                  || $last_statement->isa('Perlito5::AST::Block');
+                push @str, $s;
+            }
+
         }
+
+        # print STDERR Perlito5::Dumper::Dumper( $self );
+        # print STDERR Perlito5::Dumper::Dumper( \@str );
+
         my $out;
 
         if ($self->{eval_block}) {

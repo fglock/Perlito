@@ -401,47 +401,118 @@ sub while_file {
     return 0;
 }
 
-sub _insert_return_in_block {
-    my ($self, $tag) = @_;
-    my $body = $self->{$tag};
-    if (!$body) {
-        $body = Perlito5::AST::Block->new(
-                    stmts => [
+sub insert_return_in_block {
+    my ($self) = @_;
+    if (@{$self->{stmts}} == 0) {
+        push @{$self->{stmts}},
                         Perlito5::AST::Apply->new(
                             'arguments' => [],
                             'code' => 'return',
                             'namespace' => '',
-                        ),
-                    ],
-                );
-    }
-    elsif (ref($body) ne 'Perlito5::AST::Block') {
-        # TODO
-    }
-    elsif (@{$body->{stmts}} == 0) {
-        push @{$body->{stmts}},
-                        Perlito5::AST::Apply->new(
-                            'arguments' => [],
-                            'code' => 'return',
-                            'namespace' => '',
+                            '_return_from_block' => 1,
                         );
     }
     else {
-        my $last_statement = $body->{stmts}[-1];
-        if ($last_statement->isa('Perlito5::AST::If')) {
-            Perlito5::Macro::insert_return_in_if($last_statement);
-        }
+        my $last_statement = pop(@{$self->{stmts}});
+        push(@{$self->{stmts}}, insert_return( $last_statement ));
     }
-    $self->{$tag} = $body;
+    return $self;
 }
-
 sub insert_return_in_if {
     my $self = $_[0];
-    return 0
-        if ref($self) ne 'Perlito5::AST::If';
-    _insert_return_in_block($self, 'body');
-    _insert_return_in_block($self, 'otherwise');
+    $self->{body}      = insert_return_in_block($self->{body} || Perlito5::AST::Block->new(stmts => []));
+    $self->{otherwise} = insert_return_in_block($self->{otherwise} || Perlito5::AST::Block->new(stmts => []));
+    return $self;
 }
+sub insert_return {
+    my $self = $_[0];
+    if ($self->isa('Perlito5::AST::If')) {
+        return insert_return_in_if($self);
+    }
+    if ($self->isa('Perlito5::AST::Block')) {
+        return insert_return_in_block($self);
+    }
+    if ($self->isa('Perlito5::AST::For')) {
+        return (
+            $self,
+            Perlito5::AST::Apply->new(
+                'arguments' => [ Perlito5::AST::Buf->new( buf => "" ) ],
+                'code' => 'return',
+                'namespace' => '',
+                '_return_from_block' => 1,
+            ),
+        );
+    }
+    if ( $self->isa('Perlito5::AST::While') ) {
+        if (   $self->{cond}->isa('Perlito5::AST::Int')  && $self->{cond}{int} )
+        {
+            # do not emit "return" after while(1){...} because "unreachable statement"
+            return $self;
+        }
+        else {
+            return (
+                $self,
+                Perlito5::AST::Apply->new(
+                    'arguments' => [ Perlito5::AST::Int->new( int => 0 ) ],
+                    'code' => 'return',
+                    'namespace' => '',
+                    '_return_from_block' => 1,
+                ),
+            );
+        }
+    }
+    if ( $self->isa( 'Perlito5::AST::Sub' ) ) {
+        if ( ! $self->{name} )
+        {
+            return Perlito5::AST::Apply->new(
+                    'arguments' => [ $self ],
+                    'code' => 'return',
+                    'namespace' => '',
+                    '_return_from_block' => 1,
+                );
+        }
+        else {
+            return (
+                $self,
+                Perlito5::AST::Apply->new(
+                    'arguments' => [ Perlito5::AST::Int->new( int => 0 ) ],
+                    'code' => 'return',
+                    'namespace' => '',
+                    '_return_from_block' => 1,
+                ),
+            );
+        }
+    }
+    if (   $self->isa( 'Perlito5::AST::Int' )
+        || $self->isa( 'Perlito5::AST::Num' )
+        || $self->isa( 'Perlito5::AST::Buf' )
+        || $self->isa( 'Perlito5::AST::Index' )
+        || $self->isa( 'Perlito5::AST::Lookup' )
+        || $self->isa( 'Perlito5::AST::Call' )
+        || $self->isa( 'Perlito5::AST::Var' )
+        || $self->isa( 'Perlito5::AST::Decl' )
+    ) {
+        return Perlito5::AST::Apply->new(
+                'arguments' => [ $self ],
+                'code' => 'return',
+                'namespace' => '',
+                '_return_from_block' => 1,
+            );
+    }
+    if ( $self->isa( 'Perlito5::AST::Apply' ) ) {
+        if ( $self->code eq 'return' ) {
+            return $self;
+        }
+        return Perlito5::AST::Apply->new(
+                'arguments' => [ $self ],
+                'code' => 'return',
+                'namespace' => '',
+                '_return_from_block' => 1,
+            );
+    }
+    return $self;
+}
+
 
 # sub split_deep_if {
 #     my $stmt = $_[0];
