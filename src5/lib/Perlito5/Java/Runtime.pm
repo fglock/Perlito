@@ -4925,6 +4925,14 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         result.a = aa;
         return result;
     }
+    public static PlArray construct_list_of_references(PlObject... args) {
+        PlArray aa = PlArray.construct_list_of_aliases(args);
+        PlArray result = new PlArray();
+        for (PlObject s : aa) {
+            result.push(new PlLvalueRef(s));
+        }
+        return result;
+    }
     public static PlObject static_list_set(int want, PlObject src, PlObject... args) {
         src = new PlArray(src);
         int size = src.to_int();

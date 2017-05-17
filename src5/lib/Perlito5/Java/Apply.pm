@@ -659,7 +659,7 @@ package Perlito5::AST::Apply;
                 # }
                 if ( $arg->{code} eq 'circumfix:<( )>' ) {
                     # \( @x )
-                    return 'p5_list_of_refs(' . Perlito5::Java::to_list( $arg->{arguments}, $level ) . ')';
+                    return 'PlArray.construct_list_of_references(' . Perlito5::Java::to_list( $arg->{arguments}, $level ) . ')';
                 }
                 if ( $arg->{code} eq 'prefix:<&>' ) {
                     return 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->{arguments}->[0]->emit_java($level) . ')';

@@ -17635,7 +17635,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     return 'new PlHashRef(' . $arg->emit_java($level) . ')'
                 }
                 if ($arg->{'code'} eq 'circumfix:<( )>') {;
-                    return 'p5_list_of_refs(' . Perlito5::Java::to_list($arg->{'arguments'}, $level) . ')'
+                    return 'PlArray.construct_list_of_references(' . Perlito5::Java::to_list($arg->{'arguments'}, $level) . ')'
                 }
                 if ($arg->{'code'} eq 'prefix:<&>') {;
                     return 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->{'arguments'}->[0]->emit_java($level) . ')'
@@ -22285,6 +22285,21 @@ class PlJavaCompiler {
             source5.append("        }\\n");
             source5.append("        catch(PlReturnException e) {\\n");
             source5.append("            return e.ret;\\n");
+            source5.append("        }\\n");
+            source5.append("        catch(PlNextException e) {\\n");
+            source5.append("            throw(e);\\n");
+            source5.append("        }\\n");
+            source5.append("        catch(PlLastException e) {\\n");
+            source5.append("            throw(e);\\n");
+            source5.append("        }\\n");
+            source5.append("        catch(PlRedoException e) {\\n");
+            source5.append("            throw(e);\\n");
+            source5.append("        }\\n");
+            source5.append("        catch(Exception e) {\\n");
+            // source5.append("            e.printStackTrace();\\n");
+            source5.append("            String message = e.getMessage();\\n");
+            source5.append("            PlV.sset(\\"main::@\\", new PlString(\\"\\" + message));\\n");
+            source5.append("            return PerlOp.context(want);\\n");
             source5.append("        }\\n");
             source5.append("    }\\n");
             source5.append("}\\n");
@@ -27280,6 +27295,14 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         }
         PlArray result = new PlArray();
         result.a = aa;
+        return result;
+    }
+    public static PlArray construct_list_of_references(PlObject... args) {
+        PlArray aa = PlArray.construct_list_of_aliases(args);
+        PlArray result = new PlArray();
+        for (PlObject s : aa) {
+            result.push(new PlLvalueRef(s));
+        }
         return result;
     }
     public static PlObject static_list_set(int want, PlObject src, PlObject... args) {
