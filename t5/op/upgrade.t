@@ -4,13 +4,13 @@
 # Curiously, before this, lib/Math/Trig.t was the only code anywhere in the
 # build or testsuite that upgraded an NV to an RV
 
+use strict;
+
 BEGIN {
     chdir 't' if -d 't';
     @INC = '../lib';
     require './test.pl';
 }
-
-use strict;
 
 my $null;
 

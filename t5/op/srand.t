@@ -1,13 +1,14 @@
 #!./perl -w
 
+use strict;
+use warnings;
+
 BEGIN {
     chdir "t" if -d "t";
     @INC = qw(. ../lib);
 }
 
 # Test srand.
-
-use strict;
 
 require "./test.pl";
 plan(tests => 10);
