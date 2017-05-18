@@ -19659,7 +19659,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             if ($meth eq 'postcircumfix:<( )>') {
                 my $invocant;
-                if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::' && $self->{'invocant'}->{'namespace'} eq '__SUB__') {;
+                if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::' && ($self->{'invocant'}->{'namespace'} eq '__SUB__' || $self->{'invocant'}->{'namespace'} eq 'CORE::__SUB__')) {;
                     $invocant = 'this.getCurrentSub()'
                 }
                 else {;

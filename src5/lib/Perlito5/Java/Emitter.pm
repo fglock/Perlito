@@ -2270,7 +2270,8 @@ package Perlito5::AST::Call;
 
             if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
                && $self->{invocant}{sigil} eq '::'
-               && $self->{invocant}{namespace} eq '__SUB__'
+               && ( $self->{invocant}{namespace} eq '__SUB__'
+                  || $self->{invocant}{namespace} eq 'CORE::__SUB__' )
                )
             {
                 # __SUB__->()
