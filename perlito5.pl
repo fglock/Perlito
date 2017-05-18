@@ -9081,7 +9081,7 @@ use feature 'say';
             if ($self->{'code'} eq 'eval') {
                 my $args = $self->{'arguments'};
                 if (@{$args} && !$args->[0]->isa('Perlito5::AST::Block')) {;
-                    return Perlito5::AST::Apply::->new(%{$self}, 'arguments' => [Perlito5::AST::Apply::->new('code' => 'generate_eval_string', 'namespace' => 'Perlito5::CompileTime::Dumper', 'arguments' => [@{$args}, Perlito5::AST::Buf::->new('buf' => $Perlito5::STRICT)])])
+                    return $self
                 }
             }
             if ($self->{'code'} eq 'require' && !$self->{'namespace'}) {;
@@ -9309,22 +9309,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::CompileTime::Dumper;
-    sub Perlito5::CompileTime::Dumper::generate_eval_string {
-        (my($source), my($strict)) = @_;
-        local $Perlito5::STRICT = $strict;
-        my $source_new = '';
-        ${'@'} = '';
-        eval {
-            my $m = Perlito5::Grammar::exp_stmts($source, 0);
-            my $block = Perlito5::AST::Block::->new('stmts' => Perlito5::Match::flat($m));
-            my @data = $block->emit_perl5();
-            my $out = [];
-            Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-            $source_new = join('', @{$out}), ';1
-'
-        };
-        return $source_new
-    }
     sub Perlito5::CompileTime::Dumper::_dump_AST_from_scope {
         (my($name), my($item), my($vars), my($dumper_seen)) = @_;
         my $sigil = substr($name, 0, 1);
@@ -22651,6 +22635,7 @@ class SourceCode extends SimpleJavaFileObject {
     sub Perlito5::Java::Runtime::perl5_to_java {
         (my($source), my($namespace), my($want), my($strict), my($scope_java)) = @_;
         my $strict_old = $Perlito5::STRICT;
+        $Perlito5::STRICT = $strict;
         local $_;
         local ${'^GLOBAL_PHASE'};
         local $Perlito5::BASE_SCOPE = $scope_java;
@@ -22661,6 +22646,7 @@ class SourceCode extends SimpleJavaFileObject {
         local $Perlito5::PKG_NAME = $namespace;
         local @Perlito5::UNITCHECK_BLOCK;
         local @Perlito5::Java::Java_constants;
+        ${'@'} = '';
         my $match = Perlito5::Grammar::exp_stmts($source, 0);
         if (!$match || $match->{'to'} != length($source)) {;
             die('Syntax error in eval near pos ', $match->{'to'})

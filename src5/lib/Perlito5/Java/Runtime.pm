@@ -12,7 +12,8 @@ sub perl5_to_java {
 
     # say "source: [" . $source . "]";
 
-    my    $strict_old         = $Perlito5::STRICT;
+    my    $strict_old   = $Perlito5::STRICT;
+    $Perlito5::STRICT   = $strict;
     local $_;
     local ${^GLOBAL_PHASE};
     local $Perlito5::BASE_SCOPE = $scope_java;  # ->[0];
@@ -23,6 +24,7 @@ sub perl5_to_java {
     local $Perlito5::PKG_NAME = $namespace;
     local @Perlito5::UNITCHECK_BLOCK;
     local @Perlito5::Java::Java_constants;
+    $@ = "";
 
     # warn "in eval enter\n";
     # warn "External scope ", Data::Dumper::Dumper($scope_java);

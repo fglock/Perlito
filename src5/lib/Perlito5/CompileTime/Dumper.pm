@@ -3,37 +3,38 @@ package Perlito5::CompileTime::Dumper;
 use Perlito5::DumpToAST;
 use strict;
 
-sub generate_eval_string {
-    my ($source, $strict) = @_;
-    local $Perlito5::STRICT = $strict;
-    my $source_new = "";
-    $@ = "";
-    eval {
-        # print STDERR "[[[ $source ]]]\n";
-        my $m = Perlito5::Grammar::exp_stmts($source, 0);
-        my $block = Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($m) );
-
-        ## TODO: enable emit_compile_time()
-        ##
-        ##  $ node perlito5.js -I src5/lib  t5/op/pow.t
-        ##  [[[ { package main;
-        ##  {
-        ##      chdir 't' if -d 't';
-        ##      @INC = '../lib';
-        ##      require './test.pl';
-        ##  } }; 1 ]]]
-        ##  Error in BEGIN block: TypeError: Cannot call method 'p5aget' of undefined
-        ##
-        # my @data = $block->emit_compile_time;
-
-        my @data = $block->emit_perl5;
-        my $out = [];
-        Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-        $source_new = join( '', @$out ), ";1\n";
-        # print STDERR "[[[ $source_new ]]]\n";
-    };
-    return $source_new;
-}
+# TODO
+# sub generate_eval_string {
+#     my ($source, $strict) = @_;
+#     local $Perlito5::STRICT = $strict;
+#     my $source_new = "";
+#     $@ = "";
+#     eval {
+#         # print STDERR "[[[ $source ]]]\n";
+#         my $m = Perlito5::Grammar::exp_stmts($source, 0);
+#         my $block = Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($m) );
+# 
+#         ## TODO: enable emit_compile_time()
+#         ##
+#         ##  $ node perlito5.js -I src5/lib  t5/op/pow.t
+#         ##  [[[ { package main;
+#         ##  {
+#         ##      chdir 't' if -d 't';
+#         ##      @INC = '../lib';
+#         ##      require './test.pl';
+#         ##  } }; 1 ]]]
+#         ##  Error in BEGIN block: TypeError: Cannot call method 'p5aget' of undefined
+#         ##
+#         # my @data = $block->emit_compile_time;
+# 
+#         my @data = $block->emit_perl5;
+#         my $out = [];
+#         Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
+#         $source_new = join( '', @$out ), ";1\n";
+#         # print STDERR "[[[ $source_new ]]]\n";
+#     };
+#     return $source_new;
+# }
 
 sub _dump_AST_from_scope {
     my ($name, $item, $vars, $dumper_seen,) = @_;
