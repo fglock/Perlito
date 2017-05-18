@@ -27,7 +27,6 @@ token the_object {
             }
     |
         <typeglob>
-            <!before '('>
             {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'typeglob'});
             }
@@ -59,7 +58,14 @@ token the_object {
     }
 };
 
-sub typeglob {
+token typeglob {
+    <typeglob_bareword> <!before '('>
+        {
+            $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'typeglob_bareword'});
+        }
+};
+ 
+sub typeglob_bareword {
     my $str = $_[0];
     my $pos = $_[1];
     my $p = $pos;

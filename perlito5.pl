@@ -674,6 +674,12 @@ use feature 'say';
                 return $m_name
             }
         }
+        if ($Perlito5::STRICT) {
+            my $m = Perlito5::Grammar::Space::opt_ws($str, $p);
+            my $p = $m->{'to'};
+            if ($str->[$p] eq ':') {}
+            elsif (!(exists($Perlito5::PROTO->{$effective_name}) || ((!$namespace || $namespace eq 'CORE') && exists($Perlito5::CORE_PROTO->{'CORE::' . $name})))) {}
+        }
         $m_name->{'capture'} = ['postfix_or_term', 'funcall_no_params', $namespace, $name];
         return $m_name
     }
@@ -7140,12 +7146,6 @@ use feature 'say';
                         0
                     }
                 }) && (do {
-                    my $tmp = $MATCH;
-                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
-                    $MATCH = $tmp;
-                    $res ? 0 : 1
-                }) && (do {
                     $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'typeglob'});
                     1
                 }))
@@ -7202,6 +7202,32 @@ use feature 'say';
         $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Print::typeglob {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
+        my $tmp = (((do {
+            my $m2 = typeglob_bareword($str, $MATCH->{'to'});
+            if ($m2) {
+                $MATCH->{'to'} = $m2->{'to'};
+                $MATCH->{'typeglob_bareword'} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $tmp = $MATCH;
+            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+            my $res = (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
+            $MATCH = $tmp;
+            $res ? 0 : 1
+        }) && (do {
+            $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'typeglob_bareword'});
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Print::typeglob_bareword {
         my $str = $_[0];
         my $pos = $_[1];
         my $p = $pos;

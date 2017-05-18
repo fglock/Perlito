@@ -669,25 +669,39 @@ sub term_bareword {
 
     # it's just a bareword - we will disambiguate later
 
-    # TODO - forbid barewords that are not "GLOB" - "close FILE" is ok
-    #
-    # if ($Perlito5::STRICT) {
-    #     if (
-    #         !(
-    #             exists( $Perlito5::PROTO->{$effective_name} )
-    #             || (
-    #                 ( !$namespace || $namespace eq 'CORE' )
-    #                 && exists $Perlito5::CORE_PROTO->{"CORE::$name"}    # subroutine comes from CORE
-    #             )
-    #         )
-    #       )
-    #     {
-    #         # subroutine was not predeclared
-    #         # print STDERR "effective_name [$effective_name]\n";
-    #         Perlito5::Compiler::error 'Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use';
+    if ($Perlito5::STRICT) {
+        # Allow:
+        #   - close FILE
+        #   - LABEL: { ... }
+        #   - next LABEL / goto LABEL
+        #   - predeclared named subroutines in $Perlito5::PROTO
+        #   - CORE operators                in $Perlito5::CORE_PROTO
+        #   - subr LABEL                    if prototype(&subr) eq '*'
 
-    #     }
-    # }
+        my $m = Perlito5::Grammar::Space::opt_ws( $str, $p );
+        my $p = $m->{to};
+        if ( $str->[$p] eq ':' ) {
+            # looks like "LABEL:"
+        }
+        elsif (
+            !(
+                exists( $Perlito5::PROTO->{$effective_name} )
+                || (
+                    ( !$namespace || $namespace eq 'CORE' )
+                    && exists $Perlito5::CORE_PROTO->{"CORE::$name"}    # subroutine comes from CORE
+                )
+            )
+          )
+        {
+            # TODO
+
+            # subroutine was not predeclared
+            # print STDERR "effective_name [$effective_name]\n";
+            # Perlito5::Compiler::error( 'HERE2 Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
+            # warn( 'HERE2 Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
+
+        }
+    }
 
     $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
             $namespace,
