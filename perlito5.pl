@@ -17859,7 +17859,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             return $js
         }, 'eval' => sub {
             (my($self), my($level), my($wantarray)) = @_;
-            my $arg = $self->{'arguments'}->[0];
+            my $arg = $self->{'arguments'}->[0] || Perlito5::AST::Var::SCALAR_ARG();
             my $eval;
             if ($arg->isa('Perlito5::AST::Block')) {
                 $Perlito5::THROW = 1;
@@ -20325,6 +20325,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             // See: http://stackoverflow.com/questions/262618/java-bufferedreader-back-to-the-top-of-a-text-file
 
             // position = 0
+            if (fh.reader == null) {
+                PlV.sset("main::!", new PlString("File is not open"));
+                return PlCx.UNDEF;
+            }
             fh.reader.reset();
             fh.readlineBuffer = new StringBuilder();
             fh.eof = false;
@@ -20935,8 +20939,13 @@ class PlCORE {
             return ret;
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < List__.to_int(); i++) {
-            sb.append( List__.aget(i).toString() );
+        if (List__.to_int() == 0) {
+            sb.append( PlV.sget("main::_") );
+        }
+        else {
+            for (int i = 0; i < List__.to_int(); i++) {
+                sb.append( List__.aget(i).toString() );
+            }
         }
         return new PlString(sb.reverse().toString());
     }
@@ -22313,7 +22322,7 @@ class PlJavaCompiler {
             source5.append("            throw(e);\\n");
             source5.append("        }\\n");
             source5.append("        catch(Exception e) {\\n");
-            // source5.append("            e.printStackTrace();\\n");
+            source5.append("            e.printStackTrace();\\n");
             source5.append("            String message = e.getMessage();\\n");
             source5.append("            PlV.sset(\\"main::@\\", new PlString(\\"\\" + message));\\n");
             source5.append("            return PerlOp.context(want);\\n");
@@ -22321,7 +22330,7 @@ class PlJavaCompiler {
             source5.append("    }\\n");
             source5.append("}\\n");
             String cls5 = source5.toString();
-            // System.out.println("\\neval_ast:\\n" + cls5 + "\\n");
+            System.out.println("\\neval_ast:\\n" + cls5 + "\\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -22451,7 +22460,7 @@ class PlJavaCompiler {
             source5.append("            throw(e);\\n");
             source5.append("        }\\n");
             source5.append("        catch(Exception e) {\\n");
-            // source5.append("            e.printStackTrace();\\n");
+            source5.append("            e.printStackTrace();\\n");
             source5.append("            String message = e.getMessage();\\n");
             source5.append("            PlV.sset(\\"main::@\\", new PlString(\\"\\" + message));\\n");
             source5.append("            return PerlOp.context(want);\\n");
@@ -22459,7 +22468,7 @@ class PlJavaCompiler {
             source5.append("    }\\n");
             source5.append("}\\n");
             String cls5 = source5.toString();
-            // System.out.println("\\neval_perl_string:\\n" + cls5 + "\\n");
+            System.out.println("\\neval_perl_string:\\n" + cls5 + "\\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(

@@ -986,7 +986,7 @@ package Perlito5::AST::Apply;
         'eval' => sub {
             my ($self, $level, $wantarray) = @_;
 
-            my $arg = $self->{arguments}->[0];
+            my $arg = $self->{arguments}->[0] || Perlito5::AST::Var::SCALAR_ARG();
             my $eval;
             if ($arg->isa( "Perlito5::AST::Block" )) {
                 # eval BLOCK

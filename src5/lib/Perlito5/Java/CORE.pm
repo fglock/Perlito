@@ -346,6 +346,10 @@ EOT
             // See: http://stackoverflow.com/questions/262618/java-bufferedreader-back-to-the-top-of-a-text-file
 
             // position = 0
+            if (fh.reader == null) {
+                PlV.sset("main::!", new PlString("File is not open"));
+                return PlCx.UNDEF;
+            }
             fh.reader.reset();
             fh.readlineBuffer = new StringBuilder();
             fh.eof = false;
@@ -963,8 +967,13 @@ EOT
             return ret;
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < List__.to_int(); i++) {
-            sb.append( List__.aget(i).toString() );
+        if (List__.to_int() == 0) {
+            sb.append( PlV.sget("main::_") );
+        }
+        else {
+            for (int i = 0; i < List__.to_int(); i++) {
+                sb.append( List__.aget(i).toString() );
+            }
         }
         return new PlString(sb.reverse().toString());
     }

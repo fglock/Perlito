@@ -7,10 +7,12 @@ use feature 'say';
 use strict;
 use warnings;
 
-# eval in an empty lexical scope;
-# shift() makes sure @_ empty
-sub eval_string { eval shift() }
-
+{
+    package main;
+    # eval in an empty lexical scope;
+    # shift() makes sure @_ empty
+    sub eval_string { eval shift() }
+}
 
 # precompile some extra modules
 use Data::Dumper ();
@@ -320,14 +322,12 @@ if ($backend) {
         $use_warnings = $1;
     }
 
-    $source = "\n# line 1\n"
-            . $source;
-
     if ($wrapper_begin) {
-        $source = " $wrapper_begin;
-                    $source;
-                    $wrapper_end
-                  ";
+        $source = 
+              $wrapper_begin . ";\n"
+            . "# line 1\n"
+            . $source . ";\n"
+            . $wrapper_end;
     }
     if ($verbose) {
         warn "// source [[[ $source ]]]\n";
@@ -358,11 +358,10 @@ if ($backend) {
         my $init = join("; ", @Use);
         my $warnings = '';
         $warnings = "use warnings" if $use_warnings;
-        eval_string( qq{
+        main::eval_string( qq{
             $warnings;
             Perlito5::set_global_phase("CHECK");
             \$_->() for \@Perlito5::CHECK_BLOCK;
-            package main;
             $init;
             if (keys %Perlito5::DATA_SECTION) {
                 for my \$pkg (keys %Perlito5::DATA_SECTION) {
@@ -377,9 +376,9 @@ if ($backend) {
             }
             or die "\$@\nINIT failed--call queue aborted.\n";
             Perlito5::set_global_phase("RUN");
-            $source;
-            \$@ = undef
+            print "HERE\n";
         } );
+        main::eval_string( $source ) if !$@;
         my $error = $@;
         warn $error if $error;
         Perlito5::set_global_phase("END");
