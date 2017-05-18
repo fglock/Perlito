@@ -17915,8 +17915,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             (my($self), my($level), my($wantarray)) = @_;
             if ($self->{'arguments'} && @{$self->{'arguments'}}) {
                 my $arg = $self->{'arguments'}->[0];
-                if (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'sigil'} eq '&') {;
-                    return '(delete p5pkg[' . Perlito5::Java::escape_string(($arg->{'namespace'} || $Perlito5::PKG_NAME)) . '][' . Perlito5::Java::escape_string($arg->{'name'}) . '])'
+                if (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'sigil'} eq '&') {
+                    my $name = $arg->{'name'};
+                    my $namespace = $arg->{'namespace'} || $Perlito5::PKG_NAME;
+                    return 'PlV.cset(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ', PlCx.UNDEF)'
                 }
                 $self->{'arguments'} = [];
                 return $arg->emit_java_set($self, $level, $wantarray)
@@ -23157,6 +23159,13 @@ class PerlOp {
             if (!invocant.is_ref()) {
                 // invocant can be a package name
                 return call( invocant.toString(), method, args, context );
+            }
+
+            if (invocant.is_filehandle()) {
+                // $fh->print() is allowed, even if $fh is unblessed
+                if (method.equals("print")) {
+                    return PlCORE.print(context, (PlFileHandle)invocant, args);
+                }
             }
 
             PlCORE.die( "Can' . chr(39) . 't call method \\"" + method

@@ -675,6 +675,13 @@ class PerlOp {
                 return call( invocant.toString(), method, args, context );
             }
 
+            if (invocant.is_filehandle()) {
+                // $fh->print() is allowed, even if $fh is unblessed
+                if (method.equals("print")) {
+                    return PlCORE.print(context, (PlFileHandle)invocant, args);
+                }
+            }
+
             PlCORE.die( "Can't call method \"" + method
                 + "\" on unblessed reference" );
             return PlCx.UNDEF;
