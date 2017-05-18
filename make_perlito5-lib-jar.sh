@@ -1,8 +1,9 @@
 
 # cleanup
 
-make clean
+# make clean
 rm perlito5-lib.jar
+rm perlito5.jar
 rm -rf org
 
 
