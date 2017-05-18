@@ -542,6 +542,12 @@ sub term_bareword {
             # stat DIRHANDLE
             # If EXPR is omitted, it stats $_.
 
+            # $m = Perlito5::Grammar::Print::typeglob( $str, $p );
+            # if ($m) {
+            #     $p = $m->{to};
+            #     my $arg = Perlito5::Match::flat($m->{'Perlito5::Grammar::Print::typeglob'});
+            #     # TODO
+            # }
         }
 
     } # / defined $sig
