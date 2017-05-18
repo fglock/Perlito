@@ -179,7 +179,10 @@ package Perlito5::AST::Apply;
                         Perlito5::AST::Apply->new(
                             code => 'generate_eval_string',
                             namespace => 'Perlito5::CompileTime::Dumper',
-                            arguments => $args,
+                            arguments => [
+                                @$args,
+                                Perlito5::AST::Buf->new( buf => $Perlito5::STRICT ),
+                            ],
                         ),
                     ],
                 );
