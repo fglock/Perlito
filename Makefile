@@ -4,7 +4,7 @@ PERL5_INC := -I./lib5
 
 # default actions
 
-all : build-5to5 build-5js build-5browser build-5to6browser
+all : build-5to5 build-5js build-5java build-5browser build-5to6browser
 
 test-all : test-5to5 test-5js
 
