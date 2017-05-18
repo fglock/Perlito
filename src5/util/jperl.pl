@@ -376,7 +376,6 @@ if ($backend) {
             }
             or die "\$@\nINIT failed--call queue aborted.\n";
             Perlito5::set_global_phase("RUN");
-            print "HERE\n";
         } );
         main::eval_string( $source ) if !$@;
         my $error = $@;

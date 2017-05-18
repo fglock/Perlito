@@ -22322,7 +22322,7 @@ class PlJavaCompiler {
             source5.append("            throw(e);\\n");
             source5.append("        }\\n");
             source5.append("        catch(Exception e) {\\n");
-            source5.append("            e.printStackTrace();\\n");
+            // source5.append("            e.printStackTrace();\\n");
             source5.append("            String message = e.getMessage();\\n");
             source5.append("            PlV.sset(\\"main::@\\", new PlString(\\"\\" + message));\\n");
             source5.append("            return PerlOp.context(want);\\n");
@@ -22330,7 +22330,7 @@ class PlJavaCompiler {
             source5.append("    }\\n");
             source5.append("}\\n");
             String cls5 = source5.toString();
-            System.out.println("\\neval_ast:\\n" + cls5 + "\\n");
+            // System.out.println("\\neval_ast:\\n" + cls5 + "\\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -22460,7 +22460,7 @@ class PlJavaCompiler {
             source5.append("            throw(e);\\n");
             source5.append("        }\\n");
             source5.append("        catch(Exception e) {\\n");
-            source5.append("            e.printStackTrace();\\n");
+            // source5.append("            e.printStackTrace();\\n");
             source5.append("            String message = e.getMessage();\\n");
             source5.append("            PlV.sset(\\"main::@\\", new PlString(\\"\\" + message));\\n");
             source5.append("            return PerlOp.context(want);\\n");
@@ -22468,7 +22468,7 @@ class PlJavaCompiler {
             source5.append("    }\\n");
             source5.append("}\\n");
             String cls5 = source5.toString();
-            System.out.println("\\neval_perl_string:\\n" + cls5 + "\\n");
+            // System.out.println("\\neval_perl_string:\\n" + cls5 + "\\n");
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
