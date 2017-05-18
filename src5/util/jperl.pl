@@ -320,11 +320,9 @@ if ($backend) {
         $use_warnings = $1;
     }
 
-    $source = "\n# line 1\n"
-            . $source;
-
     if ($wrapper_begin) {
         $source = " $wrapper_begin;
+# line 1
                     $source;
                     $wrapper_end
                   ";
@@ -377,7 +375,9 @@ if ($backend) {
             }
             or die "\$@\nINIT failed--call queue aborted.\n";
             Perlito5::set_global_phase("RUN");
-            $source;
+#--START--
+# line 1
+$source;
             \$@ = undef
         } );
         my $error = $@;

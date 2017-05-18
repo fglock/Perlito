@@ -6641,8 +6641,12 @@ use feature 'say';
                 $p++
             }
         }
-        if ($is_data) {;
-            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {'pos' => $p, 'data' => join('', @{$str})}
+        if ($is_data) {
+            my $source = join('', @{$str});
+            my $len = length($source);
+            $source =~ s/.*\n#--START--\n# line 1//s;
+            my $pos = $p - $len + length($source);
+            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {'pos' => $pos, 'data' => $source}
         }
         return {'str' => $str, 'from' => $_[1], 'to' => scalar(@{$str}), 'capture' => ['space', ' ']}
     }

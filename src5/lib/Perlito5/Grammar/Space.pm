@@ -85,7 +85,13 @@ sub term_end {
         }
     }
     if ($is_data) {
-        $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = { pos => $p, data => join( "", @$str ) };
+
+        my $source = join( "", @$str );
+        my $len = length($source);
+        $source =~ s/.*\n#--START--\n# line 1//s;
+        my $pos = $p - $len + length($source);
+
+        $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = { pos => $pos, data => $source };
         # TODO - leave the DATA filehandle open
         # open(main::DATA, '<', \$Perlito5::DATA_SECTION{main}{data});
         # seek(main::DATA, $Perlito5::DATA_SECTION{main}{pos}, 0);
