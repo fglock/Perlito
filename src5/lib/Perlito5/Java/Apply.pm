@@ -1105,7 +1105,9 @@ package Perlito5::AST::Apply;
                    && $arg->{sigil} eq '&'
                    )
                 {
-                    return '(delete p5pkg[' . Perlito5::Java::escape_string(($arg->{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::Java::escape_string($arg->{name} ) . '])';
+                    my $name = $arg->{name};
+                    my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
+                    return 'PlV.cset(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ', PlCx.UNDEF)';
                 }
                 $self->{arguments} = [];
                 return $arg->emit_java_set($self, $level, $wantarray);
