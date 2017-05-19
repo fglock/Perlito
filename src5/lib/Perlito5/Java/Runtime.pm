@@ -1409,8 +1409,10 @@ class PerlOp {
     // ****** end regex variables
 
     public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global, boolean c_flag) {
-        // 'c_flag'  c  - keep the current position during repeated matching
+        // 'want'    context (PlCx.LIST, PlCx.SCALAR, PlCx.VOID)
         // 'global'  g  - globally match the pattern repeatedly in the string
+        // 'c_flag'  c  - keep the current position during repeated matching
+
         String str = input.toString();
         if (want != PlCx.LIST) {
             Matcher matcher = pat.p.matcher(str);
@@ -1454,11 +1456,24 @@ class PerlOp {
         PlArray ret = new PlArray();
         if (global) {
             // list context, global match
+            // Note: if there are no captures, then return the matched substrings
             boolean found = false;
             while (matcher.find()) {
                 found = true;
-                for (int i = 1; i <= matcher.groupCount(); i++) {
-                    String cap = matcher.group(i);
+                int count = matcher.groupCount();
+                if (count > 0) {
+                    for (int i = 1; i <= count; i++) {
+                        String cap = matcher.group(i);
+                        if (cap == null) {
+                            ret.push(PlCx.UNDEF);
+                        }
+                        else {
+                            ret.push(cap);
+                        }
+                    }
+                }
+                else {
+                    String cap = matcher.group();
                     if (cap == null) {
                         ret.push(PlCx.UNDEF);
                     }
