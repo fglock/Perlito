@@ -721,7 +721,7 @@ package Perlito5::AST::Apply;
                     namespace => '',
                     arguments => [
                        Perlito5::AST::Apply->new(
-                          code => 'do_file',
+                          code => 'slurp_file',
                           namespace => 'Perlito5::Grammar::Use',
                           arguments => $self->{arguments}
                         )

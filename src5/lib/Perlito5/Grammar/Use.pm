@@ -367,7 +367,7 @@ sub require {
     #   use the compiler "do FILE" instead of native Perl
     #   because we need to add BEGIN-block instrumentation
     # my $result = do $filename;
-    my $source = do_file($filename);
+    my $source = slurp_file($filename);
     # print STDERR "require $filename [[ $source ]]\n";
     local $Perlito5::FILE_NAME = $filename;
     local $Perlito5::STRICT = 0;
@@ -395,7 +395,7 @@ sub require {
     }
 }
 
-sub do_file {
+sub slurp_file {
     my $filename = shift;
     eval {
         filename_lookup($filename);
