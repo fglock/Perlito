@@ -2,15 +2,16 @@
 
 use v5;
 
-package Perlito5;
-use feature 'say';
-use strict;
-use warnings;
-
+package main;
 # eval in an empty lexical scope;
 # shift() makes sure @_ empty
 sub eval_string { eval shift() }
 
+
+package Perlito5;
+use feature 'say';
+use strict;
+use warnings;
 
 # precompile some extra modules
 use Data::Dumper ();
@@ -356,7 +357,7 @@ if ($backend) {
         my $init = join("; ", @Use);
         my $warnings = '';
         $warnings = "use warnings" if $use_warnings;
-        eval_string( qq{
+        main::eval_string( qq{
             $warnings;
             Perlito5::set_global_phase("CHECK");
             \$_->() for \@Perlito5::CHECK_BLOCK;
@@ -369,11 +370,8 @@ if ($backend) {
             }
             or die "\$@\nINIT failed--call queue aborted.\n";
             Perlito5::set_global_phase("RUN");
-#--START--
-# line 1
-$source;
-            \$@ = undef
         } );
+        main::eval_string($source);
         my $error = $@;
         warn $error if $error;
         Perlito5::set_global_phase("END");

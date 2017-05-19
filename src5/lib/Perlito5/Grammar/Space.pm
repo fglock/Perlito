@@ -87,9 +87,7 @@ sub term_end {
     if ($is_data) {
 
         my $source = join( "", @$str );
-        my $len = length($source);
-        $source =~ s/^.*\n#--START--\n# line 1//s;
-        my $pos = $p - $len + length($source);
+        my $pos = $p;
 
         $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = { pos => $pos, data => $source };
         # leave the DATA filehandle open

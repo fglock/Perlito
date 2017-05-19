@@ -6643,9 +6643,7 @@ use feature 'say';
         }
         if ($is_data) {
             my $source = join('', @{$str});
-            my $len = length($source);
-            $source =~ s/^.*\n#--START--\n# line 1//s;
-            my $pos = $p - $len + length($source);
+            my $pos = $p;
             $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {'pos' => $pos, 'data' => $source};
             my $pkg = $Perlito5::PKG_NAME;
             open(*{$pkg . '::DATA'}, '<', \$Perlito5::DATA_SECTION{$pkg}->{'data'});
