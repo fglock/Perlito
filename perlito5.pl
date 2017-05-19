@@ -24649,7 +24649,7 @@ class PlV {
             PlV.aset(name, value);
         }
         else if (value.is_scalarref()) {
-            PlV.sset(name, value);
+            PlV.sset(name, value.get());
         }
         else if (value.is_typeglobref()) {
             // *x = \\*y
