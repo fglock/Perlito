@@ -362,12 +362,6 @@ if ($backend) {
             \$_->() for \@Perlito5::CHECK_BLOCK;
             package main;
             $init;
-            if (keys %Perlito5::DATA_SECTION) {
-                for my \$pkg (keys %Perlito5::DATA_SECTION) {
-                    open *{\$pkg . "::DATA"}, '<', \\\$Perlito5::DATA_SECTION{\$pkg}{data};
-                    seek(*{\$pkg . "::DATA"}, \$Perlito5::DATA_SECTION{\$pkg}{pos}, 0);
-                }
-            }
             Perlito5::set_global_phase("INIT");
             eval {
                 \$_->() for \@Perlito5::INIT_BLOCK;

@@ -92,9 +92,10 @@ sub term_end {
         my $pos = $p - $len + length($source);
 
         $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = { pos => $pos, data => $source };
-        # TODO - leave the DATA filehandle open
-        # open(main::DATA, '<', \$Perlito5::DATA_SECTION{main}{data});
-        # seek(main::DATA, $Perlito5::DATA_SECTION{main}{pos}, 0);
+        # leave the DATA filehandle open
+        my $pkg = $Perlito5::PKG_NAME;
+        open *{$pkg . "::DATA"}, '<', \$Perlito5::DATA_SECTION{$pkg}{data};
+        seek(*{$pkg . "::DATA"}, $Perlito5::DATA_SECTION{$pkg}{pos}, 0);
     }
     return { str => $str, from => $_[1], to => scalar(@$str), capture => [ 'space',   ' ' ] }
 }

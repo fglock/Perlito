@@ -5046,7 +5046,7 @@ use feature 'say';
             return 1
         }
         filename_lookup($filename) eq 'done' && return;
-        my $source = do_file($filename);
+        my $source = slurp_file($filename);
         local $Perlito5::FILE_NAME = $filename;
         local $Perlito5::STRICT = 0;
         Perlito5::Grammar::Scope::check_variable_declarations();
@@ -5068,7 +5068,7 @@ use feature 'say';
             return $result
         }
     }
-    sub Perlito5::Grammar::Use::do_file {
+    sub Perlito5::Grammar::Use::slurp_file {
         my $filename = shift;
         eval {
             filename_lookup($filename);
@@ -6644,9 +6644,12 @@ use feature 'say';
         if ($is_data) {
             my $source = join('', @{$str});
             my $len = length($source);
-            $source =~ s/.*\n#--START--\n# line 1//s;
+            $source =~ s/^.*\n#--START--\n# line 1//s;
             my $pos = $p - $len + length($source);
-            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {'pos' => $pos, 'data' => $source}
+            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {'pos' => $pos, 'data' => $source};
+            my $pkg = $Perlito5::PKG_NAME;
+            open(*{$pkg . '::DATA'}, '<', \$Perlito5::DATA_SECTION{$pkg}->{'data'});
+            seek(*{$pkg . '::DATA'}, $Perlito5::DATA_SECTION{$pkg}->{'pos'}, 0)
         }
         return {'str' => $str, 'from' => $_[1], 'to' => scalar(@{$str}), 'capture' => ['space', ' ']}
     }
@@ -10826,7 +10829,7 @@ use feature 'say';
             }
             my $tmp_strict = $Perlito5::STRICT;
             $Perlito5::STRICT = 0;
-            my $ast = Perlito5::AST::Apply::->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'do_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})], '_scope' => Perlito5::Grammar::Scope::->new_base_scope());
+            my $ast = Perlito5::AST::Apply::->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'slurp_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})], '_scope' => Perlito5::Grammar::Scope::->new_base_scope());
             my $js = $ast->emit_javascript2($level, $wantarray);
             $Perlito5::STRICT = $tmp_strict;
             return $js
@@ -17857,7 +17860,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             my $tmp_strict = $Perlito5::STRICT;
             $Perlito5::STRICT = 0;
-            my $ast = Perlito5::AST::Apply::->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'do_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})], '_scope' => Perlito5::Grammar::Scope::->new_base_scope());
+            my $ast = Perlito5::AST::Apply::->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'slurp_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})], '_scope' => Perlito5::Grammar::Scope::->new_base_scope());
             my $js = $ast->emit_java($level, $wantarray);
             $Perlito5::STRICT = $tmp_strict;
             return $js
