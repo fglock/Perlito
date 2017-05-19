@@ -371,9 +371,8 @@ if ($backend) {
             Perlito5::set_global_phase("RUN");
 #--START--
 # line 1
-$source;
-            \$@ = undef
-        } );
+$source
+;\$@ = undef} );
         my $error = $@;
         warn $error if $error;
         Perlito5::set_global_phase("END");
