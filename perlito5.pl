@@ -17386,7 +17386,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             return emit_qr_java($self->{'arguments'}->[0], $self->{'arguments'}->[1]->{'buf'}, $level)
         }, '__PACKAGE__' => sub {
             (my($self), my($level), my($wantarray)) = @_;
-            Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+            'new PlString(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
         }, '__SUB__' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             'this.getCurrentSub()'

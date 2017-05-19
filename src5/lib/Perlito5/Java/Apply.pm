@@ -201,7 +201,7 @@ package Perlito5::AST::Apply;
         },
         '__PACKAGE__' => sub {
             my ($self, $level, $wantarray) = @_;
-            Perlito5::Java::escape_string($Perlito5::PKG_NAME);
+            "new PlString(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")";
         },
         '__SUB__' => sub {
             my ($self, $level, $wantarray) = @_;
