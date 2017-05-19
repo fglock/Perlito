@@ -31,8 +31,7 @@ my %FileFunc = (
 
                 if (List__.aget(0).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
                     PlObject o = List__.aget(0).scalar_deref("main");
-                    InputStream is = new PlStringInputStream(o);
-                    fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.reader = new PlStringReader(o);
                     fh.reader.mark(o.toString().length());
                     fh.outputStream = null;
                     return PlCx.INT1;
@@ -64,8 +63,7 @@ my %FileFunc = (
                     // TODO - input stream, charset
 
                     PlObject o = List__.aget(1).scalar_deref("main");
-                    InputStream is = new PlStringInputStream(o);
-                    fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.reader = new PlStringReader(o);
                     fh.reader.mark(o.toString().length());
                     fh.outputStream = null;
                     return PlCx.INT1;

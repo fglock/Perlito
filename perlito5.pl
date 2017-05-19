@@ -20047,8 +20047,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 
                 if (List__.aget(0).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
                     PlObject o = List__.aget(0).scalar_deref("main");
-                    InputStream is = new PlStringInputStream(o);
-                    fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.reader = new PlStringReader(o);
                     fh.reader.mark(o.toString().length());
                     fh.outputStream = null;
                     return PlCx.INT1;
@@ -20080,8 +20079,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     // TODO - input stream, charset
 
                     PlObject o = List__.aget(1).scalar_deref("main");
-                    InputStream is = new PlStringInputStream(o);
-                    fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.reader = new PlStringReader(o);
                     fh.reader.mark(o.toString().length());
                     fh.outputStream = null;
                     return PlCx.INT1;
@@ -25333,32 +25331,40 @@ class PlGlobRef extends PlReference {
 }
 
 
-class PlStringInputStream extends InputStream{
+class PlStringReader extends Reader{
     // read from string
     // See: http://www.java2s.com/Code/JavaAPI/java.io/extendsOutputStream.htm
-    PlObject s;
-    ByteBuffer buf;
+    String s;
+    int pos;
 
-    PlStringInputStream(PlObject o) {
-        this.s = o;
-        try {
-            byte[] bytes = s.toString().getBytes("UTF-8");
-            this.buf = ByteBuffer.wrap(bytes);
-        }
-        catch(UnsupportedEncodingException e) {
-            PlCORE.warn(PlCx.VOID, new PlArray(new PlString("encoding error in PlStringInputStream: " + e.getMessage())));
-        }
+    PlStringReader(PlObject o) {
+        this.s = o.toString();
+        this.pos = 0;
     }
-    public synchronized int read() throws IOException {
-        if (!buf.hasRemaining()) {
+    public int read(char[] cbuf, int off, int len) {
+        if (pos >= s.length()) {
             return -1;
         }
-        return buf.get();
+        len = Math.min(len, s.length() - pos);
+        int count = 0;
+        while (count < len) {
+            cbuf[off++] = s.charAt(pos++);
+            count++;
+        }
+        return count;
     }
-    public synchronized int read(byte[] bytes, int off, int len) throws IOException {
-        len = Math.min(len, buf.remaining());
-        buf.get(bytes, off, len);
-        return len;
+
+    public boolean markSupported() {
+        return true;
+    }
+    public void mark(int readlimit) {
+        return;
+    }
+    public void reset() {
+        pos = 0;
+    }
+    public void close() {
+        return;
     }
 }
 
@@ -25388,7 +25394,7 @@ class PlFileHandle extends PlReference {
     public InputStream inputStream;     // System.in
     public Iterator<Path> directoryIterator;
     public DirectoryStream<Path> directoryStream;
-    public BufferedReader reader;       // Console.reader
+    public Reader reader;       // Console.reader
     public StringBuilder readlineBuffer;
     public boolean eof;
     public boolean is_argv;

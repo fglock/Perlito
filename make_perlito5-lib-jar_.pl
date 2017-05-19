@@ -67,7 +67,7 @@ import org.perlito.Perlito5.PlRegexResult;
 import org.perlito.Perlito5.PlReturnException;
 import org.perlito.Perlito5.PlSlice;
 import org.perlito.Perlito5.PlString;
-import org.perlito.Perlito5.PlStringInputStream;
+import org.perlito.Perlito5.PlStringReader;
 import org.perlito.Perlito5.PlTieArray;
 import org.perlito.Perlito5.PlTieHash;
 import org.perlito.Perlito5.PlTieScalar;
