@@ -2863,16 +2863,16 @@ class PlGlobRef extends PlReference {
     }
 }
 
-
 class PlStringReader extends Reader{
     // read from string
-    // See: http://www.java2s.com/Code/JavaAPI/java.io/extendsOutputStream.htm
     String s;
     int pos;
+    int mark;
 
     PlStringReader(PlObject o) {
         this.s = o.toString();
         this.pos = 0;
+        this.mark = 0;
     }
     public int read(char[] cbuf, int off, int len) {
         if (pos >= s.length()) {
@@ -2891,34 +2891,16 @@ class PlStringReader extends Reader{
         return true;
     }
     public void mark(int readlimit) {
+        mark = pos;
         return;
     }
     public void reset() {
-        pos = 0;
+        pos = mark;
     }
     public void close() {
         return;
     }
 }
-
-// class PlStringOutputStream extends OutputStream {
-//     // write to string
-//     // See: http://www.java2s.com/Code/JavaAPI/java.io/extendsOutputStream.htm
-// 
-//     PlString buf;
-//     PlStringOutputStream(PlString buf) {
-//         this.buf = buf;
-//     }
-//     public synchronized void write(int b) throws IOException {
-//         buf.put((byte) b);
-//     }
-// 
-//     public synchronized void write(byte[] bytes, int off, int len) throws IOException {
-//         buf.put(bytes, off, len);
-//     }
-//     
-// }
-// 
 
 class PlFileHandle extends PlReference {
     public static final PlString REF = new PlString("GLOB");
