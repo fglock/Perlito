@@ -32,7 +32,7 @@ perl make_perlito5-lib-jar_.pl jperl.java
 
 # Note: compile with perlito5-lib.jar so eval-string works
 # Note: jperl.pl contains class "Main"
-javac -cp .:perlito5-lib.jar -source 7 org/perlito/Perlito5/Main.java
+javac -cp .:perlito5-lib.jar  -J-Xms2000m -J-Xmx2000m -J-Xss2000m  -source 7  org/perlito/Perlito5/Main.java
 
 # repackage everything
 jar -cfe perlito5.jar org.perlito.Perlito5.Main org/perlito/Perlito5/*.class

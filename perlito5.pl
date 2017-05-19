@@ -19126,7 +19126,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             if ($options{'expand_use'}) {
                 my $Java_class = Perlito5::Java::get_java_class_info();
-                $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => [])
+                $str .= join('', Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => []))
             }
             my $main_class = 'Main';
             $Perlito5::BOOTSTRAP_JAVA_EVAL && ($main_class = 'LibPerl');
@@ -22764,12 +22764,12 @@ class SourceCode extends SimpleJavaFileObject {
     sub Perlito5::Java::Runtime::emit_java {
         (my($self), my(%args)) = @_;
         if ($Perlito5::JAVA_EVAL) {;
-            return '
+            return ('
 // use perlito5-lib.jar
 import org.perlito.Perlito5.*;
 import java.util.regex.Pattern;
 
-'
+')
         }
         my %java_classes = %{$args{'java_classes'} // {}};
         my @number_unary = ('op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log');
@@ -22779,7 +22779,7 @@ import java.util.regex.Pattern;
         for $_ (values(%java_classes)) {;
             $native_to_perl{$_->{'java_type'}} = $_->{'java_native_to_perl'}
         }
-        return '// start Perl-Java runtime
+        return ('// start Perl-Java runtime
 // this is generated code - see: lib/Perlito5/Java/Runtime.pm
 
 import java.lang.Math;
@@ -23771,6 +23771,67 @@ class PerlOp {
         return sb.toString();
     }
 
+    // tr() escape rules:
+    //
+    // \\[       as-is
+    // [xx xx]  becomes: [xx\\ xx] - this will make sure space is a token, even when /x modifier is set
+    // \\120     becomes: \\0120 - Java requires octal sequences to start with zero
+    // \\0       becomes: \\00 - Java requires the extra zero
+    //
+    public static String tr_escape(String s) {
+        // escape spaces in character classes
+        final int length = s.length();
+        StringBuilder sb = new StringBuilder();
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {
+                case ' . chr(39) . '\\\\' . chr(39) . ':  // escape - \\[ \\120
+                            if (offset < length) {
+                                offset++;
+                                int c2 = s.codePointAt(offset);
+                                if (c2 >= ' . chr(39) . '0' . chr(39) . ' && c2 <= ' . chr(39) . '3' . chr(39) . ') {
+                                    if (offset < length+1) {
+                                        int c3 = s.codePointAt(offset+1);
+                                        int c4 = s.codePointAt(offset+2);
+                                        if ((c3 >= ' . chr(39) . '0' . chr(39) . ' && c3 <= ' . chr(39) . '7' . chr(39) . ') && (c4 >= ' . chr(39) . '0' . chr(39) . ' && c4 <= ' . chr(39) . '7' . chr(39) . ')) {
+                                            // a \\000 octal sequence
+                                            try {
+                                                String oct = s.substring(offset, offset+3);
+                                                sb.append(  (char) Integer.parseInt(oct, 8)  );
+                                                offset = offset + 2;
+                                                break;
+                                            }
+                                            catch (NumberFormatException e) {
+                                            }
+                                        }
+                                    }
+                                }
+                                if (c2 == ' . chr(39) . '0' . chr(39) . ') {
+                                    // \\0
+                                    sb.append(  (char)0  );
+                                    break;
+                                }
+                                sb.append(Character.toChars(c2));
+                                break;
+                            }
+                            sb.append(Character.toChars(c));
+                            break;
+                case ' . chr(39) . '[' . chr(39) . ':   // character class
+                            // TODO - character class in tr()
+                            sb.append(Character.toChars(c));
+                            offset++;
+                            offset = _regex_character_class_escape(offset, s, sb, length);
+                            break;
+                default:    // normal char
+                            sb.append(Character.toChars(c));
+                            break;
+            }
+            offset++;
+        }
+        return sb.toString();
+    }
+
+
     // ****** pos()
     // TODO - optimize: we are adding "pos" (Integer) to all PlLvalue objects
 
@@ -24138,8 +24199,8 @@ class PerlOp {
     // PerlOp.tr(v_v_100, new PlString("xyz"), new PlString("abc"), "", PlCx.VOID)
     public static final PlObject tr(PlObject pstr, PlObject psearchChars, PlObject preplaceChars, String modifier, int want) {
         String str          = pstr.toString();
-        String searchChars  = psearchChars.toString();
-        String replaceChars = preplaceChars.toString();
+        String searchChars  = tr_escape(psearchChars.toString());
+        String replaceChars = tr_escape(preplaceChars.toString());
         int modified = 0;
         final int replaceCharsLength = replaceChars.length();
         final int strLength = str.length();
@@ -24286,6 +24347,8 @@ class PerlOp {
     }
 
 }
+
+', '
 class PlV {
     // PlV implements namespaces and global variables
     //
@@ -25401,6 +25464,8 @@ class PlFileHandle extends PlReference {
         return PlCORE.die("Can' . chr(39) . 't modify glob elem in scalar assignment");
     }
 }
+
+', '
 class PlRegex extends PlReference {
     public Pattern p;
     public String  original_string;
@@ -27186,6 +27251,8 @@ class PlLvalue extends PlObject {
         } sort {;
             $a cmp $b
         } keys(%java_classes))) . '}
+
+', '
 class PlROvalue extends PlLvalue {
 
     // Note: several versions of PlROvalue()
@@ -29095,7 +29162,7 @@ class PlString extends PlObject {
         } sort {;
             $a cmp $b
         } keys(%java_classes))) . '// end Perl-Java runtime
-'
+')
     }
     1
 }

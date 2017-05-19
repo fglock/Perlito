@@ -1390,9 +1390,11 @@ package Perlito5::AST::CompUnit;
         }
         if ($options{'expand_use'}) {
             my $Java_class = Perlito5::Java::get_java_class_info();
-            $str .= Perlito5::Java::Runtime->emit_java(
-                java_classes => $Java_class,
-                java_constants => [],  # \@Perlito5::Java::Java_constants,
+            $str .= join("",
+                Perlito5::Java::Runtime->emit_java(
+                    java_classes => $Java_class,
+                    java_constants => [],  # \@Perlito5::Java::Java_constants,
+                )
             );
         }
 
