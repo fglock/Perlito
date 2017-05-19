@@ -2,14 +2,16 @@
 
 use v5;
 
+package main;
+# eval in an empty lexical scope;
+# shift() makes sure @_ empty
+sub eval_string { eval shift() }
+
+
 package Perlito5;
 use feature 'say';
 use strict;
 use warnings;
-
-# eval in an empty lexical scope;
-# shift() makes sure @_ empty
-sub eval_string { eval shift() }
 
 
 # precompile some extra modules
@@ -353,15 +355,13 @@ if ($backend) {
 
     if ( $execute ) { 
         local $@;
-        my $init = join("; ", @Use);
+        main::eval_string( join("; ", @Use) );
         my $warnings = '';
         $warnings = "use warnings" if $use_warnings;
-        eval_string( qq{
+        main::eval_string( qq{
             $warnings;
             Perlito5::set_global_phase("CHECK");
             \$_->() for \@Perlito5::CHECK_BLOCK;
-            package main;
-            $init;
             Perlito5::set_global_phase("INIT");
             eval {
                 \$_->() for \@Perlito5::INIT_BLOCK;
