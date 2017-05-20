@@ -21579,13 +21579,19 @@ class PlCORE {
     public static final PlObject system(int want, PlArray List__) {
         // TODO - see perldoc -f system
         try {
-            String[] args = new String[List__.to_int()];
-            int i = 0;
-            for (PlObject s : List__.a) {
-                args[i++] = s.toString();
+            Process p;
+            if (List__.to_int() > 1) {
+                String[] args = new String[List__.to_int()];
+                int i = 0;
+                for (PlObject s : List__.a) {
+                    args[i++] = s.toString();
+                }
+                p = Runtime.getRuntime().exec(args);
             }
-            String s = null;
-            Process p = Runtime.getRuntime().exec(args);
+            else {
+                p = Runtime.getRuntime().exec(List__.aget(0).toString());
+            }
+            // String s = null;
             // BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
             // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             // System.out.println("STDOUT\\n");
@@ -21596,11 +21602,17 @@ class PlCORE {
             // while ((s = stdError.readLine()) != null) {
             //     System.out.println("  " + s);
             // }
-            return PlCx.INT0;
+            int ret = p.waitFor() * 256;
+            PlV.sset("main::?", new PlInt(ret));
+            return new PlInt(ret);
+        } catch (InterruptedException e) {
+            //Handle exception
+            return PlCORE.die("interrupted");
         }
         catch (IOException e) {
             // System.out.println("IOexception: ");
             // e.printStackTrace();
+            PlV.sset("main::!", new PlString(e.getMessage()));
             return PlCx.MIN1;
         }
     }
