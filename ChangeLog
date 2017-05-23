@@ -12,6 +12,10 @@
 
     XS replacement modules
 
+- Parser:
+-- fix chomp(), chop()
+-- fix fat-arrow in argument lists
+
 - Java:
 -- "require"
 -- "opendir", "readdir", "closedir"

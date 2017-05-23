@@ -2342,6 +2342,60 @@ use feature 'say';
         })));
         $tmp ? $MATCH : undef
     }
+    sub Perlito5::Grammar::Expression::operator_with_paren {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+        my $tmp = ((do {
+            my $pos1 = $MATCH->{'to'};
+            (do {;
+                (('c' eq $str->[$MATCH->{'to'} + 0]) && ('h' eq $str->[$MATCH->{'to'} + 1]) && ('o' eq $str->[$MATCH->{'to'} + 2]) && ('m' eq $str->[$MATCH->{'to'} + 3]) && ('p' eq $str->[$MATCH->{'to'} + 4]) && ($MATCH->{'to'} += 5))
+            }) || (do {
+                $MATCH->{'to'} = $pos1;
+                (('c' eq $str->[$MATCH->{'to'} + 0]) && ('h' eq $str->[$MATCH->{'to'} + 1]) && ('o' eq $str->[$MATCH->{'to'} + 2]) && ('p' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4))
+            })
+        }));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_operator_with_paren {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+        my $tmp = (((do {
+            my $m2 = operator_with_paren($str, $MATCH->{'to'});
+            if ($m2) {
+                $MATCH->{'to'} = $m2->{'to'};
+                $MATCH->{'operator_with_paren'} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+            if ($m2) {
+                $MATCH->{'to'} = $m2->{'to'};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
+            my $m2 = paren_parse($str, $MATCH->{'to'});
+            if ($m2) {
+                $MATCH->{'to'} = $m2->{'to'};
+                $MATCH->{'paren_parse'} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
+            $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code', Perlito5::Match::flat($MATCH->{'operator_with_paren'}), 'arguments', expand_list(Perlito5::Match::flat($MATCH->{'paren_parse'})), 'namespace', '')];
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
     sub Perlito5::Grammar::Expression::term_not {
         my $str = $_[0];
         my $pos = $_[1];
@@ -2613,6 +2667,8 @@ use feature 'say';
     Perlito5::Grammar::Precedence::add_term('return', \&term_return);
     Perlito5::Grammar::Precedence::add_term('not', \&term_not);
     Perlito5::Grammar::Precedence::add_term('pos', \&term_pos);
+    Perlito5::Grammar::Precedence::add_term('chomp', \&term_operator_with_paren);
+    Perlito5::Grammar::Precedence::add_term('chop', \&term_operator_with_paren);
     1
 }
 {

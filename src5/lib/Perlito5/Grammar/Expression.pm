@@ -536,6 +536,23 @@ token term_declarator {
         }
 };
 
+# these operators parse differently when followed by parenthesis
+token operator_with_paren {
+    'chomp' | 'chop' 
+};
+
+token term_operator_with_paren {
+    <operator_with_paren> <.Perlito5::Grammar::Space::opt_ws> '('  <paren_parse>   ')'
+        {
+            $MATCH->{capture} = [ 'term', 
+                Perlito5::AST::Apply->new(
+                    code      => Perlito5::Match::flat($MATCH->{operator_with_paren}),
+                    arguments => expand_list( Perlito5::Match::flat($MATCH->{paren_parse}) ),
+                    namespace => '',
+                ) ]
+        }
+};
+
 token term_not {
     'not' <.Perlito5::Grammar::Space::opt_ws> '('  <paren_parse>   ')'
         {
@@ -883,6 +900,8 @@ Perlito5::Grammar::Precedence::add_term( 'local' => \&term_local );
 Perlito5::Grammar::Precedence::add_term( 'return' => \&term_return );
 Perlito5::Grammar::Precedence::add_term( 'not'   => \&term_not );
 Perlito5::Grammar::Precedence::add_term( 'pos'   => \&term_pos );
+Perlito5::Grammar::Precedence::add_term( 'chomp' => \&term_operator_with_paren );
+Perlito5::Grammar::Precedence::add_term( 'chop'  => \&term_operator_with_paren );
 
 
 1;
