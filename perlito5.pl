@@ -17350,6 +17350,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
                 return 'PerlOp.set_pos(' . $lvalue[0]->emit_java($level, 'scalar') . ', ' . $arguments->emit_java($level, 'scalar') . ')'
             }
+            if ($code eq 'prefix:<$#>') {;
+                return Perlito5::Java::emit_java_autovivify($self->{'arguments'}->[0], $level + 1, 'array') . '.array_deref().set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
+            }
             if ($code eq 'prefix:<$>') {;
                 return Perlito5::Java::emit_java_autovivify($self->{'arguments'}->[0], $level + 1, 'scalar') . '.scalar_deref_set(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
             }
