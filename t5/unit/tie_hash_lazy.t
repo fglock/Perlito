@@ -4,7 +4,7 @@ use strict;
 
 package TheHash;
 
-my $debug = 1;
+my $debug = 0;
 
 sub TIEHASH {
     my $storage = bless {}, shift;
@@ -39,7 +39,7 @@ sub NEXTKEY {
 
 package main;
 
-print "1..1\n";
+print "1..2\n";
 
 my $tied = tie( my %hh, 'TheHash' );
 
@@ -52,12 +52,11 @@ addr( $hh{x} );
 print "not " if $hh{x} != 1;
 print "ok 1\n";
 
-## TODO - infinite loop in jvm
-##
-## addr( %hh );
-## 
-## print "not " if $hh{x} != 2;
-## print "ok 2\n";
+
+addr( %hh );
+
+print "not " if $hh{x} != 2;
+print "ok 2\n";
 
 # $tied->dump();
 
