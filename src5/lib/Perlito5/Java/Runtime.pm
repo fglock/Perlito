@@ -3306,13 +3306,22 @@ EOT
         return REF;
     }
 }
+class PlHashIterator {
+    public Iterator<Map.Entry<String, PlObject>> iterator;
+
+    public PlHashIterator() {
+    }
+    public void reset(PlHash hh) {
+        iterator = hh.h.entrySet().iterator();
+    }
+}
 class PlHashRef extends PlHash {
     public static final PlString REF = new PlString("HASH");
     public PlClass bless;
 
     public PlHashRef() {
         this.h = new HashMap<String, PlObject>();
-        this.each_iterator = null;
+        this.each_iterator = new PlHashIterator();
     }
     public PlHashRef(PlHash o) {
         this.h = o.h;
@@ -3327,14 +3336,10 @@ class PlHashRef extends PlHash {
         this.each_iterator = o.each_iterator;
         return o;
     }
-    public PlObject get() {
-        PlHash o = new PlHash();
-        o.h = this.h;
-        return o;
-    }
     public PlHash hash_deref() {
         PlHash o = new PlHash();
         o.h = this.h;
+        o.each_iterator = this.each_iterator;
         return o;
     }
     public PlObject hash_deref_set(PlObject v) {
@@ -5047,7 +5052,7 @@ class PlLvalue extends PlObject {
             return new PlHash();
         }
         else if (this.o.is_hashref()) {
-            return this.o.get();
+            return this.o.hash_deref();
         }
         return this.o.hash_deref();
     }
@@ -6095,11 +6100,12 @@ EOT
 }
 class PlHash extends PlObject {
     public HashMap<String, PlObject> h;
-    public Iterator<Map.Entry<String, PlObject>> each_iterator;
+    public PlHashIterator each_iterator;
 
     public PlHash() {
-        this.each_iterator = null;
+        this.each_iterator = new PlHashIterator();
         this.h = new HashMap<String, PlObject>();
+        this.each_iterator.reset(this);
     }
     public PlHash(PlObject... args) {
         PlHash hh = new PlHash();
@@ -6140,8 +6146,9 @@ class PlHash extends PlObject {
                 hh.hset(s, value);
             }
         }
-        this.each_iterator = null;
-        this.h = hh.to_HashMap();
+        this.h = hh.h;
+        this.each_iterator = hh.each_iterator;
+        this.each_iterator.reset(this);
     }
     private HashMap<String, PlObject> to_HashMap() {
         return this.h;
@@ -6197,7 +6204,7 @@ class PlHash extends PlObject {
             // TODO - emit warning about odd number of arguments
             this.hset(s, PlCx.UNDEF);
         }
-        this.each_iterator = null;
+        this.each_iterator.reset(this);
         return this;
     }
 
@@ -6498,20 +6505,17 @@ class PlHash extends PlObject {
         return aa;
     }
     public PlObject each() {
-        if (this.each_iterator == null) {
-            this.each_iterator = this.h.entrySet().iterator();
-        }
         PlArray aa = new PlArray();
-        if (this.each_iterator.hasNext()) {
-            Map.Entry<String, PlObject> entry = this.each_iterator.next();
+        if (this.each_iterator.iterator.hasNext()) {
+            Map.Entry<String, PlObject> entry = this.each_iterator.iterator.next();
             String key = entry.getKey();
             aa.push(new PlString(key));
             PlObject value = entry.getValue();
             aa.push(value);
         }
         else {
-             // return empty list
-             this.each_iterator = null;
+            // return empty list
+            this.each_iterator.reset(this);
         }
         return aa;
     }
