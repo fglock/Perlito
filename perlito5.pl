@@ -26209,8 +26209,10 @@ class PlTieArray extends PlArray {
 class PlTieHash extends PlHash {
     public PlObject tied;
     public PlHash old_var;
+    private boolean each_iterator;
 
     public PlTieHash() {
+        this.each_iterator = false;
     }
     public PlHash untie() {
         PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
@@ -26269,7 +26271,7 @@ class PlTieHash extends PlHash {
             // TODO - emit warning about odd number of arguments
             this.hset(s, PlCx.UNDEF);
         }
-        // this.each_iterator = null;
+        this.each_iterator = false;
         return this;
     }
 
@@ -26284,6 +26286,7 @@ class PlTieHash extends PlHash {
                 key = PerlOp.call(tied, "NEXTKEY", new PlArray(key), PlCx.SCALAR);
             }
         }
+        this.each_iterator = false;
         return aa;
     }
 
@@ -26304,6 +26307,7 @@ class PlTieHash extends PlHash {
         }
         PlSlice result = new PlSlice();
         result.a = aa;
+        this.each_iterator = false;
         return result;
     }
 
@@ -26458,8 +26462,6 @@ class PlTieHash extends PlHash {
     //     return aa.pop();
     // }
 
-    // TODO
-
     public PlObject hset_alias(String s, PlObject lvalue) {
         return PerlOp.call(tied, "STORE", new PlArray(new PlString(s), lvalue), PlCx.SCALAR);
     }
@@ -26493,48 +26495,65 @@ class PlTieHash extends PlHash {
     // }
     public PlObject values() {
         PlArray aa = new PlArray();
-        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
-            PlObject value = entry.getValue();
-            aa.push(value);
+        PlObject key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
+        if (!key.is_undef()) {
+            aa.push(this.hget(key));
+            key = PerlOp.call(tied, "NEXTKEY", new PlArray(key), PlCx.SCALAR);
+            while (!key.is_undef()) {
+                aa.push(this.hget(key));
+                key = PerlOp.call(tied, "NEXTKEY", new PlArray(key), PlCx.SCALAR);
+            }
         }
+        this.each_iterator = false;
         return aa;
     }
     public PlObject keys() {
         PlArray aa = new PlArray();
-        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
-            String key = entry.getKey();
-            aa.push(new PlString(key));
+        PlObject key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
+        if (!key.is_undef()) {
+            aa.push(key);
+            key = PerlOp.call(tied, "NEXTKEY", new PlArray(key), PlCx.SCALAR);
+            while (!key.is_undef()) {
+                aa.push(key);
+                key = PerlOp.call(tied, "NEXTKEY", new PlArray(key), PlCx.SCALAR);
+            }
         }
+        this.each_iterator = false;
         return aa;
     }
+
     public PlObject each() {
-        if (this.each_iterator == null) {
-            this.each_iterator = this.h.entrySet().iterator();
-        }
-        PlArray aa = new PlArray();
-        if (this.each_iterator.hasNext()) {
-            Map.Entry<String, PlObject> entry = this.each_iterator.next();
-            String key = entry.getKey();
-            aa.push(new PlString(key));
-            PlObject value = entry.getValue();
-            aa.push(value);
+        PlObject key;
+        if (!this.each_iterator) {
+            key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
+            this.each_iterator = true;
         }
         else {
-             // return empty list
-             this.each_iterator = null;
+            // TODO - the param to NEXTKEY is the previous key
+            key = PerlOp.call(tied, "NEXTKEY", new PlArray(), PlCx.SCALAR);
+        }
+        PlArray aa = new PlArray();
+        if (!key.is_undef()) {
+            aa.push(key);
+            aa.push(this.hget(key));
+        }
+        else {
+            this.each_iterator = false;
         }
         return aa;
     }
 
     public boolean to_boolean() {
-        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
+        PlObject key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
+        if (!key.is_undef()) {
             return true;
         }
         return false;
     }
 
     public PlObject scalar() {
-        return new PlString(this.toString());
+        // TODO
+        return PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
     }
 
     // EOT

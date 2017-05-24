@@ -4,7 +4,7 @@ use strict;
 
 package TheHash;
 
-my $debug = 0;
+my $debug = 1;
 
 sub TIEHASH {
     my $storage = bless {}, shift;
@@ -24,6 +24,7 @@ sub FETCH {
 
 sub FIRSTKEY {
     warn "FIRSTKEY\n" if $debug;
+    my $a = scalar keys %{$_[0]};
     each %{$_[0]};
 }
 
