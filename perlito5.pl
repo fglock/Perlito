@@ -26348,182 +26348,149 @@ class PlTieHash extends PlHash {
         return result.pop();
     }
 
-    // TODO
-
     public PlObject hget_lvalue(String i) {
-        PlObject o = this.h.get(i);
-        if (o == null) {
-            return new PlLazyLookup(this, i);
-        }
-        else if (o.is_lvalue()) {
-            return o;
-        }
-        PlLvalue a = new PlLvalue(o);
-        this.h.put(i, a);
-        return a;
+        return new PlLazyLookup(this, i);
     }
     public PlObject hget_lvalue_local(String i) {
-        PlObject o = this.h.get(i);
-        if (o == null) {
-            this.h.put(i, PlCx.UNDEF);
-        }
         return PerlOp.push_local(this, i);
     }
 
-    public PlObject get_scalar(PlObject i) {
-        // $$x
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
-            PlLvalue a = new PlLvalue();
-            this.hset(i, new PlLvalueRef(a));
-            return a;
-        }
-        else if (o.is_scalarref()) {
-            return o.get();
-        }
-        // Modification of a read-only value attempted
-        // return PlCORE.die("Not an SCALAR reference");
-        return o;
-    }
+    // public PlObject get_scalar(PlObject i) {
+    //     // $$x
+    //     PlObject o = this.hget(i);
+    //     if (o.is_undef()) {
+    //         PlLvalue a = new PlLvalue();
+    //         this.hset(i, new PlLvalueRef(a));
+    //         return a;
+    //     }
+    //     else if (o.is_scalarref()) {
+    //         return o.get();
+    //     }
+    //     // Modification of a read-only value attempted
+    //     // return PlCORE.die("Not an SCALAR reference");
+    //     return o;
+    // }
 
-    public PlObject hget_scalarref(String i) {
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
-            return new PlLvalueRef(new PlLazyScalarref(new PlLazyLookup(this, i)));
-        }
-        else if (o.is_scalarref()) {
-            return o;
-        }
-        // Modification of a read-only value attempted
-        return o;
-    }
+    // public PlObject hget_scalarref(String i) {
+    //     PlObject o = this.hget(i);
+    //     if (o.is_undef()) {
+    //         return new PlLvalueRef(new PlLazyScalarref(new PlLazyLookup(this, i)));
+    //     }
+    //     else if (o.is_scalarref()) {
+    //         return o;
+    //     }
+    //     // Modification of a read-only value attempted
+    //     return o;
+    // }
 
-    public PlObject hget_arrayref(PlObject i) {
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
-            PlArrayRef ar = new PlArrayRef();
-            this.hset(i, ar);
-            return ar;
-        }
-        else if (o.is_arrayref()) {
-            return o;
-        }
-        return PlCORE.die("Not an ARRAY reference");
-    }
-    public PlObject hget_arrayref(String i) {
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
-            PlArrayRef ar = new PlArrayRef();
-            this.hset(i, ar);
-            return ar;
-        }
-        else if (o.is_arrayref()) {
-            return o;
-        }
-        return PlCORE.die("Not an ARRAY reference");
-    }
+    // public PlObject hget_arrayref(PlObject i) {
+    //     PlObject o = this.hget(i);
+    //     if (o.is_undef()) {
+    //         PlArrayRef ar = new PlArrayRef();
+    //         this.hset(i, ar);
+    //         return ar;
+    //     }
+    //     else if (o.is_arrayref()) {
+    //         return o;
+    //     }
+    //     return PlCORE.die("Not an ARRAY reference");
+    // }
+    // public PlObject hget_arrayref(String i) {
+    //     PlObject o = this.hget(i);
+    //     if (o.is_undef()) {
+    //         PlArrayRef ar = new PlArrayRef();
+    //         this.hset(i, ar);
+    //         return ar;
+    //     }
+    //     else if (o.is_arrayref()) {
+    //         return o;
+    //     }
+    //     return PlCORE.die("Not an ARRAY reference");
+    // }
 
-    public PlObject hget_hashref(PlObject i) {
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
-            PlHashRef hr = new PlHashRef();
-            this.hset(i, hr);
-            return hr;
-        }
-        else if (o.is_hashref()) {
-            return o;
-        }
-        return PlCORE.die("Not a HASH reference");
-    }
-    public PlObject hget_hashref(String i) {
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
-            PlHashRef hr = new PlHashRef();
-            this.hset(i, hr);
-            return hr;
-        }
-        else if (o.is_hashref()) {
-            return o;
-        }
-        return PlCORE.die("Not a HASH reference");
-    }
+    // public PlObject hget_hashref(PlObject i) {
+    //     PlObject o = this.hget(i);
+    //     if (o.is_undef()) {
+    //         PlHashRef hr = new PlHashRef();
+    //         this.hset(i, hr);
+    //         return hr;
+    //     }
+    //     else if (o.is_hashref()) {
+    //         return o;
+    //     }
+    //     return PlCORE.die("Not a HASH reference");
+    // }
+    // public PlObject hget_hashref(String i) {
+    //     PlObject o = this.hget(i);
+    //     if (o.is_undef()) {
+    //         PlHashRef hr = new PlHashRef();
+    //         this.hset(i, hr);
+    //         return hr;
+    //     }
+    //     else if (o.is_hashref()) {
+    //         return o;
+    //     }
+    //     return PlCORE.die("Not a HASH reference");
+    // }
 
     // Note: multiple versions of set()
     public PlObject hset(PlObject s, PlObject v) {
-        String key = s.toString();
-        PlObject value = v.scalar();
-        PlObject o = this.h.get(key);
-        if (o != null && o.is_lvalue()) {
-            o.set(value);
-        }
-        else {
-            this.h.put(key, value);
-        }
-        return v;
+        return PerlOp.call(tied, "STORE", new PlArray(s, v), PlCx.SCALAR);
     }
     public PlObject hset(String key, PlObject v) {
-        PlObject value = v.scalar();
-        PlObject o = this.h.get(key);
-        if (o != null && o.is_lvalue()) {
-            o.set(value);
-        }
-        else {
-            this.h.put(key, value);
-        }
-        return v;
+        return PerlOp.call(tied, "STORE", new PlArray(new PlString(key), v), PlCx.SCALAR);
     }
-    public PlObject hset(PlObject s, PlLvalue v) {
-        return this.hset(s, v.get());
-    }
-    public PlObject hset(String s, PlLvalue v) {
-        return this.hset(s, v.get());
-    }
-    public PlObject hset(int want, PlArray s, PlArray v) {
-        PlArray aa = new PlArray();
+    // public PlObject hset(PlObject s, PlLvalue v) {
+    //     return this.hset(s, v.get());
+    // }
+    // public PlObject hset(String s, PlLvalue v) {
+    //     return this.hset(s, v.get());
+    // }
+    // public PlObject hset(int want, PlArray s, PlArray v) {
+    //     PlArray aa = new PlArray();
 
-        for (int i = 0; i < v.to_int(); i++){
-            aa.push(this.hset(v.aget(i), s.aget(i)));
-        };
-        if (want == PlCx.LIST) {
-            return aa;
-        }
-        return aa.pop();
-    }
+    //     for (int i = 0; i < v.to_int(); i++){
+    //         aa.push(this.hset(v.aget(i), s.aget(i)));
+    //     };
+    //     if (want == PlCx.LIST) {
+    //         return aa;
+    //     }
+    //     return aa.pop();
+    // }
+
+    // TODO
+
     public PlObject hset_alias(String s, PlObject lvalue) {
-        return this.h.put(s, lvalue);
+        return PerlOp.call(tied, "STORE", new PlArray(new PlString(s), lvalue), PlCx.SCALAR);
     }
     public PlObject exists(PlObject i) {
-        return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
+        return PerlOp.call(tied, "EXISTS", new PlArray(i), PlCx.SCALAR);
     }
     public PlObject delete(PlObject i) {
-        PlObject r = this.h.remove(i.toString());
-        if (r == null) {
-            return PlCx.UNDEF;
-        }
-        return r;
+        return PerlOp.call(tied, "DELETE", new PlArray(i), PlCx.SCALAR);
     }
-    public PlObject delete(int want, PlArray a) {
-        PlArray aa = new PlArray();
+    // public PlObject delete(int want, PlArray a) {
+    //     PlArray aa = new PlArray();
 
-        for (int i = 0; i < a.to_int(); i++) {
-            PlObject r = this.delete(a.aget(i));
-            aa.push(r);
-        }
-        if (want == PlCx.LIST) {
-            return aa;
-        }
-        return aa.pop();
-    }
-    public PlObject delete(int want, PlString a) {
-        PlArray aa = new PlArray();
-        aa.push(a);
-        return delete(want, aa);
-    }
-    public PlObject delete(int want, PlLvalue a) {
-        PlArray aa = new PlArray();
-        aa.push(a);
-        return delete(want, aa);
-    }
+    //     for (int i = 0; i < a.to_int(); i++) {
+    //         PlObject r = this.delete(a.aget(i));
+    //         aa.push(r);
+    //     }
+    //     if (want == PlCx.LIST) {
+    //         return aa;
+    //     }
+    //     return aa.pop();
+    // }
+    // public PlObject delete(int want, PlString a) {
+    //     PlArray aa = new PlArray();
+    //     aa.push(a);
+    //     return delete(want, aa);
+    // }
+    // public PlObject delete(int want, PlLvalue a) {
+    //     PlArray aa = new PlArray();
+    //     aa.push(a);
+    //     return delete(want, aa);
+    // }
     public PlObject values() {
         PlArray aa = new PlArray();
         for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
@@ -26558,19 +26525,7 @@ class PlTieHash extends PlHash {
         }
         return aa;
     }
-' . (join('', map {
-            my $native = $_;
-            my $perl = $native_to_perl{$native};
-            $native && $perl ? '    public PlObject hset(PlObject s, ' . $native . ' v) {
-        return this.hset(s, new ' . $perl . '(v));
-    }
-    public PlObject hset(String s, ' . $native . ' v) {
-        return this.hset(s, new ' . $perl . '(v));
-    }
-' : ()
-        } sort {;
-            $a cmp $b
-        } keys(%native_to_perl))) . '
+
     public boolean to_boolean() {
         for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             return true;
@@ -26582,6 +26537,23 @@ class PlTieHash extends PlHash {
         return new PlString(this.toString());
     }
 
+    // EOT
+    //     . ( join(' . chr(39) . chr(39) . ', map {
+    //             my $native = $_;
+    //             my $perl   = $native_to_perl{$native};
+    //             $native && $perl ?
+    // "    public PlObject hset(PlObject s, $native v) {
+    //         return this.hset(s, new $perl(v));
+    //     }
+    //     public PlObject hset(String s, $native v) {
+    //         return this.hset(s, new $perl(v));
+    //     }
+    // " : ()
+    //             }
+    //             sort keys %native_to_perl ))
+    // 
+    //     . <<' . chr(39) . 'EOT' . chr(39) . '
+    //
     // public String toString() {
     //     // TODO
     //     return "" + this.hashCode();
