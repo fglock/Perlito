@@ -19,6 +19,7 @@
 - Java:
 -- "require"
 -- "opendir", "readdir", "closedir"
+-- tied hash
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:
