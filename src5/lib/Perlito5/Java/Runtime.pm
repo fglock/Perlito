@@ -3628,6 +3628,24 @@ class PlLazyIndex extends PlLazyLvalue {
     }
 
 }
+class PlLazyTiedLookup extends PlLazyLvalue {
+    private PlHash la;    // %la
+    private String i;     // $la{$i}
+
+    public PlLazyTiedLookup(PlHash la, String i) {
+        this.la = la;
+        this.i  = i;
+    }
+
+    // internal lazy api
+    public PlLvalue create_scalar() {
+        if (llv == null) {
+            llv = la.create_scalar(i);
+        }
+        return llv;
+    }
+
+}
 class PlLazyLookup extends PlLazyLvalue {
     private PlHash la;    // %la
     private String i;     // $la{$i}
@@ -3823,7 +3841,7 @@ class PlTieHash extends PlHash {
     }
 
     public PlObject hget_lvalue(String i) {
-        return new PlLazyLookup(this, i);
+        return new PlLazyTiedLookup(this, i);
     }
     public PlObject hget_lvalue_local(String i) {
         return PerlOp.push_local(this, i);
@@ -3848,7 +3866,7 @@ class PlTieHash extends PlHash {
     // public PlObject hget_scalarref(String i) {
     //     PlObject o = this.hget(i);
     //     if (o.is_undef()) {
-    //         return new PlLvalueRef(new PlLazyScalarref(new PlLazyLookup(this, i)));
+    //         return new PlLvalueRef(new PlLazyScalarref(new PlLazyTiedLookup(this, i)));
     //     }
     //     else if (o.is_scalarref()) {
     //         return o;
