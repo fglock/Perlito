@@ -25846,8 +25846,8 @@ class PlHashIterator {
 
     public PlHashIterator() {
     }
-    public void reset(PlHash hh) {
-        iterator = hh.h.entrySet().iterator();
+    public void reset() {
+        iterator = null;
     }
 }
 class PlHashRef extends PlHash {
@@ -28565,7 +28565,7 @@ class PlHash extends PlObject {
     public PlHash() {
         this.each_iterator = new PlHashIterator();
         this.h = new HashMap<String, PlObject>();
-        this.each_iterator.reset(this);
+        this.each_iterator.reset();
     }
     public PlHash(PlObject... args) {
         PlHash hh = new PlHash();
@@ -28608,7 +28608,7 @@ class PlHash extends PlObject {
         }
         this.h = hh.h;
         this.each_iterator = hh.each_iterator;
-        this.each_iterator.reset(this);
+        this.each_iterator.reset();
     }
     private HashMap<String, PlObject> to_HashMap() {
         return this.h;
@@ -28664,7 +28664,7 @@ class PlHash extends PlObject {
             // TODO - emit warning about odd number of arguments
             this.hset(s, PlCx.UNDEF);
         }
-        this.each_iterator.reset(this);
+        this.each_iterator.reset();
         return this;
     }
 
@@ -28966,6 +28966,9 @@ class PlHash extends PlObject {
     }
     public PlObject each() {
         PlArray aa = new PlArray();
+        if (this.each_iterator.iterator == null) {
+            this.each_iterator.iterator = this.h.entrySet().iterator();
+        }
         if (this.each_iterator.iterator.hasNext()) {
             Map.Entry<String, PlObject> entry = this.each_iterator.iterator.next();
             String key = entry.getKey();
@@ -28975,7 +28978,7 @@ class PlHash extends PlObject {
         }
         else {
             // return empty list
-            this.each_iterator.reset(this);
+            this.each_iterator.reset();
         }
         return aa;
     }
