@@ -26169,6 +26169,39 @@ class PlLazyTiedLookup extends PlLazyLvalue {
         return llv;
     }
 
+    public PlObject get() {
+        return la.hget(i);
+    }
+
+    public PlLvalue set(PlObject o) {
+        la.hset(i, o);
+        return this;
+    }
+
+    public PlObject pre_decr() {
+        // --$x
+        PlObject o = this.get()._decr();
+        return this.set(o);
+    }
+    public PlObject post_decr() {
+        // $x--
+        PlObject o = this.get();
+        this.set(o._decr());
+        return o;
+    }
+    public PlObject pre_incr() {
+        // ++$x
+        PlObject o = this.get()._incr();
+        return this.set(o);
+    }
+    public PlObject post_incr() {
+        // $x++
+        PlObject o = this.get();
+        this.set(o._incr());
+        return o;
+    }
+
+
 }
 class PlLazyLookup extends PlLazyLvalue {
     private PlHash la;    // %la
