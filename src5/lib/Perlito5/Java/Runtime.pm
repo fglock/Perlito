@@ -3885,84 +3885,6 @@ class PlTieHash extends PlHash {
         return PerlOp.push_local(this, i);
     }
 
-    // public PlObject get_scalar(PlObject i) {
-    //     // $$x
-    //     PlObject o = this.hget(i);
-    //     if (o.is_undef()) {
-    //         PlLvalue a = new PlLvalue();
-    //         this.hset(i, new PlLvalueRef(a));
-    //         return a;
-    //     }
-    //     else if (o.is_scalarref()) {
-    //         return o.get();
-    //     }
-    //     // Modification of a read-only value attempted
-    //     // return PlCORE.die("Not an SCALAR reference");
-    //     return o;
-    // }
-
-    // public PlObject hget_scalarref(String i) {
-    //     PlObject o = this.hget(i);
-    //     if (o.is_undef()) {
-    //         return new PlLvalueRef(new PlLazyScalarref(new PlLazyTiedLookup(this, i)));
-    //     }
-    //     else if (o.is_scalarref()) {
-    //         return o;
-    //     }
-    //     // Modification of a read-only value attempted
-    //     return o;
-    // }
-
-    // public PlObject hget_arrayref(PlObject i) {
-    //     PlObject o = this.hget(i);
-    //     if (o.is_undef()) {
-    //         PlArrayRef ar = new PlArrayRef();
-    //         this.hset(i, ar);
-    //         return ar;
-    //     }
-    //     else if (o.is_arrayref()) {
-    //         return o;
-    //     }
-    //     return PlCORE.die("Not an ARRAY reference");
-    // }
-    // public PlObject hget_arrayref(String i) {
-    //     PlObject o = this.hget(i);
-    //     if (o.is_undef()) {
-    //         PlArrayRef ar = new PlArrayRef();
-    //         this.hset(i, ar);
-    //         return ar;
-    //     }
-    //     else if (o.is_arrayref()) {
-    //         return o;
-    //     }
-    //     return PlCORE.die("Not an ARRAY reference");
-    // }
-
-    // public PlObject hget_hashref(PlObject i) {
-    //     PlObject o = this.hget(i);
-    //     if (o.is_undef()) {
-    //         PlHashRef hr = new PlHashRef();
-    //         this.hset(i, hr);
-    //         return hr;
-    //     }
-    //     else if (o.is_hashref()) {
-    //         return o;
-    //     }
-    //     return PlCORE.die("Not a HASH reference");
-    // }
-    // public PlObject hget_hashref(String i) {
-    //     PlObject o = this.hget(i);
-    //     if (o.is_undef()) {
-    //         PlHashRef hr = new PlHashRef();
-    //         this.hset(i, hr);
-    //         return hr;
-    //     }
-    //     else if (o.is_hashref()) {
-    //         return o;
-    //     }
-    //     return PlCORE.die("Not a HASH reference");
-    // }
-
     // Note: multiple versions of set()
     public PlObject hset(PlObject s, PlObject v) {
         return PerlOp.call(tied, "STORE", new PlArray(s, v), PlCx.SCALAR);
@@ -3970,23 +3892,6 @@ class PlTieHash extends PlHash {
     public PlObject hset(String key, PlObject v) {
         return PerlOp.call(tied, "STORE", new PlArray(new PlString(key), v), PlCx.SCALAR);
     }
-    // public PlObject hset(PlObject s, PlLvalue v) {
-    //     return this.hset(s, v.get());
-    // }
-    // public PlObject hset(String s, PlLvalue v) {
-    //     return this.hset(s, v.get());
-    // }
-    // public PlObject hset(int want, PlArray s, PlArray v) {
-    //     PlArray aa = new PlArray();
-
-    //     for (int i = 0; i < v.to_int(); i++){
-    //         aa.push(this.hset(v.aget(i), s.aget(i)));
-    //     };
-    //     if (want == PlCx.LIST) {
-    //         return aa;
-    //     }
-    //     return aa.pop();
-    // }
 
     public PlObject hset_alias(String s, PlObject lvalue) {
         return PerlOp.call(tied, "STORE", new PlArray(new PlString(s), lvalue), PlCx.SCALAR);
@@ -3997,28 +3902,7 @@ class PlTieHash extends PlHash {
     public PlObject delete(PlObject i) {
         return PerlOp.call(tied, "DELETE", new PlArray(i), PlCx.SCALAR);
     }
-    // public PlObject delete(int want, PlArray a) {
-    //     PlArray aa = new PlArray();
 
-    //     for (int i = 0; i < a.to_int(); i++) {
-    //         PlObject r = this.delete(a.aget(i));
-    //         aa.push(r);
-    //     }
-    //     if (want == PlCx.LIST) {
-    //         return aa;
-    //     }
-    //     return aa.pop();
-    // }
-    // public PlObject delete(int want, PlString a) {
-    //     PlArray aa = new PlArray();
-    //     aa.push(a);
-    //     return delete(want, aa);
-    // }
-    // public PlObject delete(int want, PlLvalue a) {
-    //     PlArray aa = new PlArray();
-    //     aa.push(a);
-    //     return delete(want, aa);
-    // }
     public PlObject values() {
         PlArray aa = new PlArray();
         PlObject key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
@@ -4081,54 +3965,6 @@ class PlTieHash extends PlHash {
         // TODO
         return PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
     }
-
-    // EOT
-    //     . ( join('', map {
-    //             my $native = $_;
-    //             my $perl   = $native_to_perl{$native};
-    //             $native && $perl ?
-    // "    public PlObject hset(PlObject s, $native v) {
-    //         return this.hset(s, new $perl(v));
-    //     }
-    //     public PlObject hset(String s, $native v) {
-    //         return this.hset(s, new $perl(v));
-    //     }
-    // " : ()
-    //             }
-    //             sort keys %native_to_perl ))
-    // 
-    //     . <<'EOT'
-    //
-    // public String toString() {
-    //     // TODO
-    //     return "" + this.hashCode();
-    // }
-    // public long to_long() {
-    //     // TODO
-    //     return this.hashCode();
-    // }
-    // public double to_double() {
-    //     return 0.0 + this.to_long();
-    // }
-    // public PlObject to_num() {
-    //     return this.scalar();
-    // }
-    // public boolean is_int() {
-    //     return false;
-    // }
-    // public boolean is_num() {
-    //     return false;
-    // }
-    // public boolean is_string() {
-    //     return false;
-    // }
-    // public boolean is_bool() {
-    //     return false;
-    // }
-    // public boolean is_hash() {
-    //     return true;
-    // }
-
 }
 class PlTieScalar extends PlLvalue {
     public PlObject tied;
