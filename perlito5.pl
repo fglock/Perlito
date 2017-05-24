@@ -26291,17 +26291,15 @@ class PlTieHash extends PlHash {
     }
 
     public PlArray to_list_of_aliases() {
-        // TODO - return lazy lvalues
-
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         PlObject key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
         if (!key.is_undef()) {
             aa.add(key);
-            aa.add(this.hget(key));
+            aa.add(this.hget_lvalue(key));
             key = PerlOp.call(tied, "NEXTKEY", new PlArray(key), PlCx.SCALAR);
             while (!key.is_undef()) {
                 aa.add(key);
-                aa.add(this.hget(key));
+                aa.add(this.hget_lvalue(key));
                 key = PerlOp.call(tied, "NEXTKEY", new PlArray(key), PlCx.SCALAR);
             }
         }
@@ -26319,13 +26317,11 @@ class PlTieHash extends PlHash {
     }
 
     public PlObject hget_list_of_aliases(int want, PlArray a) {
-        // TODO - return lazy lvalues
-
         // @a{LIST}
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (int i = 0; i < a.to_int(); i++) {
             PlObject key = a.aget(i);
-            aa.add(this.hget(key));
+            aa.add(this.hget_lvalue(key));
         }
         PlSlice result = new PlSlice();
         result.a = aa;
@@ -26335,14 +26331,12 @@ class PlTieHash extends PlHash {
         return result.pop();
     }
     public PlObject hget_hash_list_of_aliases(int want, PlArray a) {
-        // TODO - return lazy lvalues
-
         // %a{LIST}
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (int i = 0; i < a.to_int(); i++) {
             PlObject key = a.aget(i);
             aa.add(key);
-            aa.add(this.hget(key));
+            aa.add(this.hget_lvalue(key));
         }
         PlArray result = new PlArray();
         result.a = aa;
