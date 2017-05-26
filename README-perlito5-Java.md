@@ -164,6 +164,7 @@ Perlito5-Java work-in-progress
           - "each()" in reference to hash: see t5/unit/tie_hash_each.t
           - "our" hash: need to tie both the global variable and the lexical alias
           - lazy lookup: possibly incomplete impl for proxy objects, this needs more tests
+          - tie() in non-void context: need to return the tied object, see Config.pm
 
       - tie array incomplete
       - tie filehandle todo
