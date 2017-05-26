@@ -159,8 +159,13 @@ Perlito5-Java work-in-progress
   - tied variables are partially implemented
       - DESTROY not used, because we use Java memory management
       - tie scalar works
-      - tie array incomplete
       - tie hash incomplete
+
+          - "each()" in reference to hash: see t5/unit/tie_hash_each.t
+          - "our" hash: need to tie both the global variable and the lexical alias
+          - lazy lookup: possibly incomplete impl for proxy objects, this needs more tests
+
+      - tie array incomplete
       - tie filehandle todo
 
   - overload is partially implemented
