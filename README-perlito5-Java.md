@@ -6,11 +6,11 @@ Perlito5 Java backend
 Requirements
 ------------
 
-- Java 7
+- Java 7 or Java 8
 
-Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 7.
+  - Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 7.
 
-Java 7 is also required for named groups in regex, like:
+  - Java 7 is also required for named groups in regex, like:
 
 ~~~
     (?<name>X).
@@ -215,56 +215,7 @@ Limitations
 
   - Java extensions are disabled (only plain-perl)
 
-Instructions
-
-  - create the "perlito5-lib.jar" file
-
-~~~sh
-    $ . make_perlito5-lib-jar.sh
-~~~
-
-  - compile the Perl script to Java with the "--java_eval" option
-
-  - compile the Java script with perlito5-lib.jar in the classpath
-
-  - run the class with perlito5-lib.jar in the classpath
-
-~~~sh
-    $ time perl perlito5.pl -Isrc5/lib/ --java_eval -Cjava -e ' say eval "123"; ' > x.java ; javac -cp perlito5-lib.jar -source 7 x.java ; java -cp '.:perlito5-lib.jar' Main
-~~~
-
-See also: misc/Java_eval$ vim JavaCompiler6.java
-
-Compiling the compiler with BEGIN capabilities
-
-  - preparation
-
-~~~sh
-    # update perlito5.pl, just in case
-    $ make build-5to5
-
-    # create "perlito5-lib.jar"
-    $ . make_perlito5-lib-jar.sh
-~~~
-
-  - create a CLI
-
-~~~sh
-    $ perl perlito5.pl --bootstrapping --java_eval -Isrc5/lib -Cjava src5/util/jperl.pl > jperl.java
-
-    $ time javac -cp .:perlito5-lib.jar -source 7 jperl.java
-
-    # test
-    $ java -cp '.:perlito5-lib.jar' Main -e ' say 123 '
-~~~
-
 See also:
-
-  - JS-eval-string: embedding a JavaScript-in-Java interpreter:
-        https://github.com/fglock/Perlito/blob/master/misc/Java/TestJS.pl
-
-  - Java-eval-string: using the native compiler API:
-        https://github.com/fglock/Perlito/blob/master/misc/Java_eval/JavaCompiler4.java
 
   - ASM:
         TODO: prototype eval-string with ASM
@@ -272,6 +223,12 @@ See also:
 
 Perlito5-Java extensibility
 ===========================
+
+Note: Java extensions are disabled in the Java eval-string backend.
+
+  - Java::inline is enabled in the eval-string backend.
+
+  - extensions can be precompiled in perlito5.jar
 
 
 The Perlito5 Java backend doesn't support Perl XS extensions.
@@ -573,13 +530,14 @@ $ perl perlito5.pl -Isrc5/lib -Cjava -e ' sub x { return 123, 5 } my $x = x(); s
 $ make build-5to5 
 ~~~
 
-"make" rebuilds everything, including the nodejs-based compiler
+"make" rebuilds everything, including the java-eval-string and the nodejs-based compiler
 
 * Perl-Java test suite
 
 ~~~bash
-$ make test-5java
-$ make test  # tests the nodejs backend
+$ make test-5java   # tests the Java-precompile backend
+$ make test-5jar    # tests the Java-eval-string backend (perlito5.jar)
+$ make test         # tests the nodejs backend
 ~~~
 
 "make test" should pass everything, except for the "sleep" function which requires a nodejs module
@@ -1151,8 +1109,6 @@ Missing features, or partially implemented, or untested
     (DONE) Scalar::blessed
 
     TODO - unit tests (work in progress)
-
-    TODO - method dispatch (current impl doesn't look up classes in @INC)
 
     TODO - method cache
 
