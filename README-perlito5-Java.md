@@ -104,15 +104,14 @@ Perlito5-Java work-in-progress
   - "Java Scripting API"
 
       - https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/prog_guide/api.html
+      - http://download.java.net/java/jdk9/docs/api/javax/script/package-summary.html
 
-  - Problems compiling with Java 8
+  - Java 8 seems to trigger this problem:
+      http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
+      http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
 
-      - it seems to trigger this problem:
-          http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
-          http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
-
-          - "The workaround is to compile at Java 7-compatibility level: javac -source 7, or just to use simpler constructions.
-          - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
+      - "The workaround is to compile at Java 7-compatibility level: javac -source 7, or just to use simpler constructions.
+      - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
 
 
   - BEGIN blocks
@@ -1120,7 +1119,7 @@ Variables
 Overflow from int to double
 ---------------------------
 
-    partially implemented - needs more work
+    partially implemented - needs more work, tests
 
     Note: integer operations may have problems with type erasure
     example:
