@@ -114,31 +114,11 @@ Perlito5-Java work-in-progress
           - "The workaround is to compile at Java 7-compatibility level: javac -source 7, or just to use simpler constructions.
           - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
 
-      - other compiler options that don't seem to work:
-
-~~~sh
-    $ time javac perlito5.java
-    # never finishes
-
-    $ time javac -source 7 perlito5.java
-    warning: [options] bootstrap class path not set in conjunction with -source 1.7
-    The system is out of resources.
-    java.lang.StackOverflowError
-
-    $ time javac -J-Xms1024m -J-Xmx1024m -J-Xss1024m -source 7 perlito5.java
-    The system is out of resources.
-    Consult the following stack trace for details.
-    java.lang.OutOfMemoryError: Java heap space
-~~~
-
 
   - BEGIN blocks
       - Loops containing: BEGIN blocks, "use" statements, or named subroutines.
           - lexical variables inside loops don't behave properly if they are captured at compile-time
       - lexical variables are not shared between closures created in BEGIN blocks
-
-  - no eval-string at runtime (because not-yet-bootstrapped)
-      - also no: "do FILE", "require" (because these depend on eval-string)
 
   - runtime error messages do not include the line number in the Perl code
       - also caller() is only partially implemented
@@ -182,6 +162,9 @@ Perlito5-Java work-in-progress
       - <DATA> works
       - open binary mode vs. open utf8 needs more work
       - files don't "auto-close"
+
+  - tr() needs to be interpolated at compile-time
+      - pre-expand escape sequences
 
   - subroutines
       - "my sub x {...}" not implemented
