@@ -11,6 +11,7 @@ sub init {
     Perlito5::Grammar::Use::register_internal_module( 'Digest::SHA1' => 'Perlito5X::Java::Digest::SHA1' );
     Perlito5::Grammar::Use::register_internal_module( 'Encode'       => 'Perlito5X::Java::Encode' );
     # Perlito5::Grammar::Use::register_internal_module( 'JSON'         => 'Perlito5X::Java::JSON' );
+    Perlito5::Grammar::Use::register_internal_module( 'Time::HiRes'  => 'Perlito5X::Java::Time::HiRes' );
 }
 
 1;

@@ -3307,22 +3307,22 @@ EOT
     }
 }
 
-class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
-    public PlTieHash h;
-    private PlObject key;
-
-    public PlTieHashIterator(PlTieHash h) {
-        this.h = h;
-        this.key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
-    }
-    public Map.Entry<String, PlObject>> next() {
-        return new Map.Entry<String, PlObject>>(key.toString(), this.h.hget(key));
-    }
-    public boolean hasNext() {
-        this.key = PerlOp.call(tied, "NEXTKEY", new PlArray(), PlCx.SCALAR);
-        return !key.is_undef();
-    }
-}
+// class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
+//     public PlTieHash h;
+//     private PlObject key;
+// 
+//     public PlTieHashIterator(PlTieHash h) {
+//         this.h = h;
+//         this.key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
+//     }
+//     public Map.Entry<String, PlObject> next() {
+//         return new Map.Entry<String, PlObject>(key.toString(), this.h.hget(key));
+//     }
+//     public boolean hasNext() {
+//         this.key = PerlOp.call(tied, "NEXTKEY", new PlArray(), PlCx.SCALAR);
+//         return !key.is_undef();
+//     }
+// }
 
 class PlHashIterator {
     public Iterator<Map.Entry<String, PlObject>> iterator;

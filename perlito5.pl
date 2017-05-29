@@ -25842,22 +25842,22 @@ class PlArrayRef extends PlArray {
     }
 }
 
-class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
-    public PlTieHash h;
-    private PlObject key;
-
-    public PlTieHashIterator(PlTieHash h) {
-        this.h = h;
-        this.key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
-    }
-    public Map.Entry<String, PlObject>> next() {
-        return new Map.Entry<String, PlObject>>(key.toString(), this.h.hget(key));
-    }
-    public boolean hasNext() {
-        this.key = PerlOp.call(tied, "NEXTKEY", new PlArray(), PlCx.SCALAR);
-        return !key.is_undef();
-    }
-}
+// class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
+//     public PlTieHash h;
+//     private PlObject key;
+// 
+//     public PlTieHashIterator(PlTieHash h) {
+//         this.h = h;
+//         this.key = PerlOp.call(tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
+//     }
+//     public Map.Entry<String, PlObject> next() {
+//         return new Map.Entry<String, PlObject>(key.toString(), this.h.hget(key));
+//     }
+//     public boolean hasNext() {
+//         this.key = PerlOp.call(tied, "NEXTKEY", new PlArray(), PlCx.SCALAR);
+//         return !key.is_undef();
+//     }
+// }
 
 class PlHashIterator {
     public Iterator<Map.Entry<String, PlObject>> iterator;
@@ -29545,7 +29545,8 @@ class PlString extends PlObject {
         Perlito5::Grammar::Use::register_internal_module('List::Util', 'Perlito5X::Java::List::Util');
         Perlito5::Grammar::Use::register_internal_module('Digest::MD5', 'Perlito5X::Java::Digest::MD5');
         Perlito5::Grammar::Use::register_internal_module('Digest::SHA1', 'Perlito5X::Java::Digest::SHA1');
-        Perlito5::Grammar::Use::register_internal_module('Encode', 'Perlito5X::Java::Encode')
+        Perlito5::Grammar::Use::register_internal_module('Encode', 'Perlito5X::Java::Encode');
+        Perlito5::Grammar::Use::register_internal_module('Time::HiRes', 'Perlito5X::Java::Time::HiRes')
     }
     1
 }
