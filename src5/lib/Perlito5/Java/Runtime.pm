@@ -1994,6 +1994,22 @@ class PlV {
         return PlCORE.die("Undefined subroutine &" + name + " called");
     }
 
+    public static final PlObject apply_maybe_core(String name, int want, PlArray List__) {
+        // time() is a CORE function that can be redefined
+        PlObject code = cvar.hget(name);
+        if ( code.is_coderef() ) {
+            return code.apply(want, List__);
+        }
+        int pos = name.lastIndexOf("::");
+        if (pos != -1) {
+            String shortname = name.substring(pos + 2);
+            if ( shortname.equals("time") ) {
+                return PlCORE.time(want, List__);
+            }
+        }
+        return PlCORE.die("Undefined subroutine &" + name + " called");
+    }
+
     public static final PlLvalue cget(String name) {
         // this implements " \&name "
         PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);

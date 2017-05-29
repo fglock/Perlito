@@ -18347,10 +18347,16 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 'PlCORE.' . $op . '(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
             }
         }
-        for my $op ('time', 'sleep', 'ref', 'exit', 'warn', 'die', 'system', 'qx', 'pack', 'unpack', 'sprintf', 'crypt', 'join', 'reverse') {;
+        for my $op ('sleep', 'ref', 'exit', 'warn', 'die', 'system', 'qx', 'pack', 'unpack', 'sprintf', 'crypt', 'join', 'reverse') {;
             $emit_js{$op} = sub {
                 (my($self), my($level), my($wantarray)) = @_;
                 'PlCORE.' . $op . '(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
+            }
+        }
+        for my $op ('time') {;
+            $emit_js{$op} = sub {
+                (my($self), my($level), my($wantarray)) = @_;
+                'PlV.apply_maybe_core(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $op) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')'
             }
         }
         sub Perlito5::AST::Apply::emit_java {
@@ -24555,6 +24561,22 @@ class PlV {
             if ( autoload.is_coderef() ) {
                 PlV.sset(namespace + "::AUTOLOAD", new PlString(name));
                 return autoload.apply(want, List__);
+            }
+        }
+        return PlCORE.die("Undefined subroutine &" + name + " called");
+    }
+
+    public static final PlObject apply_maybe_core(String name, int want, PlArray List__) {
+        // time() is a CORE function that can be redefined
+        PlObject code = cvar.hget(name);
+        if ( code.is_coderef() ) {
+            return code.apply(want, List__);
+        }
+        int pos = name.lastIndexOf("::");
+        if (pos != -1) {
+            String shortname = name.substring(pos + 2);
+            if ( shortname.equals("time") ) {
+                return PlCORE.time(want, List__);
             }
         }
         return PlCORE.die("Undefined subroutine &" + name + " called");
