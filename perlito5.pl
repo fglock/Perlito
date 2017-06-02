@@ -25762,11 +25762,6 @@ class PlArrayRef extends PlArray {
         this.each_iterator = o.each_iterator;
         return o;
     }
-    public PlObject get() {
-        PlArray o = new PlArray();
-        o.a = this.a;
-        return o;
-    }
     public PlArray array_deref_lvalue() {
         PlArray o = new PlArray();
         o.a = this.a;
@@ -27392,7 +27387,7 @@ class PlLvalue extends PlObject {
             return new PlArray();
         }
         else if (this.o.is_arrayref()) {
-            return (PlArray)(this.o.get());
+            return (PlArray)(this.o.array_deref());
         }
         return this.o.array_deref();
     }
@@ -27403,7 +27398,7 @@ class PlLvalue extends PlObject {
             return ar;
         }
         else if (this.o.is_arrayref()) {
-            return (PlArray)(this.o.get());
+            return (PlArray)(this.o.array_deref_lvalue());
         }
         return this.o.array_deref();
     }
