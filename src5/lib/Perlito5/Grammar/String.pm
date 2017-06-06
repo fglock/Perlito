@@ -797,7 +797,7 @@ sub here_doc {
             # this will put the text in the right place in the AST
 
             # unindent the heredoc by $spaces
-            my @here_string = split( "\n", join('', @{$str}[ $pos .. $p - 1]) );
+            my @here_string = split( "\n", join('', @{$str}[ $pos .. $p - 1]), -1 );
             if (length($spaces)) {
                 my $l = length($spaces);
                 for my $i (0 .. $#here_string) {
@@ -813,25 +813,15 @@ sub here_doc {
             if ($type eq 'single_quote') {
                 # single_quote
                 # TODO - single quote escapes like \' and \\
-
-                push @$result, Perlito5::AST::Buf->new(buf => join('', @{$str}[ $pos .. $p - 1]));
-
-                ## push @$result, Perlito5::AST::Buf->new(buf => join("\n", @here_string));
-
+                push @$result, Perlito5::AST::Buf->new(buf => join("\n", @here_string));
             }
             else {
                 # double_quote
                 my $m;
-
-                $m = string_interpolation_parse($str, $pos, '', "\n" . $spaces . $delimiter . "\n", 1);
-
-                ## my $delim = "<,>?{#]";
-                ## my $str = [ split "", join("\n", @here_string, $delim) ];
-                ## $m = string_interpolation_parse($str, 0, '', "\n" . $delim, 1);
-
+                my $str = [ split "", join("\n", @here_string, $delimiter) ];
+                $m = string_interpolation_parse($str, 0, '', "\n" . $delimiter, 1);
                 if ( $m ) {
                     push @$result, Perlito5::Match::flat($m);
-                    push @$result, Perlito5::AST::Buf->new( buf => "\n" );
                 }
                 else {
                     Perlito5::Compiler::error 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';

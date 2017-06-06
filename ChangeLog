@@ -15,6 +15,7 @@
 - Parser:
 -- fix chomp(), chop()
 -- fix fat-arrow in argument lists
+-- indented heredoc with <<~"tag"
 
 - Java:
 -- "require"
