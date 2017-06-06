@@ -4322,41 +4322,46 @@ use feature 'say';
                 $spaces = join('', @{$str}[$p0 .. $p - 1])
             }
             if (join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter) {
-                my @here_string = split('
+                my $c = $str->[$p + length($delimiter)];
+                if ($c eq '' || $c eq ' ' || $c eq chr(9) || $c eq chr(10) || $c eq chr(13)) {
+                    my @here_string = split('
 ', join('', @{$str}[$pos .. $p - 1]), -1);
-                if (length($spaces)) {
-                    my $l = length($spaces);
-                    for my $i (0 .. $#here_string) {
-                        if (substr($here_string[$i], 0, $l) eq $spaces) {;
-                            $here_string[$i] = substr($here_string[$i], $l)
+                    if (length($spaces)) {
+                        my $l = length($spaces);
+                        for my $i (0 .. $#here_string) {
+                            if (substr($here_string[$i], 0, $l) eq $spaces) {;
+                                $here_string[$i] = substr($here_string[$i], $l)
+                            }
+                            else {;
+                                Perlito5::Compiler::error('Indentation on line ' . $i . ' of here-doc doesn' . chr(39) . 't match delimiter')
+                            }
+                        }
+                    }
+                    if ($type eq 'single_quote') {;
+                        push(@{$result}, Perlito5::AST::Buf::->new('buf', join('
+', @here_string)))
+                    }
+                    else {
+                        my $m;
+                        my $str = [split('', join('
+', @here_string, $delimiter . '
+'))];
+                        $m = string_interpolation_parse($str, 0, '', '
+' . $delimiter . '
+', 1);
+                        if ($m) {;
+                            push(@{$result}, Perlito5::Match::flat($m))
                         }
                         else {;
-                            Perlito5::Compiler::error('Indentation on line ' . $i . ' of here-doc doesn' . chr(39) . 't match delimiter')
+                            Perlito5::Compiler::error('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF')
                         }
                     }
-                }
-                if ($type eq 'single_quote') {;
-                    push(@{$result}, Perlito5::AST::Buf::->new('buf', join('
-', @here_string)))
-                }
-                else {
-                    my $m;
-                    my $str = [split('', join('
-', @here_string, $delimiter))];
-                    $m = string_interpolation_parse($str, 0, '', '
-' . $delimiter, 1);
-                    if ($m) {;
-                        push(@{$result}, Perlito5::Match::flat($m))
+                    $p += length($delimiter);
+                    my $m = newline($str, $p);
+                    if ($p >= @{$str} || $m) {
+                        $m && ($p = $m->{'to'});
+                        return {'str', $str, 'from', $pos, 'to', $p - 1}
                     }
-                    else {;
-                        Perlito5::Compiler::error('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF')
-                    }
-                }
-                $p += length($delimiter);
-                my $m = newline($str, $p);
-                if ($p >= @{$str} || $m) {
-                    $m && ($p = $m->{'to'});
-                    return {'str', $str, 'from', $pos, 'to', $p - 1}
                 }
             }
             while ($p < @{$str} && ($str->[$p] ne chr(10) && $str->[$p] ne chr(13))) {;

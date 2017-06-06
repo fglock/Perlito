@@ -794,48 +794,51 @@ sub here_doc {
             $spaces = join('', @{$str}[ $p0 .. $p - 1 ] );
         }
         if ( join('', @{$str}[ $p .. $p + length($delimiter) - 1]) eq $delimiter ) {
-            # this will put the text in the right place in the AST
+            my $c = $str->[ $p + length($delimiter) ];
+            if ($c eq '' || $c eq " " || $c eq "\t" || $c eq chr(10) || $c eq chr(13) ) {
+                # this will put the text in the right place in the AST
 
-            # unindent the heredoc by $spaces
-            my @here_string = split( "\n", join('', @{$str}[ $pos .. $p - 1]), -1 );
-            if (length($spaces)) {
-                my $l = length($spaces);
-                for my $i (0 .. $#here_string) {
-                    if ( substr($here_string[$i], 0, $l) eq $spaces ) {
-                        $here_string[$i] = substr( $here_string[$i], $l );
-                    }
-                    else {
-                        Perlito5::Compiler::error "Indentation on line $i of here-doc doesn't match delimiter";
+                # unindent the heredoc by $spaces
+                my @here_string = split( "\n", join('', @{$str}[ $pos .. $p - 1]), -1 );
+                if (length($spaces)) {
+                    my $l = length($spaces);
+                    for my $i (0 .. $#here_string) {
+                        if ( substr($here_string[$i], 0, $l) eq $spaces ) {
+                            $here_string[$i] = substr( $here_string[$i], $l );
+                        }
+                        else {
+                            Perlito5::Compiler::error "Indentation on line $i of here-doc doesn't match delimiter";
+                        }
                     }
                 }
-            }
 
-            if ($type eq 'single_quote') {
-                # single_quote
-                # TODO - single quote escapes like \' and \\
-                push @$result, Perlito5::AST::Buf->new(buf => join("\n", @here_string));
-            }
-            else {
-                # double_quote
-                my $m;
-                my $str = [ split "", join("\n", @here_string, $delimiter) ];
-                $m = string_interpolation_parse($str, 0, '', "\n" . $delimiter, 1);
-                if ( $m ) {
-                    push @$result, Perlito5::Match::flat($m);
+                if ($type eq 'single_quote') {
+                    # single_quote
+                    # TODO - single quote escapes like \' and \\
+                    push @$result, Perlito5::AST::Buf->new(buf => join("\n", @here_string));
                 }
                 else {
-                    Perlito5::Compiler::error 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
+                    # double_quote
+                    my $m;
+                    my $str = [ split "", join("\n", @here_string, $delimiter . "\n") ];
+                    $m = string_interpolation_parse($str, 0, '', "\n" . $delimiter . "\n", 1);
+                    if ( $m ) {
+                        push @$result, Perlito5::Match::flat($m);
+                    }
+                    else {
+                        Perlito5::Compiler::error 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
+                    }
                 }
-            }
 
-            $p += length($delimiter);
-            # say "$p ", scalar(@$str);
-            my $m = newline( $str, $p );
-            if ( $p >= @$str || $m ) {
-                # return true
-                $p = $m->{to} if $m;
-                return {
-                    'str' => $str, 'from' => $pos, 'to' => $p - 1
+                $p += length($delimiter);
+                # say "$p ", scalar(@$str);
+                my $m = newline( $str, $p );
+                if ( $p >= @$str || $m ) {
+                    # return true
+                    $p = $m->{to} if $m;
+                    return {
+                        'str' => $str, 'from' => $pos, 'to' => $p - 1
+                    }
                 }
             }
         }
