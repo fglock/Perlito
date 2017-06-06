@@ -4322,6 +4322,19 @@ use feature 'say';
                 $spaces = join('', @{$str}[$p0 .. $p - 1])
             }
             if (join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter) {
+                my @here_string = split('
+', join('', @{$str}[$pos .. $p - 1]));
+                if (length($spaces)) {
+                    my $l = length($spaces);
+                    for my $i (0 .. $#here_string) {
+                        if (substr($here_string[$i], 0, $l) eq $spaces) {;
+                            $here_string[$i] = substr($here_string[$i], $l)
+                        }
+                        else {;
+                            Perlito5::Compiler::error('Indentation on line ' . $i . ' of here-doc doesn' . chr(39) . 't match delimiter')
+                        }
+                    }
+                }
                 if ($type eq 'single_quote') {;
                     push(@{$result}, Perlito5::AST::Buf::->new('buf', join('', @{$str}[$pos .. $p - 1])))
                 }
@@ -29638,7 +29651,8 @@ GNU General Public License, which may be found in the Perl 5 source kit.
 
 Complete documentation for Perl, including FAQ lists, should be found on
 this system using "man perl" or "perldoc perl".  If you have access to the
-Internet, point your browser at http://www.perl.org/, the Perl Home Page.';
+Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
+';
     sub Perlito5::chomp_switch {
         my $s = substr($ARGV[0], 2);
         if ($s) {;
