@@ -681,11 +681,17 @@ sub here_doc_wanted {
 
     my $delimiter;
     my $type = 'double_quote';
+    my $indented = 0;
     my $p = $pos;
     if ( $str->[$p] eq '<' && $str->[$p + 1] eq '<' ) {
         # <<
         $p += 2;
         my $quote = $str->[$p];
+        if ( $quote eq "~" ) {
+            $indented = 1;
+            $p++;
+            $quote = $str->[$p];
+        }
         if ( $quote eq "'" || $quote eq '"' ) {
             $p += 1;
             my $m = string_interpolation_parse($_[0], $p, $quote, $quote, 0);
@@ -738,6 +744,7 @@ sub here_doc_wanted {
         $type,
         $placeholder->{arguments}[0]{arguments},
         $delimiter,
+        $indented,
     ];
 
     return {
@@ -774,6 +781,7 @@ sub here_doc {
     my $type      = $here->[0];
     my $result    = $here->[1];
     my $delimiter = $here->[2];
+    my $indented  = $here->[3];     # TODO indented heredoc
     # say "got a newline and we are looking for a $type that ends with ", $delimiter;
     if ($type eq 'single_quote') {
         while ( $p < @$str ) {

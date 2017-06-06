@@ -4229,10 +4229,16 @@ use feature 'say';
         my $pos = $_[1];
         my $delimiter;
         my $type = 'double_quote';
+        my $indented = 0;
         my $p = $pos;
         if ($str->[$p] eq '<' && $str->[$p + 1] eq '<') {
             $p += 2;
             my $quote = $str->[$p];
+            if ($quote eq '~') {
+                $indented = 1;
+                $p++;
+                $quote = $str->[$p]
+            }
             if ($quote eq chr(39) || $quote eq '"') {
                 $p += 1;
                 my $m = string_interpolation_parse($_[0], $p, $quote, $quote, 0);
@@ -4261,7 +4267,7 @@ use feature 'say';
             return 0
         }
         my $placeholder = Perlito5::AST::Apply::->new('code', 'list:<.>', 'namespace', '', 'arguments', [Perlito5::AST::Apply::->new('code', 'list:<.>', 'namespace', '', 'arguments', [])]);
-        push(@Here_doc, [$type, $placeholder->{'arguments'}->[0]->{'arguments'}, $delimiter]);
+        push(@Here_doc, [$type, $placeholder->{'arguments'}->[0]->{'arguments'}, $delimiter, $indented]);
         return {'str', $str, 'from', $pos, 'to', $p, 'capture', ['term', $placeholder]}
     }
     sub Perlito5::Grammar::String::newline {
@@ -4304,6 +4310,7 @@ use feature 'say';
         my $type = $here->[0];
         my $result = $here->[1];
         my $delimiter = $here->[2];
+        my $indented = $here->[3];
         if ($type eq 'single_quote') {;
             while ($p < @{$str}) {
                 if (join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter) {
