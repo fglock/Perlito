@@ -29193,7 +29193,9 @@ class PlString extends PlObject {
         return PlV.sget(s);
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
-        // TODO - concatenate current namespace if needed
+        if (s.indexOf("::") == -1) {
+            s = namespace + "::" + s;
+        }
         return PlV.sset(s, v);
     }
     public PlArray array_deref_lvalue() {
