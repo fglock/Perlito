@@ -4311,45 +4311,46 @@ use feature 'say';
         my $result = $here->[1];
         my $delimiter = $here->[2];
         my $indented = $here->[3];
-        if ($type eq 'single_quote') {;
-            while ($p < @{$str}) {
-                if (join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter) {
-                    push(@{$result}, Perlito5::AST::Buf::->new('buf', join('', @{$str}[$pos .. $p - 1])));
-                    $p += length($delimiter);
-                    my $m = newline($str, $p);
-                    if ($p >= @{$str} || $m) {
-                        $m && ($p = $m->{'to'});
-                        return {'str', $str, 'from', $pos, 'to', $p - 1}
+        while ($p < @{$str}) {
+            my $spaces = '';
+            my $p0 = $p;
+            if ($indented) {
+                while ($p < @{$str}) {
+                    $str->[$p] ne ' ' && $str->[$p] ne chr(9) && last;
+                    $p++
+                }
+                $spaces = join('', @{$str}[$p0 .. $p - 1])
+            }
+            if (join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter) {
+                if ($type eq 'single_quote') {;
+                    push(@{$result}, Perlito5::AST::Buf::->new('buf', join('', @{$str}[$pos .. $p - 1])))
+                }
+                else {
+                    my $m;
+                    $m = string_interpolation_parse($str, $pos, '', '
+' . $spaces . $delimiter . '
+', 1);
+                    if ($m) {
+                        push(@{$result}, Perlito5::Match::flat($m));
+                        push(@{$result}, Perlito5::AST::Buf::->new('buf', '
+'))
+                    }
+                    else {;
+                        Perlito5::Compiler::error('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF')
                     }
                 }
-                while ($p < @{$str} && ($str->[$p] ne chr(10) && $str->[$p] ne chr(13))) {;
-                    $p++
-                }
-                while ($p < @{$str} && ($str->[$p] eq chr(10) || $str->[$p] eq chr(13))) {;
-                    $p++
-                }
-            }
-        }
-        else {
-            my $m;
-            if (join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter) {
                 $p += length($delimiter);
-                $m = newline($str, $p);
+                my $m = newline($str, $p);
                 if ($p >= @{$str} || $m) {
-                    push(@{$result}, Perlito5::AST::Buf::->new('buf', ''));
                     $m && ($p = $m->{'to'});
-                    return {'str', $str, 'from', $pos, 'to', $p}
+                    return {'str', $str, 'from', $pos, 'to', $p - 1}
                 }
             }
-            $m = string_interpolation_parse($str, $pos, '', '
-' . $delimiter . '
-', 1);
-            if ($m) {
-                push(@{$result}, Perlito5::Match::flat($m));
-                push(@{$result}, Perlito5::AST::Buf::->new('buf', '
-'));
-                $m->{'to'} = $m->{'to'} - 1;
-                return $m
+            while ($p < @{$str} && ($str->[$p] ne chr(10) && $str->[$p] ne chr(13))) {;
+                $p++
+            }
+            while ($p < @{$str} && ($str->[$p] eq chr(10) || $str->[$p] eq chr(13))) {;
+                $p++
             }
         }
         Perlito5::Compiler::error('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF')
@@ -29637,8 +29638,7 @@ GNU General Public License, which may be found in the Perl 5 source kit.
 
 Complete documentation for Perl, including FAQ lists, should be found on
 this system using "man perl" or "perldoc perl".  If you have access to the
-Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
-';
+Internet, point your browser at http://www.perl.org/, the Perl Home Page.';
     sub Perlito5::chomp_switch {
         my $s = substr($ARGV[0], 2);
         if ($s) {;

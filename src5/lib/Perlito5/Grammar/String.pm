@@ -783,60 +783,63 @@ sub here_doc {
     my $delimiter = $here->[2];
     my $indented  = $here->[3];     # TODO indented heredoc
     # say "got a newline and we are looking for a $type that ends with ", $delimiter;
-    if ($type eq 'single_quote') {
-        while ( $p < @$str ) {
-            if ( join('', @{$str}[ $p .. $p + length($delimiter) - 1]) eq $delimiter ) {
-                # this will put the text in the right place in the AST
+    while ( $p < @$str ) {
+        my $spaces = '';
+        my $p0 = $p;
+        if ($indented) {
+            while ( $p < @$str ) {
+                last if $str->[$p] ne ' ' && $str->[$p] ne "\t";
+                $p++;
+            }
+            $spaces = join('', @{$str}[ $p0 .. $p - 1 ] );
+        }
+        if ( join('', @{$str}[ $p .. $p + length($delimiter) - 1]) eq $delimiter ) {
+            # this will put the text in the right place in the AST
+
+            # TODO - unindent the heredoc by $spaces
+            # Indentation on line 2 of here-doc doesn't match delimiter at ...
+
+            if ($type eq 'single_quote') {
+                # single_quote
+                # TODO - single quote escapes like \' and \\
                 push @$result, Perlito5::AST::Buf->new(buf => join('', @{$str}[ $pos .. $p - 1]));
-                $p += length($delimiter);
-                # say "$p ", scalar(@$str);
-                my $m = newline( $str, $p );
-                if ( $p >= @$str || $m ) {
-                    # return true
-                    $p = $m->{to} if $m;
-                    return {
-                        'str' => $str, 'from' => $pos, 'to' => $p - 1
-                    }
+            }
+            else {
+                # double_quote
+                my $m;
+                $m = string_interpolation_parse($str, $pos, '', "\n" . $spaces . $delimiter . "\n", 1);
+                if ( $m ) {
+                    push @$result, Perlito5::Match::flat($m);
+                    push @$result, Perlito5::AST::Buf->new( buf => "\n" );
+                }
+                else {
+                    Perlito5::Compiler::error 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
                 }
             }
-            # ... next line
-            while (  $p < @$str
-                  && ( $str->[$p] ne chr(10) && $str->[$p] ne chr(13) )
-                  )
-            {
-                $p++
-            }
-            while (  $p < @$str
-                  && ( $str->[$p] eq chr(10) || $str->[$p] eq chr(13) )
-                  )
-            {
-                $p++
-            }
-        }
-    }
-    else {
-        # double_quote
-        my $m;
-        if ( join('', @{$str}[ $p .. $p + length($delimiter) - 1]) eq $delimiter ) {
+
             $p += length($delimiter);
-            $m = newline( $str, $p );
+            # say "$p ", scalar(@$str);
+            my $m = newline( $str, $p );
             if ( $p >= @$str || $m ) {
-                push @$result, Perlito5::AST::Buf->new( buf => '' );
+                # return true
                 $p = $m->{to} if $m;
                 return {
-                    'str' => $str, 'from' => $pos, 'to' => $p
-                };
+                    'str' => $str, 'from' => $pos, 'to' => $p - 1
+                }
             }
         }
-
-        # TODO - compare to newline() instead of "\n"
-
-        $m = string_interpolation_parse($str, $pos, '', "\n" . $delimiter . "\n", 1);
-        if ( $m ) {
-            push @$result, Perlito5::Match::flat($m);
-            push @$result, Perlito5::AST::Buf->new( buf => "\n" );
-            $m->{to} = $m->{to} - 1;
-            return $m;
+        # ... next line
+        while (  $p < @$str
+              && ( $str->[$p] ne chr(10) && $str->[$p] ne chr(13) )
+              )
+        {
+            $p++
+        }
+        while (  $p < @$str
+              && ( $str->[$p] eq chr(10) || $str->[$p] eq chr(13) )
+              )
+        {
+            $p++
         }
     }
     Perlito5::Compiler::error 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
