@@ -196,6 +196,19 @@ Parser
 
         if ($code eq 'eval' && $Perlito5::PHASE eq 'BEGIN') {
 
+- compiler hints with $^H
+
+~~~sh
+    $ perl -e ' $^H = 1; { $^H = 3; use strict; print "HERE $^H\n"; eval q{ print "EVAL $^H\n";  }; BEGIN {  print "BEGIN1 $^H\n";  } };  print $^H, "\n";  {  use strict; print "HERE2 $^H\n"; eval q{ print "EVAL2 $^H\n";  BEGIN {  eval q{ print "BEGIN-EVAL $^H\n" }  }    }; } '
+    BEGIN1 2018
+    HERE 3
+    EVAL 3
+    3
+    HERE2 3
+    BEGIN-EVAL 2018
+    EVAL2 3
+~~~
+
 - parse example in http://www.perlmonks.org/?node_id=663393
 
 ~~~sh
