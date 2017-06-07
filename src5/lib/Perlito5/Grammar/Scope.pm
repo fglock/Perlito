@@ -17,6 +17,8 @@ sub create_new_compile_time_scope {
     $Perlito5::SCOPE_DEPTH++;
     # warn "ENTER ", $Perlito5::SCOPE_DEPTH, " $Perlito5::PKG_NAME \n";
     $Perlito5::SCOPE = $new_scope;
+    $Perlito5::SCOPE->{hint_scalar} = $Perlito5::HINT;
+    $Perlito5::SCOPE->{hint_hash}   = { %Perlito5::HINT };
 }
 
 sub end_compile_time_scope {
@@ -28,6 +30,8 @@ sub end_compile_time_scope {
         $pos++;
         $Perlito5::SCOPE = $Perlito5::SCOPE->{block}[-1]; 
     }
+    $Perlito5::HINT = $Perlito5::SCOPE->{hint_scalar};
+    %Perlito5::HINT = %{ $Perlito5::SCOPE->{hint_hash} || {} };
 }
 
 sub compile_time_glob_set {
