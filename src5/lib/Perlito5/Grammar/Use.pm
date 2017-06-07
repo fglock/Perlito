@@ -117,6 +117,7 @@ token stmt_use {
                 #   "strict::import()" doesn\'t work
                 #   because the effect of "strict" is localized by the compiler
                 $Perlito5::STRICT = ($use_decl eq 'no' ? 0 : 1);
+                $Perlito5::HINT   = ($use_decl eq 'no' ? 0 : 2018);   # TODO - subs/refs/vars
             }
 
             if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {

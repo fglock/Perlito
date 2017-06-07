@@ -4980,8 +4980,9 @@ use feature 'say';
                     my $full_ident = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
                     $Perlito5::PACKAGES->{$full_ident} = 1;
                     my $use_decl = Perlito5::Match::flat($MATCH->{'use_decl'});
-                    if ($full_ident eq 'strict') {;
-                        $Perlito5::STRICT = ($use_decl eq 'no' ? 0 : 1)
+                    if ($full_ident eq 'strict') {
+                        $Perlito5::STRICT = ($use_decl eq 'no' ? 0 : 1);
+                        $Perlito5::HINT = ($use_decl eq 'no' ? 0 : 2018)
                     }
                     if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                         my $code = 'our (' . join(', ', @{$list}) . ')';
