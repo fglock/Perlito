@@ -207,6 +207,8 @@ sub parse_time_eval {
     # the module runs in a new scope without access to the current lexical variables
 
     local $Perlito5::STRICT = 0;
+    local $Perlito5::H = 0;
+    local %Perlito5::H = ();
     if ( $Perlito5::EXPAND_USE ) {
         # normal "use" is not disabled, go for it:
         #   - require the module (evaluate the source code)
@@ -371,6 +373,8 @@ sub require {
     # print STDERR "require $filename [[ $source ]]\n";
     local $Perlito5::FILE_NAME = $filename;
     local $Perlito5::STRICT = 0;
+    local $Perlito5::H = 0;
+    local %Perlito5::H = ();
     Perlito5::Grammar::Scope::check_variable_declarations();
     Perlito5::Grammar::Scope::create_new_compile_time_scope();
 

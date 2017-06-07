@@ -451,6 +451,8 @@ $source
                 if (!$bootstrapping) {
                     # emit BEGIN-block side-effects, INIT blocks
                     $Perlito5::STRICT = 0;
+                    $Perlito5::H = 0;
+                    %Perlito5::H = ();
                     my @units;
                     push @units,
                         Perlito5::AST::Block->new(

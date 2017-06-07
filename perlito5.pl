@@ -5038,6 +5038,8 @@ use feature 'say';
         my $skip_import = defined($arguments) && @{$arguments} == 0;
         defined($arguments) || ($arguments = []);
         local $Perlito5::STRICT = 0;
+        local $Perlito5::H = 0;
+        local %Perlito5::H = ();
         if ($Perlito5::EXPAND_USE) {
             my $current_module_name = $Perlito5::PKG_NAME;
             my $filename = modulename_to_filename($module_name);
@@ -5143,6 +5145,8 @@ use feature 'say';
         my $source = slurp_file($filename);
         local $Perlito5::FILE_NAME = $filename;
         local $Perlito5::STRICT = 0;
+        local $Perlito5::H = 0;
+        local %Perlito5::H = ();
         Perlito5::Grammar::Scope::check_variable_declarations();
         Perlito5::Grammar::Scope::create_new_compile_time_scope();
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
@@ -8992,6 +8996,8 @@ use feature 'say';
     our $EXPAND_USE = 1;
     our $EMIT_USE = 0;
     our $STRICT = 0;
+    our $H = 0;
+    our %H = ();
     our $WARNINGS = 0;
     our $UTF8 = 0;
     our $BYTES = 0;
@@ -29972,6 +29978,8 @@ INIT failed--call queue aborted.
                     }
                     if (!$bootstrapping) {
                         $Perlito5::STRICT = 0;
+                        $Perlito5::H = 0;
+                        %Perlito5::H = ();
                         my @units;
                         push(@units, Perlito5::AST::Block::->new('stmts', Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL)));
                         if (@Perlito5::INIT_BLOCK || keys(%Perlito5::DATA_SECTION)) {
