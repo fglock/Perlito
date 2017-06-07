@@ -20,11 +20,13 @@ use feature 'say';
 {
     package main;
     package strict;
-    sub strict::import {;
-        $Perlito5::STRICT = 1
+    sub strict::import {
+        $Perlito5::STRICT = 1;
+        $Perlito5::HINT = 2018
     }
-    sub strict::unimport {;
-        $Perlito5::STRICT = 0
+    sub strict::unimport {
+        $Perlito5::STRICT = 0;
+        $Perlito5::HINT = 0
     }
     1
 }
@@ -12046,6 +12048,9 @@ use feature 'say';
         my $table = {'$', 'v_', '@', 'List_', '%', 'Hash_', '&', ''};
         sub Perlito5::AST::Var::emit_javascript2_global {
             (my($self), my($level), my($wantarray)) = @_;
+            if ($self->{'name'} eq chr(8)) {;
+                $self = Perlito5::AST::Var::->new(%{$self}, 'namespace', 'Perlito5', 'name', 'HINT')
+            }
             my $str_name = $self->{'name'};
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
             my $namespace = $self->{'namespace'} || $self->{'_namespace'};
@@ -19507,6 +19512,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         my $table = {'$', '', '@', '', '%', '', '&', ''};
         sub Perlito5::AST::Var::emit_java_global {
             (my($self), my($level), my($wantarray), my($localize)) = @_;
+            if ($self->{'name'} eq chr(8)) {;
+                $self = Perlito5::AST::Var::->new(%{$self}, 'namespace', 'Perlito5', 'name', 'HINT')
+            }
             my $local = $localize ? '_local' : '';
             my $str_name = $self->{'name'};
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
@@ -19566,6 +19574,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }
         sub Perlito5::AST::Var::emit_java_global_set {
             (my($self), my($arguments), my($level), my($wantarray), my($localize)) = @_;
+            if ($self->{'name'} eq chr(8)) {;
+                $self = Perlito5::AST::Var::->new(%{$self}, 'namespace', 'Perlito5', 'name', 'HINT')
+            }
             my $local = $localize ? '_local' : '';
             my $str_name = $self->{'name'};
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
