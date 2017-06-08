@@ -5626,7 +5626,7 @@ use feature 'say';
                     $look->{'_namespace'} && ($var->{'_namespace'} = $look->{'_namespace'})
                 }
                 else {
-                    if ($Perlito5::STRICT) {
+                    if (${^H} & $Perlito5::STRICT_VARS) {
                         my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
                         if ($sigil ne '*' && $sigil ne '&') {;
                             Perlito5::Compiler::error('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name')
@@ -9020,6 +9020,9 @@ use feature 'say';
     our @UNITCHECK_BLOCK = ();
     our %BEGIN_SCRATCHPAD = ();
     our $PROTO = {};
+    our $STRICT_REFS = 2;
+    our $STRICT_SUBS = 512;
+    our $STRICT_VARS = 1024;
     our @ANNOTATION;
     sub Perlito5::set_global_phase {
         my $phase = shift;

@@ -153,7 +153,7 @@ sub check_variable_declarations {
             }
             else {
                 # unknown variable
-                if ( $Perlito5::STRICT ) {
+                if ( $^H & $Perlito5::STRICT_VARS ) {
                     # warn "look: ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
                     my $sigil = $var->{_real_sigil} || $var->{sigil};
                     if ($sigil ne '*' && $sigil ne '&') {
