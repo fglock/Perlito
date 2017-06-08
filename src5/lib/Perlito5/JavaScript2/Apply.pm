@@ -770,6 +770,7 @@ package Perlito5::AST::Apply;
                             . Perlito5::JavaScript2::to_str($arg) . ", "
                             . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', '
                             . Perlito5::JavaScript2::escape_string($wantarray) . ', '
+                            . ( 0 + $^H ) . ', '
                             . $scope_js
                         . "]))";
             }
