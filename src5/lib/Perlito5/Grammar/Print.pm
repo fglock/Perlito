@@ -120,9 +120,7 @@ sub typeglob_bareword {
     my $full_name = $name;
     $full_name = $namespace . '::' . $name if $namespace;
 
-    # if ( $Perlito5::STRICT && ! $Perlito5::PACKAGES->{ $full_name } ) {
     #     die 'Bareword "' . $full_name . '" not allowed';
-    # }
 
     $m_name->{capture} = Perlito5::AST::Var->new(
                              sigil => '::',

@@ -474,7 +474,6 @@ if ($backend) {
 
                 if (!$bootstrapping) {
                     # emit BEGIN-block side-effects, INIT blocks
-                    $Perlito5::STRICT = 0;
                     $^H = 0;
                     %^H = ();
                     my @units;

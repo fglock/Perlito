@@ -21,7 +21,6 @@ $^H = 0;
 
 our $EXPAND_USE   = 1;
 our $EMIT_USE     = 0;
-our $STRICT       = 0;
 our $WARNINGS     = 0;
 our $UTF8         = 0;
 our $BYTES        = 0;

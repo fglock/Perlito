@@ -364,7 +364,6 @@ sub require {
     local $Perlito5::FILE_NAME = $filename;
     Perlito5::Grammar::Scope::check_variable_declarations();
     Perlito5::Grammar::Scope::create_new_compile_time_scope();
-    local $Perlito5::STRICT = 0;
     local $^H = 0;
     local %^H = ();
 

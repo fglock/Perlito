@@ -6,7 +6,6 @@ use strict;
 # TODO
 # sub generate_eval_string {
 #     my ($source, $strict) = @_;
-#     local $Perlito5::STRICT = $strict;
 #     my $source_new = "";
 #     $@ = "";
 #     eval {

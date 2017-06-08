@@ -20,12 +20,10 @@ use feature 'say';
 {
     package main;
     package strict;
-    sub strict::import {
-        $Perlito5::STRICT = 1;
+    sub strict::import {;
         ${^H} = 2018
     }
-    sub strict::unimport {
-        $Perlito5::STRICT = 0;
+    sub strict::unimport {;
         ${^H} = 0
     }
     1
@@ -5144,7 +5142,6 @@ use feature 'say';
         local $Perlito5::FILE_NAME = $filename;
         Perlito5::Grammar::Scope::check_variable_declarations();
         Perlito5::Grammar::Scope::create_new_compile_time_scope();
-        local $Perlito5::STRICT = 0;
         local ${^H} = 0;
         local %{^H} = ();
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
@@ -8999,7 +8996,6 @@ use feature 'say';
     %{^H} = ();
     our $EXPAND_USE = 1;
     our $EMIT_USE = 0;
-    our $STRICT = 0;
     our $WARNINGS = 0;
     our $UTF8 = 0;
     our $BYTES = 0;
@@ -29982,7 +29978,6 @@ INIT failed--call queue aborted.
                             for @Perlito5::CHECK_BLOCK
                     }
                     if (!$bootstrapping) {
-                        $Perlito5::STRICT = 0;
                         ${^H} = 0;
                         %{^H} = ();
                         my @units;
