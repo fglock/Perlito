@@ -22520,7 +22520,7 @@ class PlJavaCompiler {
         String outJava;
         String constants;
         PlObject tmp_scalar_hints = PlV.sget("main::" + (char)8).get();   // save $^H
-        PlHash   tmp_hash_hints   = PlV.hash_get("main::" + (char)8);     // save %^H
+        PlHash   tmp_hash_hints   = new PlHash(PlV.hash_get("main::" + (char)8));  // save %^H
         try {
 
             PlV.sset("main::" + (char)8, scalar_hints);                   // $^H
