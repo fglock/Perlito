@@ -7,7 +7,6 @@ sub perl5_to_js {
 
     # say "source: [" . $source . "]";
 
-    my    $strict_old         = $Perlito5::STRICT;
     local $_;
     local ${^GLOBAL_PHASE};
     local $^H = $scalar_hints;
@@ -50,7 +49,6 @@ sub perl5_to_js {
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
-    $Perlito5::STRICT   = $strict_old;
     return $js_code;
 }
 

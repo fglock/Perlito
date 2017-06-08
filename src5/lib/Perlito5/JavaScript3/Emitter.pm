@@ -1845,9 +1845,7 @@ package Perlito5::AST::Apply;
             else {
                 # this subroutine was never declared
                 if ($self->{bareword}) {
-                    if ( $Perlito5::STRICT ) {
-                        die 'Bareword "' . $name . '" not allowed while "strict subs" in use';
-                    }
+                    # die 'Bareword "' . $name . '" not allowed while "strict subs" in use';
                     return Perlito5::JavaScript3::escape_string( 
                             ($self->{namespace} ? $self->{namespace} . '::' : "") . $name 
                         );

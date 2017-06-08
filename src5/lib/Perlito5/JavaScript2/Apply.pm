@@ -713,8 +713,6 @@ package Perlito5::AST::Apply;
             }
 
             # do EXPR
-            my $tmp_strict = $Perlito5::STRICT;
-            $Perlito5::STRICT = 0;
             my $ast =
                 Perlito5::AST::Apply->new(
                     code => 'eval',
@@ -726,10 +724,11 @@ package Perlito5::AST::Apply;
                           arguments => $self->{arguments}
                         )
                     ],
-                    _scope => Perlito5::Grammar::Scope->new_base_scope(),
+                    _scope          => Perlito5::Grammar::Scope->new_base_scope(),
+                    _hash_hints     => {},  # TODO
+                    _scalar_hints   => 0,   # TODO
                 );
             my $js = $ast->emit_javascript2( $level, $wantarray );
-            $Perlito5::STRICT = $tmp_strict;
             return $js;
         },
 
@@ -790,8 +789,6 @@ package Perlito5::AST::Apply;
                 ),
                 "var r;",
                 'p5pkg["main"]["v_@"] = "";',
-                'var p5strict = p5pkg["Perlito5"]["v_STRICT"];',
-                'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';',
                 "try {",
                     [ 'r = ' . $eval . "",
                     ],
@@ -820,7 +817,6 @@ package Perlito5::AST::Apply;
                    "}",
                  ],
                 "}",
-                'p5pkg["Perlito5"]["v_STRICT"] = p5strict;',
                 "return r;",
             );
         },
@@ -1016,7 +1012,6 @@ package Perlito5::AST::Apply;
                 );
             }
             else {
-                $Perlito5::STRICT = 0;  # allow FILE bareword
                 return 'CORE.open(' . Perlito5::JavaScript2::to_list( $self->{arguments}, $level ) . ')'
             }
         },
@@ -1351,9 +1346,6 @@ package Perlito5::AST::Apply;
                 # this subroutine was never declared
                 if ($self->{bareword}) {
                     # TODO: allow barewords where a glob is expected: open FILE, ...
-                    # if ( $Perlito5::STRICT ) {
-                    #     die 'Bareword ' . Perlito5::JavaScript2::escape_string($name ) . ' not allowed while "strict subs" in use';
-                    # }
 
                     # bareword doesn't call AUTOLOAD
                     return Perlito5::JavaScript2::escape_string( 

@@ -10932,11 +10932,8 @@ use feature 'say';
                 my $block = $arg->{'stmts'};
                 return Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, (Perlito5::JavaScript2::LexicalBlock::->new('block', $block))->emit_javascript2($level + 1, $wantarray))
             }
-            my $tmp_strict = $Perlito5::STRICT;
-            $Perlito5::STRICT = 0;
-            my $ast = Perlito5::AST::Apply::->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply::->new('code', 'slurp_file', 'namespace', 'Perlito5::Grammar::Use', 'arguments', $self->{'arguments'})], '_scope', Perlito5::Grammar::Scope::->new_base_scope());
+            my $ast = Perlito5::AST::Apply::->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply::->new('code', 'slurp_file', 'namespace', 'Perlito5::Grammar::Use', 'arguments', $self->{'arguments'})], '_scope', Perlito5::Grammar::Scope::->new_base_scope(), '_hash_hints', {}, '_scalar_hints', 0);
             my $js = $ast->emit_javascript2($level, $wantarray);
-            $Perlito5::STRICT = $tmp_strict;
             return $js
         }, 'eval', sub {
             (my($self), my($level), my($wantarray)) = @_;
@@ -10960,7 +10957,7 @@ use feature 'say';
                 $eval = 'eval(p5pkg["Perlito5::JavaScript2::Runtime"].perl5_to_js([' . Perlito5::JavaScript2::to_str($arg) . ', ' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::JavaScript2::escape_string($wantarray) . ', ' . (0 + $self->{'_scalar_hints'}) . ', ' . $hash_hints_js . ', ' . $scope_js . ']))'
             }
             my $context = Perlito5::JavaScript2::to_context($wantarray);
-            Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, ($context eq 'p5want' ? () : 'var p5want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if (err instanceof p5_error && (err.type == ' . chr(39) . 'last' . chr(39) . ' || err.type == ' . chr(39) . 'redo' . chr(39) . ' || err.type == ' . chr(39) . 'next' . chr(39) . ')) {', ['throw(err)'], '}', 'else if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\\n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\\n" + err.stack + "\\n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
+            Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, ($context eq 'p5want' ? () : 'var p5want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if (err instanceof p5_error && (err.type == ' . chr(39) . 'last' . chr(39) . ' || err.type == ' . chr(39) . 'redo' . chr(39) . ' || err.type == ' . chr(39) . 'next' . chr(39) . ')) {', ['throw(err)'], '}', 'else if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\\n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\\n" + err.stack + "\\n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'return r;')
         }, 'substr', sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $length = $self->{'arguments'}->[2];
@@ -11107,8 +11104,7 @@ use feature 'say';
             if (ref($fun) ne 'Perlito5::AST::Apply') {;
                 return Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, $fun->emit_javascript2($level) . ' = CORE.bless([ {file_handle : {id : null}}, "GLOB" ]);', 'return CORE.open(' . Perlito5::JavaScript2::to_list($self->{'arguments'}, $level) . ')')
             }
-            else {
-                $Perlito5::STRICT = 0;
+            else {;
                 return 'CORE.open(' . Perlito5::JavaScript2::to_list($self->{'arguments'}, $level) . ')'
             }
         }, 'chomp', sub {
@@ -12541,7 +12537,6 @@ use feature 'say';
     package Perlito5::JavaScript2::Runtime;
     sub Perlito5::JavaScript2::Runtime::perl5_to_js {
         (my($source), my($namespace), my($want), my($scalar_hints), my($hash_hints), my($scope_js)) = @_;
-        my $strict_old = $Perlito5::STRICT;
         local $_;
         local ${^GLOBAL_PHASE};
         local ${^H} = $scalar_hints;
@@ -12563,7 +12558,6 @@ use feature 'say';
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
-        $Perlito5::STRICT = $strict_old;
         return $js_code
     }
     sub Perlito5::JavaScript2::Runtime::eval_ast {
