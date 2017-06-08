@@ -4980,10 +4980,6 @@ use feature 'say';
                     my $full_ident = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
                     $Perlito5::PACKAGES->{$full_ident} = 1;
                     my $use_decl = Perlito5::Match::flat($MATCH->{'use_decl'});
-                    if ($full_ident eq 'strict') {
-                        $Perlito5::STRICT = ($use_decl eq 'no' ? 0 : 1);
-                        $Perlito5::HINT = ($use_decl eq 'no' ? 0 : 2018)
-                    }
                     if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                         my $code = 'our (' . join(', ', @{$list}) . ')';
                         my $m = Perlito5::Grammar::Statement::statement_parse([split('', $code)], 0);
@@ -5040,9 +5036,6 @@ use feature 'say';
         my $arguments = $ast->{'arguments'};
         my $skip_import = defined($arguments) && @{$arguments} == 0;
         defined($arguments) || ($arguments = []);
-        local $Perlito5::STRICT = 0;
-        local $Perlito5::HINT = 0;
-        local %Perlito5::HINT = ();
         if ($Perlito5::EXPAND_USE) {
             my $current_module_name = $Perlito5::PKG_NAME;
             my $filename = modulename_to_filename($module_name);
@@ -5147,11 +5140,11 @@ use feature 'say';
         filename_lookup($filename) eq 'done' && return;
         my $source = slurp_file($filename);
         local $Perlito5::FILE_NAME = $filename;
+        Perlito5::Grammar::Scope::check_variable_declarations();
+        Perlito5::Grammar::Scope::create_new_compile_time_scope();
         local $Perlito5::STRICT = 0;
         local $Perlito5::HINT = 0;
         local %Perlito5::HINT = ();
-        Perlito5::Grammar::Scope::check_variable_declarations();
-        Perlito5::Grammar::Scope::create_new_compile_time_scope();
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         my $ast = Perlito5::AST::Block::->new('stmts', Perlito5::Match::flat($m));
         my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
@@ -5539,6 +5532,8 @@ use feature 'say';
         $Perlito5::SCOPE->{'hint_hash'} = {%Perlito5::HINT, }
     }
     sub Perlito5::Grammar::Scope::end_compile_time_scope {
+        $Perlito5::HINT = $Perlito5::SCOPE->{'hint_scalar'};
+        %Perlito5::HINT = %{$Perlito5::SCOPE->{'hint_hash'} || {}};
         my $pos = 0;
         $Perlito5::SCOPE_DEPTH--;
         $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
@@ -5546,8 +5541,6 @@ use feature 'say';
             $pos++;
             $Perlito5::SCOPE = $Perlito5::SCOPE->{'block'}->[-1]
         }
-        $Perlito5::HINT = $Perlito5::SCOPE->{'hint_scalar'};
-        %Perlito5::HINT = %{$Perlito5::SCOPE->{'hint_hash'} || {}}
     }
     sub Perlito5::Grammar::Scope::compile_time_glob_set {
         (my($glob), my($value), my($namespace)) = @_;

@@ -112,14 +112,6 @@ token stmt_use {
 
             my $use_decl = Perlito5::Match::flat($MATCH->{use_decl});
 
-            if ($full_ident eq 'strict') {
-                # special case:
-                #   "strict::import()" doesn\'t work
-                #   because the effect of "strict" is localized by the compiler
-                $Perlito5::STRICT = ($use_decl eq 'no' ? 0 : 1);
-                $Perlito5::HINT   = ($use_decl eq 'no' ? 0 : 2018);   # TODO - subs/refs/vars
-            }
-
             if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                 my $code = 'our (' . join(', ', @$list) . ')';
                 my $m = Perlito5::Grammar::Statement::statement_parse( [ split "", $code ], 0);
@@ -207,9 +199,6 @@ sub parse_time_eval {
     # load the module source code and create a syntax tree.
     # the module runs in a new scope without access to the current lexical variables
 
-    local $Perlito5::STRICT = 0;
-    local $Perlito5::HINT = 0;
-    local %Perlito5::HINT = ();
     if ( $Perlito5::EXPAND_USE ) {
         # normal "use" is not disabled, go for it:
         #   - require the module (evaluate the source code)
@@ -373,11 +362,11 @@ sub require {
     my $source = slurp_file($filename);
     # print STDERR "require $filename [[ $source ]]\n";
     local $Perlito5::FILE_NAME = $filename;
+    Perlito5::Grammar::Scope::check_variable_declarations();
+    Perlito5::Grammar::Scope::create_new_compile_time_scope();
     local $Perlito5::STRICT = 0;
     local $Perlito5::HINT = 0;
     local %Perlito5::HINT = ();
-    Perlito5::Grammar::Scope::check_variable_declarations();
-    Perlito5::Grammar::Scope::create_new_compile_time_scope();
 
     my $m = Perlito5::Grammar::exp_stmts($source, 0);
     my $ast = Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($m) );
