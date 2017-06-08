@@ -22,11 +22,11 @@ use feature 'say';
     package strict;
     sub strict::import {
         $Perlito5::STRICT = 1;
-        $Perlito5::HINT = 2018
+        ${'^H'} = 2018
     }
     sub strict::unimport {
         $Perlito5::STRICT = 0;
-        $Perlito5::HINT = 0
+        ${'^H'} = 0
     }
     1
 }
@@ -5143,8 +5143,8 @@ use feature 'say';
         Perlito5::Grammar::Scope::check_variable_declarations();
         Perlito5::Grammar::Scope::create_new_compile_time_scope();
         local $Perlito5::STRICT = 0;
-        local $Perlito5::HINT = 0;
-        local %Perlito5::HINT = ();
+        local ${'^H'} = 0;
+        local %{'^H'} = ();
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         my $ast = Perlito5::AST::Block::->new('stmts', Perlito5::Match::flat($m));
         my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
@@ -5528,12 +5528,12 @@ use feature 'say';
         push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
         $Perlito5::SCOPE_DEPTH++;
         $Perlito5::SCOPE = $new_scope;
-        $Perlito5::SCOPE->{'hint_scalar'} = $Perlito5::HINT;
-        $Perlito5::SCOPE->{'hint_hash'} = {%Perlito5::HINT, }
+        $Perlito5::SCOPE->{'hint_scalar'} = ${'^H'};
+        $Perlito5::SCOPE->{'hint_hash'} = {%{'^H'}, }
     }
     sub Perlito5::Grammar::Scope::end_compile_time_scope {
-        $Perlito5::HINT = $Perlito5::SCOPE->{'hint_scalar'};
-        %Perlito5::HINT = %{$Perlito5::SCOPE->{'hint_hash'} || {}};
+        ${'^H'} = $Perlito5::SCOPE->{'hint_scalar'};
+        %{'^H'} = %{$Perlito5::SCOPE->{'hint_hash'} || {}};
         my $pos = 0;
         $Perlito5::SCOPE_DEPTH--;
         $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
@@ -8993,11 +8993,11 @@ use feature 'say';
     defined(${'?'}) || (${'?'} = 0);
     ${']'} || (${']'} = '5.022000');
     defined(${'^V'}) || (${'^V'} = bless({'original', 'v5.22.0', 'qv', 1, 'version', [5, 22, 0]}, 'version'));
+    ${'^H'} = 0;
+    %{'^H'} = ();
     our $EXPAND_USE = 1;
     our $EMIT_USE = 0;
     our $STRICT = 0;
-    our $HINT = 0;
-    our %HINT = ();
     our $WARNINGS = 0;
     our $UTF8 = 0;
     our $BYTES = 0;
@@ -12042,9 +12042,6 @@ use feature 'say';
         my $table = {'$', 'v_', '@', 'List_', '%', 'Hash_', '&', ''};
         sub Perlito5::AST::Var::emit_javascript2_global {
             (my($self), my($level), my($wantarray)) = @_;
-            if ($self->{'name'} eq chr(8)) {;
-                $self = Perlito5::AST::Var::->new(%{$self}, 'namespace', 'Perlito5', 'name', 'HINT')
-            }
             my $str_name = $self->{'name'};
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
             my $namespace = $self->{'namespace'} || $self->{'_namespace'};
@@ -15909,7 +15906,7 @@ CORE.sprintf = function(List__) {
             my $str_name = $self->{'name'};
             my $c = substr($str_name, 0, 1);
             if ($c lt ' ') {;
-                $str_name = '^' . chr(ord($c) + ord('A') - 1) . substr($str_name, 1)
+                return $self->{'sigil'} . '{^' . chr(ord($c) + ord('A') - 1) . substr($str_name, 1) . '}'
             }
             my $ns = '';
             if ($self->{'namespace'}) {
@@ -19506,9 +19503,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         my $table = {'$', '', '@', '', '%', '', '&', ''};
         sub Perlito5::AST::Var::emit_java_global {
             (my($self), my($level), my($wantarray), my($localize)) = @_;
-            if ($self->{'name'} eq chr(8)) {;
-                $self = Perlito5::AST::Var::->new(%{$self}, 'namespace', 'Perlito5', 'name', 'HINT')
-            }
             my $local = $localize ? '_local' : '';
             my $str_name = $self->{'name'};
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
@@ -19568,9 +19562,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }
         sub Perlito5::AST::Var::emit_java_global_set {
             (my($self), my($arguments), my($level), my($wantarray), my($localize)) = @_;
-            if ($self->{'name'} eq chr(8)) {;
-                $self = Perlito5::AST::Var::->new(%{$self}, 'namespace', 'Perlito5', 'name', 'HINT')
-            }
             my $local = $localize ? '_local' : '';
             my $str_name = $self->{'name'};
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
@@ -29987,8 +29978,8 @@ INIT failed--call queue aborted.
                     }
                     if (!$bootstrapping) {
                         $Perlito5::STRICT = 0;
-                        $Perlito5::HINT = 0;
-                        %Perlito5::HINT = ();
+                        ${'^H'} = 0;
+                        %{'^H'} = ();
                         my @units;
                         push(@units, Perlito5::AST::Block::->new('stmts', Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL)));
                         if (@Perlito5::INIT_BLOCK || keys(%Perlito5::DATA_SECTION)) {

@@ -365,8 +365,8 @@ sub require {
     Perlito5::Grammar::Scope::check_variable_declarations();
     Perlito5::Grammar::Scope::create_new_compile_time_scope();
     local $Perlito5::STRICT = 0;
-    local $Perlito5::HINT = 0;
-    local %Perlito5::HINT = ();
+    local $^H = 0;
+    local %^H = ();
 
     my $m = Perlito5::Grammar::exp_stmts($source, 0);
     my $ast = Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($m) );

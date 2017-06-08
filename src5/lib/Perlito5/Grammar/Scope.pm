@@ -17,15 +17,15 @@ sub create_new_compile_time_scope {
     $Perlito5::SCOPE_DEPTH++;
     # warn "ENTER ", $Perlito5::SCOPE_DEPTH, " $Perlito5::PKG_NAME \n";
     $Perlito5::SCOPE = $new_scope;
-    $Perlito5::SCOPE->{hint_scalar} = $Perlito5::HINT;
-    $Perlito5::SCOPE->{hint_hash}   = { %Perlito5::HINT };
-    # print STDERR "create_new_compile_time_scope [ $Perlito5::HINT ]\n";
+    $Perlito5::SCOPE->{hint_scalar} = $^H;
+    $Perlito5::SCOPE->{hint_hash}   = { %^H };
+    # print STDERR "create_new_compile_time_scope [ $^H ]\n";
 }
 
 sub end_compile_time_scope {
     # warn "EXIT  ", $Perlito5::SCOPE_DEPTH, "\n";
-    $Perlito5::HINT = $Perlito5::SCOPE->{hint_scalar};
-    %Perlito5::HINT = %{ $Perlito5::SCOPE->{hint_hash} || {} };
+    $^H = $Perlito5::SCOPE->{hint_scalar};
+    %^H = %{ $Perlito5::SCOPE->{hint_hash} || {} };
     my $pos = 0;
     $Perlito5::SCOPE_DEPTH--;
     $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
@@ -33,7 +33,7 @@ sub end_compile_time_scope {
         $pos++;
         $Perlito5::SCOPE = $Perlito5::SCOPE->{block}[-1]; 
     }
-    # print STDERR "end_compile_time_scope [ $Perlito5::HINT ]\n";
+    # print STDERR "end_compile_time_scope [ $^H ]\n";
 }
 
 sub compile_time_glob_set {

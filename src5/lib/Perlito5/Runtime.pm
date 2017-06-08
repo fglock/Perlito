@@ -16,12 +16,12 @@ $^V = bless( { 'original' => 'v5.22.0',
                'version'  => [ 5, 22, 0 ]
              }, 'version' )
                     unless defined $^V;
+$^H = 0;
+%^H = ();
 
 our $EXPAND_USE   = 1;
 our $EMIT_USE     = 0;
 our $STRICT       = 0;
-our $HINT         = 0;
-our %HINT         = ();
 our $WARNINGS     = 0;
 our $UTF8         = 0;
 our $BYTES        = 0;

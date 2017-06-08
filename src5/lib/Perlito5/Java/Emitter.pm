@@ -1941,12 +1941,6 @@ package Perlito5::AST::Var;
 
     sub emit_java_global {
         my ($self, $level, $wantarray, $localize) = @_;
-
-        if ($self->{name} eq chr(8)) {
-            # $^H
-            $self = Perlito5::AST::Var->new( %$self, namespace => 'Perlito5', name => 'HINT' );
-        }
-
         my $local = $localize ? "_local" : "";
         my $str_name = $self->{name};
         my $sigil = $self->{_real_sigil} || $self->{sigil};
@@ -2017,12 +2011,6 @@ package Perlito5::AST::Var;
 
     sub emit_java_global_set {
         my ($self, $arguments, $level, $wantarray, $localize) = @_;
-
-        if ($self->{name} eq chr(8)) {
-            # $^H
-            $self = Perlito5::AST::Var->new( %$self, namespace => 'Perlito5', name => 'HINT' );
-        }
-
         my $local = $localize ? "_local" : "";
         my $str_name = $self->{name};
         my $sigil = $self->{_real_sigil} || $self->{sigil};

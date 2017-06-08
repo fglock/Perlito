@@ -166,7 +166,7 @@ package Perlito5::AST::Var;
         my $c = substr($str_name, 0, 1);
 
         if ($c lt " ") {
-            $str_name = "^" . chr( ord($c) + ord("A") - 1 ) . substr($str_name, 1);
+            return $self->{sigil} . "{^" . chr( ord($c) + ord("A") - 1 ) . substr($str_name, 1) . "}";
         }
 
         # Normalize the sigil

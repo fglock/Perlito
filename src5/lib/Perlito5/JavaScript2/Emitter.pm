@@ -1147,12 +1147,6 @@ package Perlito5::AST::Var;
 
     sub emit_javascript2_global {
         my ($self, $level, $wantarray) = @_;
-
-        if ($self->{name} eq chr(8)) {
-            # $^H
-            $self = Perlito5::AST::Var->new( %$self, namespace => 'Perlito5', name => 'HINT' );
-        }
-
         my $str_name = $self->{name};
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $namespace = $self->{namespace} || $self->{_namespace};
