@@ -1076,11 +1076,14 @@ package Perlito5::AST::Apply;
             # new String[]{};
             # new PlHash[]{}
 
+            # print STDERR "eval_perl_string [ $^H ]\n";
+
             return 'PlJavaCompiler.eval_perl_string('
                 . $arg->emit_java( $level, $wantarray ) . '.toString(), '
                 . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
                 . Perlito5::Java::escape_string($wantarray) . ', '
                 . ( 0 + $Perlito5::STRICT ) . ', '
+                . 'new PlInt(' . ( 0 + $^H ) . 'L), '
                 . $scope . ', '
                 . join( ', ', @out ) . ', '
                 . Perlito5::Java::to_context($wantarray) . ', '
