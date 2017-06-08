@@ -17969,7 +17969,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             my $tmp_strict = $Perlito5::STRICT;
             $Perlito5::STRICT = 0;
-            my $ast = Perlito5::AST::Apply::->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply::->new('code', 'slurp_file', 'namespace', 'Perlito5::Grammar::Use', 'arguments', $self->{'arguments'})], '_scope', Perlito5::Grammar::Scope::->new_base_scope());
+            my $ast = Perlito5::AST::Apply::->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply::->new('code', 'slurp_file', 'namespace', 'Perlito5::Grammar::Use', 'arguments', $self->{'arguments'})], '_scope', Perlito5::Grammar::Scope::->new_base_scope(), '_hash_hints', {}, '_scalar_hints', 0);
             my $js = $ast->emit_java($level, $wantarray);
             $Perlito5::STRICT = $tmp_strict;
             return $js

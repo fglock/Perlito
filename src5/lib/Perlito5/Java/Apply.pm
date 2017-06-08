@@ -982,7 +982,9 @@ package Perlito5::AST::Apply;
                           arguments => $self->{arguments}
                         )
                     ],
-                    _scope => Perlito5::Grammar::Scope->new_base_scope(),
+                    _scope          => Perlito5::Grammar::Scope->new_base_scope(),
+                    _hash_hints     => {},  # TODO
+                    _scalar_hints   => 0,   # TODO
                 );
             my $js = $ast->emit_java( $level, $wantarray );
             $Perlito5::STRICT = $tmp_strict;
