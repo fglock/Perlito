@@ -596,7 +596,7 @@ use feature 'say';
                 if ($name eq 'eval' && !$namespace) {
                     $ast->{'_scope'} = Perlito5::Grammar::Scope::get_snapshot($Perlito5::CLOSURE_SCOPE);
                     $ast->{'_scalar_hints'} = ${^H};
-                    $ast->{'_hash_hints'} = \%{^H}
+                    $ast->{'_hash_hints'} = {%{^H}, }
                 }
                 $m->{'capture'} = ['term', $ast];
                 return $m
