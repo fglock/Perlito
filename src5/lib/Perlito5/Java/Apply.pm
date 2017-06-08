@@ -969,8 +969,6 @@ package Perlito5::AST::Apply;
             }
 
             # do EXPR
-            my $tmp_strict = $Perlito5::STRICT;
-            $Perlito5::STRICT = 0;
             my $ast =
                 Perlito5::AST::Apply->new(
                     code => 'eval',
@@ -987,7 +985,6 @@ package Perlito5::AST::Apply;
                     _scalar_hints   => 0,   # TODO
                 );
             my $js = $ast->emit_java( $level, $wantarray );
-            $Perlito5::STRICT = $tmp_strict;
             return $js;
         },
 
@@ -1083,7 +1080,6 @@ package Perlito5::AST::Apply;
                 . $arg->emit_java( $level, $wantarray ) . '.toString(), '
                 . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
                 . Perlito5::Java::escape_string($wantarray) . ', '
-                . ( 0 + $Perlito5::STRICT ) . ', '
                 . 'new PlInt(' . ( 0 + $self->{_scalar_hints} ) . 'L), '
                 . $hash_hints . ', '
                 . $scope . ', '
@@ -1615,7 +1611,6 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
             my $fun = shift(@in);
-            $Perlito5::STRICT = 0;  # allow FILE bareword
             'PlCORE.' . $op . '('
              .      Perlito5::Java::to_context($wantarray) . ', '
              .      Perlito5::Java::to_filehandle($fun, $level+1) . ', '
@@ -1744,9 +1739,6 @@ package Perlito5::AST::Apply;
                 # this subroutine was never declared
                 if ($self->{bareword}) {
                     # TODO: allow barewords where a glob is expected: open FILE, ...
-                    # if ( $Perlito5::STRICT ) {
-                    #     die 'Bareword ' . Perlito5::Java::escape_string($name ) . ' not allowed while "strict subs" in use';
-                    # }
 
                     # bareword doesn't call AUTOLOAD
                     return Perlito5::AST::Buf->new(

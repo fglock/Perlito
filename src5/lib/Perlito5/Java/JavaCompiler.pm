@@ -161,7 +161,6 @@ class PlJavaCompiler {
         String      source, 
         String      namespace, 
         String      wantarray, 
-        int         strict,
         PlInt       scalar_hints,   // $^H
         PlHashRef   hash_hints,     // \%^H
         PlObject    scope,          // "my" declarations
@@ -186,13 +185,12 @@ class PlJavaCompiler {
 
             PlV.sset("main::" + (char)8, scalar_hints);                   // $^H
             PlV.hash_set("main::" + (char)8, hash_hints.hash_deref());    // %^H
-            // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $strict, $scope_java)
+            // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $scope_java)
             PlObject code[] = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Java::Runtime::perl5_to_java",
                 new PlString(source),
                 new PlString(namespace),
                 new PlString(wantarray),
-                new PlInt(strict),
                 scope
             );
             outJava = code[0].toString();

@@ -678,7 +678,7 @@ use feature 'say';
                 return $m_name
             }
         }
-        if ($Perlito5::STRICT) {
+        if (${^H} & $Perlito5::STRICT_SUBS) {
             my $m = Perlito5::Grammar::Space::opt_ws($str, $p);
             my $p = $m->{'to'};
             if ($str->[$p] eq ':') {}
@@ -17970,11 +17970,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $ast = Perlito5::AST::Sub::->new('block', $arg, 'attributes', [], '_do_block', 1);
                 return $ast->emit_java($level + 1, $wantarray) . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . 'List__' . ')'
             }
-            my $tmp_strict = $Perlito5::STRICT;
-            $Perlito5::STRICT = 0;
             my $ast = Perlito5::AST::Apply::->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply::->new('code', 'slurp_file', 'namespace', 'Perlito5::Grammar::Use', 'arguments', $self->{'arguments'})], '_scope', Perlito5::Grammar::Scope::->new_base_scope(), '_hash_hints', {}, '_scalar_hints', 0);
             my $js = $ast->emit_java($level, $wantarray);
-            $Perlito5::STRICT = $tmp_strict;
             return $js
         }, 'eval', sub {
             (my($self), my($level), my($wantarray)) = @_;
@@ -18011,7 +18008,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     push(@out, 'new ' . $type{$sigil} . '[]{' . join(', ', @val) . '}')
                 }
             }
-            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ', ' . 'new PlInt(' . (0 + $self->{'_scalar_hints'}) . 'L), ' . $hash_hints . ', ' . $scope . ', ' . join(', ', @out) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . 'List__' . ')'
+            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . 'new PlInt(' . (0 + $self->{'_scalar_hints'}) . 'L), ' . $hash_hints . ', ' . $scope . ', ' . join(', ', @out) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . 'List__' . ')'
         }, 'length', sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = shift(@{$self->{'arguments'}});
@@ -18385,7 +18382,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 (my($self), my($level), my($wantarray)) = @_;
                 my @in = @{$self->{'arguments'}};
                 my $fun = shift(@in);
-                $Perlito5::STRICT = 0;
                 'PlCORE.' . $op . '(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
             }
         }
@@ -22503,7 +22499,6 @@ class PlJavaCompiler {
         String      source, 
         String      namespace, 
         String      wantarray, 
-        int         strict,
         PlInt       scalar_hints,   // $^H
         PlHashRef   hash_hints,     // \\%^H
         PlObject    scope,          // "my" declarations
@@ -22528,13 +22523,12 @@ class PlJavaCompiler {
 
             PlV.sset("main::" + (char)8, scalar_hints);                   // $^H
             PlV.hash_set("main::" + (char)8, hash_hints.hash_deref());    // %^H
-            // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $strict, $scope_java)
+            // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $scope_java)
             PlObject code[] = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Java::Runtime::perl5_to_java",
                 new PlString(source),
                 new PlString(namespace),
                 new PlString(wantarray),
-                new PlInt(strict),
                 scope
             );
             outJava = code[0].toString();
@@ -22788,9 +22782,7 @@ class SourceCode extends SimpleJavaFileObject {
     package main;
     package Perlito5::Java::Runtime;
     sub Perlito5::Java::Runtime::perl5_to_java {
-        (my($source), my($namespace), my($want), my($strict), my($scope_java)) = @_;
-        my $strict_old = $Perlito5::STRICT;
-        $Perlito5::STRICT = $strict;
+        (my($source), my($namespace), my($want), my($scope_java)) = @_;
         local $_;
         local ${^GLOBAL_PHASE};
         local $Perlito5::BASE_SCOPE = $scope_java;
@@ -22817,7 +22809,6 @@ class SourceCode extends SimpleJavaFileObject {
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
-        $Perlito5::STRICT = $strict_old;
         return ($java_code, $constants)
     }
     sub Perlito5::Java::Runtime::eval_ast {

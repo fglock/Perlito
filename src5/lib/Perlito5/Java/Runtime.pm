@@ -8,12 +8,10 @@ use Perlito5::Java::Crypt;
 use Perlito5::Java::JavaCompiler;
 
 sub perl5_to_java {
-    my ($source, $namespace, $want, $strict, $scope_java) = @_;
+    my ($source, $namespace, $want, $scope_java) = @_;
 
     # say "source: [" . $source . "]";
 
-    my    $strict_old   = $Perlito5::STRICT;
-    $Perlito5::STRICT   = $strict;
     local $_;
     local ${^GLOBAL_PHASE};
     local $Perlito5::BASE_SCOPE = $scope_java;  # ->[0];
@@ -65,7 +63,6 @@ sub perl5_to_java {
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
-    $Perlito5::STRICT   = $strict_old;
     return ($java_code, $constants);
 }
 

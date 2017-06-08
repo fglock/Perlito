@@ -677,7 +677,7 @@ sub term_bareword {
 
     # it's just a bareword - we will disambiguate later
 
-    if ($Perlito5::STRICT) {
+    if ( $^H & $Perlito5::STRICT_SUBS ) {
         # Allow:
         #   - close FILE
         #   - LABEL: { ... }
