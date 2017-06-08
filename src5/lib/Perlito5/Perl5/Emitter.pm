@@ -165,7 +165,7 @@ package Perlito5::AST::Var;
         my $str_name = $self->{name};
         my $c = substr($str_name, 0, 1);
 
-        if ($c lt " ") {
+        if ($c lt " " && $self->{sigil} ne "::") {
             return $self->{sigil} . "{^" . chr( ord($c) + ord("A") - 1 ) . substr($str_name, 1) . "}";
         }
 

@@ -22,11 +22,11 @@ use feature 'say';
     package strict;
     sub strict::import {
         $Perlito5::STRICT = 1;
-        ${'^H'} = 2018
+        ${^H} = 2018
     }
     sub strict::unimport {
         $Perlito5::STRICT = 0;
-        ${'^H'} = 0
+        ${^H} = 0
     }
     1
 }
@@ -5143,8 +5143,8 @@ use feature 'say';
         Perlito5::Grammar::Scope::check_variable_declarations();
         Perlito5::Grammar::Scope::create_new_compile_time_scope();
         local $Perlito5::STRICT = 0;
-        local ${'^H'} = 0;
-        local %{'^H'} = ();
+        local ${^H} = 0;
+        local %{^H} = ();
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         my $ast = Perlito5::AST::Block::->new('stmts', Perlito5::Match::flat($m));
         my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
@@ -5528,12 +5528,12 @@ use feature 'say';
         push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
         $Perlito5::SCOPE_DEPTH++;
         $Perlito5::SCOPE = $new_scope;
-        $Perlito5::SCOPE->{'hint_scalar'} = ${'^H'};
-        $Perlito5::SCOPE->{'hint_hash'} = {%{'^H'}, }
+        $Perlito5::SCOPE->{'hint_scalar'} = ${^H};
+        $Perlito5::SCOPE->{'hint_hash'} = {%{^H}, }
     }
     sub Perlito5::Grammar::Scope::end_compile_time_scope {
-        ${'^H'} = $Perlito5::SCOPE->{'hint_scalar'};
-        %{'^H'} = %{$Perlito5::SCOPE->{'hint_hash'} || {}};
+        ${^H} = $Perlito5::SCOPE->{'hint_scalar'};
+        %{^H} = %{$Perlito5::SCOPE->{'hint_hash'} || {}};
         my $pos = 0;
         $Perlito5::SCOPE_DEPTH--;
         $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
@@ -6099,7 +6099,7 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Block::eval_begin_block {
         my $block = shift;
-        local ${'^GLOBAL_PHASE'};
+        local ${^GLOBAL_PHASE};
         Perlito5::set_global_phase('BEGIN');
         my @captured = $block->get_captures();
         my %dont_capture = map {;
@@ -8984,7 +8984,7 @@ use feature 'say';
 {
     package main;
     package Perlito5;
-    defined(${'^O'}) || (${'^O'} = 'perlito5');
+    defined(${^O}) || (${^O} = 'perlito5');
     defined($/) || ($/ = chr(10));
     defined(${'"'}) || (${'"'} = ' ');
     defined(${','}) || (${','} = undef);
@@ -8992,9 +8992,9 @@ use feature 'say';
     defined(${';'}) || (${';'} = chr(28));
     defined(${'?'}) || (${'?'} = 0);
     ${']'} || (${']'} = '5.022000');
-    defined(${'^V'}) || (${'^V'} = bless({'original', 'v5.22.0', 'qv', 1, 'version', [5, 22, 0]}, 'version'));
-    ${'^H'} = 0;
-    %{'^H'} = ();
+    defined(${^V}) || (${^V} = bless({'original', 'v5.22.0', 'qv', 1, 'version', [5, 22, 0]}, 'version'));
+    ${^H} = 0;
+    %{^H} = ();
     our $EXPAND_USE = 1;
     our $EMIT_USE = 0;
     our $STRICT = 0;
@@ -9023,7 +9023,7 @@ use feature 'say';
         my $phase = shift;
         local ${'@'};
         eval {;
-            ${'^GLOBAL_PHASE'} = $phase
+            ${^GLOBAL_PHASE} = $phase
         }
     }
     our $ID = 100;
@@ -12536,7 +12536,7 @@ use feature 'say';
         (my($source), my($namespace), my($want), my($scope_js)) = @_;
         my $strict_old = $Perlito5::STRICT;
         local $_;
-        local ${'^GLOBAL_PHASE'};
+        local ${^GLOBAL_PHASE};
         local $Perlito5::BASE_SCOPE = $scope_js->[0];
         local @Perlito5::SCOPE_STMT;
         local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;
@@ -15905,7 +15905,7 @@ CORE.sprintf = function(List__) {
             my $self = $_[0];
             my $str_name = $self->{'name'};
             my $c = substr($str_name, 0, 1);
-            if ($c lt ' ') {;
+            if ($c lt ' ' && $self->{'sigil'} ne '::') {;
                 return $self->{'sigil'} . '{^' . chr(ord($c) + ord('A') - 1) . substr($str_name, 1) . '}'
             }
             my $ns = '';
@@ -22772,7 +22772,7 @@ class SourceCode extends SimpleJavaFileObject {
         my $strict_old = $Perlito5::STRICT;
         $Perlito5::STRICT = $strict;
         local $_;
-        local ${'^GLOBAL_PHASE'};
+        local ${^GLOBAL_PHASE};
         local $Perlito5::BASE_SCOPE = $scope_java;
         local @Perlito5::SCOPE_STMT;
         local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;
@@ -29607,7 +29607,7 @@ class PlString extends PlObject {
     my $_V5_COMPILER_NAME = Perlito5::Compiler::compiler_name();
     my $_V5_COMPILER_VERSION = $Perlito5::VERSION;
     my $source = '';
-    my $backend = ${'^O'};
+    my $backend = ${^O};
     my $compile_only = 0;
     my $execute = 1;
     my $verbose = 0;
@@ -29898,7 +29898,7 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.
 ')
         }
         $backend eq 'java' && Perlito5::Java::Lib::init();
-        ($backend eq 'js' || ${'^O'} eq 'node.js') && Perlito5::JavaScript2::Lib::init();
+        ($backend eq 'js' || ${^O} eq 'node.js') && Perlito5::JavaScript2::Lib::init();
         $backend eq 'java' && ($Perlito5::CODE_TOO_LARGE = 1);
         $Perlito5::EXPAND_USE = 1;
         $bootstrapping && ($Perlito5::EXPAND_USE = 0);
@@ -29971,15 +29971,15 @@ INIT failed--call queue aborted.
                         $Perlito5::COMP_UNIT[$_] = $Perlito5::COMP_UNIT[$_]->emit_begin_scratchpad()
                     }
                     {
-                        local ${'^GLOBAL_PHASE'};
+                        local ${^GLOBAL_PHASE};
                         Perlito5::set_global_phase('CHECK');
                         $_->()
                             for @Perlito5::CHECK_BLOCK
                     }
                     if (!$bootstrapping) {
                         $Perlito5::STRICT = 0;
-                        ${'^H'} = 0;
-                        %{'^H'} = ();
+                        ${^H} = 0;
+                        %{^H} = ();
                         my @units;
                         push(@units, Perlito5::AST::Block::->new('stmts', Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL)));
                         if (@Perlito5::INIT_BLOCK || keys(%Perlito5::DATA_SECTION)) {
