@@ -593,8 +593,9 @@ use feature 'say';
                     $sig eq '_' && push(@args, Perlito5::AST::Var::->new('namespace', '', 'name', '_', 'sigil', '$'))
                 }
                 my $ast = Perlito5::AST::Apply::->new('code', $name, 'namespace', $namespace, 'arguments', \@args, 'bareword', ($has_paren == 0));
-                if ($name eq 'eval' && !$namespace) {;
-                    $ast->{'_scope'} = Perlito5::Grammar::Scope::get_snapshot($Perlito5::CLOSURE_SCOPE)
+                if ($name eq 'eval' && !$namespace) {
+                    $ast->{'_scope'} = Perlito5::Grammar::Scope::get_snapshot($Perlito5::CLOSURE_SCOPE);
+                    $ast->{'_scalar_hints'} = ${^H}
                 }
                 $m->{'capture'} = ['term', $ast];
                 return $m

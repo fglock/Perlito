@@ -503,6 +503,7 @@ sub term_bareword {
                 # - other variables captured by the current closure need to be added when the closure finishes compiling
 
                 $ast->{_scope} = Perlito5::Grammar::Scope::get_snapshot( $Perlito5::CLOSURE_SCOPE );
+                $ast->{_scalar_hints} = $^H;
             }
             $m->{capture} = [ 'term', $ast ];
             return $m;
