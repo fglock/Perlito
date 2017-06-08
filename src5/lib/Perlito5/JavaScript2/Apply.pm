@@ -766,11 +766,15 @@ package Perlito5::AST::Apply;
                 my $scope = Perlito5::DumpToAST::dump_to_ast({'block' => [values(%vars)], }, {}, 's');
                 my $scope_js = '(new p5ArrayRef(' . Perlito5::JavaScript2::to_list([$scope]) . '))';
 
+                my $hash_hints = Perlito5::DumpToAST::dump_to_ast($self->{_hash_hints}, {}, 's');
+                my $hash_hints_js = $hash_hints->emit_javascript2($level);
+
                 $eval ='eval(p5pkg["Perlito5::JavaScript2::Runtime"].perl5_to_js([' 
                             . Perlito5::JavaScript2::to_str($arg) . ", "
                             . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', '
                             . Perlito5::JavaScript2::escape_string($wantarray) . ', '
                             . ( 0 + $self->{_scalar_hints} ) . ', '
+                            . $hash_hints_js . ', '
                             . $scope_js
                         . "]))";
             }

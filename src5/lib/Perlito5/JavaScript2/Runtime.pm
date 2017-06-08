@@ -3,7 +3,7 @@ use v5;
 package Perlito5::JavaScript2::Runtime;
 
 sub perl5_to_js {
-    my ($source, $namespace, $want, $scalar_hints, $scope_js) = @_;
+    my ($source, $namespace, $want, $scalar_hints, $hash_hints, $scope_js) = @_;
 
     # say "source: [" . $source . "]";
 
@@ -11,6 +11,7 @@ sub perl5_to_js {
     local $_;
     local ${^GLOBAL_PHASE};
     local $^H = $scalar_hints;
+    local %^H = %$hash_hints;
     local $Perlito5::BASE_SCOPE = $scope_js->[0];
     local @Perlito5::SCOPE_STMT;
     local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;

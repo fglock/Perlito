@@ -1050,6 +1050,7 @@ package Perlito5::AST::Apply;
             my $scope = Perlito5::DumpToAST::dump_to_ast( $self->{_scope}, {}, "s" )->emit_java(0);
             # print STDERR "SCOPE [ $scope ]\n";
 
+            my $hash_hints = Perlito5::DumpToAST::dump_to_ast( $self->{_hash_hints}, {}, "s" )->emit_java(0);
 
             my @out;
             {
@@ -1082,6 +1083,7 @@ package Perlito5::AST::Apply;
                 . Perlito5::Java::escape_string($wantarray) . ', '
                 . ( 0 + $Perlito5::STRICT ) . ', '
                 . 'new PlInt(' . ( 0 + $self->{_scalar_hints} ) . 'L), '
+                . $hash_hints . ', '
                 . $scope . ', '
                 . join( ', ', @out ) . ', '
                 . Perlito5::Java::to_context($wantarray) . ', '

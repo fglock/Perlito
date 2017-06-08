@@ -163,6 +163,7 @@ class PlJavaCompiler {
         String      wantarray, 
         int         strict,
         PlInt       scalar_hints,   // $^H
+        PlHashRef   hash_hints,     // \%^H
         PlObject    scope,          // "my" declarations
         String[]    scalar_name,    // new String[]{"x_100"};   capture name
         PlLvalue[]  scalar_val,     // new PlLvalue[]{x_100};   capture value
@@ -180,9 +181,11 @@ class PlJavaCompiler {
         String outJava;
         String constants;
         PlObject tmp_scalar_hints = PlV.sget("main::" + (char)8).get();   // save $^H
+        PlHash   tmp_hash_hints   = PlV.hash_get("main::" + (char)8);     // save %^H
         try {
 
-            PlV.sset("main::" + (char)8, scalar_hints);     // $^H
+            PlV.sset("main::" + (char)8, scalar_hints);                   // $^H
+            PlV.hash_set("main::" + (char)8, hash_hints.hash_deref());    // %^H
             // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $strict, $scope_java)
             PlObject code[] = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Java::Runtime::perl5_to_java",
@@ -202,10 +205,12 @@ class PlJavaCompiler {
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
             PlV.sset("main::@", new PlString("" + message));
-            PlV.sset("main::" + (char)8, tmp_scalar_hints);   // restore $^H
+            PlV.sset("main::" + (char)8, tmp_scalar_hints);     // restore $^H
+            PlV.hash_set("main::" + (char)8, tmp_hash_hints);   // restore %^H
             return PlCx.UNDEF;
         }
-        PlV.sset("main::" + (char)8, tmp_scalar_hints);   // restore $^H
+        PlV.sset("main::" + (char)8, tmp_scalar_hints);     // restore $^H
+        PlV.hash_set("main::" + (char)8, tmp_hash_hints);   // restore %^H
 
         // return eval_java_string(outJava.toString());
 

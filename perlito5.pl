@@ -595,7 +595,8 @@ use feature 'say';
                 my $ast = Perlito5::AST::Apply::->new('code', $name, 'namespace', $namespace, 'arguments', \@args, 'bareword', ($has_paren == 0));
                 if ($name eq 'eval' && !$namespace) {
                     $ast->{'_scope'} = Perlito5::Grammar::Scope::get_snapshot($Perlito5::CLOSURE_SCOPE);
-                    $ast->{'_scalar_hints'} = ${^H}
+                    $ast->{'_scalar_hints'} = ${^H};
+                    $ast->{'_hash_hints'} = \%{^H}
                 }
                 $m->{'capture'} = ['term', $ast];
                 return $m
@@ -10951,7 +10952,9 @@ use feature 'say';
                 }
                 my $scope = Perlito5::DumpToAST::dump_to_ast({'block', [values(%vars)]}, {}, 's');
                 my $scope_js = '(new p5ArrayRef(' . Perlito5::JavaScript2::to_list([$scope]) . '))';
-                $eval = 'eval(p5pkg["Perlito5::JavaScript2::Runtime"].perl5_to_js([' . Perlito5::JavaScript2::to_str($arg) . ', ' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::JavaScript2::escape_string($wantarray) . ', ' . (0 + $self->{'_scalar_hints'}) . ', ' . $scope_js . ']))'
+                my $hash_hints = Perlito5::DumpToAST::dump_to_ast($self->{'_hash_hints'}, {}, 's');
+                my $hash_hints_js = $hash_hints->emit_javascript2($level);
+                $eval = 'eval(p5pkg["Perlito5::JavaScript2::Runtime"].perl5_to_js([' . Perlito5::JavaScript2::to_str($arg) . ', ' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::JavaScript2::escape_string($wantarray) . ', ' . (0 + $self->{'_scalar_hints'}) . ', ' . $hash_hints_js . ', ' . $scope_js . ']))'
             }
             my $context = Perlito5::JavaScript2::to_context($wantarray);
             Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, ($context eq 'p5want' ? () : 'var p5want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if (err instanceof p5_error && (err.type == ' . chr(39) . 'last' . chr(39) . ' || err.type == ' . chr(39) . 'redo' . chr(39) . ' || err.type == ' . chr(39) . 'next' . chr(39) . ')) {', ['throw(err)'], '}', 'else if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\\n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\\n" + err.stack + "\\n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
@@ -12534,11 +12537,12 @@ use feature 'say';
     package main;
     package Perlito5::JavaScript2::Runtime;
     sub Perlito5::JavaScript2::Runtime::perl5_to_js {
-        (my($source), my($namespace), my($want), my($scalar_hints), my($scope_js)) = @_;
+        (my($source), my($namespace), my($want), my($scalar_hints), my($hash_hints), my($scope_js)) = @_;
         my $strict_old = $Perlito5::STRICT;
         local $_;
         local ${^GLOBAL_PHASE};
         local ${^H} = $scalar_hints;
+        local %{^H} = %{$hash_hints};
         local $Perlito5::BASE_SCOPE = $scope_js->[0];
         local @Perlito5::SCOPE_STMT;
         local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;
@@ -17988,6 +17992,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
             }
             my $scope = Perlito5::DumpToAST::dump_to_ast($self->{'_scope'}, {}, 's')->emit_java(0);
+            my $hash_hints = Perlito5::DumpToAST::dump_to_ast($self->{'_hash_hints'}, {}, 's')->emit_java(0);
             my @out;
             {
                 local %Perlito5::Java::Java_var_name;
@@ -18003,7 +18008,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     push(@out, 'new ' . $type{$sigil} . '[]{' . join(', ', @val) . '}')
                 }
             }
-            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ', ' . 'new PlInt(' . (0 + $self->{'_scalar_hints'}) . 'L), ' . $scope . ', ' . join(', ', @out) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . 'List__' . ')'
+            return 'PlJavaCompiler.eval_perl_string(' . $arg->emit_java($level, $wantarray) . '.toString(), ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . (0 + $Perlito5::STRICT) . ', ' . 'new PlInt(' . (0 + $self->{'_scalar_hints'}) . 'L), ' . $hash_hints . ', ' . $scope . ', ' . join(', ', @out) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . 'List__' . ')'
         }, 'length', sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = shift(@{$self->{'arguments'}});
@@ -22497,6 +22502,7 @@ class PlJavaCompiler {
         String      wantarray, 
         int         strict,
         PlInt       scalar_hints,   // $^H
+        PlHashRef   hash_hints,     // \\%^H
         PlObject    scope,          // "my" declarations
         String[]    scalar_name,    // new String[]{"x_100"};   capture name
         PlLvalue[]  scalar_val,     // new PlLvalue[]{x_100};   capture value
@@ -22514,9 +22520,11 @@ class PlJavaCompiler {
         String outJava;
         String constants;
         PlObject tmp_scalar_hints = PlV.sget("main::" + (char)8).get();   // save $^H
+        PlHash   tmp_hash_hints   = PlV.hash_get("main::" + (char)8);     // save %^H
         try {
 
-            PlV.sset("main::" + (char)8, scalar_hints);     // $^H
+            PlV.sset("main::" + (char)8, scalar_hints);                   // $^H
+            PlV.hash_set("main::" + (char)8, hash_hints.hash_deref());    // %^H
             // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $strict, $scope_java)
             PlObject code[] = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Java::Runtime::perl5_to_java",
@@ -22536,10 +22544,12 @@ class PlJavaCompiler {
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
             PlV.sset("main::@", new PlString("" + message));
-            PlV.sset("main::" + (char)8, tmp_scalar_hints);   // restore $^H
+            PlV.sset("main::" + (char)8, tmp_scalar_hints);     // restore $^H
+            PlV.hash_set("main::" + (char)8, tmp_hash_hints);   // restore %^H
             return PlCx.UNDEF;
         }
-        PlV.sset("main::" + (char)8, tmp_scalar_hints);   // restore $^H
+        PlV.sset("main::" + (char)8, tmp_scalar_hints);     // restore $^H
+        PlV.hash_set("main::" + (char)8, tmp_hash_hints);   // restore %^H
 
         // return eval_java_string(outJava.toString());
 
