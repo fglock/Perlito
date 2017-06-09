@@ -1235,6 +1235,16 @@ use feature 'say';
         }
         return @stmts
     }
+    sub Perlito5::Macro::preprocess_regex {
+        my $regex = shift;
+        if ($regex->isa('Perlito5::AST::Apply') && $regex->{'code'} eq 'circumfix:<( )>') {;
+            ($regex) = @{$regex->{'arguments'}}
+        }
+        if ($regex->isa('Perlito5::AST::Buf') || $regex->isa('Perlito5::AST::Var') || ($regex->isa('Perlito5::AST::Apply') && $regex->{'code'} eq 'list:<.>')) {;
+            $regex = Perlito5::AST::Apply::->new('code', 'p5:m', 'arguments', [$regex, Perlito5::AST::Buf::->new('buf', '')])
+        }
+        return $regex
+    }
     1
 }
 {
@@ -10548,9 +10558,7 @@ use feature 'say';
             my $regex = shift;
             my $level = shift;
             my $wantarray = shift;
-            if ($regex->isa('Perlito5::AST::Var')) {;
-                $regex = {'code', 'p5:m', 'arguments', [$regex, '']}
-            }
+            $regex = Perlito5::Macro::preprocess_regex($regex);
             my $str;
             my $code = $regex->{'code'};
             my $regex_args = $regex->{'arguments'};
@@ -17381,9 +17389,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $regex = shift;
             my $level = shift;
             my $wantarray = shift;
-            if ($regex->isa('Perlito5::AST::Var')) {;
-                $regex = {'code', 'p5:m', 'arguments', [$regex, '']}
-            }
+            $regex = Perlito5::Macro::preprocess_regex($regex);
             my $str;
             my $code = $regex->{'code'};
             my $regex_args = $regex->{'arguments'};

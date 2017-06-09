@@ -46,10 +46,7 @@ package Perlito5::AST::Apply;
         my $level     = shift;
         my $wantarray = shift;
 
-        if ($regex->isa('Perlito5::AST::Var')) {
-            # $x =~ $regex
-            $regex = { code => 'p5:m', arguments => [ $regex, '' ] };
-        }
+        $regex = Perlito5::Macro::preprocess_regex($regex);
 
         my $str;
         my $code = $regex->{code};

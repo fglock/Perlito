@@ -573,6 +573,28 @@ sub split_code_too_large {
     return @stmts;
 }
 
+
+sub preprocess_regex {
+    my $regex = shift;
+
+    if ($regex->isa('Perlito5::AST::Apply') && $regex->{code} eq 'circumfix:<( )>') {
+        # $x =~ ( ... )
+        ($regex) = @{ $regex->{arguments} };
+    }
+    if ( $regex->isa('Perlito5::AST::Buf')   # $x =~ '\w'
+      || $regex->isa('Perlito5::AST::Var')   # $x =~ $regex
+      || ($regex->isa('Perlito5::AST::Apply') && $regex->{code} eq 'list:<.>')    # $x =~ ($r1 . $r2)
+      )
+    {
+        $regex = Perlito5::AST::Apply->new(
+            code      => 'p5:m',
+            arguments => [ $regex, Perlito5::AST::Buf->new( buf => '' ) ]
+        );
+    }
+
+    return $regex;
+}
+
 1;
 
 =begin
