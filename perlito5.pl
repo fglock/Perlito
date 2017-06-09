@@ -292,7 +292,7 @@ use feature 'say';
                 unshift(@{$op_stack}, $token)
             }
             else {;
-                Perlito5::Compiler::error("Unknown token: \x{27}", $token->[1], "\x{27}")
+                Perlito5::Compiler::error("Unknown token: '", $token->[1], "'")
             }
             $last = $token;
             $last_is_term = $token_is_term;
@@ -854,7 +854,7 @@ use feature 'say';
                 $a cmp $b
             } keys(%{$obj})) {
                 my $here = $pos . "->{" . $i . "}";
-                push(@out, $tab1, "\x{27}" . $i . "\x{27} => ", _dumper($obj->{$i}, $tab1, $seen, $here), ",
+                push(@out, $tab1, "'" . $i . "' => ", _dumper($obj->{$i}, $tab1, $seen, $here), ",
 ")
             }
             return join('', "{
@@ -876,26 +876,26 @@ use feature 'say';
 ")
             }
             join('', "bless([
-", @out, $tab, "], \x{27}" . $ref . "\x{27})")
+", @out, $tab, "], '" . $ref . "')")
         };
         $res && return $res;
         for my $i (sort {;
             $a cmp $b
         } keys(%{$obj})) {
             my $here = $pos . "->{" . $i . "}";
-            push(@out, $tab1, "\x{27}" . $i . "\x{27} => ", _dumper($obj->{$i}, $tab1, $seen, $here), ",
+            push(@out, $tab1, "'" . $i . "' => ", _dumper($obj->{$i}, $tab1, $seen, $here), ",
 ")
         }
         return join('', "bless({
-", @out, $tab, "}, \x{27}" . $ref . "\x{27})")
+", @out, $tab, "}, '" . $ref . "')")
     }
-    our %safe_char = (" ", 1, "!", 1, "\"", 1, "\x{27}", 1, "#", 1, "\$", 1, "%", 1, "&", 1, "(", 1, ")", 1, "*", 1, "+", 1, ",", 1, "-", 1, ".", 1, "/", 1, ":", 1, ";", 1, "<", 1, "=", 1, ">", 1, "?", 1, "\@", 1, "[", 1, "]", 1, "^", 1, "_", 1, "`", 1, "{", 1, "|", 1, "}", 1, "~", 1, "
+    our %safe_char = (" ", 1, "!", 1, "\"", 1, "'", 1, "#", 1, "\$", 1, "%", 1, "&", 1, "(", 1, ")", 1, "*", 1, "+", 1, ",", 1, "-", 1, ".", 1, "/", 1, ":", 1, ";", 1, "<", 1, "=", 1, ">", 1, "?", 1, "\@", 1, "[", 1, "]", 1, "^", 1, "_", 1, "`", 1, "{", 1, "|", 1, "}", 1, "~", 1, "
 ", 1);
     sub Perlito5::Dumper::escape_string {
         my $s = shift;
         my @out;
         my $tmp = '';
-        $s eq '' && return "\x{27}\x{27}";
+        $s eq '' && return "''";
         (0 + $s) eq $s && $s =~ m/[0-9]/ && return 0 + $s;
         for my $c (split('', $s)) {
             if ($c eq "\\" || $c eq "\$" || $c eq "\@" || $c eq "\"") {;
@@ -1481,7 +1481,7 @@ use feature 'say';
         my $expression = $_[3];
         my $modifier_exp = Perlito5::Grammar::Expression::exp_parse($str, $pos);
         if (!$modifier_exp) {;
-            Perlito5::Compiler::error("Expected expression after \x{27}", Perlito5::Match::flat($modifier), "\x{27}")
+            Perlito5::Compiler::error("Expected expression after '", Perlito5::Match::flat($modifier), "'")
         }
         if ($modifier eq "if") {;
             return {"str", $str, "from", $pos, "to", $modifier_exp->{"to"}, "capture", Perlito5::AST::Apply::->new("arguments", [Perlito5::Match::flat($modifier_exp), $expression], "code", "infix:<&&>", "namespace", '')}
@@ -1505,7 +1505,7 @@ use feature 'say';
         if ($modifier eq "for" || $modifier eq "foreach") {;
             return {"str", $str, "from", $pos, "to", $modifier_exp->{"to"}, "capture", Perlito5::AST::For::->new("cond", Perlito5::Match::flat($modifier_exp), "body", $expression, "topic", Perlito5::AST::Var::SCALAR_ARG())}
         }
-        Perlito5::Compiler::error("Unexpected statement modifier \x{27}" . $modifier . "\x{27}")
+        Perlito5::Compiler::error("Unexpected statement modifier '" . $modifier . "'")
     }
     sub Perlito5::Grammar::Statement::statement_parse {
         my $m = statement_parse_inner(@_);
@@ -1542,7 +1542,7 @@ use feature 'say';
         if ($terminator ne ";" && $terminator ne "}" && $terminator ne '') {
             my $type = "Number or Bareword";
             $terminator ge 0 && $terminator le 9 && ($type = "Number");
-            ($terminator eq "\"" || $terminator eq "\x{27}") && ($type = "String");
+            ($terminator eq "\"" || $terminator eq "'") && ($type = "String");
             $terminator eq "\$" && ($type = "Scalar");
             $terminator eq "\@" && ($type = "Array");
             Perlito5::Compiler::error($type . " found where operator expected")
@@ -1793,7 +1793,7 @@ use feature 'say';
         }
         else {
             if (scalar(@{$num_stack}) < 2) {;
-                Perlito5::Compiler::error("missing value after operator \x{27}" . $last_op->[1] . "\x{27}")
+                Perlito5::Compiler::error("missing value after operator '" . $last_op->[1] . "'")
             }
             my $v2 = pop_term($num_stack);
             push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "infix:<" . $last_op->[1] . ">", "arguments", [pop_term($num_stack), $v2]))
@@ -2464,7 +2464,7 @@ use feature 'say';
             my $var = $MATCH->{"capture"};
             my $look = Perlito5::Grammar::Scope::lookup_variable($var);
             if ($look && ($look->{"_decl"} eq "my" || $look->{"_decl"} eq "state")) {;
-                Perlito5::Compiler::error("Can\x{27}t localize lexical variable " . $var->{"sigil"} . $var->{"name"})
+                Perlito5::Compiler::error("Can't localize lexical variable " . $var->{"sigil"} . $var->{"name"})
             }
             $var->{"_id"} = $Perlito5::ID++;
             $var->{"_decl"} = $declarator;
@@ -3466,7 +3466,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("\x{27}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
             })
         }) && (do {
             my $m2 = q_quote_parse($str, $MATCH->{"to"});
@@ -3877,7 +3877,7 @@ use feature 'say';
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
         my $interpolate = 2;
-        $delimiter eq "\x{27}" && ($interpolate = 3);
+        $delimiter eq "'" && ($interpolate = 3);
         my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
         $part1 || return $part1;
         my $str_regex = $part1->{"capture"};
@@ -3899,7 +3899,7 @@ use feature 'say';
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
         my $interpolate = 2;
-        $delimiter eq "\x{27}" && ($interpolate = 3);
+        $delimiter eq "'" && ($interpolate = 3);
         my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
         $part1 || return $part1;
         my $str_regex = Perlito5::Match::flat($part1);
@@ -3960,7 +3960,7 @@ use feature 'say';
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
         my $interpolate = 2;
-        $delimiter eq "\x{27}" && ($interpolate = 3);
+        $delimiter eq "'" && ($interpolate = 3);
         my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
         $part1 || return $part1;
         my $str_regex = $part1->{"capture"};
@@ -4028,7 +4028,7 @@ use feature 'say';
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
         my $interpolate = 2;
-        $delimiter eq "\x{27}" && ($interpolate = 3);
+        $delimiter eq "'" && ($interpolate = 3);
         my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
         $part1 || return $part1;
         my $str_regex = Perlito5::Match::flat($part1);
@@ -4044,7 +4044,7 @@ use feature 'say';
             $closing_delimiter = $delimiter;
             exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
             $interpolate = 2;
-            $delimiter eq "\x{27}" && ($interpolate = 3);
+            $delimiter eq "'" && ($interpolate = 3);
             $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
             $part2 || return $part2
         }
@@ -4178,7 +4178,7 @@ use feature 'say';
                         $m = Perlito5::Grammar::String::double_quoted_unescape($str, $p)
                     }
                     else {;
-                        $m = $c2 eq "\\" ? {"str", $str, "from", $p, "to", $p + 2, "capture", Perlito5::AST::Buf::->new("buf", "\\")} : $c2 eq "\x{27}" ? {"str", $str, "from", $p, "to", $p + 2, "capture", Perlito5::AST::Buf::->new("buf", "\x{27}")} : 0
+                        $m = $c2 eq "\\" ? {"str", $str, "from", $p, "to", $p + 2, "capture", Perlito5::AST::Buf::->new("buf", "\\")} : $c2 eq "'" ? {"str", $str, "from", $p, "to", $p + 2, "capture", Perlito5::AST::Buf::->new("buf", "'")} : 0
                     }
                 }
             }
@@ -4217,7 +4217,7 @@ use feature 'say';
         if (length($buf)) {;
             push(@args, Perlito5::AST::Buf::->new("buf", $buf))
         }
-        join('', @{$str}[$p .. $p + length($delimiter) - 1]) ne $delimiter && Perlito5::Compiler::error("Can\x{27}t find string terminator \x{27}" . $delimiter . "\x{27} anywhere before EOF");
+        join('', @{$str}[$p .. $p + length($delimiter) - 1]) ne $delimiter && Perlito5::Compiler::error("Can't find string terminator '" . $delimiter . "' anywhere before EOF");
         $p += length($delimiter);
         my $ast;
         if (!@args) {;
@@ -4247,13 +4247,13 @@ use feature 'say';
                 $p++;
                 $quote = $str->[$p]
             }
-            if ($quote eq "\x{27}" || $quote eq "\"") {
+            if ($quote eq "'" || $quote eq "\"") {
                 $p += 1;
                 my $m = string_interpolation_parse($_[0], $p, $quote, $quote, 0);
                 if ($m) {
                     $p = $m->{"to"};
                     $delimiter = Perlito5::Match::flat($m)->{"buf"};
-                    $type = $quote eq "\x{27}" ? "single_quote" : "double_quote"
+                    $type = $quote eq "'" ? "single_quote" : "double_quote"
                 }
             }
             else {
@@ -4341,7 +4341,7 @@ use feature 'say';
                                 $here_string[$i] = substr($here_string[$i], $l)
                             }
                             else {;
-                                Perlito5::Compiler::error("Indentation on line " . $i . " of here-doc doesn\x{27}t match delimiter")
+                                Perlito5::Compiler::error("Indentation on line " . $i . " of here-doc doesn't match delimiter")
                             }
                         }
                     }
@@ -4361,7 +4361,7 @@ use feature 'say';
                             push(@{$result}, Perlito5::Match::flat($m))
                         }
                         else {;
-                            Perlito5::Compiler::error("Can\x{27}t find string terminator \"" . $delimiter . "\" anywhere before EOF")
+                            Perlito5::Compiler::error("Can't find string terminator \"" . $delimiter . "\" anywhere before EOF")
                         }
                     }
                     $p += length($delimiter);
@@ -4379,7 +4379,7 @@ use feature 'say';
                 $p++
             }
         }
-        Perlito5::Compiler::error("Can\x{27}t find string terminator \"" . $delimiter . "\" anywhere before EOF")
+        Perlito5::Compiler::error("Can't find string terminator \"" . $delimiter . "\" anywhere before EOF")
     }
     sub Perlito5::Grammar::String::double_quoted_unescape {
         my $str = $_[0];
@@ -4424,7 +4424,7 @@ use feature 'say';
             $m = {"str", $str, "from", $pos, "to", $p, "capture", Perlito5::AST::Buf::->new("buf", chr($tmp))}
         }
         elsif ($c2 eq "N") {;
-            Perlito5::Compiler::error("TODO - \\N{charname} not implemented; requires \x{27}use charnames\x{27}")
+            Perlito5::Compiler::error("TODO - \\N{charname} not implemented; requires 'use charnames'")
         }
         else {;
             $m = {"str", $str, "from", $pos, "to", $pos + 2, "capture", Perlito5::AST::Buf::->new("buf", $c2)}
@@ -4527,7 +4527,7 @@ use feature 'say';
         }
         return 0
     }
-    Perlito5::Grammar::Precedence::add_term("\x{27}", \&term_q_quote);
+    Perlito5::Grammar::Precedence::add_term("'", \&term_q_quote);
     Perlito5::Grammar::Precedence::add_term("\"", \&term_qq_quote);
     Perlito5::Grammar::Precedence::add_term("/", \&term_m_quote);
     Perlito5::Grammar::Precedence::add_term("<", \&term_glob);
@@ -4548,7 +4548,7 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Sigil;
-    my %special_var = ("\$_", '', "\$&", '', "\$`", '', "\$\x{27}", '', "\$+", '', "\@+", '', "%+", '', "\$.", '', "\$/", '', "\$|", '', "\$,", '', "\$\\", '', "\$\"", '', "\$;", '', "\$%", '', "\$=", '', "\$-", '', "\@-", '', "%-", '', "\$~", '', "\$^", '', "\$:", '', "\$?", '', "\$!", '', "%!", '', "\$\@", '', "\$\$", '', "\$<", '', "\$>", '', "\$(", '', "\$)", '', "\$[", '', "\$]", '', "\$}", '', "\@_", '', "*_", '', "*&", '', "*`", '', "*\x{27}", '', "*+", '', "*.", '', "*/", '', "*|", '', "*,", '', "*\\", '', "*\"", '', "*;", '', "*%", '', "*=", '', "*-", '', "*~", '', "*^", '', "*:", '', "*?", '', "*!", '', "*\@", '', "*\$", '', "*<", '', "*>", '', "*(", '', "*)", '', "*[", '', "*]", '', "*_", '', "**", '', "*#", '', "\$#+", '', "\$#-", '', "\$#_", '');
+    my %special_var = ("\$_", '', "\$&", '', "\$`", '', "\$'", '', "\$+", '', "\@+", '', "%+", '', "\$.", '', "\$/", '', "\$|", '', "\$,", '', "\$\\", '', "\$\"", '', "\$;", '', "\$%", '', "\$=", '', "\$-", '', "\@-", '', "%-", '', "\$~", '', "\$^", '', "\$:", '', "\$?", '', "\$!", '', "%!", '', "\$\@", '', "\$\$", '', "\$<", '', "\$>", '', "\$(", '', "\$)", '', "\$[", '', "\$]", '', "\$}", '', "\@_", '', "*_", '', "*&", '', "*`", '', "*'", '', "*+", '', "*.", '', "*/", '', "*|", '', "*,", '', "*\\", '', "*\"", '', "*;", '', "*%", '', "*=", '', "*-", '', "*~", '', "*^", '', "*:", '', "*?", '', "*!", '', "*\@", '', "*\$", '', "*<", '', "*>", '', "*(", '', "*)", '', "*[", '', "*]", '', "*_", '', "**", '', "*#", '', "\$#+", '', "\$#-", '', "\$#_", '');
     sub Perlito5::Grammar::Sigil::term_special_var {
         my $str = $_[0];
         my $pos = $_[1];
@@ -5106,7 +5106,7 @@ use feature 'say';
                 return "todo"
             }
         }
-        Perlito5::Compiler::error("Can\x{27}t locate " . $filename . " in \@INC " . "(\@INC contains " . join(" ", @INC) . ").")
+        Perlito5::Compiler::error("Can't locate " . $filename . " in \@INC " . "(\@INC contains " . join(" ", @INC) . ").")
     }
     sub Perlito5::Grammar::Use::bootstrapping_use {
         my $stmt = shift;
@@ -6333,7 +6333,7 @@ use feature 'say';
                         0
                     }
                 }) && (do {
-                    Perlito5::Compiler::error("Illegal declaration of subroutine \x{27}", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}), "\x{27}");
+                    Perlito5::Compiler::error("Illegal declaration of subroutine '", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}), "'");
                     1
                 }))
             }) || (do {
@@ -9037,7 +9037,7 @@ use feature 'say';
     our $PACKAGES = {"STDERR", 1, "STDOUT", 1, "STDIN", 1, "main", 1, "strict", 1, "warnings", 1, "utf8", 1, "bytes", 1, "encoding", 1, "UNIVERSAL", 1, "CORE", 1, "CORE::GLOBAL", 1, "Perlito5::IO", 1};
     push(@INC, $_)
         for split(":", ($ENV{"PERL5LIB"} || ''));
-    our $SPECIAL_VAR = {"\$_", "ARG", "\$&", "\$MATCH", "\$`", "\$PREMATCH", "\$\x{27}", "\$POSTMATCH", "\$+", "\$LAST_PAREN_MATCH", "\@+", "\@LAST_MATCH_END", "%+", "%LAST_PAREN_MATCH", "\@-", "\@LAST_MATCH_START", "\$|", "autoflush", "\$/", "\$RS", "\@_", "\@ARG", "< \$", "\$EUID", "\$.", "\$NR", "< \$< ", "\$UID", "\$(", "\$GID", "\$#", undef, "\$\@", "\$EVAL_ERROR", "\$=", "\$FORMAT_LINES_PER_PAGE", "\$,", "\$OFS", "\$?", "\$CHILD_ERROR", "\$*", undef, "\$[", undef, "\$\$", "\$PID", "%-", undef, "\$~", "\$FORMAT_NAME", "\$-", "\$FORMAT_LINES_LEFT", "\$&", "\$MATCH", "\$%", "\$FORMAT_PAGE_NUMBER", "\$)", "\$EGID", "\$]", undef, "\$!", "\$ERRNO", "\$;", "\$SUBSEP", "\$\\", "\$ORS", "%!", undef, "\$\"", "\$LIST_SEPARATOR", "\$_", "\$ARG", "\$:", "FORMAT_LINE_BREAK_CHARACTERS"};
+    our $SPECIAL_VAR = {"\$_", "ARG", "\$&", "\$MATCH", "\$`", "\$PREMATCH", "\$'", "\$POSTMATCH", "\$+", "\$LAST_PAREN_MATCH", "\@+", "\@LAST_MATCH_END", "%+", "%LAST_PAREN_MATCH", "\@-", "\@LAST_MATCH_START", "\$|", "autoflush", "\$/", "\$RS", "\@_", "\@ARG", "< \$", "\$EUID", "\$.", "\$NR", "< \$< ", "\$UID", "\$(", "\$GID", "\$#", undef, "\$\@", "\$EVAL_ERROR", "\$=", "\$FORMAT_LINES_PER_PAGE", "\$,", "\$OFS", "\$?", "\$CHILD_ERROR", "\$*", undef, "\$[", undef, "\$\$", "\$PID", "%-", undef, "\$~", "\$FORMAT_NAME", "\$-", "\$FORMAT_LINES_LEFT", "\$&", "\$MATCH", "\$%", "\$FORMAT_PAGE_NUMBER", "\$)", "\$EGID", "\$]", undef, "\$!", "\$ERRNO", "\$;", "\$SUBSEP", "\$\\", "\$ORS", "%!", undef, "\$\"", "\$LIST_SEPARATOR", "\$_", "\$ARG", "\$:", "FORMAT_LINE_BREAK_CHARACTERS"};
     our $CORE_OVERRIDABLE = {"say", 1, "break", 1, "given", 1, "when", 1, "default", 1, "state", 1, "lock", 1};
     our $CORE_PROTO = {"CORE::shutdown", "*\$", "CORE::chop", "_", "CORE::lstat", "*", "CORE::rename", "\$\$", "CORE::lock", "\\\$", "CORE::rand", ";\$", "CORE::gmtime", ";\$", "CORE::gethostbyname", "\$", "CORE::each", "+", "CORE::ref", "_", "CORE::syswrite", "*\$;\$\$", "CORE::msgctl", "\$\$\$", "CORE::getnetbyname", "\$", "CORE::write", ";*", "CORE::alarm", "_", "CORE::print", undef, "CORE::getnetent", '', "CORE::semget", "\$\$\$", "CORE::use", undef, "CORE::abs", "_", "CORE::break", '', "CORE::undef", ";\$", "CORE::no", undef, "CORE::eval", "_", "CORE::split", undef, "CORE::localtime", ";\$", "CORE::sort", undef, "CORE::chown", "\@", "CORE::endpwent", '', "CORE::getpwent", '', "CORE::pos", undef, "CORE::lcfirst", "_", "CORE::kill", "\@", "CORE::send", "*\$\$;\$", "CORE::endprotoent", '', "CORE::semctl", "\$\$\$\$", "CORE::waitpid", "\$\$", "CORE::utime", "\@", "CORE::dbmclose", "\\%", "CORE::getpwnam", "\$", "CORE::substr", "\$\$;\$\$", "CORE::listen", "*\$", "CORE::getprotoent", '', "CORE::shmget", "\$\$\$", "CORE::our", undef, "CORE::readlink", "_", "CORE::shmwrite", "\$\$\$\$", "CORE::times", '', "CORE::package", undef, "CORE::map", undef, "CORE::join", "\$\@", "CORE::rmdir", "_", "CORE::shmread", "\$\$\$\$", "CORE::uc", "_", "CORE::bless", "\$;\$", "CORE::closedir", "*", "CORE::getppid", '', "CORE::tie", "\\[\$\@%]\$;\@", "CORE::readdir", "*", "CORE::gethostent", '', "CORE::getlogin", '', "CORE::last", undef, "CORE::gethostbyaddr", "\$\$", "CORE::accept", "**", "CORE::log", "_", "CORE::tell", ";*", "CORE::readline", ";*", "CORE::tied", undef, "CORE::socket", "*\$\$\$", "CORE::umask", ";\$", "CORE::sysread", "*\\\$\$;\$", "CORE::syscall", "\$\@", "CORE::quotemeta", "_", "CORE::dump", '', "CORE::opendir", "*\$", "CORE::untie", undef, "CORE::truncate", "\$\$", "CORE::select", ";*", "CORE::sleep", ";\$", "CORE::seek", "*\$\$", "CORE::read", "*\\\$\$;\$", "CORE::rewinddir", "*", "CORE::scalar", undef, "CORE::wantarray", '', "CORE::oct", "_", "CORE::bind", "*\$", "CORE::stat", "*", "CORE::sqrt", "_", "CORE::getc", ";*", "CORE::fileno", "*", "CORE::getpeername", "*", "CORE::sin", "_", "CORE::getnetbyaddr", "\$\$", "CORE::grep", undef, "CORE::setservent", "\$", "CORE::sub", undef, "CORE::shmctl", "\$\$\$", "CORE::study", undef, "CORE::msgrcv", "\$\$\$\$\$", "CORE::setsockopt", "*\$\$\$", "CORE::int", "_", "CORE::pop", ";+", "CORE::link", "\$\$", "CORE::exec", undef, "CORE::setpwent", '', "CORE::mkdir", "_;\$", "CORE::sysseek", "*\$\$", "CORE::endservent", '', "CORE::chr", "_", "CORE::when", undef, "CORE::getpwuid", "\$", "CORE::setprotoent", "\$", "CORE::reverse", "\@", "CORE::say", undef, "CORE::goto", undef, "CORE::getgrent", '', "CORE::endnetent", '', "CORE::hex", "_", "CORE::binmode", "*;\$", "CORE::formline", "\$\@", "CORE::getgrnam", "\$", "CORE::ucfirst", "_", "CORE::chdir", ";\$", "CORE::setnetent", "\$", "CORE::splice", "+;\$\$\@", "CORE::unlink", "\@", "CORE::time", '', "CORE::push", "+\@", "CORE::exit", ";\$", "CORE::endgrent", '', "CORE::unshift", "+\@", "CORE::local", undef, "CORE::my", undef, "CORE::cos", "_", "CORE::redo", undef, "CORE::warn", "\@", "CORE::getsockname", "*", "CORE::pipe", "**", "CORE::sprintf", "\$\@", "CORE::open", "*;\$\@", "CORE::setpgrp", ";\$\$", "CORE::exp", "_", "CORE::seekdir", "*\$", "CORE::getservbyport", "\$\$", "CORE::given", undef, "CORE::pack", "\$\@", "CORE::msgget", "\$\$", "CORE::rindex", "\$\$;\$", "CORE::srand", ";\$", "CORE::telldir", "*", "CORE::connect", "*\$", "CORE::getprotobyname", "\$", "CORE::msgsnd", "\$\$\$", "CORE::length", "_", "CORE::state", undef, "CORE::die", "\@", "CORE::delete", "\$", "CORE::getservent", '', "CORE::getservbyname", "\$\$", "CORE::setpriority", "\$\$\$", "CORE::lc", "_", "CORE::fc", "_", "CORE::pack", "\$\@", "CORE::fcntl", "*\$\$", "CORE::chroot", "_", "CORE::recv", "*\\\$\$\$", "CORE::dbmopen", "\\%\$\$", "CORE::socketpair", "**\$\$\$", "CORE::vec", "\$\$\$", "CORE::system", undef, "CORE::defined", "_", "CORE::index", "\$\$;\$", "CORE::caller", ";\$", "CORE::close", ";*", "CORE::atan2", "\$\$", "CORE::semop", "\$\$", "CORE::unpack", "\$;\$", "CORE::ord", "_", "CORE::chmod", "\@", "CORE::prototype", undef, "CORE::getprotobynumber", "\$", "CORE::values", "+", "CORE::chomp", "_", "CORE::ioctl", "*\$\$", "CORE::eof", ";*", "CORE::crypt", "\$\$", "CORE::do", undef, "CORE::flock", "*\$", "CORE::wait", '', "CORE::sethostent", "\$", "CORE::return", undef, "CORE::getsockopt", "*\$\$", "CORE::fork", '', "CORE::require", undef, "CORE::format", undef, "CORE::readpipe", "_", "CORE::endhostent", '', "CORE::getpgrp", ";\$", "CORE::setgrent", '', "CORE::keys", "+", "CORE::glob", undef, "CORE::getpriority", "\$\$", "CORE::reset", ";\$", "CORE::sysopen", "*\$\$;\$", "CORE::continue", '', "CORE::next", undef, "CORE::getgrgid", "\$", "CORE::default", undef, "CORE::shift", ";+", "CORE::symlink", "\$\$", "CORE::exists", "\$", "CORE::printf", "\$\@", "CORE::m", undef, "CORE::q", undef, "CORE::qq", undef, "CORE::qw", undef, "CORE::qx", undef, "CORE::qr", undef, "CORE::s", undef, "CORE::tr", undef, "CORE::y", undef, "CORE::if", undef, "CORE::unless", undef, "CORE::when", undef, "CORE::for", undef, "CORE::foreach", undef, "CORE::while", undef, "CORE::given", undef, "CORE::and", undef, "CORE::or", undef, "CORE::xor", undef, "CORE::not", undef, "CORE::cmp", undef, "CORE::__FILE__", '', "CORE::__LINE__", ''};
     sub Perlito5::test_perl_version {
@@ -9444,7 +9444,7 @@ use feature 'say';
             push(@{$vars}, Perlito5::AST::Apply::->new("code", "infix:<=>", "arguments", [$ast, Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq "Perlito5::AST::Var" && $sigil eq "\@") {
-            substr($bareword, 0, 2) eq "{\x{27}" && ($bareword = substr($bareword, 2, -2));
+            substr($bareword, 0, 2) eq "{'" && ($bareword = substr($bareword, 2, -2));
             my $value = \@{$bareword};
             push(@{$vars}, Perlito5::AST::Apply::->new("code", "infix:<=>", "arguments", [Perlito5::AST::Var::->new(%{$ast}, "sigil", "*"), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
         }
@@ -9453,7 +9453,7 @@ use feature 'say';
             push(@{$vars}, Perlito5::AST::Apply::->new("code", "infix:<=>", "arguments", [Perlito5::AST::Var::->new(%{$ast}, "sigil", "*"), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq "Perlito5::AST::Var" && $sigil eq "*") {
-            substr($bareword, 0, 2) eq "{\x{27}" && ($bareword = substr($bareword, 2, -2));
+            substr($bareword, 0, 2) eq "{'" && ($bareword = substr($bareword, 2, -2));
             if (exists(&{$bareword})) {
                 my $value = \&{$bareword};
                 push(@{$vars}, Perlito5::AST::Apply::->new("code", "infix:<=>", "arguments", [Perlito5::AST::Var::->new(%{$ast}, "sigil", "*"), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
@@ -9629,7 +9629,7 @@ use feature 'say';
                     ((do {
                         my $tmp = $MATCH;
                         $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                        my $res = (("\x{27}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                        my $res = (("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
                         $MATCH = $tmp;
                         $res ? 0 : 1
                     }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -9697,7 +9697,7 @@ use feature 'say';
                     ((("\\" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    ((("\x{27}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                    ((("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
                         my $m2 = literal($str, $MATCH->{"to"});
                         if ($m2) {
                             $MATCH->{"to"} = $m2->{"to"};
@@ -9706,7 +9706,7 @@ use feature 'say';
                         else {;
                             0
                         }
-                    }) && (("\x{27}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)))
+                    }) && (("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
                     ((("{" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
@@ -9822,7 +9822,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("\x{27}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = literal($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -9832,7 +9832,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("\x{27}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = Perlito5::Rul::Constant::->new("constant", Perlito5::Match::flat($MATCH->{"literal"}));
                     1
                 }))
@@ -10226,10 +10226,10 @@ use feature 'say';
                 if ($char eq "\\") {;
                     $char = "\\\\"
                 }
-                if ($char eq "\x{27}") {;
-                    $char = "\\\x{27}"
+                if ($char eq "'") {;
+                    $char = "\\'"
                 }
-                push(@cond, "(\x{27}" . $char . "\x{27} eq \$str->[\$MATCH->{to} + " . $i . "])");
+                push(@cond, "('" . $char . "' eq \$str->[\$MATCH->{to} + " . $i . "])");
                 $i++
             }
             return "(" . join(" && ", @cond, "(\$MATCH->{to} += " . $len . ")") . ")"
@@ -10326,10 +10326,10 @@ use feature 'say';
         my $meth = $self->{"metasyntax"};
         my $code;
         if ($self->{"captures"} == 1) {;
-            $code = "if (\$m2) { \$MATCH->{to} = \$m2->{to}; \$MATCH->{\x{27}" . $self->{"metasyntax"} . "\x{27}} = \$m2; 1 } else { 0 }; "
+            $code = "if (\$m2) { \$MATCH->{to} = \$m2->{to}; \$MATCH->{'" . $self->{"metasyntax"} . "'} = \$m2; 1 } else { 0 }; "
         }
         elsif ($self->{"captures"} > 1) {;
-            $code = "if (\$m2) { " . "\$MATCH->{to} = \$m2->{to}; " . "if (exists \$MATCH->{\x{27}" . $self->{"metasyntax"} . "\x{27}}) { " . "push \@{ \$MATCH->{\x{27}" . $self->{"metasyntax"} . "\x{27}} }, \$m2; " . "} " . "else { " . "\$MATCH->{\x{27}" . $self->{"metasyntax"} . "\x{27}} = [ \$m2 ]; " . "}; " . "1 " . "} else { 0 }; "
+            $code = "if (\$m2) { " . "\$MATCH->{to} = \$m2->{to}; " . "if (exists \$MATCH->{'" . $self->{"metasyntax"} . "'}) { " . "push \@{ \$MATCH->{'" . $self->{"metasyntax"} . "'} }, \$m2; " . "} " . "else { " . "\$MATCH->{'" . $self->{"metasyntax"} . "'} = [ \$m2 ]; " . "}; " . "1 " . "} else { 0 }; "
         }
         else {;
             $code = "if (\$m2) { \$MATCH->{to} = \$m2->{to}; 1 } else { 0 }; "
@@ -10365,7 +10365,7 @@ use feature 'say';
     }
     sub Perlito5::Rul::Dot::emit_perl5 {
         my $self = $_[0];
-        "(\x{27}\x{27} ne \$str->[\$MATCH->{to}] " . "&& ++\$MATCH->{to}" . ")"
+        "('' ne \$str->[\$MATCH->{to}] " . "&& ++\$MATCH->{to}" . ")"
     }
     sub Perlito5::Rul::Dot::set_captures_to_array {;
         my $self = $_[0]
@@ -10426,7 +10426,7 @@ use feature 'say';
     }
     sub Perlito5::Rul::Before::emit_perl5 {
         my $self = $_[0];
-        "(do { " . "my \$tmp = \$MATCH; " . "\$MATCH = { \x{27}from\x{27} => \$tmp->{to}, \x{27}to\x{27} => \$tmp->{to} }; " . "my \$res = " . $self->{"rule_exp"}->emit_perl5() . "; " . "\$MATCH = \$tmp; " . "\$res ? 1 : 0 " . "})"
+        "(do { " . "my \$tmp = \$MATCH; " . "\$MATCH = { 'from' => \$tmp->{to}, 'to' => \$tmp->{to} }; " . "my \$res = " . $self->{"rule_exp"}->emit_perl5() . "; " . "\$MATCH = \$tmp; " . "\$res ? 1 : 0 " . "})"
     }
     sub Perlito5::Rul::Before::set_captures_to_array {;
         my $self = $_[0]
@@ -10441,7 +10441,7 @@ use feature 'say';
     }
     sub Perlito5::Rul::NotBefore::emit_perl5 {
         my $self = $_[0];
-        "(do { " . "my \$tmp = \$MATCH; " . "\$MATCH = { \x{27}from\x{27} => \$tmp->{to}, \x{27}to\x{27} => \$tmp->{to} }; " . "my \$res = " . $self->{"rule_exp"}->emit_perl5() . "; " . "\$MATCH = \$tmp; " . "\$res ? 0 : 1 " . "})"
+        "(do { " . "my \$tmp = \$MATCH; " . "\$MATCH = { 'from' => \$tmp->{to}, 'to' => \$tmp->{to} }; " . "my \$res = " . $self->{"rule_exp"}->emit_perl5() . "; " . "\$MATCH = \$tmp; " . "\$res ? 0 : 1 " . "})"
     }
     sub Perlito5::Rul::NotBefore::set_captures_to_array {;
         my $self = $_[0]
@@ -10957,7 +10957,7 @@ use feature 'say';
                 $eval = "eval(p5pkg[\"Perlito5::JavaScript2::Runtime\"].perl5_to_js([" . Perlito5::JavaScript2::to_str($arg) . ", " . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ", " . Perlito5::JavaScript2::escape_string($wantarray) . ", " . (0 + $self->{"_scalar_hints"}) . ", " . $hash_hints_js . ", " . $scope_js . "]))"
             }
             my $context = Perlito5::JavaScript2::to_context($wantarray);
-            Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, ($context eq "p5want" ? () : "var p5want = " . $context . ";"), "var r;", "p5pkg[\"main\"][\"v_\@\"] = \"\";", "try {", ["r = " . $eval . ''], "}", "catch(err) {", ["if (err instanceof p5_error && (err.type == \x{27}last\x{27} || err.type == \x{27}redo\x{27} || err.type == \x{27}next\x{27})) {", ["throw(err)"], "}", "else if ( err instanceof p5_error || err instanceof Error ) {", ["p5pkg[\"main\"][\"v_\@\"] = err;", "if (p5str(p5pkg[\"main\"][\"v_\@\"]).substr(-1, 1) != \"\\n\") {", ["try {" . '', ["p5pkg[\"main\"][\"v_\@\"] = p5pkg[\"main\"][\"v_\@\"] + \"\\n\" + err.stack + \"\\n\";"], "}", "catch(err) { }"], "}"], "}", "else {", ["return(err);"], "}"], "}", "return r;")
+            Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, ($context eq "p5want" ? () : "var p5want = " . $context . ";"), "var r;", "p5pkg[\"main\"][\"v_\@\"] = \"\";", "try {", ["r = " . $eval . ''], "}", "catch(err) {", ["if (err instanceof p5_error && (err.type == 'last' || err.type == 'redo' || err.type == 'next')) {", ["throw(err)"], "}", "else if ( err instanceof p5_error || err instanceof Error ) {", ["p5pkg[\"main\"][\"v_\@\"] = err;", "if (p5str(p5pkg[\"main\"][\"v_\@\"]).substr(-1, 1) != \"\\n\") {", ["try {" . '', ["p5pkg[\"main\"][\"v_\@\"] = p5pkg[\"main\"][\"v_\@\"] + \"\\n\" + err.stack + \"\\n\";"], "}", "catch(err) { }"], "}"], "}", "else {", ["return(err);"], "}"], "}", "return r;")
         }, "substr", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $length = $self->{"arguments"}->[2];
@@ -11035,7 +11035,7 @@ use feature 'say';
                 $meth = "scalar"
             }
             else {;
-                die("tie \x{27}", ref($v), "\x{27} not implemented")
+                die("tie '", ref($v), "' not implemented")
             }
             return "p5tie_" . $meth . "(" . $v->emit_javascript2($level) . ", " . Perlito5::JavaScript2::to_list(\@arguments) . ")"
         }, "untie", sub {
@@ -11053,7 +11053,7 @@ use feature 'say';
                 $meth = "scalar"
             }
             else {;
-                die("tie \x{27}", ref($v), "\x{27} not implemented")
+                die("tie '", ref($v), "' not implemented")
             }
             return "p5untie_" . $meth . "(" . $v->emit_javascript2($level) . ")"
         }, "print", sub {
@@ -11462,19 +11462,19 @@ use feature 'say';
             my $s = shift;
             my @out;
             my $tmp = '';
-            $s eq '' && return "\x{27}\x{27}";
+            $s eq '' && return "''";
             for my $i (0 .. length($s) - 1) {
                 my $c = substr($s, $i, 1);
                 if (($c ge "a" && $c le "z") || ($c ge "A" && $c le "Z") || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {;
                     $tmp = $tmp . $c
                 }
                 else {
-                    $tmp ne '' && push(@out, "\x{27}" . $tmp . "\x{27}");
+                    $tmp ne '' && push(@out, "'" . $tmp . "'");
                     push(@out, "String.fromCharCode(" . ord($c) . ")");
                     $tmp = ''
                 }
             }
-            $tmp ne '' && push(@out, "\x{27}" . $tmp . "\x{27}");
+            $tmp ne '' && push(@out, "'" . $tmp . "'");
             return join(" + ", @out)
         }
         sub Perlito5::JavaScript2::to_str {
@@ -12135,7 +12135,7 @@ use feature 'say';
                 my $namespace = $self->{"namespace"} || $self->{"_namespace"};
                 return "p5typeglob_set(" . Perlito5::JavaScript2::escape_string($namespace) . ", " . Perlito5::JavaScript2::escape_string($self->{"name"}) . ", " . Perlito5::JavaScript2::to_scalar([$arguments], $level + 1) . ")"
             }
-            die("don\x{27}t know how to assign to variable ", $sigil, $self->name())
+            die("don't know how to assign to variable ", $sigil, $self->name())
         }
         sub Perlito5::AST::Var::emit_javascript2_set_list {
             (my($self), my($level), my($list)) = @_;
@@ -12151,7 +12151,7 @@ use feature 'say';
                 return join(";
 " . Perlito5::JavaScript2::tab($level), $self->emit_javascript2() . " = p5a_to_h(" . $list . ")", $list . " = []")
             }
-            die("don\x{27}t know how to assign to variable ", $sigil, $self->name())
+            die("don't know how to assign to variable ", $sigil, $self->name())
         }
         sub Perlito5::AST::Var::emit_javascript2_get_decl {;
             ()
@@ -12209,7 +12209,7 @@ use feature 'say';
                 return "if (typeof " . $self->{"var"}->emit_javascript2() . " == \"undefined\" ) { " . $str . "}"
             }
             else {;
-                die("not implemented: Perlito5::AST::Decl \x{27}" . $self->{"decl"} . "\x{27}")
+                die("not implemented: Perlito5::AST::Decl '" . $self->{"decl"} . "'")
             }
         }
         sub Perlito5::AST::Decl::emit_javascript2_set {
@@ -12266,7 +12266,7 @@ use feature 'say';
             if ($self->{"method"} eq "postcircumfix:<{ }>") {;
                 return Perlito5::JavaScript2::emit_javascript2_autovivify($self->{"invocant"}, $level, "hash") . "._hash_.p5hset(" . Perlito5::JavaScript2::autoquote($self->{"arguments"}, $level + 1, "list") . ", " . Perlito5::JavaScript2::to_scalar([$arguments], $level + 1) . ")"
             }
-            die("don\x{27}t know how to assign to method ", $self->{"method"})
+            die("don't know how to assign to method ", $self->{"method"})
         }
         sub Perlito5::AST::Call::emit_javascript2_set_list {
             (my($self), my($level), my($list)) = @_;
@@ -12276,7 +12276,7 @@ use feature 'say';
             if ($self->{"method"} eq "postcircumfix:<{ }>") {;
                 return Perlito5::JavaScript2::emit_javascript2_autovivify($self->{"invocant"}, $level, "hash") . "._hash_.p5hset(" . Perlito5::JavaScript2::autoquote($self->{"arguments"}, $level + 1, "list") . ", " . $list . ".shift()" . ")"
             }
-            die("don\x{27}t know how to assign to method ", $self->{"method"})
+            die("don't know how to assign to method ", $self->{"method"})
         }
         sub Perlito5::AST::Call::emit_javascript2_get_decl {;
             ()
@@ -12441,7 +12441,7 @@ use feature 'say';
                 }
             }
             if (ref($self->{"cond"}) eq "ARRAY") {;
-                push(@str, Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, "var label = " . Perlito5::JavaScript2::escape_string(($self->{"label"} || '')) . ";", "for ( " . ($self->{"cond"}->[0] ? $self->{"cond"}->[0]->emit_javascript2($level + 1) . "; " : "; ") . ($self->{"cond"}->[1] ? Perlito5::JavaScript2::to_bool($self->{"cond"}->[1], $level + 1) . "; " : "; ") . ($self->{"cond"}->[2] ? $self->{"cond"}->[2]->emit_javascript2($level + 1) . " " : '') . ") {", ["var _redo;", "do {", ["_redo = false;", "try {", [Perlito5::JavaScript2::LexicalBlock::->new("block", $body)->emit_javascript2($level + 4, "void")], "}", "catch(err) {", ["if (err instanceof p5_error && (err.v == label || err.v == \x{27}\x{27})) {", ["if (err.type == \x{27}last\x{27}) { return }", "else if (err.type == \x{27}redo\x{27}) { _redo = true }", "else if (err.type != \x{27}next\x{27}) { throw(err) }"], "}", "else {", ["throw(err)"], "}"], "}"], "} while (_redo);"], "}"))
+                push(@str, Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, "var label = " . Perlito5::JavaScript2::escape_string(($self->{"label"} || '')) . ";", "for ( " . ($self->{"cond"}->[0] ? $self->{"cond"}->[0]->emit_javascript2($level + 1) . "; " : "; ") . ($self->{"cond"}->[1] ? Perlito5::JavaScript2::to_bool($self->{"cond"}->[1], $level + 1) . "; " : "; ") . ($self->{"cond"}->[2] ? $self->{"cond"}->[2]->emit_javascript2($level + 1) . " " : '') . ") {", ["var _redo;", "do {", ["_redo = false;", "try {", [Perlito5::JavaScript2::LexicalBlock::->new("block", $body)->emit_javascript2($level + 4, "void")], "}", "catch(err) {", ["if (err instanceof p5_error && (err.v == label || err.v == '')) {", ["if (err.type == 'last') { return }", "else if (err.type == 'redo') { _redo = true }", "else if (err.type != 'next') { throw(err) }"], "}", "else {", ["throw(err)"], "}"], "}"], "} while (_redo);"], "}"))
             }
             else {
                 my $cond = Perlito5::JavaScript2::to_list([$self->{"cond"}], $level + 1);
@@ -12656,12 +12656,12 @@ if (typeof p5pkg !== \"object\") {
         this.type = type;
         this.v = this.message = v;
         this.toString = function(){
-            if (this.type == \x{27}break\x{27}) {
-                return \x{27}Can\\\x{27}t \"break\" outside a given block\x{27}
+            if (this.type == 'break') {
+                return 'Can\\'t \"break\" outside a given block'
             }
-            if (this.type == \x{27}next\x{27} || this.type == \x{27}last\x{27} || this.type == \x{27}redo\x{27}) {
-                if (this.v == \"\") { return \x{27}Can\\\x{27}t \"\x{27} + this.type + \x{27}\" outside a loop block\x{27} }
-                return \x{27}Label not found for \"\x{27} + this.type + \x{27} \x{27} + this.v + \x{27}\"\x{27};
+            if (this.type == 'next' || this.type == 'last' || this.type == 'redo') {
+                if (this.v == \"\") { return 'Can\\'t \"' + this.type + '\" outside a loop block' }
+                return 'Label not found for \"' + this.type + ' ' + this.v + '\"';
             }
             return this.v;
         };
@@ -12719,7 +12719,7 @@ function p5method_lookup(method, class_name, seen) {
 }
 
 function p5method_not_found(method, class_name) {
-    return \"Can\x{27}t locate object method \\\"\"
+    return \"Can't locate object method \\\"\"
         + method + \"\\\" via package \\\"\" + class_name + \"\\\" (perhaps you forgot to load \\\"\"
         + class_name + \"\\\"?)\";
 }
@@ -12761,7 +12761,7 @@ function p5call(invocant, method, list, p5want) {
 
         if (method == \"print\" || method == \"printf\" || method == \"say\" || method == \"close\") {
             list.shift();
-            return p5pkg[\x{27}Perlito5::IO\x{27}][method]( invocant_original, list, p5want);
+            return p5pkg['Perlito5::IO'][method]( invocant_original, list, p5want);
         }
 
         if (method.substr(0, 1) != \"(\"
@@ -12770,7 +12770,7 @@ function p5call(invocant, method, list, p5want) {
          && method != \"isa\"
          && method != \"can\"
         ) {
-            pkg_name = p5get_class_for_method(\x{27}AUTOLOAD\x{27}, invocant._class_._ref_, {}) || p5get_class_for_method(\x{27}AUTOLOAD\x{27}, \"UNIVERSAL\", {});
+            pkg_name = p5get_class_for_method('AUTOLOAD', invocant._class_._ref_, {}) || p5get_class_for_method('AUTOLOAD', \"UNIVERSAL\", {});
             if (pkg_name) {
                 p5pkg[pkg_name][\"v_AUTOLOAD\"] = invocant._class_._ref_ + \"::\" + method;
                 return p5pkg[pkg_name][\"AUTOLOAD\"](list, p5want);
@@ -12778,7 +12778,7 @@ function p5call(invocant, method, list, p5want) {
         }
         p5pkg.CORE.die([p5method_not_found(method, invocant._class_._ref_)]);
     }
-    p5pkg.CORE.die([\"Can\x{27}t call method \", method, \" on unblessed reference\"]);
+    p5pkg.CORE.die([\"Can't call method \", method, \" on unblessed reference\"]);
 }
 
 function p5cget(namespace, name) {
@@ -12845,7 +12845,7 @@ function p5sub_exists(name, current_pkg_name) {
     }
     var c = v.charCodeAt(0);
     if (c < 27) {
-        pkg_name = \x{27}main\x{27};
+        pkg_name = 'main';
     }
     return p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v) 
 }
@@ -12868,7 +12868,7 @@ function p5sub_prototype(name, current_pkg_name) {
     }
     var c = v.charCodeAt(0);
     if (c < 27) {
-        pkg_name = \x{27}main\x{27};
+        pkg_name = 'main';
     }
     if (p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v)) {
         return p5pkg[pkg_name][v]._prototype_
@@ -12888,30 +12888,30 @@ function p5scalar_deref(v, current_pkg_name, autoviv_type) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            pkg_name = \x{27}main\x{27};
+            pkg_name = 'main';
         }
         var name = \"v_\"+v;
         if (!p5make_package(pkg_name)[name]) {
-            if (autoviv_type == \x{27}array\x{27}) {
+            if (autoviv_type == 'array') {
                 p5pkg[pkg_name][name] = new p5ArrayRef([]);
             }
-            else if (autoviv_type == \x{27}hash\x{27}) {
+            else if (autoviv_type == 'hash') {
                 p5pkg[pkg_name][name] = new p5HashRef([]);
             }
-            else if (autoviv_type == \x{27}scalar\x{27}) {
+            else if (autoviv_type == 'scalar') {
                 p5pkg[pkg_name][name] = new p5ScalarRef([]);
             }
         }
         return p5pkg[pkg_name][name];
     }
     if (!v._scalar_) {
-        if (autoviv_type == \x{27}array\x{27}) {
+        if (autoviv_type == 'array') {
             v._scalar_ = new p5ArrayRef([]);
         }
-        else if (autoviv_type == \x{27}hash\x{27}) {
+        else if (autoviv_type == 'hash') {
             v._scalar_ = new p5HashRef([]);
         }
-        else if (autoviv_type == \x{27}scalar\x{27}) {
+        else if (autoviv_type == 'scalar') {
             v._scalar_ = new p5ScalarRef([]);
         }
     }
@@ -12930,7 +12930,7 @@ function p5scalar_deref_set(v, n, current_pkg_name) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            pkg_name = \x{27}main\x{27};
+            pkg_name = 'main';
         }
         var name = \"v_\"+v;
         p5make_package(pkg_name)[name] = n;
@@ -12952,7 +12952,7 @@ function p5array_deref(v, current_pkg_name) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            pkg_name = \x{27}main\x{27};
+            pkg_name = 'main';
         }
         var name = \"List_\"+v;
         if (!p5make_package(pkg_name)[name]) {
@@ -12975,7 +12975,7 @@ function p5hash_deref(v, current_pkg_name) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            pkg_name = \x{27}main\x{27};
+            pkg_name = 'main';
         }
         var name = \"Hash_\"+v;
         if (!p5make_package(pkg_name)[name]) {
@@ -12994,12 +12994,12 @@ var p5_regex_capture = [];
 p5make_package(\"main\");
 p5make_package(\"Perlito5\");
 p5pkg[\"Perlito5\"].v_PKG_NAME = \"main\";
-p5make_package(\"main::STDIN\").file_handle = { id : 0, readline_buffer : \x{27}\x{27} };
+p5make_package(\"main::STDIN\").file_handle = { id : 0, readline_buffer : '' };
 p5make_package(\"main::STDOUT\").file_handle = { id : 1 };
 p5make_package(\"main::STDERR\").file_handle = { id : 2 };
-p5make_package(\"main::STDIN\")[\x{27}List_ISA\x{27}] = [\x{27}Perlito5::IO\x{27}];
-// p5make_package(\"main::STDOUT\")[\x{27}List_ISA\x{27}] = [\x{27}Perlito5::IO\x{27}];
-// p5make_package(\"main::STDERR\")[\x{27}List_ISA\x{27}] = [\x{27}Perlito5::IO\x{27}];
+p5make_package(\"main::STDIN\")['List_ISA'] = ['Perlito5::IO'];
+// p5make_package(\"main::STDOUT\")['List_ISA'] = ['Perlito5::IO'];
+// p5make_package(\"main::STDERR\")['List_ISA'] = ['Perlito5::IO'];
 p5make_package(\"ARGV\").file_handle = { id : null };
 p5make_package(\"main\")[\"STDOUT\"] = p5pkg[\"main::STDOUT\"];
 p5make_package(\"main\")[\"STDERR\"] = p5pkg[\"main::STDERR\"];
@@ -13011,7 +13011,7 @@ p5pkg[\"Perlito5\"].v_SELECT = \"main::STDOUT\";
 p5pkg[\"main\"][\"v_\@\"] = [];      // \$\@
 p5pkg[\"main\"][\"v_|\"] = 0;       // \$|
 p5pkg[\"main\"][\"v_/\"] = \"\\n\";    // \$/
-p5pkg[\"main\"][\x{27}v_\"\x{27}] = \" \";     // \$\"
+p5pkg[\"main\"]['v_\"'] = \" \";     // \$\"
 p5pkg[\"main\"][\"List_#\"] = [];   // \@#
 p5scalar_deref_set(String.fromCharCode(15), isNode ? \"node.js\" : \"javascript2\");  // \$^O
 p5pkg[\"main\"][\"List_INC\"] = [];
@@ -13035,22 +13035,22 @@ p5make_package(\"Perlito5::IO\");
 p5make_package(\"Perlito5::Runtime\");
 p5make_package(\"Perlito5::Grammar\");
 
-var sigils = { \x{27}\@\x{27} : \x{27}List_\x{27}, \x{27}%\x{27} : \x{27}Hash_\x{27}, \x{27}\$\x{27} : \x{27}v_\x{27}, \x{27}&\x{27} : \x{27}\x{27} };
+var sigils = { '\@' : 'List_', '%' : 'Hash_', '\$' : 'v_', '&' : '' };
 
 function p5typeglob_set(namespace, name, obj) {
     p5make_package(namespace);
     if ( obj.hasOwnProperty(\"_ref_\") ) {
         if ( obj._ref_ == \"HASH\" ) {
-            p5pkg[namespace][sigils[\x{27}%\x{27}] + name] = obj._hash_;
+            p5pkg[namespace][sigils['%'] + name] = obj._hash_;
         }
         else if ( obj._ref_ == \"ARRAY\" ) {
-            p5pkg[namespace][sigils[\x{27}\@\x{27}] + name] = obj._array_;
+            p5pkg[namespace][sigils['\@'] + name] = obj._array_;
         }
         else if ( obj._ref_ == \"SCALAR\" ) {
-            p5pkg[namespace][sigils[\x{27}\$\x{27}] + name] = obj._scalar_;
+            p5pkg[namespace][sigils['\$'] + name] = obj._scalar_;
         }
         else if ( obj._ref_ == \"CODE\" ) {
-            p5pkg[namespace][sigils[\x{27}&\x{27}] + name] = obj._code_;
+            p5pkg[namespace][sigils['&'] + name] = obj._code_;
         }
         else if ( obj._ref_ == \"GLOB\" ) {
             // TODO
@@ -13076,7 +13076,7 @@ function p5typeglob_deref_set(v, obj, current_pkg_name) {
         }
         return p5typeglob_set(pkg_name, v, obj);
     }
-    CORE.die([\"TODO: can\x{27}t p5typeglob_deref_set()\"]);
+    CORE.die([\"TODO: can't p5typeglob_deref_set()\"]);
 }
 
 function p5cleanup_local(idx, value) {
@@ -13263,7 +13263,7 @@ var p5smrt_scalar = function(a1, a2) {
     if (typeof a2 == \"number\") {
         return p5num(a1) == a2;
     }
-    CORE.die(\"Not implemented: smartmatch operator with argument type \x{27}\", (typeof a2), \"\x{27}\");
+    CORE.die(\"Not implemented: smartmatch operator with argument type '\", (typeof a2), \"'\");
 };
 
 var p5str = function(o) {
@@ -13275,34 +13275,34 @@ var p5str = function(o) {
             return CORE.join([\"\"].concat(o));
         }
         if ( o.hasOwnProperty(\"_ref_\") ) {
-            var class_name = \x{27}\x{27};
+            var class_name = '';
             if (o._class_ && typeof o._class_._ref_ === \"string\") {
                 // blessed reference
                 // test for overload
-                var meth = p5method_lookup(\x{27}(\"\"\x{27}, o._class_._ref_, {});
+                var meth = p5method_lookup('(\"\"', o._class_._ref_, {});
                 if (meth) {
                     return p5str(meth([o], 0));
                 }
                 // TODO - test the \"fallback\" flag
-                meth = p5method_lookup(\x{27}(0+\x{27}, o._class_._ref_, {});
+                meth = p5method_lookup('(0+', o._class_._ref_, {});
                 if (meth) {
                     return p5str(meth([o], 0));
                 }
                 // no overload, strigify the reference instead
-                class_name = o._class_._ref_ + \x{27}=\x{27};
+                class_name = o._class_._ref_ + '=';
             }
             if (!o._id_) { o._id_ = p5id++ }
-            return [class_name, o._ref_, \x{27}(0x\x{27}, o._id_.toString( 16 ), \x{27})\x{27}].join(\x{27}\x{27});
+            return [class_name, o._ref_, '(0x', o._id_.toString( 16 ), ')'].join('');
         }
     }
     if (typeof o === \"function\") {
-        var class_name = \x{27}\x{27};
+        var class_name = '';
         if (o._class_ && typeof o._class_._ref_ === \"string\") {
             // blessed reference
-            class_name = o._class_._ref_ + \x{27}=\x{27};
+            class_name = o._class_._ref_ + '=';
         }
         if (!o._id_) { o._id_ = p5id++ }
-        return [class_name, \x{27}CODE(0x\x{27}, o._id_.toString( 16 ), \x{27})\x{27}].join(\x{27}\x{27});
+        return [class_name, 'CODE(0x', o._id_.toString( 16 ), ')'].join('');
     }
     if (typeof o == \"number\" && Math.abs(o) < 0.0001 && o != 0) {
         return o.toExponential().replace(/e-(\\d)\$/,\"e-0\$1\");
@@ -13328,12 +13328,12 @@ var p5num = function(o) {
             if (o._class_ && typeof o._class_._ref_ === \"string\") {
                 // blessed reference
                 // test for overload
-                var meth = p5method_lookup(\x{27}(0+\x{27}, o._class_._ref_, {});
+                var meth = p5method_lookup('(0+', o._class_._ref_, {});
                 if (meth) {
                     return p5num(meth([o], 0));
                 }
                 // TODO - test the \"fallback\" flag
-                meth = p5method_lookup(\x{27}(\"\"\x{27}, o._class_._ref_, {});
+                meth = p5method_lookup('(\"\"', o._class_._ref_, {});
                 if (meth) {
                     return p5num(meth([o], 0));
                 }
@@ -13569,16 +13569,16 @@ var p5range = function(a, b, p5want, id, three_dots) {
         else {
             a = p5str(a);
             b = p5str(b);
-            if (a == \x{27}\x{27}) {
+            if (a == '') {
                 return [a];
             }
 
-            if (a.substr(0, 1) != \x{27}0\x{27} && p5looks_like_number(a) && p5looks_like_number(b)) {
+            if (a.substr(0, 1) != '0' && p5looks_like_number(a) && p5looks_like_number(b)) {
                 // both sides look like number
                 return p5range(p5num(a), p5num(b), p5want, id, three_dots)
             }
 
-            // If the initial value specified isn\x{27}t part of a magical increment sequence
+            // If the initial value specified isn't part of a magical increment sequence
             // (that is, a non-empty string matching /^[a-zA-Z]*[0-9]*\\z/ ),
             // only the initial value will be returned.
             if (!a.match(/^[a-zA-Z]*[0-9]*\$/)) {
@@ -13622,7 +13622,7 @@ var p5range = function(a, b, p5want, id, three_dots) {
 
 var p5negative = function(o) {
     if (o == null) {
-        return \x{27}-0\x{27};
+        return '-0';
     }
     if (typeof o === \"object\" && (o instanceof Array)) {
         return -(o.length);
@@ -13630,15 +13630,15 @@ var p5negative = function(o) {
     if (typeof o !== \"number\") {
         var s = p5str(o);
         var c = s.substr(0, 1);
-        if ( c == \x{27}+\x{27} ) { s = s.substr(1); return \x{27}-\x{27} + s }
-        if ( c == \x{27}-\x{27} ) { s = s.substr(1); return \x{27}+\x{27} + s }
+        if ( c == '+' ) { s = s.substr(1); return '-' + s }
+        if ( c == '-' ) { s = s.substr(1); return '+' + s }
         var s1 = parseFloat(s.trim());
         if ( isNaN(s1) ) {
             if ( c.length && !c.match(/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/) ) {
                 if ( s.trim().substr(0,1) == \"-\" ) { return 0 };
-                return \x{27}-0\x{27};
+                return '-0';
             };
-            return \x{27}-\x{27} + s
+            return '-' + s
         };
         return -s1;
     }
@@ -13696,13 +13696,13 @@ function p5regex_compile (s, flags) {
 var p5qr = function(search, modifier) {
     // TODO - \"Regex\" stringification
     var re = p5regex_compile(search, modifier);
-    return CORE.bless([(new p5ScalarRef(re)), \x{27}Regex\x{27}]);
+    return CORE.bless([(new p5ScalarRef(re)), 'Regex']);
 };
 
 var p5m = function(s, search, modifier, want) {
     // TODO - captures
     var re;
-    if (search.hasOwnProperty(\x{27}_scalar_\x{27})) {
+    if (search.hasOwnProperty('_scalar_')) {
         // search is a Regex object
         re = search._scalar_;
     }
@@ -13733,7 +13733,7 @@ var p5s = function(s, search, fun_replace, modifier, want) {
     // TODO - captures
     var count = null;
     var re;
-    if (search.hasOwnProperty(\x{27}_scalar_\x{27})) {
+    if (search.hasOwnProperty('_scalar_')) {
         // search is a Regex object
         re = search._scalar_;
     }
@@ -13759,14 +13759,14 @@ var p5s = function(s, search, fun_replace, modifier, want) {
             if (s.length > last_index) {
                 res.push(s.substr(last_index, s.length - last_index));
             }
-            return [res.join(\x{27}\x{27}), count]
+            return [res.join(''), count]
         }
         count++;
     }
     if (s.length > last_index) {
         res.push(s.substr(last_index, s.length - last_index));
     }
-    return [res.join(\x{27}\x{27}), count]
+    return [res.join(''), count]
 };
 
 var p5tr = function(s, search, replace, modifier, want) {
@@ -13789,7 +13789,7 @@ var p5tr = function(s, search, replace, modifier, want) {
             count++;
         }
     }
-    return [res.join(\x{27}\x{27}), count]
+    return [res.join(''), count]
 };
 
 var p5chop = function(s) {
@@ -13851,13 +13851,13 @@ var p5for = function(namespace, var_name, func, args, cont, label) {
                 func()
             }
             catch(err) {
-                if (err instanceof p5_error && (err.v == label || err.v == \x{27}\x{27})) {
-                    if (err.type == \x{27}last\x{27}) {
+                if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                    if (err.type == 'last') {
                         p5cleanup_local(local_idx, null);
                         return
                     }
-                    else if (err.type == \x{27}redo\x{27}) { _redo = true }
-                    else if (err.type != \x{27}next\x{27}) { throw(err) }
+                    else if (err.type == 'redo') { _redo = true }
+                    else if (err.type != 'next') { throw(err) }
                 }
                 else {
                     throw(err)
@@ -13868,13 +13868,13 @@ var p5for = function(namespace, var_name, func, args, cont, label) {
                     if (!_redo) { cont() }
                 }
                 catch(err) {
-                    if (err instanceof p5_error && (err.v == label || err.v == \x{27}\x{27})) {
-                        if (err.type == \x{27}last\x{27}) {
+                    if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                        if (err.type == 'last') {
                             p5cleanup_local(local_idx, null);
                             return
                         }
-                        else if (err.type == \x{27}redo\x{27}) { _redo = true }
-                        else if (err.type != \x{27}next\x{27}) { throw(err) }
+                        else if (err.type == 'redo') { _redo = true }
+                        else if (err.type != 'next') { throw(err) }
                     }            
                     else {
                         throw(err)
@@ -13897,13 +13897,13 @@ var p5for_lex = function(set_var, func, args, cont, label) {
                 func()
             }
             catch(err) {
-                if (err instanceof p5_error && (err.v == label || err.v == \x{27}\x{27})) {
-                    if (err.type == \x{27}last\x{27}) {
+                if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                    if (err.type == 'last') {
                         p5cleanup_local(local_idx, null);
                         return
                     }
-                    else if (err.type == \x{27}redo\x{27}) { _redo = true }
-                    else if (err.type != \x{27}next\x{27}) { throw(err) }
+                    else if (err.type == 'redo') { _redo = true }
+                    else if (err.type != 'next') { throw(err) }
                 }            
                 else {
                     throw(err)
@@ -13914,13 +13914,13 @@ var p5for_lex = function(set_var, func, args, cont, label) {
                     if (!_redo) { cont() }
                 }
                 catch(err) {
-                    if (err instanceof p5_error && (err.v == label || err.v == \x{27}\x{27})) {
-                        if (err.type == \x{27}last\x{27}) {
+                    if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                        if (err.type == 'last') {
                             p5cleanup_local(local_idx, null);
                             return
                         }
-                        else if (err.type == \x{27}redo\x{27}) { _redo = true }
-                        else if (err.type != \x{27}next\x{27}) { throw(err) }
+                        else if (err.type == 'redo') { _redo = true }
+                        else if (err.type != 'next') { throw(err) }
                     }            
                     else {
                         throw(err)
@@ -13943,13 +13943,13 @@ var p5block = function(set_var, func, args, cont, label) {
                 return func()
             }
             catch(err) {
-                if (err instanceof p5_error && (err.v == label || err.v == \x{27}\x{27})) {
-                    if (err.type == \x{27}last\x{27}) {
+                if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                    if (err.type == 'last') {
                         p5cleanup_local(local_idx, null);
                         return
                     }
-                    else if (err.type == \x{27}redo\x{27}) { _redo = true }
-                    else if (err.type != \x{27}next\x{27}) { throw(err) }
+                    else if (err.type == 'redo') { _redo = true }
+                    else if (err.type != 'next') { throw(err) }
                 }            
                 else {
                     throw(err)
@@ -13960,13 +13960,13 @@ var p5block = function(set_var, func, args, cont, label) {
                     if (!_redo) { cont() }
                 }
                 catch(err) {
-                    if (err instanceof p5_error && (err.v == label || err.v == \x{27}\x{27})) {
-                        if (err.type == \x{27}last\x{27}) {
+                    if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                        if (err.type == 'last') {
                             p5cleanup_local(local_idx, null);
                             return
                         }
-                        else if (err.type == \x{27}redo\x{27}) { _redo = true }
-                        else if (err.type != \x{27}next\x{27}) { throw(err) }
+                        else if (err.type == 'redo') { _redo = true }
+                        else if (err.type != 'next') { throw(err) }
                     }            
                     else {
                         throw(err)
@@ -13987,13 +13987,13 @@ var p5while = function(func, cond, cont, label, redo) {
             func()
         }
         catch(err) {
-            if (err instanceof p5_error && (err.v == label || err.v == \x{27}\x{27})) {
-                if (err.type == \x{27}last\x{27}) {
+            if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                if (err.type == 'last') {
                     p5cleanup_local(local_idx, null);
                     return
                 }
-                else if (err.type == \x{27}redo\x{27}) { redo = true }
-                else if (err.type != \x{27}next\x{27}) { throw(err) }
+                else if (err.type == 'redo') { redo = true }
+                else if (err.type != 'next') { throw(err) }
             }            
             else {
                 throw(err)
@@ -14004,13 +14004,13 @@ var p5while = function(func, cond, cont, label, redo) {
                 if (!redo) { cont() }
             }
             catch(err) {
-                if (err instanceof p5_error && (err.v == label || err.v == \x{27}\x{27})) {
-                    if (err.type == \x{27}last\x{27}) {
+                if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                    if (err.type == 'last') {
                         p5cleanup_local(local_idx, null);
                         return
                     }
-                    else if (err.type == \x{27}redo\x{27}) { redo = true }
-                    else if (err.type != \x{27}next\x{27}) { throw(err) }
+                    else if (err.type == 'redo') { redo = true }
+                    else if (err.type != 'next') { throw(err) }
                 }            
                 else {
                     throw(err)
@@ -14193,7 +14193,7 @@ Object.defineProperty( Array.prototype, \"p5push\", {
 var p5tie_array = function(v, List__) {
     var pkg_name = p5str(List__.shift());
 
-    var res = p5call(pkg_name, \x{27}TIEARRAY\x{27}, List__, null);
+    var res = p5call(pkg_name, 'TIEARRAY', List__, null);
     
     // TODO
     
@@ -14217,14 +14217,14 @@ var p5tie_array = function(v, List__) {
         enumerable : false,
         configurable : true,
         value : function (i) {
-            return p5call(res, \x{27}FETCH\x{27}, [i]);
+            return p5call(res, 'FETCH', [i]);
         }
     });
     Object.defineProperty( v, \"p5aset\", {
         enumerable : false,
         configurable : true,
         value : function (i, value) {
-            p5call(res, \x{27}STORE\x{27}, [i, value]);
+            p5call(res, 'STORE', [i, value]);
             return value;
         }
     });
@@ -14232,8 +14232,8 @@ var p5tie_array = function(v, List__) {
         enumerable : false,
         configurable : true,
         value : function (i) {
-            var value = p5incr_(p5call(res, \x{27}FETCH\x{27}, [i]));
-            p5call(res, \x{27}STORE\x{27}, [i, value]);
+            var value = p5incr_(p5call(res, 'FETCH', [i]));
+            p5call(res, 'STORE', [i, value]);
             return value;
         }
     });
@@ -14241,8 +14241,8 @@ var p5tie_array = function(v, List__) {
         enumerable : false,
         configurable : true,
         value : function (i) {
-            var value = p5call(res, \x{27}FETCH\x{27}, [i]);
-            p5call(res, \x{27}STORE\x{27}, [i, p5incr_(value)]);
+            var value = p5call(res, 'FETCH', [i]);
+            p5call(res, 'STORE', [i, p5incr_(value)]);
             return value;
         }
     });
@@ -14250,8 +14250,8 @@ var p5tie_array = function(v, List__) {
         enumerable : false,
         configurable : true,
         value : function (i) {
-            var value = p5decr_(p5call(res, \x{27}FETCH\x{27}, [i]));
-            p5call(res, \x{27}STORE\x{27}, [i, value]);
+            var value = p5decr_(p5call(res, 'FETCH', [i]));
+            p5call(res, 'STORE', [i, value]);
             return value;
         }
     });
@@ -14259,8 +14259,8 @@ var p5tie_array = function(v, List__) {
         enumerable : false,
         configurable : true,
         value : function (i) {
-            var value = p5call(res, \x{27}FETCH\x{27}, [i]);
-            p5call(res, \x{27}STORE\x{27}, [i, p5decr_(value)]);
+            var value = p5call(res, 'FETCH', [i]);
+            p5call(res, 'STORE', [i, p5decr_(value)]);
             return value;
         }
     });
@@ -14269,10 +14269,10 @@ var p5tie_array = function(v, List__) {
         enumerable : false,
         configurable : true,
         value : function (i) {
-            var value = p5call(res, \x{27}FETCH\x{27}, [i]);
+            var value = p5call(res, 'FETCH', [i]);
             if (value == null) {
                 value = new p5ArrayRef([]);
-                p5call(res, \x{27}STORE\x{27}, [i, value]);
+                p5call(res, 'STORE', [i, value]);
             }
             return value;
         }
@@ -14281,10 +14281,10 @@ var p5tie_array = function(v, List__) {
         enumerable : false,
         configurable : true,
         value : function (i) {
-            var value = p5call(res, \x{27}FETCH\x{27}, [i]);
+            var value = p5call(res, 'FETCH', [i]);
             if (value == null) {
                 value = new p5HashRef({});
-                p5call(res, \x{27}STORE\x{27}, [i, value]);
+                p5call(res, 'STORE', [i, value]);
             }
             return value;
         }
@@ -14292,26 +14292,26 @@ var p5tie_array = function(v, List__) {
     Object.defineProperty( v, \"p5untie\", {
         enumerable : false,
         configurable : true,
-        value : function (i) { return p5call(res, \x{27}UNTIE\x{27}, []) }
+        value : function (i) { return p5call(res, 'UNTIE', []) }
     });
     Object.defineProperty( v, \"shift\", {
         enumerable : false,
         configurable : true,
-        value : function () { return p5call(res, \x{27}SHIFT\x{27}, []) }
+        value : function () { return p5call(res, 'SHIFT', []) }
     });
     Object.defineProperty( v, \"pop\", {
         enumerable : false,
         configurable : true,
-        value : function () { return p5call(res, \x{27}POP\x{27}, []) }
+        value : function () { return p5call(res, 'POP', []) }
     });
     Object.defineProperty( v, \"p5unshift\", {
         enumerable : false,
         configurable : true,
         value : function (args) { 
             for(var i = args.length-1; i >= 0; i--) {
-                p5call(res, \x{27}UNSHIFT\x{27}, [args[i]]);
+                p5call(res, 'UNSHIFT', [args[i]]);
             }
-            return p5call(res, \x{27}FETCHSIZE\x{27}, []); 
+            return p5call(res, 'FETCHSIZE', []); 
         }
     });
     Object.defineProperty( v, \"p5push\", {
@@ -14319,9 +14319,9 @@ var p5tie_array = function(v, List__) {
         configurable : true,
         value : function (args) { 
             for(var i = 0; i < args.length; i++) {
-                p5call(res, \x{27}PUSH\x{27}, [args[i]]);
+                p5call(res, 'PUSH', [args[i]]);
             }
-            return p5call(res, \x{27}FETCHSIZE\x{27}, []); 
+            return p5call(res, 'FETCHSIZE', []); 
         }
     });
 
@@ -14329,7 +14329,7 @@ var p5tie_array = function(v, List__) {
 };
 
 var p5untie_array = function(v) {
-    if (v.hasOwnProperty(\x{27}p5untie\x{27})) {
+    if (v.hasOwnProperty('p5untie')) {
         var res = v.p5untie();  // call UNTIE
         delete v.p5aget;
         delete v.p5aset;
@@ -14477,7 +14477,7 @@ var isNode = typeof require != \"undefined\";
     }
     catch (err) {
         CORE.sleep = function(List__) {
-            CORE.die(\"sleep() function failed. Maybe you need \x{27}npm install sleep\x{27}?\\n\" + err);
+            CORE.die(\"sleep() function failed. Maybe you need 'npm install sleep'?\\n\" + err);
         }
     }
 }
@@ -14501,7 +14501,7 @@ if (!CORE.sleep) {
     }
     catch (err) {
         CORE.crypt = function(List__) {
-            CORE.die(\"crypt() function failed. Maybe you need \x{27}npm install crypt3\x{27}?\\n\" + err);
+            CORE.die(\"crypt() function failed. Maybe you need 'npm install crypt3'?\\n\" + err);
         }
     }
 }
@@ -14515,9 +14515,9 @@ if (!CORE.crypt) {
     return CORE.int([Date.now() / 1000]);
 }
 " . "var _fmt_date = function(date) {
-    return [\x{27}Sun\x{27},\x{27}Mon\x{27},\x{27}Tue\x{27},\x{27}Wed\x{27},\x{27}Thu\x{27},\x{27}Fri\x{27},\x{27}Sat\x{27}][date.getDay()] + \x{27} \x{27} +
-        [\x{27}Jan\x{27},\x{27}Feb\x{27},\x{27}Mar\x{27},\x{27}Apr\x{27},\x{27}May\x{27},\x{27}Jun\x{27},\x{27}Jul\x{27},\x{27}Aug\x{27},\x{27}Sep\x{27},\x{27}Oct\x{27},\x{27}Nov\x{27},\x{27}Dec\x{27}][date.getMonth()] + \x{27} \x{27} +
-        date.getDate() + \x{27} \x{27} + 
+    return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()] + ' ' +
+        ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][date.getMonth()] + ' ' +
+        date.getDate() + ' ' + 
         CORE.sprintf([ \"%02d:%02d:%02d \", date.getHours(), date.getMinutes(), date.getSeconds() ]) +
         date.getFullYear();
 }
@@ -14624,7 +14624,7 @@ CORE.oct = function(List__) {
         }
     }
 
-    var re = new RegExp(\x{27}_\x{27}, \x{27}g\x{27});
+    var re = new RegExp('_', 'g');
     v = v.replace(re, \"\");
     var result;
 
@@ -14901,12 +14901,12 @@ CORE.split = function(List__, want) {
     if (limit == 0) {
         // strip trailing empty strings and undef
         var res = CORE.split([pattern, s, -1], 1);
-        while (res.length && (res[res.length - 1] == \x{27}\x{27} || typeof res[res.length - 1] == \"undefined\") ) {
+        while (res.length && (res[res.length - 1] == '' || typeof res[res.length - 1] == \"undefined\") ) {
             res.pop()
         }
         return res;
     }
-    if (s == \x{27}\x{27}) {
+    if (s == '') {
         return []
     }
     // make sure pattern is a RegExp
@@ -14942,7 +14942,7 @@ CORE.split = function(List__, want) {
             return res;
         }
         if (m[0].length == 0 && m.index == pos) {
-            // pointer didn\x{27}t move
+            // pointer didn't move
             pattern.lastIndex = pattern.lastIndex + 1;
         }
         else {
@@ -14953,7 +14953,7 @@ CORE.split = function(List__, want) {
             pattern.lastIndex = pos;
         }
         for (var i = 1; i < m.length ; i++) {
-            res.push(m[i]);     // captured substrings; don\x{27}t increment count
+            res.push(m[i]);     // captured substrings; don't increment count
         }
     }
 };
@@ -15026,7 +15026,7 @@ if (isNode) {
         }
         catch(err) {
             p5pkg[\"main\"][\"v_!\"] = err;
-            return \x{27}\x{27};
+            return '';
         }
     } );
 
@@ -15050,7 +15050,7 @@ if (isNode) {
             var handle_id = pkg.file_handle.id;
 
             if (!pkg.file_handle.buffer) {
-                // we don\x{27}t have any data yet
+                // we don't have any data yet
                 var length_wanted = length + 2 * p5_extra_buffer_size;
                 var buffer = new Buffer(length_wanted);
                 var bytes_read = fs.readSync(handle_id, buffer, 0, length_wanted, null);
@@ -15080,10 +15080,10 @@ if (isNode) {
                 pkg.file_handle.buffer_length = pkg.file_handle.buffer_end;
             }
 
-            var s = pkg.file_handle.buffer.toString(\x{27}utf-8\x{27}, pkg.file_handle.buffer_start, pkg.file_handle.buffer_end).substr(0, length);
+            var s = pkg.file_handle.buffer.toString('utf-8', pkg.file_handle.buffer_start, pkg.file_handle.buffer_end).substr(0, length);
 
             // how many bytes we actually used
-            var buffer_used = Buffer.byteLength(s, \x{27}utf-8\x{27});
+            var buffer_used = Buffer.byteLength(s, 'utf-8');
 
             pkg.file_handle.buffer_start = pkg.file_handle.buffer_start + buffer_used;
             pkg.file_handle.buffer_length = pkg.file_handle.buffer_length - buffer_used;
@@ -15137,7 +15137,7 @@ if (isNode) {
                 if (pkg.file_handle.id == null) {
                     if (!p5ARGV) {
                         if (p5pkg[\"main\"][\"List_ARGV\"].length == 0) {
-                            p5pkg[\"main\"][\"List_ARGV\"].push(\x{27}-\x{27});
+                            p5pkg[\"main\"][\"List_ARGV\"].push('-');
                         }
                     }
                     p5ARGV = 1;
@@ -15177,9 +15177,9 @@ if (isNode) {
         }
 
         if (pos < 0) {
-            pkg.file_handle.readline_buffer = \x{27}\x{27};
+            pkg.file_handle.readline_buffer = '';
             if (!buf.length) {
-                pkg.file_handle.readline_buffer = \x{27}\x{27};
+                pkg.file_handle.readline_buffer = '';
                 pkg.file_handle.eof = 1;
                 return null
             }
@@ -15188,7 +15188,7 @@ if (isNode) {
         var s = buf.substr(0, pos + separator.length);
         pkg.file_handle.readline_buffer = buf.substr(pos + separator.length);
         if (!s.length) {
-            pkg.file_handle.readline_buffer = \x{27}\x{27};
+            pkg.file_handle.readline_buffer = '';
             pkg.file_handle.eof = 1;
             return null
         }
@@ -15225,7 +15225,7 @@ if (isNode) {
         }
         catch(err) {
             p5pkg[\"main\"][\"v_!\"] = err;
-            return \x{27}\x{27};
+            return '';
         }
     } );
 
@@ -15253,7 +15253,7 @@ if (isNode) {
         }
         catch(err) {
             p5pkg[\"main\"][\"v_!\"] = err;
-            return \x{27}\x{27};
+            return '';
         }
     };
 
@@ -15282,7 +15282,7 @@ if (isNode) {
                 // looks like a package name
                 pkg = p5make_package(v);
                 if (path == \"-\") {
-                    if (flags == \x{27}>\x{27} || flags == \x{27}>>\x{27} || flags == \x{27}+>\x{27} || flags == \x{27}+>>\x{27}) {
+                    if (flags == '>' || flags == '>>' || flags == '+>' || flags == '+>>') {
                         pkg.file_handle = p5pkg[\"STDOUT\"].file_handle;
                     }
                     else {
@@ -15300,34 +15300,34 @@ if (isNode) {
                 }
                 p5pkg[\"Perlito5::IO\"].close(filehandle, []);
             }
-            if (flags == \x{27}>\x{27}) {
-                flags = \x{27}w\x{27}
+            if (flags == '>') {
+                flags = 'w'
             }
-            else if (flags == \x{27}>>\x{27}) {
-                flags = \x{27}a\x{27}
+            else if (flags == '>>') {
+                flags = 'a'
             }
-            else if (flags == \x{27}<\x{27} || flags == \x{27}\x{27} || flags == \x{27}<:encoding(UTF-8)\x{27}) {
-                flags = \x{27}r\x{27}
+            else if (flags == '<' || flags == '' || flags == '<:encoding(UTF-8)') {
+                flags = 'r'
             }
-            else if (flags == \x{27}+>\x{27}) {
-                flags = \x{27}w+\x{27}
+            else if (flags == '+>') {
+                flags = 'w+'
             }
-            else if (flags == \x{27}+>>\x{27}) {
-                flags = \x{27}a+\x{27}
+            else if (flags == '+>>') {
+                flags = 'a+'
             }
-            else if (flags == \x{27}+<\x{27}) {
-                flags = \x{27}r+\x{27}
+            else if (flags == '+<') {
+                flags = 'r+'
             }
             else {
-                CORE.die([ \"don\x{27}t know what to do with MODE \x{27}\", flags, \"\x{27}\" ]);
+                CORE.die([ \"don't know what to do with MODE '\", flags, \"'\" ]);
             }
             var id = fs.openSync(path, flags);
-            pkg.file_handle = { id : id, readline_buffer : \x{27}\x{27} };
+            pkg.file_handle = { id : id, readline_buffer : '' };
             return 1;
         }
         catch(err) {
             p5pkg[\"main\"][\"v_!\"] = err;
-            return \x{27}\x{27};
+            return '';
         }
     };
 
@@ -15336,7 +15336,7 @@ if (isNode) {
             var stat = fs.statSync(s); return stat[\"atime\"];
         }
         catch(err) {
-            return \x{27}\x{27};
+            return '';
         }
     };
     var p5mtime = function(s) {
@@ -15344,7 +15344,7 @@ if (isNode) {
             var stat = fs.statSync(s); return stat[\"mtime\"];
         }
         catch(err) {
-            return \x{27}\x{27};
+            return '';
         }
     };
     var p5ctime = function(s) {
@@ -15352,7 +15352,7 @@ if (isNode) {
             var stat = fs.statSync(s); return stat[\"ctime\"];
         }
         catch(err) {
-            return \x{27}\x{27};
+            return '';
         }
     };
     var p5size = function(s) {
@@ -15360,7 +15360,7 @@ if (isNode) {
             var stat = fs.statSync(s); return stat[\"size\"];
         }
         catch(err) {
-            return \x{27}\x{27};
+            return '';
         }
     };
     var p5is_file = function(s) {
@@ -15368,7 +15368,7 @@ if (isNode) {
             var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
         }
         catch(err) {
-            return \x{27}\x{27};
+            return '';
         }
     };
     var p5is_directory = function(s) {
@@ -15376,7 +15376,7 @@ if (isNode) {
             var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
         }
         catch(err) {
-            return \x{27}\x{27};
+            return '';
         }
     };
     var p5file_exists = function(s) {
@@ -15417,7 +15417,7 @@ if (isNode) {
             catch(err) {
             }
         }
-        return \x{27}\x{27};
+        return '';
     };
 
     CORE.binmode = function(List__) {
@@ -15427,7 +15427,7 @@ if (isNode) {
         }
         catch(err) {
             p5pkg[\"main\"][\"v_!\"] = err;
-            return \x{27}\x{27};
+            return '';
         }
     };
 
@@ -15438,7 +15438,7 @@ if (isNode) {
         }
         catch(err) {
             p5pkg[\"main\"][\"v_!\"] = err;
-            return \x{27}\x{27};
+            return '';
         }
     };
 
@@ -15449,7 +15449,7 @@ if (isNode) {
         }
         catch(err) {
             p5pkg[\"main\"][\"v_!\"] = err;
-            return \x{27}\x{27};
+            return '';
         }
     };
 
@@ -15464,7 +15464,7 @@ if (isNode) {
         }
         catch(err) {
             p5pkg[\"main\"][\"v_!\"] = err;
-            return \x{27}\x{27};
+            return '';
         }
     };
 
@@ -15490,14 +15490,14 @@ if (isNode) {
         for (var i = 0; i < List__.length; i++) {
             s = s + p5str(List__[i]);
         }
-        if (console && typeof console.log === \x{27}function\x{27}) {
+        if (console && typeof console.log === 'function') {
             console.log(s);
         }
-        else if (typeof write === \x{27}function\x{27}) {
+        else if (typeof write === 'function') {
             // d8 shell uses \"write\"
             write(s);
         }
-        else if (typeof print === \x{27}function\x{27}) {
+        else if (typeof print === 'function') {
             // Rhino uses \"print\"
             print(s);
         }
@@ -15509,8 +15509,8 @@ if (isNode) {
 }
 
 p5typeglob_set(\"Perlito5::IO\", \"say\", function (filehandle, List__, p5want) {
-    p5pkg[\x{27}Perlito5::IO\x{27}].print( filehandle, List__);
-    p5pkg[\x{27}Perlito5::IO\x{27}].print( filehandle, [\"\\n\"]);
+    p5pkg['Perlito5::IO'].print( filehandle, List__);
+    p5pkg['Perlito5::IO'].print( filehandle, [\"\\n\"]);
     return 1;
 } );
 p5typeglob_set(\"Perlito5::IO\", \"printf\", function (filehandle, List__, p5want) {
@@ -15547,16 +15547,16 @@ CORE.die = function(List__) {
 };
 
 CORE.say = function(List__) {
-    return p5pkg[\x{27}Perlito5::IO\x{27}].say( \x{27}STDOUT\x{27}, List__);
+    return p5pkg['Perlito5::IO'].say( 'STDOUT', List__);
 };
 CORE.print = function(List__) {
-    return p5pkg[\x{27}Perlito5::IO\x{27}].print( \x{27}STDOUT\x{27}, List__);
+    return p5pkg['Perlito5::IO'].print( 'STDOUT', List__);
 };
 CORE.printf = function(List__) {
-    return p5pkg[\x{27}Perlito5::IO\x{27}].printf( \x{27}STDOUT\x{27}, List__);
+    return p5pkg['Perlito5::IO'].printf( 'STDOUT', List__);
 };
 CORE.readline = function(List__, p5want) {
-    return p5pkg[\x{27}Perlito5::IO\x{27}].readline(List__, p5want);
+    return p5pkg['Perlito5::IO'].readline(List__, p5want);
 };
 
 CORE.warn = function(List__) {
@@ -15568,14 +15568,14 @@ CORE.warn = function(List__) {
     if (s.substr(-1, 1) != \"\\n\") {
         try {
             if (s == \"\") {
-                s = \"Warning: something\x{27}s wrong\";
+                s = \"Warning: something's wrong\";
             }
             s = s + \" at \" + p5pkg[\"Perlito5\"].v_FILE_NAME + \" line \" + p5pkg[\"Perlito5\"].v_LINE_NUMBER;
             s = s + \"\\n\" + new Error().stack + \"\\n\";
         }
         catch(err) { }
     }
-    p5pkg[\x{27}Perlito5::IO\x{27}].print( \x{27}STDERR\x{27}, [s]);
+    p5pkg['Perlito5::IO'].print( 'STDERR', [s]);
 };
 
 
@@ -15614,7 +15614,7 @@ CORE.sprintf = function(List__) {
     var list = List__;
 
     // Check for format definition
-    if ( typeof format != \x{27}string\x{27} ) {
+    if ( typeof format != 'string' ) {
         CORE.die([\"sprintf: The first arguments need to be a valid format string.\"]);
     }
     
@@ -15638,14 +15638,14 @@ CORE.sprintf = function(List__) {
      *  x - hexadecimal number (lowercase characters)
      *  X - hexadecimal number (uppercase characters)
      */
-    var r = new RegExp( /%(\\+)?([0 ]|\x{27}(.))?(-)?([0-9]+)?(\\.([0-9]+))?([%bcdfosxX])/g );
+    var r = new RegExp( /%(\\+)?([0 ]|'(.))?(-)?([0-9]+)?(\\.([0-9]+))?([%bcdfosxX])/g );
 
     /**
      * Each format string is splitted into the following parts:
      * 0: Full format string
      * 1: sign specifier (+)
-     * 2: padding specifier (0/<space>/\x{27}<any char>)
-     * 3: if the padding character starts with a \x{27} this will be the real 
+     * 2: padding specifier (0/<space>/'<any char>)
+     * 3: if the padding character starts with a ' this will be the real 
      *    padding character
      * 4: alignment specifier
      * 5: width specifier
@@ -15669,18 +15669,18 @@ CORE.sprintf = function(List__) {
             /* end of the part in the string */
             end: part.index + part[0].length,
             /* force sign */
-            sign: ( part[1] == \x{27}+\x{27} ),
+            sign: ( part[1] == '+' ),
             /* is the given data negative */
             negative: ( parseInt( list[paramIndex] ) < 0 ) ? true : false,
             /* padding character (default: <space>) */
             padding: ( part[2] == undefined )
-                     ? ( \x{27} \x{27} ) /* default */
-                     : ( ( part[2].substring( 0, 1 ) == \"\x{27}\" ) 
+                     ? ( ' ' ) /* default */
+                     : ( ( part[2].substring( 0, 1 ) == \"'\" ) 
                          ? ( part[3] ) /* use special char */
                          : ( part[2] ) /* use normal <space> or zero */
                        ),
             /* should the output be aligned left?*/
-            alignLeft: ( part[4] == \x{27}-\x{27} ),
+            alignLeft: ( part[4] == '-' ),
             /* width specifier (number or false) */
             width: ( part[5] != undefined ) ? part[5] : false,
             /* precision specifier (number or false) */
@@ -15688,7 +15688,7 @@ CORE.sprintf = function(List__) {
             /* type specifier */
             type: part[8],
             /* the given data associated with this part converted to a string */
-            data: ( part[8] != \x{27}%\x{27} ) ? String ( list[paramIndex++] ) : false
+            data: ( part[8] != '%' ) ? String ( list[paramIndex++] ) : false
         };
     }
 
@@ -15704,41 +15704,41 @@ CORE.sprintf = function(List__) {
 
         // Create the appropriate preformat substitution
         // This substitution is only the correct type conversion. All the
-        // different options and flags haven\x{27}t been applied to it at this
+        // different options and flags haven't been applied to it at this
         // point
         var preSubstitution = \"\";
         switch ( parts[i].type ) {
-            case \x{27}%\x{27}:
+            case '%':
                 preSubstitution = \"%\";
             break;
-            case \x{27}b\x{27}:
+            case 'b':
                 preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 2 );
             break;
-            case \x{27}c\x{27}:
+            case 'c':
                 preSubstitution = String.fromCharCode( Math.abs( parseInt( parts[i].data ) ) );
             break;
-            case \x{27}d\x{27}:
+            case 'd':
                 preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
             break;
-            case \x{27}f\x{27}:
+            case 'f':
                 preSubstitution = ( parts[i].precision == false )
                                   ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )
                                   : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );
             break;
-            case \x{27}o\x{27}:
+            case 'o':
                 preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 8 );
             break;
-            case \x{27}s\x{27}:
+            case 's':
                 preSubstitution = parts[i].data.substring( 0, parts[i].precision ? parts[i].precision : parts[i].data.length ); /* Cut if precision is defined */
             break;
-            case \x{27}x\x{27}:
+            case 'x':
                 preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toLowerCase();
             break;
-            case \x{27}X\x{27}:
+            case 'X':
                 preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toUpperCase();
             break;
             default:
-                throw \x{27}sprintf: Unknown type \"\x{27} + parts[i].type + \x{27}\" detected. This should never happen. Maybe the regex is wrong.\x{27};
+                throw 'sprintf: Unknown type \"' + parts[i].type + '\" detected. This should never happen. Maybe the regex is wrong.';
         }
 
         // The % character is a special type and does not need further processing
@@ -15767,12 +15767,12 @@ CORE.sprintf = function(List__) {
 
         // Add a sign symbol if neccessary or enforced, but only if we are
         // not handling a string
-        if ( parts[i].type == \x{27}b\x{27} 
-          || parts[i].type == \x{27}d\x{27} 
-          || parts[i].type == \x{27}o\x{27} 
-          || parts[i].type == \x{27}f\x{27} 
-          || parts[i].type == \x{27}x\x{27} 
-          || parts[i].type == \x{27}X\x{27} ) {
+        if ( parts[i].type == 'b' 
+          || parts[i].type == 'd' 
+          || parts[i].type == 'o' 
+          || parts[i].type == 'f' 
+          || parts[i].type == 'x' 
+          || parts[i].type == 'X' ) {
             if ( parts[i].negative == true ) {
                 preSubstitution = \"-\" + preSubstitution;
             }
@@ -16494,7 +16494,7 @@ CORE.sprintf = function(List__) {
     sub Perlito5::Perl5::Runtime::emit_perl5 {;
         return "
 use v5.10;
-use feature \x{27}say\x{27};
+use feature 'say';
 
 "
     }
@@ -16586,19 +16586,19 @@ use feature \x{27}say\x{27};
             my $s = shift;
             my @out;
             my $tmp = '';
-            $s eq '' && return "\x{27}\x{27}";
+            $s eq '' && return "''";
             for my $i (0 .. length($s) - 1) {
                 my $c = substr($s, $i, 1);
                 if (($c ge "a" && $c le "z") || ($c ge "A" && $c le "Z") || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {;
                     $tmp = $tmp . $c
                 }
                 else {
-                    $tmp ne '' && push(@out, "\x{27}" . $tmp . "\x{27}");
+                    $tmp ne '' && push(@out, "'" . $tmp . "'");
                     push(@out, "chr(" . ord($c) . ")");
                     $tmp = ''
                 }
             }
-            $tmp ne '' && push(@out, "\x{27}" . $tmp . "\x{27}");
+            $tmp ne '' && push(@out, "'" . $tmp . "'");
             @out < 2 && return @out;
             return ["op", "list:<~>", @out]
         }
@@ -16795,7 +16795,7 @@ use feature \x{27}say\x{27};
                 $bareword eq "\@" && return "\$!";
                 $bareword >= 1 && return "\$" . ($bareword - 1)
             }
-            my $str = $self->{"sigil"} . "{\x{27}" . $bareword . "\x{27}}";
+            my $str = $self->{"sigil"} . "{'" . $bareword . "'}";
             return $str
         }
     }
@@ -17975,7 +17975,7 @@ use feature \x{27}say\x{27};
                 return $ast->emit_java($level + 1, $wantarray)
             }
             if (!$Perlito5::JAVA_EVAL) {;
-                return "PlCORE.die(\"This script has eval string disabled - the \x{27}java_eval\x{27} switch is turned off\")"
+                return "PlCORE.die(\"This script has eval string disabled - the 'java_eval' switch is turned off\")"
             }
             my %vars;
             for my $var (@{$self->{"_scope"}->{"block"}}, @Perlito5::CAPTURES) {;
@@ -18102,7 +18102,7 @@ use feature \x{27}say\x{27};
                 $meth = "scalar"
             }
             else {;
-                die("tie \x{27}", ref($v), "\x{27} not implemented")
+                die("tie '", ref($v), "' not implemented")
             }
             my $tie = "PerlOp.tie_" . $meth . "(" . $v->emit_java($level) . ", " . Perlito5::Java::to_list(\@arguments, $level) . ")";
             if ($v->{"_decl"} eq "global") {;
@@ -19190,7 +19190,7 @@ use feature \x{27}say\x{27};
                     $Java_class->{$class}->{"extends_java_type"} = $extended->{"java_type"}
                 }
                 else {;
-                    die("cannot extend class \x{27}" . $Java_class->{$class}->{"extends"} . "\x{27} because it was not declared")
+                    die("cannot extend class '" . $Java_class->{$class}->{"extends"} . "' because it was not declared")
                 }
                 my $perl_to_java = $class;
                 $perl_to_java =~ s/:://g;
@@ -19202,14 +19202,14 @@ use feature \x{27}say\x{27};
                     $Java_class->{$class}->{"implements_java_type"} = $implemented->{"java_type"}
                 }
                 else {;
-                    die("cannot implement class \x{27}" . $Java_class->{$class}->{"implements"} . "\x{27} because it was not declared")
+                    die("cannot implement class '" . $Java_class->{$class}->{"implements"} . "' because it was not declared")
                 }
                 my $perl_to_java = $class;
                 $perl_to_java =~ s/:://g;
                 Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
             }
             else {;
-                die("missing \x{27}import\x{27} argument to generate Java class")
+                die("missing 'import' argument to generate Java class")
             }
             return $str
         }
@@ -19239,7 +19239,7 @@ use feature \x{27}say\x{27};
             }
             my $main_class = "Main";
             $Perlito5::BOOTSTRAP_JAVA_EVAL && ($main_class = "LibPerl");
-            $str .= Perlito5::Java::emit_wrap_java(-1, "class " . $main_class . " {", [@Perlito5::Java::Java_constants, "public static void main(String[] args) {", [($Perlito5::JAVA_EVAL ? "org.perlito.Perlito5.LibPerl.main( new String[]{} );" : ()), "PlV.init(args);", "int want = PlCx.VOID;", "PlArray List__ = new PlArray();", "Exception ee = null;", "try {", [@Perlito5::Java::Java_init, @main], "}", "catch(PlReturnException e) {", "}", "catch(PlNextException e) {", ["ee = new PlDieException(new PlString(\"Can\x{27}t \\\"next\\\" outside a loop block\"));"], "}", "catch(PlLastException e) {", ["ee = new PlDieException(new PlString(\"Can\x{27}t \\\"last\\\" outside a loop block\"));"], "}", "catch(PlRedoException e) {", ["ee = new PlDieException(new PlString(\"Can\x{27}t \\\"redo\\\" outside a loop block\"));"], "}", "catch(Exception e) {", ["ee = e;"], "}", "if (ee != null) {", ["ee.printStackTrace(System.err);"], "}", "for (PlObject code : PlV.array_get(\"Perlito5::END_BLOCK\")) {", ["code.apply(PlCx.VOID, new PlArray());"], "}", "if (ee != null) {", ["System.exit(1);"], "}"], "}"], ["public static void init() {", ["main(new String[]{});"], "}"], ["public static PlObject[] apply(String functionName, String... args) {", ["PlArray list = new PlArray(args);", "PlObject result = PlV.apply(functionName, PlCx.LIST, list);", "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);", "PlObject[] out = new PlObject[res.to_int()];", "int i = 0;", "for (PlObject s : res) {", ["out[i++] = s;"], "}", "return out;"], "}"], ["public static PlObject[] apply(String functionName, PlObject... args) {", ["PlArray list = new PlArray(args);", "PlObject result = PlV.apply(functionName, PlCx.LIST, list);", "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);", "PlObject[] out = new PlObject[res.to_int()];", "int i = 0;", "for (PlObject s : res) {", ["out[i++] = s;"], "}", "return out;"], "}"], "}") . "
+            $str .= Perlito5::Java::emit_wrap_java(-1, "class " . $main_class . " {", [@Perlito5::Java::Java_constants, "public static void main(String[] args) {", [($Perlito5::JAVA_EVAL ? "org.perlito.Perlito5.LibPerl.main( new String[]{} );" : ()), "PlV.init(args);", "int want = PlCx.VOID;", "PlArray List__ = new PlArray();", "Exception ee = null;", "try {", [@Perlito5::Java::Java_init, @main], "}", "catch(PlReturnException e) {", "}", "catch(PlNextException e) {", ["ee = new PlDieException(new PlString(\"Can't \\\"next\\\" outside a loop block\"));"], "}", "catch(PlLastException e) {", ["ee = new PlDieException(new PlString(\"Can't \\\"last\\\" outside a loop block\"));"], "}", "catch(PlRedoException e) {", ["ee = new PlDieException(new PlString(\"Can't \\\"redo\\\" outside a loop block\"));"], "}", "catch(Exception e) {", ["ee = e;"], "}", "if (ee != null) {", ["ee.printStackTrace(System.err);"], "}", "for (PlObject code : PlV.array_get(\"Perlito5::END_BLOCK\")) {", ["code.apply(PlCx.VOID, new PlArray());"], "}", "if (ee != null) {", ["System.exit(1);"], "}"], "}"], ["public static void init() {", ["main(new String[]{});"], "}"], ["public static PlObject[] apply(String functionName, String... args) {", ["PlArray list = new PlArray(args);", "PlObject result = PlV.apply(functionName, PlCx.LIST, list);", "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);", "PlObject[] out = new PlObject[res.to_int()];", "int i = 0;", "for (PlObject s : res) {", ["out[i++] = s;"], "}", "return out;"], "}"], ["public static PlObject[] apply(String functionName, PlObject... args) {", ["PlArray list = new PlArray(args);", "PlObject result = PlV.apply(functionName, PlCx.LIST, list);", "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);", "PlObject[] out = new PlObject[res.to_int()];", "int i = 0;", "for (PlObject s : res) {", ["out[i++] = s;"], "}", "return out;"], "}"], "}") . "
 ";
             return $str
         }
@@ -19270,7 +19270,7 @@ use feature \x{27}say\x{27};
             "new PlInt(" . $v . "L)"
         }
         sub Perlito5::AST::Int::emit_java_set {;
-            die("Can\x{27}t modify constant item in scalar assignment")
+            die("Can't modify constant item in scalar assignment")
         }
         sub Perlito5::AST::Int::emit_java_get_decl {;
             ()
@@ -19286,7 +19286,7 @@ use feature \x{27}say\x{27};
             "new PlDouble(" . $self->{"num"} . "d)"
         }
         sub Perlito5::AST::Num::emit_java_set {;
-            die("Can\x{27}t modify constant item in scalar assignment")
+            die("Can't modify constant item in scalar assignment")
         }
         sub Perlito5::AST::Num::emit_java_get_decl {;
             ()
@@ -19302,7 +19302,7 @@ use feature \x{27}say\x{27};
             "new PlString(" . Perlito5::Java::escape_string($self->{"buf"}) . ")"
         }
         sub Perlito5::AST::Buf::emit_java_set {;
-            die("Can\x{27}t modify constant item in scalar assignment")
+            die("Can't modify constant item in scalar assignment")
         }
         sub Perlito5::AST::Buf::emit_java_get_decl {;
             ()
@@ -19380,7 +19380,7 @@ use feature \x{27}say\x{27};
                 return "((PlArray)" . $self->emit_java($level, "list") . ").list_set(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list([$arguments], $level) . ")"
             }
             if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<%>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && $self->{"obj"}->sigil() eq "%")) {;
-                die("Can\x{27}t modify index/value array slice in list assignment")
+                die("Can't modify index/value array slice in list assignment")
             }
             if ($localize) {;
                 return $self->emit_java_container($level) . ".aget_lvalue_local(" . Perlito5::Java::autoquote($self->{"index_exp"}, $level) . ").set(" . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
@@ -19462,7 +19462,7 @@ use feature \x{27}say\x{27};
                 return "((PlArray)" . $self->emit_java($level, "list") . ").list_set(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list([$arguments], $level) . ")"
             }
             if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<%>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && $self->{"obj"}->sigil() eq "%")) {;
-                die("Can\x{27}t modify index/value array slice in list assignment")
+                die("Can't modify index/value array slice in list assignment")
             }
             if ($localize) {;
                 return $self->emit_java_container($level) . ".hget_lvalue_local(" . Perlito5::Java::autoquote($self->{"index_exp"}, $level) . ").set(" . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
@@ -19522,7 +19522,7 @@ use feature \x{27}say\x{27};
                 if ($self->{"name"} > 0) {;
                     return "PerlOp.regex_var(" . (0 + $self->{"name"}) . ")"
                 }
-                if ($self->{"name"} eq "&" || $self->{"name"} eq "`" || $self->{"name"} eq "\x{27}") {;
+                if ($self->{"name"} eq "&" || $self->{"name"} eq "`" || $self->{"name"} eq "'") {;
                     return "PerlOp.regex_var(" . Perlito5::Java::escape_string($self->{"name"}) . ")"
                 }
                 if ($self->{"name"} eq "\$") {;
@@ -19556,7 +19556,7 @@ use feature \x{27}say\x{27};
             if ($sigil eq "%") {;
                 return "PlV.hash_get" . $local . "(" . $index . ")"
             }
-            die("don\x{27}t know how to access variable ", $sigil, $self->name())
+            die("don't know how to access variable ", $sigil, $self->name())
         }
         sub Perlito5::AST::Var::emit_java_global_set {
             (my($self), my($arguments), my($level), my($wantarray), my($localize)) = @_;
@@ -19598,11 +19598,11 @@ use feature \x{27}say\x{27};
                 return "PlV.glob_set" . $local . "(" . $index . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ", " . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")"
             }
             if ($sigil eq "&") {}
-            die("don\x{27}t know how to assign to variable ", $sigil, $self->name())
+            die("don't know how to assign to variable ", $sigil, $self->name())
         }
         sub Perlito5::AST::Var::emit_java_global_set_alias {
             (my($self), my($arguments), my($level), my($wantarray), my($localize)) = @_;
-            $localize && die("can\x{27}t localize emit_java_global_set_alias()");
+            $localize && die("can't localize emit_java_global_set_alias()");
             my $str_name = $self->{"name"};
             my $sigil = $self->{"_real_sigil"} || $self->{"sigil"};
             my $namespace = $self->{"namespace"} || $self->{"_namespace"};
@@ -19614,7 +19614,7 @@ use feature \x{27}say\x{27};
             $sigil eq "\$" && return "PlV.sset_alias(" . $index . ", " . $arguments . ")";
             $sigil eq "\@" && return "PlV.aset_alias(" . $index . ", " . $arguments . ")";
             $sigil eq "%" && return "PlV.hset_alias(" . $index . ", " . $arguments . ")";
-            die("can\x{27}t emit_java_global_set_alias() for sigil \x{27}" . $sigil . "\x{27}")
+            die("can't emit_java_global_set_alias() for sigil '" . $sigil . "'")
         }
         sub Perlito5::AST::Var::emit_java {
             (my($self), my($level), my($wantarray)) = @_;
@@ -19670,7 +19670,7 @@ use feature \x{27}say\x{27};
                 my $namespace = $self->{"namespace"} || $self->{"_namespace"};
                 return "p5typeglob_set(" . Perlito5::Java::escape_string($namespace) . ", " . Perlito5::Java::escape_string($self->{"name"}) . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
             }
-            die("don\x{27}t know how to assign to variable ", $sigil, $self->name())
+            die("don't know how to assign to variable ", $sigil, $self->name())
         }
         sub Perlito5::AST::Var::emit_java_get_decl {;
             ()
@@ -19727,7 +19727,7 @@ use feature \x{27}say\x{27};
                 }
             }
             else {;
-                die("not implemented: Perlito5::AST::Decl \x{27}" . $self->{"decl"} . "\x{27}")
+                die("not implemented: Perlito5::AST::Decl '" . $self->{"decl"} . "'")
             }
         }
         sub Perlito5::AST::Decl::emit_java_set {
@@ -19842,7 +19842,7 @@ use feature \x{27}say\x{27};
             if ($self->{"method"} eq "postcircumfix:<{ }>") {;
                 return Perlito5::Java::emit_java_autovivify($self->{"invocant"}, $level, "hash") . ".hset(" . Perlito5::Java::autoquote($self->{"arguments"}, $level + 1, "list") . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
             }
-            die("don\x{27}t know how to assign to method ", $self->{"method"})
+            die("don't know how to assign to method ", $self->{"method"})
         }
         sub Perlito5::AST::Call::emit_java_get_decl {;
             ()
@@ -20162,7 +20162,7 @@ use feature \x{27}say\x{27};
 
                 // EXPR
                 s = List__.aget(0).toString();
-                if (s.length() > 0 && s.charAt(0) == \x{27}+\x{27}) {
+                if (s.length() > 0 && s.charAt(0) == '+') {
                     mode = mode + s.substring(0, 1);
                     s = s.substring(1);
                 }
@@ -20170,11 +20170,11 @@ use feature \x{27}say\x{27};
                     mode = mode + s.substring(0, 2);
                     s = s.substring(2);
                 }
-                else if (s.length() > 0 && (s.charAt(0) == \x{27}>\x{27} || s.charAt(0) == \x{27}<\x{27})) {
+                else if (s.length() > 0 && (s.charAt(0) == '>' || s.charAt(0) == '<')) {
                     mode = mode + s.substring(0, 1);
                     s = s.substring(1);
                 }
-                while (s.length() > 0 && (s.charAt(0) == \x{27} \x{27} || s.charAt(0) == \x{27}\\t\x{27})) {
+                while (s.length() > 0 && (s.charAt(0) == ' ' || s.charAt(0) == '\\t')) {
                     s = s.substring(1);
                 }
             }
@@ -20216,7 +20216,7 @@ use feature \x{27}say\x{27};
                 fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND));
             }
             else {
-                PlCORE.die(\"TODO - not implemented: open() mode \x{27}\" + mode + \"\x{27}\");
+                PlCORE.die(\"TODO - not implemented: open() mode '\" + mode + \"'\");
             }
         }
         catch(IOException e) {
@@ -20552,13 +20552,13 @@ class PlCORE {
     public static final PlObject warn(int want, PlArray List__) {
         int arg_count = List__.length_of_array_int();
         if (arg_count == 0) {
-            List__.push(\"Warning: something\x{27}s wrong\");
+            List__.push(\"Warning: something's wrong\");
         }
         if (arg_count != 1 || !List__.aget(0).is_ref()) {
             String s = List__.toString();
             int s_length = s.length();
-            if (s_length > 0 && (s.charAt(s_length-1) == \x{27}\\n\x{27} || s.charAt(s_length-1) == \x{27}\\r\x{27})) {
-                // don\x{27}t add file+line
+            if (s_length > 0 && (s.charAt(s_length-1) == '\\n' || s.charAt(s_length-1) == '\\r')) {
+                // don't add file+line
             }
             else {
                 // TODO - add module name, line number
@@ -20589,8 +20589,8 @@ class PlCORE {
         if (arg_count != 1 || !List__.aget(0).is_ref()) {
             String s = List__.toString();
             int s_length = s.length();
-            if (s_length > 0 && (s.charAt(s_length-1) == \x{27}\\n\x{27} || s.charAt(s_length-1) == \x{27}\\r\x{27})) {
-                // don\x{27}t add file+line
+            if (s_length > 0 && (s.charAt(s_length-1) == '\\n' || s.charAt(s_length-1) == '\\r')) {
+                // don't add file+line
             }
             else {
                 // TODO - add module name, line number
@@ -20767,7 +20767,7 @@ class PlCORE {
         while (pos < arg.length() && !(limit > 0 && count >= limit) && matcher.find(next)) {
             boolean matched = true;
             if (matcher.end() == pos) {
-                // pointer didn\x{27}t move
+                // pointer didn't move
                 next++;
                 matched = matcher.find(next);
             }
@@ -20962,33 +20962,33 @@ class PlCORE {
         for ( ; offset < length; ) {
             int c = format.codePointAt(offset);
             switch (c) {
-                case \x{27}%\x{27}:
+                case '%':
                     offset++;
                     boolean scanning = true;
                     for ( ; offset < length && scanning ; ) {
                         c = format.codePointAt(offset);
                         switch (c) {
-                            case \x{27}%\x{27}:
+                            case '%':
                                 scanning = false;
                                 offset++;
                                 break;
-                            case \x{27}c\x{27}: case \x{27}s\x{27}: case \x{27}d\x{27}: case \x{27}u\x{27}: case \x{27}o\x{27}:
-                            case \x{27}x\x{27}: case \x{27}e\x{27}: case \x{27}f\x{27}: case \x{27}g\x{27}:
-                            case \x{27}X\x{27}: case \x{27}E\x{27}: case \x{27}G\x{27}: case \x{27}b\x{27}:
-                            case \x{27}B\x{27}: case \x{27}p\x{27}: case \x{27}n\x{27}:
-                            case \x{27}i\x{27}: case \x{27}D\x{27}: case \x{27}U\x{27}: case \x{27}O\x{27}: case \x{27}F\x{27}:
+                            case 'c': case 's': case 'd': case 'u': case 'o':
+                            case 'x': case 'e': case 'f': case 'g':
+                            case 'X': case 'E': case 'G': case 'b':
+                            case 'B': case 'p': case 'n':
+                            case 'i': case 'D': case 'U': case 'O': case 'F':
                                 scanning = false;
                                 switch (c) {
-                                    case \x{27}s\x{27}:
+                                    case 's':
                                         args[args_index] = List__.aget(args_index+1).toString();
                                         break;
-                                    case \x{27}d\x{27}: case \x{27}o\x{27}: case \x{27}x\x{27}: case \x{27}X\x{27}:
-                                    case \x{27}u\x{27}: case \x{27}b\x{27}: case \x{27}B\x{27}: case \x{27}p\x{27}:
-                                    case \x{27}c\x{27}:
+                                    case 'd': case 'o': case 'x': case 'X':
+                                    case 'u': case 'b': case 'B': case 'p':
+                                    case 'c':
                                         args[args_index] = List__.aget(args_index+1).to_int();
                                         break;
-                                    case \x{27}f\x{27}: case \x{27}e\x{27}: case \x{27}g\x{27}:
-                                    case \x{27}E\x{27}: case \x{27}G\x{27}:
+                                    case 'f': case 'e': case 'g':
+                                    case 'E': case 'G':
                                         args[args_index] = List__.aget(args_index+1).to_double();
                                         break;
                                     default:
@@ -21070,171 +21070,171 @@ class PlCORE {
         int index = 1;
         for(int i = 0; i < template.length(); ++i) {
             switch(template.charAt(i)) {
-            case \x{27}a\x{27}:
+            case 'a':
             {
                 int size = pack_size(template, i);
                 result.append(pack_a(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
-            case \x{27}A\x{27}:
+            case 'A':
             {    
                 int size = pack_size(template, i);
                 result.append(pack_A(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
-            case \x{27}Z\x{27}:
+            case 'Z':
             {
                 int size = pack_size(template, i);
                 result.append(pack_Z(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
-            case \x{27}b\x{27}:
+            case 'b':
             {
                 int size = pack_size(template, i);
                 result.append(pack_b(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
-            case \x{27}B\x{27}:
+            case 'B':
             {
                 int size = pack_size(template, i);
                 result.append(pack_B(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
-            case \x{27}h\x{27}:
+            case 'h':
             {
                 int size = pack_size(template, i);
                 result.append(pack_h(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
-            case \x{27}H\x{27}:
+            case 'H':
             {
                 int size = pack_size(template, i);
                 result.append(pack_H(List__.aget(index).toString(), size));
                 ++index;
                 break;        
             }
-            case \x{27}c\x{27}:
+            case 'c':
             {
                 result.append(pack_c(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}C\x{27}:
+            case 'C':
             {
                 result.append(pack_C(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}W\x{27}:
+            case 'W':
             {
                 result.append(pack_W(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}s\x{27}:
+            case 's':
             {
                 result.append(pack_s(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}S\x{27}:
+            case 'S':
             {
                 result.append(pack_S(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}l\x{27}:
+            case 'l':
             {
                 result.append(pack_l(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}L\x{27}:
+            case 'L':
             {
                 result.append(pack_L(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}q\x{27}:
+            case 'q':
             {
                 result.append(pack_q(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}Q\x{27}:
+            case 'Q':
             {
                 result.append(pack_Q(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}i\x{27}:
+            case 'i':
             {
                 result.append(pack_i(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}I\x{27}:
+            case 'I':
             {
                 result.append(pack_I(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}n\x{27}:
+            case 'n':
             {
                 result.append(pack_n(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}N\x{27}:
+            case 'N':
             {
                 result.append(pack_N(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}v\x{27}:   
+            case 'v':   
             {
                 result.append(pack_v(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}V\x{27}:   
+            case 'V':   
             {
                 result.append(pack_V(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}j\x{27}:   
+            case 'j':   
             {
                 result.append(pack_j(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}J\x{27}:   
+            case 'J':   
             {
                 result.append(pack_J(List__.aget(index).toString()));
                 ++index;
                 break;        
             }
-            case \x{27}f\x{27}:
+            case 'f':
             {
                 result.append(pack_f(List__.aget(index).to_double()));
                 ++index;
                 break;        
             }
-            case \x{27}d\x{27}:
-            case \x{27}F\x{27}:
+            case 'd':
+            case 'F':
             {
                 result.append(pack_d(List__.aget(index).to_double()));
                 ++index;
                 break;        
             }
-            case \x{27}p\x{27}:
+            case 'p':
             {
                 int size = pack_size(template, i);
                 for(int k = 0; k < size; ++k) {
@@ -21247,13 +21247,13 @@ class PlCORE {
                 }
                 index += i;
             }
-            case \x{27}u\x{27}:
+            case 'u':
             {
                 result.append(pack_u(List__.aget(index).toString()));
                 ++index;
                 break;
             }
-            case \x{27}w\x{27}:
+            case 'w':
             {
                 int size = pack_size(template, i);
                 String[] input = new String[size];
@@ -21264,14 +21264,14 @@ class PlCORE {
                 index += size;
                 break;        
             }
-            case \x{27}x\x{27}:
+            case 'x':
             {
                 int size = pack_size(template, i);
                 result.append(pack_x(size));
                 ++index;                
                 break;        
             }
-            case \x{27}X\x{27}:
+            case 'X':
             {
                 int size = pack_size(template, i);
                 int length = result.length();
@@ -21279,7 +21279,7 @@ class PlCORE {
                 ++index;                
                 break;        
             }
-            case \x{27}\@\x{27}:
+            case '\@':
             {
                 int size = pack_size(template, i);
                 int length = result.length();
@@ -21289,7 +21289,7 @@ class PlCORE {
                 ++index;                
                 break;        
             }
-            case \x{27}.\x{27}:
+            case '.':
             {
                int size = List__.aget(index).to_int();
                 int length = result.length();
@@ -21311,28 +21311,28 @@ class PlCORE {
         int index = 1;
         for(int i = 0; i < template.length(); ++i) {
             switch(template.charAt(i)) {
-            case \x{27}a\x{27}:
+            case 'a':
             {
                 int size = pack_size(template, i);
                 result.append(unpack_a(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
-            case \x{27}A\x{27}:
+            case 'A':
             {
                 int size = pack_size(template, i);
                 result.append(unpack_A(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
-            case \x{27}Z\x{27}:
+            case 'Z':
             {
                 int size = pack_size(template, i);
                 result.append(unpack_Z(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
-            case \x{27}b\x{27}:
+            case 'b':
             {
                 int size = pack_size(template, i);
                 result.append(unpack_b(List__.aget(index).toString(), size));
@@ -21371,7 +21371,7 @@ class PlCORE {
         if(s.length() >= size) {
             return s.substring(0,size);
         }
-        String padding = new String(new char[size - s.length()]).replace(\x{27}\\0\x{27}, \x{27} \x{27});
+        String padding = new String(new char[size - s.length()]).replace('\\0', ' ');
         return s + padding;    
     }
     private static final String unpack_A(String s, int size) {
@@ -21393,7 +21393,7 @@ class PlCORE {
     private static final String pack_b(String s, int size) {
         s = s.substring(0, Math.min(size, s.length()));
         int wanted8strings = (size + 7) / 8;
-        s += new String(new char[(wanted8strings * 8) - s.length()]).replace(\x{27}\\0\x{27}, \x{27}0\x{27});
+        s += new String(new char[(wanted8strings * 8) - s.length()]).replace('\\0', '0');
         StringBuilder input = new StringBuilder();
         for(int i = 0; i < s.length(); ++i) {
             if(s.codePointAt(i) % 2 == 1) {
@@ -21435,7 +21435,7 @@ class PlCORE {
     private static final String pack_B(String s, int size) {
         s = s.substring(0, Math.min(size, s.length()));
         int wanted8strings = (size + 7) / 8;
-        s += new String(new char[(wanted8strings * 8) - s.length()]).replace(\x{27}\\0\x{27}, \x{27}0\x{27});
+        s += new String(new char[(wanted8strings * 8) - s.length()]).replace('\\0', '0');
         StringBuilder input = new StringBuilder();
         for(int i = 0; i < s.length(); ++i) {
             if(s.codePointAt(i) % 2 == 1) {
@@ -21457,7 +21457,7 @@ class PlCORE {
     private static final String pack_h(String s, int size) {
         int index  = 0;
         if(s.length() < size * 2) {
-            s += new String(new char[size * 2 - s.length()]).replace(\x{27}\\0\x{27}, \x{27}0\x{27});
+            s += new String(new char[size * 2 - s.length()]).replace('\\0', '0');
         }
         StringBuilder result = new StringBuilder();
         while(index < size) {
@@ -21471,7 +21471,7 @@ class PlCORE {
     private static final String pack_H(String s, int size) {
         int index  = 0;
         if(s.length() < size * 2) {
-            s += new String(new char[size * 2 - s.length()]).replace(\x{27}\\0\x{27}, \x{27}0\x{27});
+            s += new String(new char[size * 2 - s.length()]).replace('\\0', '0');
         }
         StringBuilder result = new StringBuilder();
         while(index < size) {
@@ -21512,7 +21512,7 @@ class PlCORE {
     }
     private static String pack_number_2_string(String s, int size, boolean signed) {
         for(int i = 0; i < s.length(); ++i) {
-            if(!java.lang.Character.isDigit(s.charAt(i)) && !(s.charAt(i) == \x{27}-\x{27})) {
+            if(!java.lang.Character.isDigit(s.charAt(i)) && !(s.charAt(i) == '-')) {
                 s = s.substring(0, i);
                 break;
             }
@@ -21620,7 +21620,7 @@ class PlCORE {
             String cur = s.substring(index * 3, Math.min(index * 3 + 3, s.length()));
             while(cur.length() < 3) {
                 ++tooMany;
-                cur += \x{27}\\0\x{27};
+                cur += '\\0';
             }
             byte[] bytes = cur.getBytes();
             char value1 = (char)((bytes[0] >> 2) + 32);
@@ -21779,14 +21779,14 @@ class PlCORE {
  * Found at http://cseweb.ucsd.edu/classes/sp12/cse130-a/static/pa5/Crypt.java
  * Minor optimizations by Wes Biggs, wes\@cacas.org
  *
- * Eric\x{27}s original code is licensed under the BSD license.  As this is
+ * Eric's original code is licensed under the BSD license.  As this is
  * derivative, the same license applies.
  *
  * Note: Crypt.class is much smaller when compiled with javac -O
  ****************************************************************************/
 
 class PlCrypt {
-  private PlCrypt() {} // defined so class can\x{27}t be instantiated.
+  private PlCrypt() {} // defined so class can't be instantiated.
 
   private static final int ITERATIONS = 16;
 
@@ -22377,7 +22377,7 @@ import org.perlito.Perlito5.*;
 /****************************************************************************/
 
 class PlJavaCompiler {
-    private PlJavaCompiler() {} // defined so class can\x{27}t be instantiated.
+    private PlJavaCompiler() {} // defined so class can't be instantiated.
 
     static ArrayList<SourceCode> compilationUnits;
     static ExtendedStandardJavaFileManager fileManager;
@@ -22650,7 +22650,7 @@ class PlJavaCompiler {
         }
 
         List<String> optionList = new ArrayList<String>();
-        // set compiler\x{27}s classpath to be same as the runtime\x{27}s
+        // set compiler's classpath to be same as the runtime's
         optionList.addAll(Arrays.asList(\"-classpath\", System.getProperty(\"java.class.path\")));
         optionList.addAll(Arrays.asList(\"-source\",    \"7\"));
 
@@ -22680,7 +22680,7 @@ class ExtendedStandardJavaFileManager extends ForwardingJavaFileManager<JavaFile
         if (cc != null) {
             return cc;
         }
-        // source file not found for this output class: this is ok, because we can have a class like \x{27}PlEval\$1\x{27}
+        // source file not found for this output class: this is ok, because we can have a class like 'PlEval\$1'
         // System.out.println(\"ExtendedStandardJavaFileManager.getJavaFileForOutput: create name=\" + className);
         try {
             cc = new CompiledCode(className);
@@ -22752,7 +22752,7 @@ class SourceCode extends SimpleJavaFileObject {
     private String className;
 
     public SourceCode(String className, String contents) throws Exception {
-        super(URI.create(\"string:///\" + className.replace(\x{27}.\x{27}, \x{27}/\x{27}) + Kind.SOURCE.extension), Kind.SOURCE);
+        super(URI.create(\"string:///\" + className.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
         this.contents = contents;
         this.className = className;
     }
@@ -22837,8 +22837,8 @@ class SourceCode extends SimpleJavaFileObject {
             my $method = shift(@{$class->{"methods"}});
             my $data = shift(@{$class->{"methods"}});
             my $decl = $data->{"decl"};
-            my $code = $data->{"code"} or die("Java extends: missing \x{27}code\x{27} argument in method \x{27}" . $method . "\x{27}");
-            my $return = $data->{"return"} or die("Java extends: missing \x{27}return\x{27} argument in method \x{27}" . $method . "\x{27}");
+            my $code = $data->{"code"} or die("Java extends: missing 'code' argument in method '" . $method . "'");
+            my $return = $data->{"return"} or die("Java extends: missing 'return' argument in method '" . $method . "'");
             my @args;
             my $var = 0;
             for my $arg (@{$data->{"args"}}) {
@@ -22877,7 +22877,7 @@ class SourceCode extends SimpleJavaFileObject {
                 push(@out, "        return;")
             }
             else {
-                my $type = $java_classes->{$return} or die("Java class \x{27}" . $return . "\x{27} is not imported");
+                my $type = $java_classes->{$return} or die("Java class '" . $return . "' is not imported");
                 push(@out, "        return res[0]." . $type->{"perl_to_java"} . "();")
             }
             push(@out, "    }")
@@ -23091,25 +23091,25 @@ class PerlRange implements Iterable<PlObject> {
             if (length > 0) {
                 boolean is_num_start = PerlOp.looks_like_number(s);
                 boolean is_num_end = PerlOp.looks_like_number(this.v_end.toString());
-                if (is_num_start && is_num_end && s.codePointAt(0) != \x{27}0\x{27}) {
+                if (is_num_start && is_num_end && s.codePointAt(0) != '0') {
                     if (!this.v_start.is_integer_range() || !this.v_end.is_integer_range()) {
                         PlCORE.die(\"Range iterator outside integer range\");
                     }
                     return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
                 }
-                // If the initial value specified isn\x{27}t part of a magical increment sequence
+                // If the initial value specified isn't part of a magical increment sequence
                 // (that is, a non-empty string matching /^[a-zA-Z]*[0-9]*\\z/ ),
                 // only the initial value will be returned.
                 boolean is_incrementable = true;
                 for (int offset = 0; offset < length; offset++) {
                     int c = s.codePointAt(offset);
-                    if ((c >= \x{27}A\x{27} && c <= \x{27}Z\x{27}) || (c >= \x{27}a\x{27} && c <= \x{27}z\x{27})) {
+                    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
                         // good
                     }
                     else {
                         for ( ; offset < length; offset++) {
                             c = s.codePointAt(offset);
-                            if (c >= \x{27}0\x{27} && c <= \x{27}9\x{27}) {
+                            if (c >= '0' && c <= '9') {
                                 // good
                             }
                             else {
@@ -23180,10 +23180,10 @@ class PerlOp {
     // PerlOp implements operators: && ||
     //      and auxiliary functions
     //
-    // note: \x{27}+\x{27} add() and \x{27}-\x{27} sub() are PlObject methods, not implemented here.
+    // note: '+' add() and '-' sub() are PlObject methods, not implemented here.
     //
     // TODO - see Perlito5/JavaScript2/Runtime.pm for more operator implementations
-    // TODO - \x{27}boolean_stack\x{27} should be reset when an exception happens
+    // TODO - 'boolean_stack' should be reset when an exception happens
 
     private static ArrayList<PlObject> boolean_stack = new ArrayList<PlObject>();
     private static PlArray local_stack = new PlArray();
@@ -23273,7 +23273,7 @@ class PerlOp {
     // Intermediate calls, which have to be dispatched properly
     public static final PlObject call( PlObject invocant, String method, PlArray args, int context ) {
         if ( invocant.is_undef() ) {
-            PlCORE.die( \"Can\x{27}t call method \\\"\" + method
+            PlCORE.die( \"Can't call method \\\"\" + method
                 + \"\\\" on an undefined value\" );
             return PlCx.UNDEF;
         }
@@ -23297,7 +23297,7 @@ class PerlOp {
                 }
             }
 
-            PlCORE.die( \"Can\x{27}t call method \\\"\" + method
+            PlCORE.die( \"Can't call method \\\"\" + method
                 + \"\\\" on unblessed reference\" );
             return PlCx.UNDEF;
         }
@@ -23306,7 +23306,7 @@ class PerlOp {
 
         if (methodCode.is_undef()) {
             String className = pClass.className();
-            PlCORE.die( \"Can\x{27}t locate object method \\\"\" + method
+            PlCORE.die( \"Can't locate object method \\\"\" + method
                 + \"\\\" via package \\\"\" + className
                 + \"\\\" (perhaps you forgot to load \\\"\" + className + \"\\\"?\" );
             return PlCx.UNDEF;
@@ -23317,7 +23317,7 @@ class PerlOp {
     }
     public static final PlObject call( String invocant, String method, PlArray args, int context ) {
         if ( invocant.equals(\"\") ) {
-            PlCORE.die( \"Can\x{27}t call method \\\"\" + method
+            PlCORE.die( \"Can't call method \\\"\" + method
                 + \"\\\" on an undefined value\" );
             return PlCx.UNDEF;
         }
@@ -23325,7 +23325,7 @@ class PerlOp {
         PlObject methodCode = PlClass.getInstance(invocant).method_lookup(method, 0);
 
         if (methodCode.is_undef()) {
-            PlCORE.die( \"Can\x{27}t locate object method \\\"\" + method
+            PlCORE.die( \"Can't locate object method \\\"\" + method
                 + \"\\\" via package \\\"\" + invocant
                 + \"\\\" (perhaps you forgot to load \\\"\" + invocant + \"\\\"?\" );
             return PlCx.UNDEF;
@@ -23538,7 +23538,7 @@ class PerlOp {
         if (arg1.is_num() || arg1.is_int()) {
             return arg0.num_eq(arg1);
         }
-        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(\"Not implemented: smartmatch operator with argument type \x{27}\"), PlCORE.ref(PlCx.SCALAR, new PlArray(arg1)), new PlString(\"\x{27}\")));
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(\"Not implemented: smartmatch operator with argument type '\"), PlCORE.ref(PlCx.SCALAR, new PlArray(arg1)), new PlString(\"'\")));
     }
 
     // and1(x) ? y : and3()
@@ -23588,13 +23588,13 @@ class PerlOp {
         return new PlInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
     }
 
-    //    \x{27}prefix:<-A>\x{27} => \x{27}PerlOp.p5atime\x{27},
-    //    \x{27}prefix:<-C>\x{27} => \x{27}PerlOp.p5ctime\x{27},
-    //    \x{27}prefix:<-M>\x{27} => \x{27}PerlOp.p5mtime\x{27},
-    //    \x{27}prefix:<-d>\x{27} => \x{27}PerlOp.p5is_directory\x{27},
-    //    \x{27}prefix:<-e>\x{27} => \x{27}PerlOp.p5file_exists\x{27},
-    //    \x{27}prefix:<-f>\x{27} => \x{27}PerlOp.p5is_file\x{27},
-    //    \x{27}prefix:<-s>\x{27} => \x{27}PerlOp.p5size\x{27},
+    //    'prefix:<-A>' => 'PerlOp.p5atime',
+    //    'prefix:<-C>' => 'PerlOp.p5ctime',
+    //    'prefix:<-M>' => 'PerlOp.p5mtime',
+    //    'prefix:<-d>' => 'PerlOp.p5is_directory',
+    //    'prefix:<-e>' => 'PerlOp.p5file_exists',
+    //    'prefix:<-f>' => 'PerlOp.p5is_file',
+    //    'prefix:<-s>' => 'PerlOp.p5size',
 
     public static final Path resolve_file(PlObject s) throws IOException {
         return PlV.path.resolve(s.toString()).toRealPath();
@@ -23797,10 +23797,10 @@ class PerlOp {
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
             switch (c3) {
-                case \x{27}]\x{27}:
+                case ']':
                     sb.append(Character.toChars(c3));
                     return offset3;
-                case \x{27} \x{27}:
+                case ' ':
                     sb.append(\"\\\\ \");   // make this space a \"token\", even inside /x
                     break;
                 default:
@@ -23817,9 +23817,9 @@ class PerlOp {
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
             switch (c3) {
-                case \x{27})\x{27}:
+                case ')':
                     return offset3;
-                case \x{27}\\\\\x{27}:
+                case '\\\\':
                     offset3++;
                     break;
                 default:
@@ -23845,39 +23845,39 @@ class PerlOp {
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
             switch (c) {
-                case \x{27}\\\\\x{27}:  // escape - \\[ \\120
+                case '\\\\':  // escape - \\[ \\120
                             sb.append(Character.toChars(c));
                             if (offset < length) {
                                 offset++;
                                 int c2 = s.codePointAt(offset);
-                                if (c2 >= \x{27}1\x{27} && c2 <= \x{27}3\x{27}) {
+                                if (c2 >= '1' && c2 <= '3') {
                                     if (offset < length+1) {
                                         int off = offset;
                                         int c3 = s.codePointAt(off++);
                                         int c4 = s.codePointAt(off++);
-                                        if ((c3 >= \x{27}0\x{27} && c3 <= \x{27}7\x{27}) && (c4 >= \x{27}0\x{27} && c4 <= \x{27}7\x{27})) {
+                                        if ((c3 >= '0' && c3 <= '7') && (c4 >= '0' && c4 <= '7')) {
                                             // a \\000 octal sequence
-                                            sb.append(\x{27}0\x{27});
+                                            sb.append('0');
                                         }
                                     }
                                 }
-                                else if (c2 == \x{27}0\x{27}) {
+                                else if (c2 == '0') {
                                     // rewrite \\0 to \\00
-                                    sb.append(\x{27}0\x{27});
+                                    sb.append('0');
                                 }
                                 sb.append(Character.toChars(c2));
                             }
                             break;
-                case \x{27}[\x{27}:   // character class
+                case '[':   // character class
                             sb.append(Character.toChars(c));
                             offset++;
                             offset = _regex_character_class_escape(offset, s, sb, length);
                             break;
-                case \x{27}(\x{27}:   // comment (?# ... )
+                case '(':   // comment (?# ... )
                             if (offset < length - 2) {
                                 int c2 = s.codePointAt(offset+1);
                                 int c3 = s.codePointAt(offset+2);
-                                if (c2 == \x{27}?\x{27} && c3 == \x{27}#\x{27}) {
+                                if (c2 == '?' && c3 == '#') {
                                     offset = _regex_skip_comment(offset, s, length);
                                 }
                                 else {
@@ -23911,15 +23911,15 @@ class PerlOp {
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
             switch (c) {
-                case \x{27}\\\\\x{27}:  // escape - \\[ \\120
+                case '\\\\':  // escape - \\[ \\120
                             if (offset < length) {
                                 offset++;
                                 int c2 = s.codePointAt(offset);
-                                if (c2 >= \x{27}0\x{27} && c2 <= \x{27}3\x{27}) {
+                                if (c2 >= '0' && c2 <= '3') {
                                     if (offset < length+1) {
                                         int c3 = s.codePointAt(offset+1);
                                         int c4 = s.codePointAt(offset+2);
-                                        if ((c3 >= \x{27}0\x{27} && c3 <= \x{27}7\x{27}) && (c4 >= \x{27}0\x{27} && c4 <= \x{27}7\x{27})) {
+                                        if ((c3 >= '0' && c3 <= '7') && (c4 >= '0' && c4 <= '7')) {
                                             // a \\000 octal sequence
                                             try {
                                                 String oct = s.substring(offset, offset+3);
@@ -23932,7 +23932,7 @@ class PerlOp {
                                         }
                                     }
                                 }
-                                if (c2 == \x{27}0\x{27}) {
+                                if (c2 == '0') {
                                     // \\0
                                     sb.append(  (char)0  );
                                     break;
@@ -23942,7 +23942,7 @@ class PerlOp {
                             }
                             sb.append(Character.toChars(c));
                             break;
-                case \x{27}[\x{27}:   // character class
+                case '[':   // character class
                             // TODO - character class in tr()
                             sb.append(Character.toChars(c));
                             offset++;
@@ -24074,7 +24074,7 @@ class PerlOp {
         if (var_name.equals(\"`\")) {    // \$`
             return new PlString( str.substring(0, matcher.start()) );
         }
-        if (var_name.equals(\"\x{27}\")) {    // \$\x{27}
+        if (var_name.equals(\"'\")) {    // \$'
             return new PlString( str.substring(matcher.end()) );
         }
         return PlCx.UNDEF;
@@ -24083,9 +24083,9 @@ class PerlOp {
     // ****** end regex variables
 
     public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global, boolean c_flag) {
-        // \x{27}want\x{27}    context (PlCx.LIST, PlCx.SCALAR, PlCx.VOID)
-        // \x{27}global\x{27}  g  - globally match the pattern repeatedly in the string
-        // \x{27}c_flag\x{27}  c  - keep the current position during repeated matching
+        // 'want'    context (PlCx.LIST, PlCx.SCALAR, PlCx.VOID)
+        // 'global'  g  - globally match the pattern repeatedly in the string
+        // 'c_flag'  c  - keep the current position during repeated matching
 
         String str = input.toString();
         if (want != PlCx.LIST) {
@@ -24308,14 +24308,14 @@ class PerlOp {
     }
     public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want, boolean global) {
         if (!s.is_lvalue()) {
-            PlCORE.die(\"Can\x{27}t modify constant item in substitution (s///)\");
+            PlCORE.die(\"Can't modify constant item in substitution (s///)\");
         }
         // TODO - cache the compiled pattern
         return replace((PlLvalue)s, new PlRegex(pat, 0), rep, want, global);
     }
     public static final PlObject replace(PlObject s, PlObject pat, String rep, int want, boolean global) {
         if (!s.is_lvalue()) {
-            PlCORE.die(\"Can\x{27}t modify constant item in substitution (s///)\");
+            PlCORE.die(\"Can't modify constant item in substitution (s///)\");
         }
         // TODO - cache the compiled pattern
         return replace((PlLvalue)s, new PlRegex(pat, 0), rep, want, global);
@@ -24355,7 +24355,7 @@ class PerlOp {
         for ( ; offset < length; offset++ ) {
             final int c3 = s.codePointAt(offset);
             switch (c3) {
-                case \x{27} \x{27}: case \x{27}\\t\x{27}: case \x{27}\\n\x{27}: case \x{27}\\r\x{27}:
+                case ' ': case '\\t': case '\\n': case '\\r':
                     break;
                 default:
                     return offset;
@@ -24367,7 +24367,7 @@ class PerlOp {
         for ( ; offset < length; offset++ ) {
             final int c3 = s.codePointAt(offset);
             switch (c3) {
-                case \x{27} \x{27}: case \x{27}\\t\x{27}: case \x{27}\\n\x{27}: case \x{27}\\r\x{27}:
+                case ' ': case '\\t': case '\\n': case '\\r':
                     break;
                 default:
                     return false;
@@ -24378,7 +24378,7 @@ class PerlOp {
     private static boolean _parse_exp(String s, int length, int offset) {
         // 123.45E^^^
         final int c = s.codePointAt(offset);
-        if (c == \x{27}+\x{27} || c == \x{27}-\x{27}) {
+        if (c == '+' || c == '-') {
             offset++;
             if (offset >= length) {
                 return false;
@@ -24387,8 +24387,8 @@ class PerlOp {
         for ( ; offset < length; offset++ ) {
             final int c3 = s.codePointAt(offset);
             switch (c3) {
-                case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-                case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
                     break;
                 default:
                     return _parse_space_to_end(s, length, offset);
@@ -24401,10 +24401,10 @@ class PerlOp {
         for ( ; offset < length; offset++ ) {
             final int c3 = s.codePointAt(offset);
             switch (c3) {
-                case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-                case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
                     break;
-                case \x{27}E\x{27}: case \x{27}e\x{27}:
+                case 'E': case 'e':
                     return _parse_exp(s, length, offset+1);
                 default:
                     return _parse_space_to_end(s, length, offset);
@@ -24417,12 +24417,12 @@ class PerlOp {
         for ( ; offset < length; offset++ ) {
             final int c3 = s.codePointAt(offset);
             switch (c3) {
-                case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-                case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
                     break;
-                case \x{27}.\x{27}:
+                case '.':
                     return _parse_dot(s, length, offset+1);
-                case \x{27}E\x{27}: case \x{27}e\x{27}:
+                case 'E': case 'e':
                     return _parse_exp(s, length, offset+1);
                 default:
                     return _parse_space_to_end(s, length, offset);
@@ -24437,7 +24437,7 @@ class PerlOp {
             return false;
         }
         int c = s.codePointAt(offset);
-        if (c == \x{27}+\x{27} || c == \x{27}-\x{27}) {
+        if (c == '+' || c == '-') {
             offset++;
             if (offset >= length) {
                 return false;
@@ -24445,22 +24445,22 @@ class PerlOp {
             c = s.codePointAt(offset);
         }
         switch (c) {
-            case \x{27}i\x{27}: case \x{27}I\x{27}:
+            case 'i': case 'I':
                         return s.substring(offset, offset+3).equalsIgnoreCase(\"inf\");
-            case \x{27}n\x{27}: case \x{27}N\x{27}:
+            case 'n': case 'N':
                         return s.substring(offset, offset+3).equalsIgnoreCase(\"nan\");
-            case \x{27}.\x{27}:
+            case '.':
                         offset++;
                         if (offset >= length) {
                             return false;
                         }
                         final int c3 = s.codePointAt(offset);
                         switch (c3) {
-                            case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-                            case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+                            case '0': case '1': case '2': case '3': case '4':
+                            case '5': case '6': case '7': case '8': case '9':
                                 return _parse_dot(s, length, offset+1);
                         }
-            case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}: case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+            case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
                         return _parse_int(s, length, offset+1);
         }
         return false;
@@ -24511,7 +24511,7 @@ class PlV {
             PlV.path = Paths.get(\".\").toRealPath();
         }
         catch (IOException e) {
-            // don\x{27}t know what to do
+            // don't know what to do
         }
 
         PlV.fset(\"main::STDIN\",  PlCx.STDIN);                             // \"GLOB\"
@@ -24942,7 +24942,7 @@ class PlObject {
         return false;
     }
     public PlObject apply(int want, PlArray List__) {
-        // \$ perl -e \x{27} \$a = 5; \$a->() \x{27}
+        // \$ perl -e ' \$a = 5; \$a->() '
         // Undefined subroutine &main::5 called
         PlCORE.die(\"subroutine call error\");
         return this;
@@ -25249,22 +25249,22 @@ class PlObject {
 
     public PlObject pre_decr() {
         // --\$x
-        PlCORE.die(\"Can\x{27}t modify constant item in predecrement (--)\");
+        PlCORE.die(\"Can't modify constant item in predecrement (--)\");
         return this;
     }
     public PlObject post_decr() {
         // \$x--
-        PlCORE.die(\"Can\x{27}t modify constant item in postdecrement (--)\");
+        PlCORE.die(\"Can't modify constant item in postdecrement (--)\");
         return this;
     }
     public PlObject pre_incr() {
         // ++\$x
-        PlCORE.die(\"Can\x{27}t modify constant item in preincrement (++)\");
+        PlCORE.die(\"Can't modify constant item in preincrement (++)\");
         return this;
     }
     public PlObject post_incr() {
         // \$x++
-        PlCORE.die(\"Can\x{27}t modify constant item in postincrement (++)\");
+        PlCORE.die(\"Can't modify constant item in postincrement (++)\");
         return this;
     }
 
@@ -25296,7 +25296,7 @@ class PlObject {
         StringBuilder sb = new StringBuilder();
         for (int offset = 0; offset < length; offset++) {
             final int c = s.codePointAt(offset);
-            if ((c >= \x{27}A\x{27} && c <= \x{27}Z\x{27}) || (c >= \x{27}a\x{27} && c <= \x{27}z\x{27}) || (c >= \x{27}0\x{27} && c <= \x{27}9\x{27})) {
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
                 // good
             }
             else {
@@ -25388,7 +25388,7 @@ class PlObject {
         return this;
     }
     public PlObject bless(String className) {
-        PlCORE.die(\"Can\x{27}t bless non-reference value\");
+        PlCORE.die(\"Can't bless non-reference value\");
         return this;
     }
     public PlClass blessed_class() {
@@ -25603,7 +25603,7 @@ class PlFileHandle extends PlReference {
         return PlCx.UNDEF;
     }
     public PlObject hset(String s, PlObject v) {
-        return PlCORE.die(\"Can\x{27}t modify glob elem in scalar assignment\");
+        return PlCORE.die(\"Can't modify glob elem in scalar assignment\");
     }
 }
 
@@ -25683,8 +25683,8 @@ class PlRegexResult extends PlObject {
 }
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
-    public PlObject prototype;   // \x{27}\$\$\$\x{27}
-    public String pkg_name;      // \x{27}main\x{27}
+    public PlObject prototype;   // '\$\$\$'
+    public String pkg_name;      // 'main'
     public static final PlString REF = new PlString(\"CODE\");
     public PlClosure currentSub;
 
@@ -26076,7 +26076,7 @@ class PlClass {
             // lookup in AUTOLOAD
             methodCode = PlV.cget_no_autoload(className + \"::AUTOLOAD\");
             if (!methodCode.is_undef()) {
-                if (method.charAt(0) == \x{27}(\x{27}     // \"overload\" methods
+                if (method.charAt(0) == '('     // \"overload\" methods
                  || method.equals(\"import\")
                  || method.equals(\"unimport\")
                  || method.equals(\"isa\")
@@ -26094,7 +26094,7 @@ class PlClass {
             for (PlObject className : PlV.array_get(className + \"::ISA\")) {
                 // prevent infinite loop
                 if (level >= 100) {
-                    PlCORE.die(\"Recursive inheritance detected in package \x{27}\" + className + \"\x{27}\");
+                    PlCORE.die(\"Recursive inheritance detected in package '\" + className + \"'\");
                 }
                 methodCode = PlClass.getInstance(className).method_lookup(method, level+1);
                 if (!methodCode.is_undef()) {
@@ -26118,7 +26118,7 @@ class PlClass {
             String className = isa_item.toString();
             // prevent infinite loop
             if (level >= 100) {
-                PlCORE.die(\"Recursive inheritance detected in package \x{27}\" + className.toString() + \"\x{27}\");
+                PlCORE.die(\"Recursive inheritance detected in package '\" + className.toString() + \"'\");
             }
             PlObject is = PlClass.getInstance(className).isa(s, level+1);
             if (is.to_boolean()) {
@@ -27417,7 +27417,7 @@ class PlLvalue extends PlObject {
     }
 
     public PlArray array_deref() {
-        // \@\$x doesn\x{27}t autovivify
+        // \@\$x doesn't autovivify
         if (this.o.is_undef()) {
             return new PlArray();
         }
@@ -27450,7 +27450,7 @@ class PlLvalue extends PlObject {
     }
 
     public PlObject hash_deref() {
-        // %\$x doesn\x{27}t autovivify
+        // %\$x doesn't autovivify
         if (this.o.is_undef()) {
             return new PlHash();
         }
@@ -27864,7 +27864,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
                 src.shift();   // skip
             }
             else {
-                PlCORE.die(\"Can\x{27}t modify constant item in list assignment\");
+                PlCORE.die(\"Can't modify constant item in list assignment\");
             }
         }
         if (want == PlCx.LIST) {
@@ -28945,7 +28945,7 @@ class PlUndef extends PlObject {
     }
     public PlObject apply(int want, PlArray List__) {
         // \$a->()
-        PlCORE.die(\"Can\x{27}t use an undefined value as a subroutine reference\");
+        PlCORE.die(\"Can't use an undefined value as a subroutine reference\");
         return this;
     }
     public PlObject length() {
@@ -29189,7 +29189,7 @@ class PlString extends PlObject {
             if (this._looks_like_non_negative_integer()) {
                 return PerlOp.regex_var(this.to_int());
             }
-            if (s.equals(\"&\") || s.equals(\"`\") || s.equals(\"\x{27}\")) {
+            if (s.equals(\"&\") || s.equals(\"`\") || s.equals(\"'\")) {
                 return PerlOp.regex_var(s);
             }
             if (s.equals(\"\$\")) {
@@ -29242,8 +29242,8 @@ class PlString extends PlObject {
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
             switch (c) {
-                case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-                case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
                     break;
                 default:
                     return false;
@@ -29259,22 +29259,22 @@ class PlString extends PlObject {
             return new PlDouble(Double.parseDouble(this.s.substring(0, offset_orig - 1)));
         }
         final int sig = s.codePointAt(offset3);
-        if (sig == \x{27}+\x{27} || sig == \x{27}-\x{27}) {
+        if (sig == '+' || sig == '-') {
             offset3++;
             if (offset3 >= length) {
                 return new PlDouble(Double.parseDouble(this.s.substring(0, offset_orig - 1)));
             }
         }
         final int num = s.codePointAt(offset3);
-        if (num < \x{27}0\x{27} || num > \x{27}9\x{27}) {
+        if (num < '0' || num > '9') {
             // illegal exp
             return new PlDouble(Double.parseDouble(this.s.substring(0, offset_orig - 1)));
         }
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
             switch (c3) {
-                case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-                case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
                     break;
                 default:    // invalid
                     return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
@@ -29289,10 +29289,10 @@ class PlString extends PlObject {
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
             switch (c3) {
-                case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-                case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
                     break;
-                case \x{27}E\x{27}: case \x{27}e\x{27}:
+                case 'E': case 'e':
                     // start exponential part
                     return _parse_exp(length, signal, offset, offset3+1);
                 default:    // invalid
@@ -29317,7 +29317,7 @@ class PlString extends PlObject {
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
             switch (c) {
-                case \x{27}i\x{27}: case \x{27}I\x{27}:
+                case 'i': case 'I':
                             if (length > 2 && this.s.substring(offset, offset+3).equalsIgnoreCase(\"inf\")) {
                                 if (signal < 0) {
                                     return new PlDouble(Double.NEGATIVE_INFINITY);
@@ -29327,18 +29327,18 @@ class PlString extends PlObject {
                                 }
                             }
                             return PlCx.INT0;
-                case \x{27}n\x{27}: case \x{27}N\x{27}:
+                case 'n': case 'N':
                             if (length > 2 && this.s.substring(offset, offset+3).equalsIgnoreCase(\"nan\")) {
                                 return new PlDouble(Double.NaN);
                             }
                             return PlCx.INT0;
-                case \x{27}.\x{27}:   // starts with dot
+                case '.':   // starts with dot
                             if (signal != 0) {
                                 signal = 1;
                             }
                             return _parse_dot(length, signal, offset, offset+1);
-                case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-                case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
                             // starts with number
                             if (signal == 0) {
                                 signal = 1;
@@ -29347,14 +29347,14 @@ class PlString extends PlObject {
                             for ( ; offset2 < length; ) {
                                 final int c2 = s.codePointAt(offset2);
                                 switch (c2) {
-                                    case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-                                    case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+                                    case '0': case '1': case '2': case '3': case '4':
+                                    case '5': case '6': case '7': case '8': case '9':
                                         // more numbers
                                         break;
-                                    case \x{27}.\x{27}:
+                                    case '.':
                                         // start decimal part
                                         return _parse_dot(length, signal, offset, offset2+1);
-                                    case \x{27}E\x{27}: case \x{27}e\x{27}:
+                                    case 'E': case 'e':
                                         // start exponential part
                                         return _parse_exp(length, signal, offset, offset2+1);
                                     default:
@@ -29385,21 +29385,21 @@ class PlString extends PlObject {
                             catch (NumberFormatException e) {
                                 return new PlDouble(Double.parseDouble(this.s.substring(offset, offset2)));
                             }
-                case \x{27}+\x{27}:   // starts with +
+                case '+':   // starts with +
                             if (signal != 0) {
                                 // invalid
                                 return PlCx.INT0;
                             }
                             signal = 1;
                             break;
-                case \x{27}-\x{27}:   // starts with -
+                case '-':   // starts with -
                             if (signal != 0) {
                                 // invalid
                                 return PlCx.INT0;
                             }
                             signal = -1;
                             break;
-                case \x{27} \x{27}: case \x{27}\\t\x{27}: case \x{27}\\n\x{27}: case \x{27}\\r\x{27}:
+                case ' ': case '\\t': case '\\n': case '\\r':
                             // starts with space
                             if (signal != 0) {
                                 // invalid
@@ -29427,7 +29427,7 @@ class PlString extends PlObject {
     }
     public char to_char() {
         if (this.s.length() == 0) {
-            return \x{27}\\u0000\x{27};
+            return '\\u0000';
         }
         return this.s.charAt(0);
     }
@@ -29452,16 +29452,16 @@ class PlString extends PlObject {
     private static final String _string_increment(String s) {
         if (s.length() < 2) {
             final int c = s.codePointAt(0);
-            if ((c >= \x{27}0\x{27} && c <= \x{27}8\x{27}) || (c >= \x{27}A\x{27} && c <= \x{27}Y\x{27}) || (c >= \x{27}a\x{27} && c <= \x{27}y\x{27})) {
+            if ((c >= '0' && c <= '8') || (c >= 'A' && c <= 'Y') || (c >= 'a' && c <= 'y')) {
                 return \"\" + (char)(c + 1);
             }
-            if (c == \x{27}9\x{27}) {
+            if (c == '9') {
                 return \"10\";
             }
-            if (c == \x{27}Z\x{27}) {
+            if (c == 'Z') {
                 return \"AA\";
             }
-            if (c == \x{27}z\x{27}) {
+            if (c == 'z') {
                 return \"aa\";
             }
             return \"1\";
@@ -29480,14 +29480,14 @@ class PlString extends PlObject {
         }
         int c = this.s.codePointAt(0);
         switch (c) {
-            case \x{27} \x{27}: case \x{27}\\t\x{27}: case \x{27}\\n\x{27}: case \x{27}\\r\x{27}:
-            case \x{27}+\x{27}: case \x{27}-\x{27}: case \x{27}.\x{27}:
-            case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-            case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+            case ' ': case '\\t': case '\\n': case '\\r':
+            case '+': case '-': case '.':
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
                 return this.add(PlCx.INT1);
         }
         c = s.codePointAt(length - 1);
-        if ((c >= \x{27}0\x{27} && c <= \x{27}8\x{27}) || (c >= \x{27}A\x{27} && c <= \x{27}Y\x{27}) || (c >= \x{27}a\x{27} && c <= \x{27}y\x{27})) {
+        if ((c >= '0' && c <= '8') || (c >= 'A' && c <= 'Y') || (c >= 'a' && c <= 'y')) {
             return new PlString(s.substring(0, length-1) + (char)(c + 1));
         }
         return new PlString(_string_increment(this.s));
@@ -29499,21 +29499,21 @@ class PlString extends PlObject {
         }
         final int c = this.s.codePointAt(0);
         switch (c) {
-            case \x{27}+\x{27}: case \x{27}-\x{27}:
-                if (c == \x{27}+\x{27}) {
-                    return new PlString( \x{27}-\x{27} + s.substring(1) );
+            case '+': case '-':
+                if (c == '+') {
+                    return new PlString( '-' + s.substring(1) );
                 }
-                if (c == \x{27}-\x{27}) {
-                    return new PlString( \x{27}+\x{27} + s.substring(1) );
+                if (c == '-') {
+                    return new PlString( '+' + s.substring(1) );
                 }
-            case \x{27}.\x{27}:
-            case \x{27} \x{27}: case \x{27}\\t\x{27}: case \x{27}\\n\x{27}: case \x{27}\\r\x{27}:
-            case \x{27}0\x{27}: case \x{27}1\x{27}: case \x{27}2\x{27}: case \x{27}3\x{27}: case \x{27}4\x{27}:
-            case \x{27}5\x{27}: case \x{27}6\x{27}: case \x{27}7\x{27}: case \x{27}8\x{27}: case \x{27}9\x{27}:
+            case '.':
+            case ' ': case '\\t': case '\\n': case '\\r':
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
                 return this.parse().neg();
         }
-        if ((c >= \x{27}A\x{27} && c <= \x{27}Z\x{27}) || (c >= \x{27}a\x{27} && c <= \x{27}z\x{27})) {
-            return new PlString( \x{27}-\x{27} + s );
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+            return new PlString( '-' + s );
         }
         return PlCx.INT0;
     }
@@ -29536,22 +29536,22 @@ class PlString extends PlObject {
             my $num_returns = $number_binop{$perl}->{"num_returns"};
             if ($returns eq "PlDouble") {;
                 "    public PlObject " . $perl . "(PlObject b) {
-        // \x{27}num\x{27} - int, \x{27}num\x{27} - num
+        // 'num' - int, 'num' - num
         return this.parse()." . $perl . "(b);
     }
     public PlObject " . $perl . "2(PlObject b) {
-        // int - \x{27}num\x{27}
+        // int - 'num'
         return b." . $perl . "(this.parse());
     }
 "
             }
             else {;
                 "    public PlObject " . $perl . "(PlObject b) {
-        // \x{27}num\x{27} - int, \x{27}num\x{27} - num
+        // 'num' - int, 'num' - num
         return this.parse()." . $perl . "(b);
     }
     public PlObject " . $perl . "2(PlObject b) {
-        // int - \x{27}num\x{27}
+        // int - 'num'
         return b." . $perl . "(this.parse());
     }
 "
@@ -29638,7 +29638,7 @@ perlito5 [switches] [programfile]
     -e program      one line of program (omit programfile)
     -E program      like -e, but enables all optional features
     -h --help
-    -Idirectory     specify \@INC/include directory (several -I\x{27}s allowed)
+    -Idirectory     specify \@INC/include directory (several -I's allowed)
     -[mM][-]module  execute \"use/no module...\" before executing program
     -n              assume \"while (<>) { ... }\" loop around program
     -p              assume loop like -n but print line also, like sed
@@ -29649,13 +29649,13 @@ perlito5 [switches] [programfile]
     -Cast-perl5     emits a dump of the abstract syntax tree as a Perl dump
     -Cast-json      emits a dump of the abstract syntax tree in JSON format
     --expand_use --noexpand_use
-                    expand \x{27}use\x{27} statements at compile time
+                    expand 'use' statements at compile time
     --boilerplate --noboilerplate
                     emits or not boilerplate code
     --bootstrapping set this when compiling the compiler,
                     otherwise the new subroutine definitions will overwrite the current compiler
     --java_eval     enable java eval, using perlito5-lib.jar
-    --nojava_eval   disable java eval, creates a standalone file that doesn\x{27}t depend on perlito5-lib.jar
+    --nojava_eval   disable java eval, creates a standalone file that doesn't depend on perlito5-lib.jar
 ";
     my $copyright_message = "This is Perlito5 " . $_V5_COMPILER_VERSION . ", an implementation of the Perl language.
 
@@ -29686,7 +29686,7 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.
         }
         if ($s) {
             my $c = substr($s, 0, 1);
-            if ($c eq "\"" || $c eq "\x{27}") {;
+            if ($c eq "\"" || $c eq "'") {;
                 if (substr($s, -1, 1) eq $c) {;
                     $s = substr($s, 1, -1)
                 }
@@ -29988,7 +29988,7 @@ INIT failed--call queue aborted.
                             $s = "{ ";
                             if (keys(%Perlito5::DATA_SECTION)) {;
                                 for my $pkg (keys(%Perlito5::DATA_SECTION)) {
-                                    $s .= "open " . $pkg . "::DATA, \x{27}<\x{27}, \\\$Perlito5::DATA_SECTION{" . $pkg . "}{data}; ";
+                                    $s .= "open " . $pkg . "::DATA, '<', \\\$Perlito5::DATA_SECTION{" . $pkg . "}{data}; ";
                                     $s .= "seek(" . $pkg . "::DATA, \$Perlito5::DATA_SECTION{" . $pkg . "}{pos}, 0); "
                                 }
                             }
@@ -30051,7 +30051,7 @@ INIT failed--call queue aborted.
                         say(Perlito5::Dumper::ast_dumper($Perlito5::SCOPE))
                     }
                     else {;
-                        die("don\x{27}t know what to do with backend \x{27}" . $backend . "\x{27}")
+                        die("don't know what to do with backend '" . $backend . "'")
                     }
                 }
                 ${"\@"} = undef
