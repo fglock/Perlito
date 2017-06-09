@@ -16,6 +16,7 @@
 -- fix chomp(), chop()
 -- fix fat-arrow in argument lists
 -- indented heredoc with <<~"tag"
+-- use $^H and %^H
 
 - Java:
 -- "require"
