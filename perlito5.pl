@@ -20,11 +20,26 @@ use feature 'say';
 {
     package main;
     package strict;
-    sub strict::import {;
-        ${^H} = 2018
+    $Perlito5::STRICT_REFS = 2;
+    $Perlito5::STRICT_SUBS = 512;
+    $Perlito5::STRICT_VARS = 1024;
+    sub strict::import {
+        (my($pkg), my(@args)) = @_;
+        !@args && (@args = ("refs", "subs", "vars"));
+        for $_ (@args) {
+            $_ eq "refs" && (${^H} |= $Perlito5::STRICT_REFS);
+            $_ eq "subs" && (${^H} |= $Perlito5::STRICT_SUBS);
+            $_ eq "vars" && (${^H} |= $Perlito5::STRICT_VARS)
+        }
     }
-    sub strict::unimport {;
-        ${^H} = 0
+    sub strict::unimport {
+        (my($pkg), my(@args)) = @_;
+        !@args && (@args = ("refs", "subs", "vars"));
+        for $_ (@args) {
+            $_ eq "refs" && (${^H} &= ~$Perlito5::STRICT_REFS);
+            $_ eq "subs" && (${^H} &= ~$Perlito5::STRICT_SUBS);
+            $_ eq "vars" && (${^H} &= ~$Perlito5::STRICT_VARS)
+        }
     }
     1
 }
@@ -9022,9 +9037,6 @@ use feature 'say';
     our @UNITCHECK_BLOCK = ();
     our %BEGIN_SCRATCHPAD = ();
     our $PROTO = {};
-    our $STRICT_REFS = 2;
-    our $STRICT_SUBS = 512;
-    our $STRICT_VARS = 1024;
     our @ANNOTATION;
     sub Perlito5::set_global_phase {
         my $phase = shift;

@@ -44,10 +44,7 @@ our @UNITCHECK_BLOCK = ();    # UNITCHECK block LIFO - array of subs
 our %BEGIN_SCRATCHPAD = (); # list of "my" variables captured in BEGIN blocks
 our $PROTO           = {};
 
-# from strict.pm
-our $STRICT_REFS = 0x00000002;
-our $STRICT_SUBS = 0x00000200;
-our $STRICT_VARS = 0x00000400;
+# $Perlito5::STRICT_* - See Perlito5X::strict.pm
 
 # the Perl-to-Java compiler uses this syntax for "annotations":
 #   package Put { import => 'java.Put' };
