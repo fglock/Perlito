@@ -411,10 +411,6 @@ use feature 'say';
         if ($m) {;
             $p = $m->{'to'}
         }
-        if ($str->[$p] eq '!' && ($str->[$p + 1] eq '=' || $str->[$p + 1] eq '~')) {
-            $m_name->{'capture'} = ['term', Perlito5::AST::Apply::->new('code', $name, 'namespace', $namespace, 'arguments', [], 'bareword', 1)];
-            return $m_name
-        }
         my $invocant;
         my $is_subroutine_name;
         my $effective_name = ($namespace || $Perlito5::PKG_NAME) . '::' . $name;
@@ -486,7 +482,13 @@ use feature 'say';
             $m_name->{'to'} = $p;
             return $m_name
         }
-        my $sig;
+        my $sig = undef;
+        {
+            my $op = $str->[$p] . $str->[$p + 1];
+            if ($op eq '!=' || $op eq '!~' || $op eq '=~') {;
+                $sig = ''
+            }
+        }
         if (exists($Perlito5::PROTO->{$effective_name})) {;
             $sig = $Perlito5::PROTO->{$effective_name}
         }
@@ -500,7 +502,6 @@ use feature 'say';
                 $m->{'capture'} = ['term', $m->{'capture'}];
                 return $m
             }
-            $sig = undef
         }
         my $has_paren = 0;
         if (defined($sig)) {

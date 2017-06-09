@@ -77,20 +77,6 @@ sub term_bareword {
         $p = $m->{to};
     }
 
-    if ( $str->[$p] eq '!' && ( $str->[$p+1] eq '=' || $str->[$p+1] eq '~' ) ) {
-        # != or !~
-        # "X::y != ..."  subroutine call
-        $m_name->{capture} = [ 'term', 
-                    Perlito5::AST::Apply->new(
-                        code      => $name,
-                        namespace => $namespace,
-                        arguments => [],
-                        bareword  => 1
-                    )
-                ];
-        return $m_name;
-    }
-
     # check for indirect-object
     my $invocant;
     my $is_subroutine_name;
@@ -253,7 +239,15 @@ sub term_bareword {
     #   $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{$_} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } '
 
 
-    my $sig;
+    my $sig = undef;
+
+    {
+        my $op = $str->[$p] . $str->[$p+1];
+        if ( $op eq '!=' || $op eq '!~' || $op eq '=~' ) {
+            $sig = '';
+        }
+    }
+
     if ( exists $Perlito5::PROTO->{$effective_name} ) {
         # subroutine was predeclared
         $sig = $Perlito5::PROTO->{$effective_name};
@@ -291,8 +285,6 @@ sub term_bareword {
             $m->{capture} = [ 'term', $m->{capture} ];
             return $m;
         }
-
-        $sig = undef;
     }
 
     # TODO - parse the parameter list according to the sig
