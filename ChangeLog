@@ -17,11 +17,13 @@
 -- fix fat-arrow in argument lists
 -- indented heredoc with <<~"tag"
 -- use $^H and %^H
+-- set Perl version to 5.026
 
 - Java:
 -- "require"
 -- "opendir", "readdir", "closedir"
 -- tied hash
+-- /xx regex modifier
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:

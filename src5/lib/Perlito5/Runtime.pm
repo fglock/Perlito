@@ -10,10 +10,10 @@ $!  = ''            unless defined $!;
 $;  = chr(28)       unless defined $;;
 $?  = 0             unless defined $?;
 # $[  = 0             unless defined $[;    # "assignment to $[ is deprecated"
-$]  = '5.022000'    unless $];      # $] is defined(), but ${"main::]"} is not
-$^V = bless( { 'original' => 'v5.22.0',
+$]  = '5.026000'    unless $];      # $] is defined(), but ${"main::]"} is not
+$^V = bless( { 'original' => 'v5.26.0',
                'qv'       => 1,
-               'version'  => [ 5, 22, 0 ]
+               'version'  => [ 5, 26, 0 ]
              }, 'version' )
                     unless defined $^V;
 $^H = 0;

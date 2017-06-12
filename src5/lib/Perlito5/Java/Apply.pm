@@ -19,7 +19,10 @@ package Perlito5::AST::Apply;
             ( $flags{'s'} ? 'Pattern.DOTALL'           : () ),
         ) || '0';
 
-        my $s = 'new PlRegex(' . Perlito5::Java::to_str( $regex ) . ', ' . $flag_string . ')';
+        my $flag_xx = 'false';
+        $flag_xx = 'true' if $modifier =~ /xx/;     # Perl 5.26 "/xx"
+
+        my $s = 'new PlRegex(' . Perlito5::Java::to_str( $regex ) . ', ' . $flag_string . ', ' . $flag_xx . ')';
         if ( ref( $regex ) eq "Perlito5::AST::Buf" ) {
             # precompile regex
             my $label = Perlito5::Java::get_label();

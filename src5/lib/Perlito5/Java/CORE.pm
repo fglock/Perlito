@@ -648,7 +648,7 @@ EOT
                 plReg = PlCx.SPLIT_SPACE;
             }
             else {
-                plReg = new PlRegex(regs, Pattern.MULTILINE);
+                plReg = new PlRegex(regs, Pattern.MULTILINE, false);
             }
         }
 

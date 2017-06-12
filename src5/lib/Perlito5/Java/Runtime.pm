@@ -369,7 +369,7 @@ class PlCx {
     public static final String OVERLOAD_STRING   = "(\"\"";  // (""
     public static final String OVERLOAD_NUM      = "(0+";
     public static final String OVERLOAD_BOOL     = "(bool";
-    public static final PlRegex SPLIT_SPACE      = new PlRegex("\\s+", Pattern.MULTILINE);
+    public static final PlRegex SPLIT_SPACE      = new PlRegex("\\s+", Pattern.MULTILINE, false);
 EOT
     . "    " . join("\n    ",
         map { "public static final PlInt " . ($_ < 0 ? "MIN" : "INT") . abs($_) . " = new PlInt($_);" }
@@ -1178,25 +1178,37 @@ class PerlOp {
         return v;
     }
 
-    private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length) {
+    private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length, boolean flag_xx) {
         // [ ... ]
-        int offset3 = offset;
-        for ( ; offset3 < length; ) {
-            final int c3 = s.codePointAt(offset3);
+        for ( ; offset < length; ) {
+            final int c3 = s.codePointAt(offset);
             switch (c3) {
                 case ']':
                     sb.append(Character.toChars(c3));
-                    return offset3;
+                    return offset;
+                case '\\':
+                    sb.append(Character.toChars(c3));
+                    if (offset < length) {
+                        offset++;
+                        int c2 = s.codePointAt(offset);
+                        sb.append(Character.toChars(c2));
+                    }
+                    break;
                 case ' ':
-                    sb.append("\\ ");   // make this space a "token", even inside /x
+                    if (flag_xx) {
+                        sb.append(Character.toChars(c3));
+                    }
+                    else {
+                        sb.append("\\ ");   // make this space a "token", even inside /x
+                    }
                     break;
                 default:
                     sb.append(Character.toChars(c3));
                     break;
             }
-            offset3++;
+            offset++;
         }
-        return offset3;
+        return offset;
     }
     private static int _regex_skip_comment(int offset, String s, int length) {
         // [ ... ]
@@ -1225,7 +1237,7 @@ class PerlOp {
     // \0       becomes: \00 - Java requires the extra zero
     // (?#...)  inline comment is removed
     //
-    public static String regex_escape(String s) {
+    public static String regex_escape(String s, boolean flag_xx) {
         // escape spaces in character classes
         final int length = s.length();
         StringBuilder sb = new StringBuilder();
@@ -1258,7 +1270,7 @@ class PerlOp {
                 case '[':   // character class
                             sb.append(Character.toChars(c));
                             offset++;
-                            offset = _regex_character_class_escape(offset, s, sb, length);
+                            offset = _regex_character_class_escape(offset, s, sb, length, flag_xx);
                             break;
                 case '(':   // comment (?# ... )
                             if (offset < length - 2) {
@@ -1333,7 +1345,7 @@ class PerlOp {
                             // TODO - character class in tr()
                             sb.append(Character.toChars(c));
                             offset++;
-                            offset = _regex_character_class_escape(offset, s, sb, length);
+                            offset = _regex_character_class_escape(offset, s, sb, length, false);
                             break;
                 default:    // normal char
                             sb.append(Character.toChars(c));
@@ -1577,7 +1589,7 @@ class PerlOp {
     }
     public static final PlObject match(PlObject s, PlObject pat, int want, boolean global, boolean c_flag) {
         // TODO - cache the compiled pattern
-        return match(s, new PlRegex(pat, 0), want, global, c_flag);
+        return match(s, new PlRegex(pat, 0, false), want, global, c_flag);
     }
 
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlClosure rep, int want, boolean global) {
@@ -1698,14 +1710,14 @@ class PerlOp {
             PlCORE.die("Can't modify constant item in substitution (s///)");
         }
         // TODO - cache the compiled pattern
-        return replace((PlLvalue)s, new PlRegex(pat, 0), rep, want, global);
+        return replace((PlLvalue)s, new PlRegex(pat, 0, false), rep, want, global);
     }
     public static final PlObject replace(PlObject s, PlObject pat, String rep, int want, boolean global) {
         if (!s.is_lvalue()) {
             PlCORE.die("Can't modify constant item in substitution (s///)");
         }
         // TODO - cache the compiled pattern
-        return replace((PlLvalue)s, new PlRegex(pat, 0), rep, want, global);
+        return replace((PlLvalue)s, new PlRegex(pat, 0, false), rep, want, global);
     }
 
     // $v =~ tr/xyz/abc/i
@@ -3027,12 +3039,14 @@ class PlRegex extends PlReference {
     public Pattern p;
     public String  original_string;
     // public Matcher m;
+    public boolean flag_xx;
     public static final PlString REF = new PlString("Regexp");
 
-    public PlRegex(String p, int flags) {
-        this.p = Pattern.compile(PerlOp.regex_escape(p), flags);
+    public PlRegex(String p, int flags, boolean flag_xx) {
+        this.flag_xx = flag_xx;
+        this.p = Pattern.compile(PerlOp.regex_escape(p, flag_xx), flags);
     }
-    public PlRegex(PlObject p, int flags) {
+    public PlRegex(PlObject p, int flags, boolean flag_xx) {
         if (p.is_lvalue()) {
             p = p.get();
         }
@@ -3040,7 +3054,8 @@ class PlRegex extends PlReference {
             this.p = ((PlRegex)p).p;    // reuse compiled regex; ignore any difference in flags
         }
         else {
-            this.p = Pattern.compile(PerlOp.regex_escape(p.toString()), flags);
+            this.flag_xx = flag_xx;
+            this.p = Pattern.compile(PerlOp.regex_escape(p.toString(), flag_xx), flags);
         }
     }
     public String toString() {
@@ -3065,6 +3080,9 @@ class PlRegex extends PlReference {
                 sb.append("i");
             if ((flags & Pattern.COMMENTS) == 0)
                 sb.append("x");
+            if (flag_xx) {
+                sb.append("x");
+            }
             if ((flags & Pattern.DOTALL) == 0)
                 sb.append("s");
             if ((flags & Pattern.MULTILINE) == 0)
