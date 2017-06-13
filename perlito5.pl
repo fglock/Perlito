@@ -27555,18 +27555,6 @@ class PlLvalue extends PlObject {
     public PlObject delete(PlObject a) {
         return this.o.delete(a);
     }
-    public String toString() {
-        return this.o.toString();
-    }
-    public long to_long() {
-        return this.o.to_long();
-    }
-    public double to_double() {
-        return this.o.to_double();
-    }
-    public boolean to_boolean() {
-        return this.o.to_boolean();
-    }
     public PlObject num_cmp(PlObject b) {
         return this.o.num_cmp(b);
     }
@@ -27585,50 +27573,8 @@ class PlLvalue extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . "    public PlObject to_num() {
-        return this.o.to_num();
-    }
-    public boolean is_int() {
-        return this.o.is_int();
-    }
-    public boolean is_num() {
-        return this.o.is_num();
-    }
-    public boolean is_string() {
-        return this.o.is_string();
-    }
-    public boolean is_bool() {
-        return this.o.is_bool();
-    }
-    public boolean is_undef() {
-        return this.o.is_undef();
-    }
-    public boolean is_lvalue() {
+        } keys(%number_binop))) . "    public boolean is_lvalue() {
         return true;
-    }
-    public boolean is_ref() {
-        return this.o.is_ref();
-    }
-    public boolean is_regex() {
-        return this.o.is_regex();
-    }
-    public boolean is_coderef() {
-        return this.o.is_coderef();
-    }
-    public boolean is_filehandle() {
-        return this.o.is_filehandle();
-    }
-    public boolean is_scalarref() {
-        return this.o.is_scalarref();
-    }
-    public boolean is_arrayref() {
-        return this.o.is_arrayref();
-    }
-    public boolean is_hashref() {
-        return this.o.is_hashref();
-    }
-    public boolean is_integer_range() {
-        return this.o.is_integer_range();
     }
 
     public PlObject pre_decr() {
@@ -27656,16 +27602,6 @@ class PlLvalue extends PlObject {
         this.o = this.o._incr();
         return res;
     }
-
-" . (join('', map {
-            my $op = $_;
-            "    public PlObject " . $op . "() {
-        return this.o." . $op . "();
-    }
-"
-        } sort {;
-            $a cmp $b
-        } @number_unary)) . "
     public PlObject pow(PlObject arg)    { return this.o.pow(arg); }
     public PlObject atan2(PlObject arg)  { return this.o.atan2(arg); }
 
@@ -27675,24 +27611,14 @@ class PlLvalue extends PlObject {
     public PlObject bless(String className) {
         return this.o.bless(className);
     }
-    public PlClass blessed_class() {
-        return this.o.blessed_class();
+
+" . (join('', map {
+            my($op, $type) = @{$_};
+            "    public " . $type . " " . $op . "() {
+        return this.o." . $op . "();
     }
-    public PlObject blessed() {
-        return this.o.blessed();
-    }
-    public PlString ref() {
-        return this.o.ref();
-    }
-    public PlObject refaddr() {
-        // Scalar::Util::refaddr()
-        return this.o.refaddr();
-    }
-    public PlObject reftype() {
-        // Scalar::Util::reftype()
-        return this.o.reftype();
-    }
-" . join('', (map {
+"
+        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], ("is_int", "is_num", "is_string", "is_bool", "is_undef", "is_ref", "is_regex", "is_coderef", "is_filehandle", "is_scalarref", "is_arrayref", "is_hashref", "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"])) . join('', (map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{"java_type"};
             my $perl_to_java = $class->{"perl_to_java"};
