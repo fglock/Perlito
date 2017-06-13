@@ -5874,18 +5874,6 @@ EOT
     public PlObject to_num() {
         return this.scalar();
     }
-    public boolean is_int() {
-        return false;
-    }
-    public boolean is_num() {
-        return false;
-    }
-    public boolean is_string() {
-        return false;
-    }
-    public boolean is_bool() {
-        return false;
-    }
     public boolean is_array() {
         return true;
     }
@@ -6354,18 +6342,6 @@ EOT
     public PlObject to_num() {
         return this.scalar();
     }
-    public boolean is_int() {
-        return false;
-    }
-    public boolean is_num() {
-        return false;
-    }
-    public boolean is_string() {
-        return false;
-    }
-    public boolean is_bool() {
-        return false;
-    }
     public boolean is_hash() {
         return true;
     }
@@ -6394,9 +6370,6 @@ class PlUndef extends PlObject {
         return "";
     }
     public boolean to_boolean() {
-        return false;
-    }
-    public boolean is_bool() {
         return false;
     }
     public boolean is_undef() {
