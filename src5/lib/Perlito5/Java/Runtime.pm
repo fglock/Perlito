@@ -232,7 +232,7 @@ EOT
 
     my %java_classes = %{ $args{java_classes} // {} };
 
-    my @number_unary = qw/ op_int neg abs sqrt cos sin exp log /;
+    my @number_unary = qw/ op_int neg complement abs sqrt cos sin exp log /;
 
     my @boolean_unary = (
         'is_int',

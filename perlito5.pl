@@ -22912,7 +22912,7 @@ import java.util.regex.Pattern;
 ")
         }
         my %java_classes = %{$args{"java_classes"} // {}};
-        my @number_unary = ("op_int", "neg", "abs", "sqrt", "cos", "sin", "exp", "log");
+        my @number_unary = ("op_int", "neg", "complement", "abs", "sqrt", "cos", "sin", "exp", "log");
         my @boolean_unary = ("is_int", "is_num", "is_string", "is_bool", "is_undef", "is_ref", "is_regex", "is_coderef", "is_filehandle", "is_scalarref", "is_arrayref", "is_hashref");
         my %number_binop = ("add", {"op", "+", "returns", "PlInt", "num_returns", "PlDouble"}, "sub", {"op", "-", "returns", "PlInt", "num_returns", "PlDouble"}, "mul", {"op", "*", "returns", "PlInt", "num_returns", "PlDouble"}, "div", {"op", "/", "returns", "PlDouble", "num_returns", "PlDouble"}, "num_eq", {"op", "==", "returns", "PlBool", "num_returns", "PlBool"}, "num_ne", {"op", "!=", "returns", "PlBool", "num_returns", "PlBool"}, "num_lt", {"op", "<", "returns", "PlBool", "num_returns", "PlBool"}, "num_le", {"op", "<=", "returns", "PlBool", "num_returns", "PlBool"}, "num_gt", {"op", ">", "returns", "PlBool", "num_returns", "PlBool"}, "num_ge", {"op", ">=", "returns", "PlBool", "num_returns", "PlBool"});
         my %string_binop = ("str_eq", {"op", "== 0", "returns", "PlBool"}, "str_ne", {"op", "!= 0", "returns", "PlBool"}, "str_lt", {"op", "< 0", "returns", "PlBool"}, "str_le", {"op", "<= 0", "returns", "PlBool"}, "str_gt", {"op", "> 0", "returns", "PlBool"}, "str_ge", {"op", ">= 0", "returns", "PlBool"});
