@@ -25251,6 +25251,7 @@ class PlObject {
     // for compatibility with the swap flag in overload
     public PlObject pow2(PlObject arg)    { return arg.pow(this);   }
     public PlObject atan22(PlObject arg)  { return arg.atan2(this); }
+    public PlObject mod2(PlObject arg)    { return arg.mod(this);   }
 
     public PlObject pre_decr() {
         // --\$x
@@ -25487,7 +25488,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", keys(%number_binop)))) . "
+        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . "
 " . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
@@ -25869,7 +25870,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", keys(%number_binop)))) . "
+        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . "
 " . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
@@ -26014,7 +26015,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", keys(%number_binop)))) . "
+        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . "
 " . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
@@ -26206,6 +26207,7 @@ class PlClass {
             $perl eq "num_cmp" && ($native = "<=>");
             $perl eq "pow" && ($native = "**");
             $perl eq "atan2" && ($native = "atan2");
+            $perl eq "mod" && ($native = "%");
             $perl eq "int_shr" && ($native = ">>");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
@@ -26225,7 +26227,7 @@ class PlClass {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . (join('', map {
             my $op = $_;
             "    public static PlObject overload_" . $op . "(PlObject o) {
         return PlCORE.die(\"TODO - overload " . $op . "\");

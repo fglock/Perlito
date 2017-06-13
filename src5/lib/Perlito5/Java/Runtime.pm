@@ -2657,6 +2657,7 @@ EOT
     // for compatibility with the swap flag in overload
     public PlObject pow2(PlObject arg)    { return arg.pow(this);   }
     public PlObject atan22(PlObject arg)  { return arg.atan2(this); }
+    public PlObject mod2(PlObject arg)    { return arg.mod(this);   }
 
     public PlObject pre_decr() {
         // --$x
@@ -2905,6 +2906,7 @@ EOT
                 'num_cmp',
                 'pow',
                 'atan2',
+                'mod',
                 keys %number_binop,
             )
       ))
@@ -3307,6 +3309,7 @@ EOT
                 'num_cmp',
                 'pow',
                 'atan2',
+                'mod',
                 keys %number_binop,
             )
       ))
@@ -3469,6 +3472,7 @@ EOT
                 'num_cmp',
                 'pow',
                 'atan2',
+                'mod',
                 keys %number_binop,
             )
       ))
@@ -3675,6 +3679,7 @@ EOT
             $native = "<=>"   if $perl eq "num_cmp";
             $native = "**"    if $perl eq "pow";
             $native = "atan2" if $perl eq "atan2";
+            $native = "%"     if $perl eq "mod";
             $native = ">>"    if $perl eq "int_shr";
 "    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
@@ -3697,6 +3702,7 @@ EOT
                 'num_cmp',
                 'pow',
                 'atan2',
+                'mod',
                 keys %number_binop,
             )
       ))
