@@ -25248,11 +25248,6 @@ class PlObject {
     public PlObject pow(PlObject arg)    { return new PlDouble(Math.pow(this.to_double(), arg.to_double()));   }
     public PlObject atan2(PlObject arg)  { return new PlDouble(Math.atan2(this.to_double(), arg.to_double())); }
 
-    // for compatibility with the swap flag in overload
-    public PlObject pow2(PlObject arg)    { return arg.pow(this);   }
-    public PlObject atan22(PlObject arg)  { return arg.atan2(this); }
-    public PlObject mod2(PlObject arg)    { return arg.mod(this);   }
-
     public PlObject pre_decr() {
         // --\$x
         PlCORE.die(\"Can't modify constant item in predecrement (--)\");
@@ -26220,7 +26215,7 @@ class PlClass {
             o = PlClass.overload_to_number(o);
         }
         if (swap.to_boolean()) {
-            return o." . $perl . "2(other);
+            return other." . $perl . "(o);
         }
         return o." . $perl . "(other);
     }
