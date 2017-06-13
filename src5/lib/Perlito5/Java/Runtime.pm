@@ -250,16 +250,19 @@ EOT
     );
 
     my %number_binop = (
-        add    => { op => '+',  returns => 'PlInt',  num_returns => 'PlDouble'}, 
-        sub    => { op => '-',  returns => 'PlInt',  num_returns => 'PlDouble'},
-        mul    => { op => '*',  returns => 'PlInt',  num_returns => 'PlDouble'},
-        div    => { op => '/',  returns => 'PlDouble',  num_returns => 'PlDouble'},
-        num_eq => { op => '==', returns => 'PlBool', num_returns => 'PlBool' },
-        num_ne => { op => '!=', returns => 'PlBool', num_returns => 'PlBool' },
-        num_lt => { op => '<',  returns => 'PlBool', num_returns => 'PlBool' },
-        num_le => { op => '<=', returns => 'PlBool', num_returns => 'PlBool' },
-        num_gt => { op => '>',  returns => 'PlBool', num_returns => 'PlBool' },
-        num_ge => { op => '>=', returns => 'PlBool', num_returns => 'PlBool' },
+        add     => { op => '+',  returns => 'PlInt',    num_returns => 'PlDouble'}, 
+        sub     => { op => '-',  returns => 'PlInt',    num_returns => 'PlDouble'},
+        mul     => { op => '*',  returns => 'PlInt',    num_returns => 'PlDouble'},
+        div     => { op => '/',  returns => 'PlDouble', num_returns => 'PlDouble'},
+        num_eq  => { op => '==', returns => 'PlBool',   num_returns => 'PlBool' },
+        num_ne  => { op => '!=', returns => 'PlBool',   num_returns => 'PlBool' },
+        num_lt  => { op => '<',  returns => 'PlBool',   num_returns => 'PlBool' },
+        num_le  => { op => '<=', returns => 'PlBool',   num_returns => 'PlBool' },
+        num_gt  => { op => '>',  returns => 'PlBool',   num_returns => 'PlBool' },
+        num_ge  => { op => '>=', returns => 'PlBool',   num_returns => 'PlBool' },
+        int_and => { op => '&',  returns => 'PlInt',    num_returns => 'PlInt'  }, 
+        int_or  => { op => '|',  returns => 'PlInt',    num_returns => 'PlInt'  }, 
+        int_xor => { op => '^',  returns => 'PlInt',    num_returns => 'PlInt'  }, 
     );
     my %string_binop = (
         str_eq => { op => '== 0', returns => 'PlBool' },
@@ -6631,9 +6634,21 @@ class PlDouble extends PlObject {
     }
 EOT
     . ( join('', map {
-            my $perl = $_;
-            my $native  = $number_binop{$perl}{op};
-            my $returns = $number_binop{$perl}{num_returns};
+                my $perl = $_;
+                my $native  = $number_binop{$perl}{op};
+                my $returns = $number_binop{$perl}{num_returns};
+                if ($returns eq 'PlInt') {
+"    public PlObject ${perl}(PlObject s) {
+        // num - int, num - num
+        return new ${returns}( this.to_long() ${native} s.to_long() );
+    }
+    public PlObject ${perl}2(PlObject s) {
+        // int - num
+        return new ${returns}( s.to_long() ${native} this.to_long() );
+    }
+"
+                }
+                else {
 "    public PlObject ${perl}(PlObject s) {
         // num - int, num - num
         return new ${returns}( this.i ${native} s.to_double() );
@@ -6643,6 +6658,7 @@ EOT
         return new ${returns}( s.to_double() ${native} this.i );
     }
 "
+                }
             }
             sort keys %number_binop ))
 
