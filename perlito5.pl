@@ -22913,6 +22913,7 @@ import java.util.regex.Pattern;
         }
         my %java_classes = %{$args{"java_classes"} // {}};
         my @number_unary = ("op_int", "neg", "abs", "sqrt", "cos", "sin", "exp", "log");
+        my @boolean_unary = ("is_int", "is_num", "is_string", "is_bool", "is_undef", "is_ref", "is_regex", "is_coderef", "is_filehandle", "is_scalarref", "is_arrayref", "is_hashref");
         my %number_binop = ("add", {"op", "+", "returns", "PlInt", "num_returns", "PlDouble"}, "sub", {"op", "-", "returns", "PlInt", "num_returns", "PlDouble"}, "mul", {"op", "*", "returns", "PlInt", "num_returns", "PlDouble"}, "div", {"op", "/", "returns", "PlDouble", "num_returns", "PlDouble"}, "num_eq", {"op", "==", "returns", "PlBool", "num_returns", "PlBool"}, "num_ne", {"op", "!=", "returns", "PlBool", "num_returns", "PlBool"}, "num_lt", {"op", "<", "returns", "PlBool", "num_returns", "PlBool"}, "num_le", {"op", "<=", "returns", "PlBool", "num_returns", "PlBool"}, "num_gt", {"op", ">", "returns", "PlBool", "num_returns", "PlBool"}, "num_ge", {"op", ">=", "returns", "PlBool", "num_returns", "PlBool"});
         my %string_binop = ("str_eq", {"op", "== 0", "returns", "PlBool"}, "str_ne", {"op", "!= 0", "returns", "PlBool"}, "str_lt", {"op", "< 0", "returns", "PlBool"}, "str_le", {"op", "<= 0", "returns", "PlBool"}, "str_gt", {"op", "> 0", "returns", "PlBool"}, "str_ge", {"op", ">= 0", "returns", "PlBool"});
         my %native_to_perl = ("int", "PlInt", "double", "PlDouble", "boolean", "PlBool", "String", "PlString");
@@ -24964,9 +24965,6 @@ class PlObject {
     public PlObject set_end_of_array_index(PlObject o) {
         return PlCORE.die(\"Not an ARRAY reference\");
     }
-    public boolean is_undef() {
-        return false;
-    }
     public PlObject apply(int want, PlArray List__) {
         // \$ perl -e ' \$a = 5; \$a->() '
         // Undefined subroutine &main::5 called
@@ -25169,18 +25167,16 @@ class PlObject {
     public PlObject mod(PlObject o) {
         return this.to_num().mod(o);
     }
-    public boolean is_int() {
+
+" . (join('', map {
+            my $op = $_;
+            "    public boolean " . $op . "() {
         return false;
     }
-    public boolean is_num() {
-        return false;
-    }
-    public boolean is_string() {
-        return false;
-    }
-    public boolean is_bool() {
-        return false;
-    }
+"
+        } sort {;
+            $a cmp $b
+        } @boolean_unary)) . "
     public boolean is_hash() {
         return false;
     }
@@ -25193,31 +25189,10 @@ class PlObject {
     public boolean is_lvalue() {
         return false;
     }
-    public boolean is_ref() {
-        return false;
-    }
     public boolean is_typeglobref() {
         return false;
     }
-    public boolean is_scalarref() {
-        return false;
-    }
-    public boolean is_arrayref() {
-        return false;
-    }
-    public boolean is_hashref() {
-        return false;
-    }
-    public boolean is_regex() {
-        return false;
-    }
     public boolean is_regex_result() {
-        return false;
-    }
-    public boolean is_coderef() {
-        return false;
-    }
-    public boolean is_filehandle() {
         return false;
     }
     public boolean is_integer_range() {
@@ -27117,44 +27092,18 @@ class PlLazyLvalue extends PlLvalue {
         } keys(%number_binop))) . "    public PlObject to_num() {
         return this.get().to_num();
     }
-    public boolean is_int() {
-        return this.get().is_int();
+
+" . (join('', map {
+            my $op = $_;
+            "    public boolean " . $op . "() {
+        return this.get()." . $op . "();
     }
-    public boolean is_num() {
-        return this.get().is_num();
-    }
-    public boolean is_string() {
-        return this.get().is_string();
-    }
-    public boolean is_bool() {
-        return this.get().is_bool();
-    }
-    public boolean is_undef() {
-        return this.get().is_undef();
-    }
+"
+        } sort {;
+            $a cmp $b
+        } @boolean_unary)) . "
     public boolean is_lvalue() {
         return true;
-    }
-    public boolean is_ref() {
-        return this.get().is_ref();
-    }
-    public boolean is_regex() {
-        return this.get().is_regex();
-    }
-    public boolean is_coderef() {
-        return this.get().is_coderef();
-    }
-    public boolean is_filehandle() {
-        return this.get().is_filehandle();
-    }
-    public boolean is_scalarref() {
-        return this.get().is_scalarref();
-    }
-    public boolean is_arrayref() {
-        return this.get().is_arrayref();
-    }
-    public boolean is_hashref() {
-        return this.get().is_hashref();
     }
     public boolean is_integer_range() {
         return this.get().is_integer_range();
@@ -27618,7 +27567,7 @@ class PlLvalue extends PlObject {
         return this.o." . $op . "();
     }
 "
-        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], ("is_int", "is_num", "is_string", "is_bool", "is_undef", "is_ref", "is_regex", "is_coderef", "is_filehandle", "is_scalarref", "is_arrayref", "is_hashref", "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"])) . join('', (map {
+        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"])) . join('', (map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{"java_type"};
             my $perl_to_java = $class->{"perl_to_java"};
