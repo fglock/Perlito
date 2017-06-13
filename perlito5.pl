@@ -25500,7 +25500,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } keys(%string_binop))) . "
+        } ("str_cmp", keys(%string_binop)))) . "
     public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
     public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
@@ -25885,7 +25885,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } keys(%string_binop))) . "
+        } ("str_cmp", keys(%string_binop)))) . "
     public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
     public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
@@ -26033,7 +26033,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } keys(%string_binop))) . "
+        } ("str_cmp", keys(%string_binop)))) . "
     public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
     public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
@@ -26251,6 +26251,7 @@ class PlClass {
         } @number_unary)) . (join('', map {
             my $perl = $_;
             my $native = $string_binop{$perl}->{"op"};
+            $perl eq "str_cmp" && ($native = "cmp");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
@@ -26269,7 +26270,7 @@ class PlClass {
 "
         } sort {;
             $a cmp $b
-        } keys(%string_binop))) . "
+        } ("str_cmp", keys(%string_binop)))) . "
     public static PlObject overload_pow(PlObject o, PlObject arg)    { return PlCORE.die(\"TODO - overload pow\"); }
     public static PlObject overload_atan2(PlObject o, PlObject arg)  { return PlCORE.die(\"TODO - overload atan2\"); }
 

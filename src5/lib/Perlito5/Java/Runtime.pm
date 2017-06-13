@@ -2917,7 +2917,11 @@ EOT
     }
 "
             }
-            sort keys %string_binop ))
+            sort (
+                'str_cmp',
+                keys %string_binop,
+            )
+      ))
 
     . <<'EOT'
 
@@ -3316,7 +3320,11 @@ EOT
     }
 "
             }
-            sort keys %string_binop ))
+            sort (
+                'str_cmp',
+                keys %string_binop,
+            )
+      ))
 
     . <<'EOT'
 
@@ -3475,7 +3483,11 @@ EOT
     }
 "
             }
-            sort keys %string_binop ))
+            sort (
+                'str_cmp',
+                keys %string_binop,
+            )
+      ))
 
     . <<'EOT'
 
@@ -3699,6 +3711,7 @@ EOT
     . ( join('', map {
             my $perl = $_;
             my $native  = $string_binop{$perl}{op};
+            $native = "cmp" if $perl eq "str_cmp";
 "    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
@@ -3716,7 +3729,11 @@ EOT
     }
 "
             }
-            sort keys %string_binop ))
+            sort (
+                'str_cmp',
+                keys %string_binop,
+            )
+      ))
 
     . <<'EOT'
 
