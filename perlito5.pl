@@ -25483,7 +25483,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . "
+        } ("num_cmp", keys(%number_binop)))) . "
 " . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
@@ -25860,7 +25860,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . "
+        } ("num_cmp", keys(%number_binop)))) . "
 " . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
@@ -26000,7 +26000,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . "
+        } ("num_cmp", keys(%number_binop)))) . "
 " . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
@@ -26180,7 +26180,21 @@ class PlClass {
         }
         return PlCx.TRUE;
     }
-
+    public static PlObject overload_num_cmp(PlObject o, PlObject other, PlObject swap) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null ) {
+            PlObject methodCode = bless.method_lookup(\"(<=>\", 0);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            }
+            // fallback
+            o = PlClass.overload_to_number(o);
+        }
+        if (swap.to_boolean()) {
+            return o.num_cmp2(other);
+        }
+        return o.num_cmp(other);
+    }
 " . (join('', map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{"op"};
