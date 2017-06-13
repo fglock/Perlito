@@ -250,19 +250,21 @@ EOT
     );
 
     my %number_binop = (
-        add     => { op => '+',  returns => 'PlInt',    num_returns => 'PlDouble'}, 
-        sub     => { op => '-',  returns => 'PlInt',    num_returns => 'PlDouble'},
-        mul     => { op => '*',  returns => 'PlInt',    num_returns => 'PlDouble'},
-        div     => { op => '/',  returns => 'PlDouble', num_returns => 'PlDouble'},
-        num_eq  => { op => '==', returns => 'PlBool',   num_returns => 'PlBool' },
-        num_ne  => { op => '!=', returns => 'PlBool',   num_returns => 'PlBool' },
-        num_lt  => { op => '<',  returns => 'PlBool',   num_returns => 'PlBool' },
-        num_le  => { op => '<=', returns => 'PlBool',   num_returns => 'PlBool' },
-        num_gt  => { op => '>',  returns => 'PlBool',   num_returns => 'PlBool' },
-        num_ge  => { op => '>=', returns => 'PlBool',   num_returns => 'PlBool' },
-        int_and => { op => '&',  returns => 'PlInt',    num_returns => 'PlInt'  }, 
-        int_or  => { op => '|',  returns => 'PlInt',    num_returns => 'PlInt'  }, 
-        int_xor => { op => '^',  returns => 'PlInt',    num_returns => 'PlInt'  }, 
+        add     => { op => '+',   returns => 'PlInt',    num_returns => 'PlDouble'}, 
+        sub     => { op => '-',   returns => 'PlInt',    num_returns => 'PlDouble'},
+        mul     => { op => '*',   returns => 'PlInt',    num_returns => 'PlDouble'},
+        div     => { op => '/',   returns => 'PlDouble', num_returns => 'PlDouble'},
+        num_eq  => { op => '==',  returns => 'PlBool',   num_returns => 'PlBool' },
+        num_ne  => { op => '!=',  returns => 'PlBool',   num_returns => 'PlBool' },
+        num_lt  => { op => '<',   returns => 'PlBool',   num_returns => 'PlBool' },
+        num_le  => { op => '<=',  returns => 'PlBool',   num_returns => 'PlBool' },
+        num_gt  => { op => '>',   returns => 'PlBool',   num_returns => 'PlBool' },
+        num_ge  => { op => '>=',  returns => 'PlBool',   num_returns => 'PlBool' },
+        int_and => { op => '&',   returns => 'PlInt',    num_returns => 'PlInt'  }, 
+        int_or  => { op => '|',   returns => 'PlInt',    num_returns => 'PlInt'  }, 
+        int_xor => { op => '^',   returns => 'PlInt',    num_returns => 'PlInt'  }, 
+        int_shr => { op => '>>>', returns => 'PlInt',    num_returns => 'PlInt'  }, 
+        int_shl => { op => '<<',  returns => 'PlInt',    num_returns => 'PlInt'  }, 
     );
     my %string_binop = (
         str_eq => { op => '== 0', returns => 'PlBool' },
@@ -3673,6 +3675,7 @@ EOT
             $native = "<=>"   if $perl eq "num_cmp";
             $native = "**"    if $perl eq "pow";
             $native = "atan2" if $perl eq "atan2";
+            $native = ">>"    if $perl eq "int_shr";
 "    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {

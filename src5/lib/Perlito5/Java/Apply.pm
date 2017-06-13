@@ -322,33 +322,28 @@ package Perlito5::AST::Apply;
         },
         'infix:<>>>' => sub {
             my ($self, $level, $wantarray) = @_;
-              'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() >>> '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.int_shr('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<<<>' => sub {
             my ($self, $level, $wantarray) = @_;
-              'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() << '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.int_shl('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<^>' => sub {
             my ($self, $level, $wantarray) = @_;
-              'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() ^ '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.int_xor('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<&>' => sub {
             my ($self, $level, $wantarray) = @_;
-              'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() & '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.int_and('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<|>' => sub {
             my ($self, $level, $wantarray) = @_;
-              'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() | '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.int_or('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<+>' => sub {
             my ($self, $level, $wantarray) = @_;

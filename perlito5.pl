@@ -17571,19 +17571,19 @@ use feature 'say';
             return $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".mod(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
         }, "infix:<>>>", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "new PlInt(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".to_long() >>> " . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ".to_long())"
+            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_shr(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
         }, "infix:<<<>", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "new PlInt(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".to_long() << " . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ".to_long())"
+            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_shl(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
         }, "infix:<^>", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "new PlInt(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".to_long() ^ " . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ".to_long())"
+            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_xor(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
         }, "infix:<&>", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "new PlInt(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".to_long() & " . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ".to_long())"
+            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_and(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
         }, "infix:<|>", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "new PlInt(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".to_long() | " . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ".to_long())"
+            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_or(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
         }, "infix:<+>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".add(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
@@ -22914,7 +22914,7 @@ import java.util.regex.Pattern;
         my %java_classes = %{$args{"java_classes"} // {}};
         my @number_unary = ("op_int", "neg", "complement", "abs", "sqrt", "cos", "sin", "exp", "log");
         my @boolean_unary = ("is_int", "is_num", "is_string", "is_bool", "is_undef", "is_ref", "is_regex", "is_coderef", "is_filehandle", "is_scalarref", "is_arrayref", "is_hashref");
-        my %number_binop = ("add", {"op", "+", "returns", "PlInt", "num_returns", "PlDouble"}, "sub", {"op", "-", "returns", "PlInt", "num_returns", "PlDouble"}, "mul", {"op", "*", "returns", "PlInt", "num_returns", "PlDouble"}, "div", {"op", "/", "returns", "PlDouble", "num_returns", "PlDouble"}, "num_eq", {"op", "==", "returns", "PlBool", "num_returns", "PlBool"}, "num_ne", {"op", "!=", "returns", "PlBool", "num_returns", "PlBool"}, "num_lt", {"op", "<", "returns", "PlBool", "num_returns", "PlBool"}, "num_le", {"op", "<=", "returns", "PlBool", "num_returns", "PlBool"}, "num_gt", {"op", ">", "returns", "PlBool", "num_returns", "PlBool"}, "num_ge", {"op", ">=", "returns", "PlBool", "num_returns", "PlBool"}, "int_and", {"op", "&", "returns", "PlInt", "num_returns", "PlInt"}, "int_or", {"op", "|", "returns", "PlInt", "num_returns", "PlInt"}, "int_xor", {"op", "^", "returns", "PlInt", "num_returns", "PlInt"});
+        my %number_binop = ("add", {"op", "+", "returns", "PlInt", "num_returns", "PlDouble"}, "sub", {"op", "-", "returns", "PlInt", "num_returns", "PlDouble"}, "mul", {"op", "*", "returns", "PlInt", "num_returns", "PlDouble"}, "div", {"op", "/", "returns", "PlDouble", "num_returns", "PlDouble"}, "num_eq", {"op", "==", "returns", "PlBool", "num_returns", "PlBool"}, "num_ne", {"op", "!=", "returns", "PlBool", "num_returns", "PlBool"}, "num_lt", {"op", "<", "returns", "PlBool", "num_returns", "PlBool"}, "num_le", {"op", "<=", "returns", "PlBool", "num_returns", "PlBool"}, "num_gt", {"op", ">", "returns", "PlBool", "num_returns", "PlBool"}, "num_ge", {"op", ">=", "returns", "PlBool", "num_returns", "PlBool"}, "int_and", {"op", "&", "returns", "PlInt", "num_returns", "PlInt"}, "int_or", {"op", "|", "returns", "PlInt", "num_returns", "PlInt"}, "int_xor", {"op", "^", "returns", "PlInt", "num_returns", "PlInt"}, "int_shr", {"op", ">>>", "returns", "PlInt", "num_returns", "PlInt"}, "int_shl", {"op", "<<", "returns", "PlInt", "num_returns", "PlInt"});
         my %string_binop = ("str_eq", {"op", "== 0", "returns", "PlBool"}, "str_ne", {"op", "!= 0", "returns", "PlBool"}, "str_lt", {"op", "< 0", "returns", "PlBool"}, "str_le", {"op", "<= 0", "returns", "PlBool"}, "str_gt", {"op", "> 0", "returns", "PlBool"}, "str_ge", {"op", ">= 0", "returns", "PlBool"});
         my %native_to_perl = ("int", "PlInt", "double", "PlDouble", "boolean", "PlBool", "String", "PlString");
         for $_ (values(%java_classes)) {;
@@ -26206,6 +26206,7 @@ class PlClass {
             $perl eq "num_cmp" && ($native = "<=>");
             $perl eq "pow" && ($native = "**");
             $perl eq "atan2" && ($native = "atan2");
+            $perl eq "int_shr" && ($native = ">>");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
