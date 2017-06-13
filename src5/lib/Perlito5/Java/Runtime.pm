@@ -2910,6 +2910,15 @@ EOT
             }
             sort @number_unary ))
 
+    . ( join('', map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return PlClass.overload_$perl(this, s, PlCx.UNDEF);
+    }
+"
+            }
+            sort keys %string_binop ))
+
     . <<'EOT'
 
     public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
@@ -3300,6 +3309,15 @@ EOT
             }
             sort @number_unary ))
 
+    . ( join('', map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return PlClass.overload_$perl(this, s, PlCx.UNDEF);
+    }
+"
+            }
+            sort keys %string_binop ))
+
     . <<'EOT'
 
     public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
@@ -3449,6 +3467,15 @@ EOT
 "
             }
             sort @number_unary ))
+
+    . ( join('', map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return PlClass.overload_$perl(this, s, PlCx.UNDEF);
+    }
+"
+            }
+            sort keys %string_binop ))
 
     . <<'EOT'
 
@@ -3659,9 +3686,7 @@ EOT
 "
             }
             sort keys %number_binop ))
-    . <<'EOT'
 
-EOT
     . ( join('', map {
             my $op = $_;
 "    public static PlObject overload_$op(PlObject o) {
@@ -3670,6 +3695,28 @@ EOT
 "
             }
             sort @number_unary ))
+
+    . ( join('', map {
+            my $perl = $_;
+            my $native  = $string_binop{$perl}{op};
+"    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null ) {
+            PlObject methodCode = bless.method_lookup(\"(${native}\", 0);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            }
+            // fallback
+            o = PlClass.overload_to_string(o);
+        }
+        if (swap.to_boolean()) {
+            return other.${perl}(o);
+        }
+        return o.${perl}(other);
+    }
+"
+            }
+            sort keys %string_binop ))
 
     . <<'EOT'
 
