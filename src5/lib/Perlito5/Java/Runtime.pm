@@ -2646,8 +2646,12 @@ EOT
     public PlObject sin()  { return new PlDouble(Math.sin(this.to_double())); }
     public PlObject exp()  { return new PlDouble(Math.exp(this.to_double())); }
     public PlObject log()  { return new PlDouble(Math.log(this.to_double())); }
-    public PlObject pow(PlObject arg)    { return new PlDouble(Math.pow(this.to_double(), arg.to_double())); }
+    public PlObject pow(PlObject arg)    { return new PlDouble(Math.pow(this.to_double(), arg.to_double()));   }
     public PlObject atan2(PlObject arg)  { return new PlDouble(Math.atan2(this.to_double(), arg.to_double())); }
+
+    // for compatibility with the swap flag in overload
+    public PlObject pow2(PlObject arg)    { return arg.pow(this);   }
+    public PlObject atan22(PlObject arg)  { return arg.atan2(this); }
 
     public PlObject pre_decr() {
         // --$x
@@ -2894,6 +2898,8 @@ EOT
             }
             sort (
                 'num_cmp',
+                'pow',
+                'atan2',
                 keys %number_binop,
             )
       ))
@@ -2924,9 +2930,6 @@ EOT
       ))
 
     . <<'EOT'
-
-    public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
-    public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
 
     public PlInt refaddr() {
@@ -3297,6 +3300,8 @@ EOT
             }
             sort (
                 'num_cmp',
+                'pow',
+                'atan2',
                 keys %number_binop,
             )
       ))
@@ -3327,9 +3332,6 @@ EOT
       ))
 
     . <<'EOT'
-
-    public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
-    public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
 
     public PlString ref() {
@@ -3460,6 +3462,8 @@ EOT
             }
             sort (
                 'num_cmp',
+                'pow',
+                'atan2',
                 keys %number_binop,
             )
       ))
@@ -3490,9 +3494,6 @@ EOT
       ))
 
     . <<'EOT'
-
-    public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
-    public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
 
     public PlString ref() {
@@ -3661,25 +3662,14 @@ class PlClass {
         }
         return PlCx.TRUE;
     }
-    public static PlObject overload_num_cmp(PlObject o, PlObject other, PlObject swap) {
-        PlClass bless = o.blessed_class();
-        if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup("(<=>", 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
-            }
-            // fallback
-            o = PlClass.overload_to_number(o);
-        }
-        if (swap.to_boolean()) {
-            return o.num_cmp2(other);
-        }
-        return o.num_cmp(other);
-    }
 EOT
     . ( join('', map {
             my $perl = $_;
-            my $native  = $number_binop{$perl}{op};
+            my $native;
+            $native = $number_binop{$perl}{op} if exists $number_binop{$perl};
+            $native = "<=>"   if $perl eq "num_cmp";
+            $native = "pow"   if $perl eq "pow";
+            $native = "atan2" if $perl eq "atan2";
 "    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
@@ -3697,7 +3687,13 @@ EOT
     }
 "
             }
-            sort keys %number_binop ))
+            sort (
+                'num_cmp',
+                'pow',
+                'atan2',
+                keys %number_binop,
+            )
+      ))
 
     . ( join('', map {
             my $op = $_;
@@ -3710,7 +3706,8 @@ EOT
 
     . ( join('', map {
             my $perl = $_;
-            my $native  = $string_binop{$perl}{op};
+            my $native;
+            $native = $string_binop{$perl}{op} if exists $string_binop{$perl};
             $native = "cmp" if $perl eq "str_cmp";
 "    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
@@ -3736,10 +3733,6 @@ EOT
       ))
 
     . <<'EOT'
-
-    public static PlObject overload_pow(PlObject o, PlObject arg)    { return PlCORE.die("TODO - overload pow"); }
-    public static PlObject overload_atan2(PlObject o, PlObject arg)  { return PlCORE.die("TODO - overload atan2"); }
-
 }
 class PlLazyIndex extends PlLazyLvalue {
     private PlArray la;    // @la

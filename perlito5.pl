@@ -25245,8 +25245,12 @@ class PlObject {
     public PlObject sin()  { return new PlDouble(Math.sin(this.to_double())); }
     public PlObject exp()  { return new PlDouble(Math.exp(this.to_double())); }
     public PlObject log()  { return new PlDouble(Math.log(this.to_double())); }
-    public PlObject pow(PlObject arg)    { return new PlDouble(Math.pow(this.to_double(), arg.to_double())); }
+    public PlObject pow(PlObject arg)    { return new PlDouble(Math.pow(this.to_double(), arg.to_double()));   }
     public PlObject atan2(PlObject arg)  { return new PlDouble(Math.atan2(this.to_double(), arg.to_double())); }
+
+    // for compatibility with the swap flag in overload
+    public PlObject pow2(PlObject arg)    { return arg.pow(this);   }
+    public PlObject atan22(PlObject arg)  { return arg.atan2(this); }
 
     public PlObject pre_decr() {
         // --\$x
@@ -25483,7 +25487,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", keys(%number_binop)))) . "
+        } ("num_cmp", "pow", "atan2", keys(%number_binop)))) . "
 " . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
@@ -25500,10 +25504,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", keys(%string_binop)))) . "
-    public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
-    public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
-    // end overload
+        } ("str_cmp", keys(%string_binop)))) . "    // end overload
 
     public PlInt refaddr() {
         // Scalar::Util::refaddr()
@@ -25868,7 +25869,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", keys(%number_binop)))) . "
+        } ("num_cmp", "pow", "atan2", keys(%number_binop)))) . "
 " . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
@@ -25885,10 +25886,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", keys(%string_binop)))) . "
-    public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
-    public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
-    // end overload
+        } ("str_cmp", keys(%string_binop)))) . "    // end overload
 
     public PlString ref() {
         if ( this.bless == null ) {
@@ -26016,7 +26014,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", keys(%number_binop)))) . "
+        } ("num_cmp", "pow", "atan2", keys(%number_binop)))) . "
 " . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
@@ -26033,10 +26031,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", keys(%string_binop)))) . "
-    public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
-    public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
-    // end overload
+        } ("str_cmp", keys(%string_binop)))) . "    // end overload
 
     public PlString ref() {
         if ( this.bless == null ) {
@@ -26204,24 +26199,13 @@ class PlClass {
         }
         return PlCx.TRUE;
     }
-    public static PlObject overload_num_cmp(PlObject o, PlObject other, PlObject swap) {
-        PlClass bless = o.blessed_class();
-        if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(\"(<=>\", 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
-            }
-            // fallback
-            o = PlClass.overload_to_number(o);
-        }
-        if (swap.to_boolean()) {
-            return o.num_cmp2(other);
-        }
-        return o.num_cmp(other);
-    }
 " . (join('', map {
             my $perl = $_;
-            my $native = $number_binop{$perl}->{"op"};
+            my $native;
+            exists($number_binop{$perl}) && ($native = $number_binop{$perl}->{"op"});
+            $perl eq "num_cmp" && ($native = "<=>");
+            $perl eq "pow" && ($native = "pow");
+            $perl eq "atan2" && ($native = "atan2");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
@@ -26240,7 +26224,7 @@ class PlClass {
 "
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . (join('', map {
+        } ("num_cmp", "pow", "atan2", keys(%number_binop)))) . (join('', map {
             my $op = $_;
             "    public static PlObject overload_" . $op . "(PlObject o) {
         return PlCORE.die(\"TODO - overload " . $op . "\");
@@ -26250,7 +26234,8 @@ class PlClass {
             $a cmp $b
         } @number_unary)) . (join('', map {
             my $perl = $_;
-            my $native = $string_binop{$perl}->{"op"};
+            my $native;
+            exists($string_binop{$perl}) && ($native = $string_binop{$perl}->{"op"});
             $perl eq "str_cmp" && ($native = "cmp");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
@@ -26270,11 +26255,7 @@ class PlClass {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", keys(%string_binop)))) . "
-    public static PlObject overload_pow(PlObject o, PlObject arg)    { return PlCORE.die(\"TODO - overload pow\"); }
-    public static PlObject overload_atan2(PlObject o, PlObject arg)  { return PlCORE.die(\"TODO - overload atan2\"); }
-
-}
+        } ("str_cmp", keys(%string_binop)))) . "}
 class PlLazyIndex extends PlLazyLvalue {
     private PlArray la;    // \@la
     private int i;         // \$la[\$i]
