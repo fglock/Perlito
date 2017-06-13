@@ -26204,7 +26204,7 @@ class PlClass {
             my $native;
             exists($number_binop{$perl}) && ($native = $number_binop{$perl}->{"op"});
             $perl eq "num_cmp" && ($native = "<=>");
-            $perl eq "pow" && ($native = "pow");
+            $perl eq "pow" && ($native = "**");
             $perl eq "atan2" && ($native = "atan2");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();

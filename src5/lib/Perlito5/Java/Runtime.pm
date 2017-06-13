@@ -3668,7 +3668,7 @@ EOT
             my $native;
             $native = $number_binop{$perl}{op} if exists $number_binop{$perl};
             $native = "<=>"   if $perl eq "num_cmp";
-            $native = "pow"   if $perl eq "pow";
+            $native = "**"    if $perl eq "pow";
             $native = "atan2" if $perl eq "atan2";
 "    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
