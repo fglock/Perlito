@@ -2906,9 +2906,6 @@ EOT
             )
       ))
 
-    . <<'EOT'
-
-EOT
     . ( join('', map {
             my $op = $_;
 "    public PlObject $op() {
@@ -3309,9 +3306,6 @@ EOT
             )
       ))
 
-    . <<'EOT'
-
-EOT
     . ( join('', map {
             my $op = $_;
 "    public PlObject $op() {
@@ -3472,9 +3466,6 @@ EOT
             )
       ))
 
-    . <<'EOT'
-
-EOT
     . ( join('', map {
             my $op = $_;
 "    public PlObject $op() {
