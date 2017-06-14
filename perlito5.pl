@@ -25483,8 +25483,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . "
-" . (join('', map {
+        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
         return PlClass.overload_" . $op . "(this);
@@ -25865,8 +25864,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . "
-" . (join('', map {
+        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
         return PlClass.overload_" . $op . "(this);
@@ -26010,8 +26008,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . "
-" . (join('', map {
+        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
         return PlClass.overload_" . $op . "(this);
@@ -27542,15 +27539,8 @@ class PlLvalue extends PlObject {
     public PlObject delete(PlObject a) {
         return this.o.delete(a);
     }
-    public PlObject num_cmp(PlObject b) {
-        return this.o.num_cmp(b);
-    }
-    public PlObject num_cmp2(PlObject b) {
-        return b.num_cmp(this.o);
-    }
 " . (join('', map {
             my $perl = $_;
-            my $native = $number_binop{$perl}->{"op"};
             "    public PlObject " . $perl . "(PlObject s) {
         return this.o." . $perl . "(s);
     }
@@ -27560,7 +27550,7 @@ class PlLvalue extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . "    public boolean is_lvalue() {
+        } ("num_cmp", "mod", keys(%number_binop)))) . "    public boolean is_lvalue() {
         return true;
     }
 

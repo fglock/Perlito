@@ -5054,16 +5054,9 @@ EOT
     public PlObject delete(PlObject a) {
         return this.o.delete(a);
     }
-    public PlObject num_cmp(PlObject b) {
-        return this.o.num_cmp(b);
-    }
-    public PlObject num_cmp2(PlObject b) {
-        return b.num_cmp(this.o);
-    }
 EOT
     . ( join('', map {
             my $perl = $_;
-            my $native = $number_binop{$perl}{op};
 "    public PlObject ${perl}(PlObject s) {
         return this.o.${perl}(s);
     }
@@ -5072,7 +5065,12 @@ EOT
     }
 "
             }
-            sort keys %number_binop ))
+            sort (
+                'num_cmp',
+                'mod',
+                keys %number_binop,
+            )
+      ))
 
     . <<'EOT'
     public boolean is_lvalue() {
