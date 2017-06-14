@@ -26783,16 +26783,8 @@ class PlTieScalar extends PlLvalue {
     public boolean to_boolean() {
         return this.get().to_boolean();
     }
-    public PlObject num_cmp(PlObject b) {
-        return this.get().num_cmp(b);
-    }
-    public PlObject num_cmp2(PlObject b) {
-        return b.num_cmp(this.get());
-    }
-
 " . (join('', map {
             my $perl = $_;
-            my $native = $number_binop{$perl}->{"op"};
             "    public PlObject " . $perl . "(PlObject s) {
         return this.get()." . $perl . "(s);
     }
@@ -26802,7 +26794,7 @@ class PlTieScalar extends PlLvalue {
 "
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . "
+        } ("num_cmp", "mod", keys(%number_binop)))) . "
     public PlObject pre_decr() {
         // --\$x
         return this.set(this.get()._decr());
