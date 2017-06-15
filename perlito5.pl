@@ -27095,21 +27095,6 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.delete(a);
     }
-    public String toString() {
-        return this.get().toString();
-    }
-    public long to_long() {
-        return this.get().to_long();
-    }
-    public double to_double() {
-        return this.get().to_double();
-    }
-    public boolean to_boolean() {
-        return this.get().to_boolean();
-    }
-    public PlObject to_num() {
-        return this.get().to_num();
-    }
 " . (join('', map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
@@ -27121,20 +27106,8 @@ class PlLazyLvalue extends PlLvalue {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))) . (join('', map {
-            my $op = $_;
-            "    public boolean " . $op . "() {
-        return this.get()." . $op . "();
-    }
-"
-        } sort {;
-            $a cmp $b
-        } @boolean_unary)) . "
-    public boolean is_lvalue() {
+        } ("num_cmp", "mod", keys(%number_binop)))) . "    public boolean is_lvalue() {
         return true;
-    }
-    public boolean is_integer_range() {
-        return this.get().is_integer_range();
     }
 
     public PlObject pre_decr() {
@@ -27166,15 +27139,6 @@ class PlLazyLvalue extends PlLvalue {
         return llv.post_incr();
     }
 
-" . (join('', map {
-            my $op = $_;
-            "    public PlObject " . $op . "() {
-        return this.get()." . $op . "();
-    }
-"
-        } sort {;
-            $a cmp $b
-        } @number_unary)) . "
     public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
     public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
 
@@ -27187,24 +27151,13 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.bless(className);
     }
-    public PlClass blessed_class() {
-        return this.get().blessed_class();
+" . (join('', map {
+            my($op, $type) = @{$_};
+            "    public " . $type . " " . $op . "() {
+        return this.get()." . $op . "();
     }
-    public PlObject blessed() {
-        return this.get().blessed();
-    }
-    public PlString ref() {
-        return this.get().ref();
-    }
-    public PlObject refaddr() {
-        // Scalar::Util::refaddr()
-        return this.get().refaddr();
-    }
-    public PlObject reftype() {
-        // Scalar::Util::reftype()
-        return this.get().reftype();
-    }
-" . join('', (map {
+"
+        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"])) . join('', (map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{"java_type"};
             my $perl_to_java = $class->{"perl_to_java"};

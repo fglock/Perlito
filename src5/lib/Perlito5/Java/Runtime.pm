@@ -4593,21 +4593,6 @@ EOT
         }
         return llv.delete(a);
     }
-    public String toString() {
-        return this.get().toString();
-    }
-    public long to_long() {
-        return this.get().to_long();
-    }
-    public double to_double() {
-        return this.get().to_double();
-    }
-    public boolean to_boolean() {
-        return this.get().to_boolean();
-    }
-    public PlObject to_num() {
-        return this.get().to_num();
-    }
 EOT
     . ( join('', map {
             my $perl = $_;
@@ -4626,22 +4611,9 @@ EOT
             )
       ))
 
-    . ( join('', map {
-            my $op = $_;
-"    public boolean $op() {
-        return this.get().$op();
-    }
-"
-            }
-            sort @boolean_unary ))
-
     . <<'EOT'
-
     public boolean is_lvalue() {
         return true;
-    }
-    public boolean is_integer_range() {
-        return this.get().is_integer_range();
     }
 
     public PlObject pre_decr() {
@@ -4673,18 +4645,6 @@ EOT
         return llv.post_incr();
     }
 
-EOT
-    . ( join('', map {
-            my $op = $_;
-"    public PlObject $op() {
-        return this.get().$op();
-    }
-"
-            }
-            sort @number_unary ))
-
-    . <<'EOT'
-
     public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
     public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
 
@@ -4697,24 +4657,36 @@ EOT
         }
         return llv.bless(className);
     }
-    public PlClass blessed_class() {
-        return this.get().blessed_class();
-    }
-    public PlObject blessed() {
-        return this.get().blessed();
-    }
-    public PlString ref() {
-        return this.get().ref();
-    }
-    public PlObject refaddr() {
-        // Scalar::Util::refaddr()
-        return this.get().refaddr();
-    }
-    public PlObject reftype() {
-        // Scalar::Util::reftype()
-        return this.get().reftype();
-    }
 EOT
+
+        # unary operators
+        #
+    . ( join('', map {
+            my ($op, $type) = @$_;
+"    public $type $op() {
+        return this.get().$op();
+    }
+"
+            }
+            map( [ $_ => 'PlObject' ], (
+                @number_unary,
+                'blessed',
+                'refaddr',      # Scalar::Util::refaddr()
+                'reftype',      # Scalar::Util::reftype()
+                'to_num',
+            )),
+            map( [ $_ => 'boolean' ], (
+                @boolean_unary,
+                'is_integer_range',
+            )),
+            [ 'toString'      => 'String'   ],
+            [ 'to_long'       => 'long'     ],
+            [ 'to_double'     => 'double'   ],
+            [ 'to_boolean'    => 'boolean'  ],
+            [ 'blessed_class' => 'PlClass'  ],
+            [ 'ref'           => 'PlString' ],
+      ))
+
         # add "unbox" accessors to Java classes
         # that were declared with
         #
