@@ -25474,16 +25474,13 @@ class PlReference extends PlObject {
 
 " . (join('', map {
             my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
-    }
-    public PlObject " . $perl . "2(PlObject s) {
+            "    public PlObject " . $perl . "2(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
     }
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", keys(%number_binop)))) . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
         return PlClass.overload_" . $op . "(this);
@@ -25499,7 +25496,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", keys(%string_binop)))) . "    // end overload
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))) . "    // end overload
 
     public PlInt refaddr() {
         // Scalar::Util::refaddr()
@@ -25858,16 +25855,13 @@ class PlArrayRef extends PlArray {
 
 " . (join('', map {
             my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
-    }
-    public PlObject " . $perl . "2(PlObject s) {
+            "    public PlObject " . $perl . "2(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
     }
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", keys(%number_binop)))) . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
         return PlClass.overload_" . $op . "(this);
@@ -25883,7 +25877,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", keys(%string_binop)))) . "    // end overload
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))) . "    // end overload
 
     public PlString ref() {
         if ( this.bless == null ) {
@@ -26005,16 +25999,13 @@ class PlHashRef extends PlHash {
 
 " . (join('', map {
             my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
-    }
-    public PlObject " . $perl . "2(PlObject s) {
+            "    public PlObject " . $perl . "2(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
     }
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", keys(%number_binop)))) . (join('', map {
             my $op = $_;
             "    public PlObject " . $op . "() {
         return PlClass.overload_" . $op . "(this);
@@ -26030,7 +26021,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", keys(%string_binop)))) . "    // end overload
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))) . "    // end overload
 
     public PlString ref() {
         if ( this.bless == null ) {
@@ -26777,18 +26768,6 @@ class PlTieScalar extends PlLvalue {
         return PlCORE.die(\"delete argument is not a HASH or ARRAY element or slice\");
     }
 
-" . (join('', map {
-            my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return this.get()." . $perl . "(s);
-    }
-    public PlObject " . $perl . "2(PlObject s) {
-        return s." . $perl . "(this.get());
-    }
-"
-        } sort {;
-            $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))) . "
     public PlObject pre_decr() {
         // --\$x
         return this.set(this.get()._decr());
@@ -26817,6 +26796,17 @@ class PlTieScalar extends PlLvalue {
         return this.get().bless(className);
     }
 " . (join('', map {
+            my $perl = $_;
+            "    public PlObject " . $perl . "(PlObject s) {
+        return this.get()." . $perl . "(s);
+    }
+    public PlObject " . $perl . "2(PlObject s) {
+        return s." . $perl . "(this.get());
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("num_cmp", "mod", keys(%number_binop)))) . (join('', map {
             my($op, $type) = @{$_};
             "    public " . $type . " " . $op . "() {
         return this.get()." . $op . "();
@@ -27091,18 +27081,7 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.delete(a);
     }
-" . (join('', map {
-            my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return this.get()." . $perl . "(s);
-    }
-    public PlObject " . $perl . "2(PlObject s) {
-        return s." . $perl . "(this.get());
-    }
-"
-        } sort {;
-            $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))) . "    public boolean is_lvalue() {
+    public boolean is_lvalue() {
         return true;
     }
 
@@ -27148,6 +27127,17 @@ class PlLazyLvalue extends PlLvalue {
         return llv.bless(className);
     }
 " . (join('', map {
+            my $perl = $_;
+            "    public PlObject " . $perl . "(PlObject s) {
+        return this.get()." . $perl . "(s);
+    }
+    public PlObject " . $perl . "2(PlObject s) {
+        return s." . $perl . "(this.get());
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("num_cmp", "mod", keys(%number_binop)))) . (join('', map {
             my($op, $type) = @{$_};
             "    public " . $type . " " . $op . "() {
         return this.get()." . $op . "();
@@ -27476,18 +27466,7 @@ class PlLvalue extends PlObject {
     public PlObject delete(PlObject a) {
         return this.o.delete(a);
     }
-" . (join('', map {
-            my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return this.o." . $perl . "(s);
-    }
-    public PlObject " . $perl . "2(PlObject s) {
-        return s." . $perl . "(this.o);
-    }
-"
-        } sort {;
-            $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))) . "    public boolean is_lvalue() {
+    public boolean is_lvalue() {
         return true;
     }
 
@@ -27525,8 +27504,18 @@ class PlLvalue extends PlObject {
     public PlObject bless(String className) {
         return this.o.bless(className);
     }
-
 " . (join('', map {
+            my $perl = $_;
+            "    public PlObject " . $perl . "(PlObject s) {
+        return this.o." . $perl . "(s);
+    }
+    public PlObject " . $perl . "2(PlObject s) {
+        return s." . $perl . "(this.o);
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("num_cmp", "mod", keys(%number_binop)))) . (join('', map {
             my($op, $type) = @{$_};
             "    public " . $type . " " . $op . "() {
         return this.o." . $op . "();

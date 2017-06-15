@@ -2890,20 +2890,14 @@ class PlReference extends PlObject {
 EOT
     . ( join('', map {
             my $perl = $_;
-"    public PlObject ${perl}(PlObject s) {
-        return PlClass.overload_${perl}(this, s, PlCx.UNDEF);
-    }
-    public PlObject ${perl}2(PlObject s) {
+"    public PlObject ${perl}2(PlObject s) {
         return PlClass.overload_${perl}(this, s, PlCx.INT1);
     }
 "
             }
             sort (
                 'num_cmp',
-                'pow',
-                'atan2',
-                'mod',
-                keys %number_binop,
+                keys(%number_binop),
             )
       ))
 
@@ -2925,7 +2919,12 @@ EOT
             }
             sort (
                 'str_cmp',
-                keys %string_binop,
+                'pow',
+                'atan2',
+                'mod',
+                'num_cmp',
+                keys(%string_binop),
+                keys(%number_binop),
             )
       ))
 
@@ -3293,20 +3292,14 @@ class PlArrayRef extends PlArray {
 EOT
     . ( join('', map {
             my $perl = $_;
-"    public PlObject ${perl}(PlObject s) {
-        return PlClass.overload_${perl}(this, s, PlCx.UNDEF);
-    }
-    public PlObject ${perl}2(PlObject s) {
+"    public PlObject ${perl}2(PlObject s) {
         return PlClass.overload_${perl}(this, s, PlCx.INT1);
     }
 "
             }
             sort (
                 'num_cmp',
-                'pow',
-                'atan2',
-                'mod',
-                keys %number_binop,
+                keys(%number_binop),
             )
       ))
 
@@ -3328,7 +3321,12 @@ EOT
             }
             sort (
                 'str_cmp',
-                keys %string_binop,
+                'pow',
+                'atan2',
+                'mod',
+                'num_cmp',
+                keys(%string_binop),
+                keys(%number_binop),
             )
       ))
 
@@ -3456,20 +3454,14 @@ class PlHashRef extends PlHash {
 EOT
     . ( join('', map {
             my $perl = $_;
-"    public PlObject ${perl}(PlObject s) {
-        return PlClass.overload_${perl}(this, s, PlCx.UNDEF);
-    }
-    public PlObject ${perl}2(PlObject s) {
+"    public PlObject ${perl}2(PlObject s) {
         return PlClass.overload_${perl}(this, s, PlCx.INT1);
     }
 "
             }
             sort (
                 'num_cmp',
-                'pow',
-                'atan2',
-                'mod',
-                keys %number_binop,
+                keys(%number_binop),
             )
       ))
 
@@ -3491,7 +3483,12 @@ EOT
             }
             sort (
                 'str_cmp',
-                keys %string_binop,
+                'pow',
+                'atan2',
+                'mod',
+                'num_cmp',
+                keys(%string_binop),
+                keys(%number_binop),
             )
       ))
 
@@ -4263,26 +4260,6 @@ EOT
         return PlCORE.die("delete argument is not a HASH or ARRAY element or slice");
     }
 
-EOT
-    . ( join('', map {
-            my $perl = $_;
-"    public PlObject ${perl}(PlObject s) {
-        return this.get().${perl}(s);
-    }
-    public PlObject ${perl}2(PlObject s) {
-        return s.${perl}(this.get());
-    }
-"
-            }
-            sort (
-                'num_cmp',
-                'mod',
-                keys %number_binop,
-            )
-      ))
-
-    . <<'EOT'
-
     public PlObject pre_decr() {
         // --$x
         return this.set(this.get()._decr());
@@ -4311,6 +4288,22 @@ EOT
         return this.get().bless(className);
     }
 EOT
+    . ( join('', map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return this.get().${perl}(s);
+    }
+    public PlObject ${perl}2(PlObject s) {
+        return s.${perl}(this.get());
+    }
+"
+            }
+            sort (
+                'num_cmp',
+                'mod',
+                keys %number_binop,
+            )
+      ))
 
         # unary operators
         #
@@ -4618,25 +4611,6 @@ EOT
         }
         return llv.delete(a);
     }
-EOT
-    . ( join('', map {
-            my $perl = $_;
-"    public PlObject ${perl}(PlObject s) {
-        return this.get().${perl}(s);
-    }
-    public PlObject ${perl}2(PlObject s) {
-        return s.${perl}(this.get());
-    }
-"
-            }
-            sort (
-                'num_cmp',
-                'mod',
-                keys %number_binop,
-            )
-      ))
-
-    . <<'EOT'
     public boolean is_lvalue() {
         return true;
     }
@@ -4683,6 +4657,22 @@ EOT
         return llv.bless(className);
     }
 EOT
+    . ( join('', map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return this.get().${perl}(s);
+    }
+    public PlObject ${perl}2(PlObject s) {
+        return s.${perl}(this.get());
+    }
+"
+            }
+            sort (
+                'num_cmp',
+                'mod',
+                keys %number_binop,
+            )
+      ))
 
         # unary operators
         #
@@ -5044,25 +5034,6 @@ EOT
     public PlObject delete(PlObject a) {
         return this.o.delete(a);
     }
-EOT
-    . ( join('', map {
-            my $perl = $_;
-"    public PlObject ${perl}(PlObject s) {
-        return this.o.${perl}(s);
-    }
-    public PlObject ${perl}2(PlObject s) {
-        return s.${perl}(this.o);
-    }
-"
-            }
-            sort (
-                'num_cmp',
-                'mod',
-                keys %number_binop,
-            )
-      ))
-
-    . <<'EOT'
     public boolean is_lvalue() {
         return true;
     }
@@ -5101,8 +5072,23 @@ EOT
     public PlObject bless(String className) {
         return this.o.bless(className);
     }
-
 EOT
+    . ( join('', map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return this.o.${perl}(s);
+    }
+    public PlObject ${perl}2(PlObject s) {
+        return s.${perl}(this.o);
+    }
+"
+            }
+            sort (
+                'num_cmp',
+                'mod',
+                keys %number_binop,
+            )
+      ))
 
         # unary operators
         #
