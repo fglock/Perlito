@@ -240,13 +240,14 @@ EOT
         'is_string',
         'is_bool',
         'is_undef',
-        'is_ref',
         'is_regex',
-        'is_coderef',
         'is_filehandle',
-        'is_scalarref',
+        'is_ref',
         'is_arrayref',
+        'is_coderef',
         'is_hashref',
+        'is_scalarref',
+        'is_typeglobref',
     );
 
     my %number_binop = (
@@ -2593,9 +2594,6 @@ EOT
         return false;
     }
     public boolean is_lvalue() {
-        return false;
-    }
-    public boolean is_typeglobref() {
         return false;
     }
     public boolean is_regex_result() {
