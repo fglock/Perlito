@@ -27157,17 +27157,12 @@ class PlLazyLvalue extends PlLvalue {
         return this.get()." . $op . "();
     }
 "
-        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"])) . join('', (map {
+        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"], (map {
             my $class = $java_classes{$_};
-            my $java_class_name = $class->{"java_type"};
-            my $perl_to_java = $class->{"perl_to_java"};
-            $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? "    public " . $java_class_name . " " . $perl_to_java . "() {
-        return this.get()." . $perl_to_java . "();
-    }
-" : ()
+            $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? [$class->{"perl_to_java"}, $class->{"java_type"}] : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))) . "}
+        } keys(%java_classes)))) . "}
 class PlLvalue extends PlObject {
     public PlObject o;
     public Integer pos;
@@ -27541,17 +27536,12 @@ class PlLvalue extends PlObject {
         return this.o." . $op . "();
     }
 "
-        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"])) . join('', (map {
+        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"], (map {
             my $class = $java_classes{$_};
-            my $java_class_name = $class->{"java_type"};
-            my $perl_to_java = $class->{"perl_to_java"};
-            $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? "    public " . $java_class_name . " " . $perl_to_java . "() {
-        return this.o." . $perl_to_java . "();
-    }
-" : ()
+            $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? [$class->{"perl_to_java"}, $class->{"java_type"}] : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))) . "}
+        } keys(%java_classes)))) . "}
 
 ", "
 class PlROvalue extends PlLvalue {

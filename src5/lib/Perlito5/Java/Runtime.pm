@@ -4685,24 +4685,15 @@ EOT
             [ 'to_boolean'    => 'boolean'  ],
             [ 'blessed_class' => 'PlClass'  ],
             [ 'ref'           => 'PlString' ],
-      ))
 
-        # add "unbox" accessors to Java classes
-        # that were declared with
-        #
-        #   package MyJavaClass { Java }
-        #
-    . join('', ( map {
-                    my $class = $java_classes{$_};
-                    my $java_class_name = $class->{java_type};
-                    my $perl_to_java = $class->{perl_to_java};
-                    $class->{import} || $class->{extends} || $class->{implements} ? 
-"    public ${java_class_name} ${perl_to_java}() {
-        return this.get().${perl_to_java}();
-    }
-" : ()
-            }
-            sort keys %java_classes
+            # add "unbox" accessors to Java classes that were declared with:  'package MyJavaClass { Java }'
+            (map {  my $class = $java_classes{$_};
+                    $class->{import} || $class->{extends} || $class->{implements}
+                      ? [ $class->{perl_to_java}, $class->{java_type} ]
+                      : ()
+                 }
+                 sort keys %java_classes
+            ),
       ))
 
     . <<'EOT'
@@ -5114,24 +5105,15 @@ EOT
             [ 'to_boolean'    => 'boolean'  ],
             [ 'blessed_class' => 'PlClass'  ],
             [ 'ref'           => 'PlString' ],
-      ))
 
-        # add "unbox" accessors to Java classes
-        # that were declared with
-        #
-        #   package MyJavaClass { Java }
-        #
-    . join('', ( map {
-                    my $class = $java_classes{$_};
-                    my $java_class_name = $class->{java_type};
-                    my $perl_to_java = $class->{perl_to_java};
-                    $class->{import} || $class->{extends} || $class->{implements} ? 
-"    public ${java_class_name} ${perl_to_java}() {
-        return this.o.${perl_to_java}();
-    }
-" : ()
-            }
-            sort keys %java_classes
+            # add "unbox" accessors to Java classes that were declared with:  'package MyJavaClass { Java }'
+            (map {  my $class = $java_classes{$_};
+                    $class->{import} || $class->{extends} || $class->{implements}
+                      ? [ $class->{perl_to_java}, $class->{java_type} ]
+                      : ()
+                 }
+                 sort keys %java_classes
+            ),
       ))
 
     . <<'EOT'
