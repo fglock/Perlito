@@ -26777,21 +26777,6 @@ class PlTieScalar extends PlLvalue {
         return PlCORE.die(\"delete argument is not a HASH or ARRAY element or slice\");
     }
 
-    public String toString() {
-        return this.get().toString();
-    }
-    public long to_long() {
-        return this.get().to_long();
-    }
-    public double to_double() {
-        return this.get().to_double();
-    }
-    public boolean to_boolean() {
-        return this.get().to_boolean();
-    }
-    public PlObject to_num() {
-        return this.get().to_num();
-    }
 " . (join('', map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
@@ -26831,7 +26816,18 @@ class PlTieScalar extends PlLvalue {
     public PlObject bless(String className) {
         return this.get().bless(className);
     }
-}
+" . (join('', map {
+            my($op, $type) = @{$_};
+            "    public " . $type . " " . $op . "() {
+        return this.get()." . $op . "();
+    }
+"
+        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"], (map {
+            my $class = $java_classes{$_};
+            $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? [$class->{"perl_to_java"}, $class->{"java_type"}] : ()
+        } sort {;
+            $a cmp $b
+        } keys(%java_classes)))) . "}
 class PlLazyLvalue extends PlLvalue {
     public  PlLvalue llv;   // \$\$lv
     public PlLvalue create_scalar() {
