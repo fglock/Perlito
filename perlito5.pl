@@ -26780,6 +26780,9 @@ class PlTieScalar extends PlLvalue {
     public boolean to_boolean() {
         return this.get().to_boolean();
     }
+    public PlObject to_num() {
+        return this.get().to_num();
+    }
 " . (join('', map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
@@ -27095,6 +27098,9 @@ class PlLazyLvalue extends PlLvalue {
     public boolean to_boolean() {
         return this.get().to_boolean();
     }
+    public PlObject to_num() {
+        return this.get().to_num();
+    }
 " . (join('', map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
@@ -27106,11 +27112,7 @@ class PlLazyLvalue extends PlLvalue {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))) . "    public PlObject to_num() {
-        return this.get().to_num();
-    }
-
-" . (join('', map {
+        } ("num_cmp", "mod", keys(%number_binop)))) . (join('', map {
             my $op = $_;
             "    public boolean " . $op . "() {
         return this.get()." . $op . "();
@@ -28856,6 +28858,9 @@ class PlUndef extends PlObject {
     public boolean to_boolean() {
         return false;
     }
+    public PlObject to_num() {
+        return PlCx.INT0;
+    }
     public boolean is_undef() {
         return true;
     }
@@ -28891,6 +28896,14 @@ class PlBool extends PlObject {
     }
     public boolean to_boolean() {
         return this.i;
+    }
+    public PlObject to_num() {
+        if (i) {
+            return PlCx.INT1;
+        }
+        else {
+            return PlCx.INT0;
+        }
     }
     public boolean is_bool() {
         return true;
@@ -29008,6 +29021,9 @@ class PlDouble extends PlObject {
     public boolean to_boolean() {
         return this.i != 0.0;
     }
+    public PlObject to_num() {
+        return this;
+    }
     public PlObject _decr() {
         // --\$x
         return new PlDouble(i-1);
@@ -29058,10 +29074,7 @@ class PlDouble extends PlObject {
             }
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . "    public PlObject to_num() {
-        return this;
-    }
-    public PlObject mod(PlObject o) {
+        } keys(%number_binop))) . "    public PlObject mod(PlObject o) {
         return PerlOp.mod(this, o);
     }
     public boolean is_num() {
@@ -29131,9 +29144,6 @@ class PlString extends PlObject {
         return PlV.hash_set(s, v);
     }
 
-    public PlObject to_num() {
-        return this.parse();
-    }
     public PlObject parse() {
         if (numericValue == null) {
             numericValue = this._parse();
@@ -29327,6 +29337,9 @@ class PlString extends PlObject {
     }
     public boolean to_boolean() {
         return !( this.s.equals(\"\") || this.s.equals(\"0\") );
+    }
+    public PlObject to_num() {
+        return this.parse();
     }
     public char to_char() {
         if (this.s.length() == 0) {
