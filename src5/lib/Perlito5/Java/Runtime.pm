@@ -332,7 +332,7 @@ EOT
     . Perlito5::Java::CORE->emit_java()
 
         # Perl-Java exceptions
-    . <<'EOT'
+    , <<'EOT'
 class PlControlException extends RuntimeException {
 }
 class PlNextException    extends PlControlException {
@@ -396,14 +396,14 @@ EOT
         map { "public static final PlInt " . ($_ < 0 ? "MIN" : "INT") . abs($_) . " = new PlInt($_);" }
             (-2 .. 2) ) . "\n"
     . "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
-    . <<'EOT'
+    , <<'EOT'
 }
 EOT
 
     . Perlito5::Java::Crypt->emit_java()
     . ( $Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler->emit_java() : () )
 
-    . <<'EOT'
+    , <<'EOT'
 class PerlCompare implements Comparator<PlObject> {
     public PlClosure sorter;
     public PlLvalue v_a;
@@ -2319,7 +2319,7 @@ EOT
             }
             sort keys %java_classes
       ))
-    . <<'EOT'
+    , <<'EOT'
     // public String toString() {
     //     return this.toString();
     // }
@@ -2573,7 +2573,7 @@ EOT
     }
 
 EOT
-    . ( join('', map {
+    , ((map {
             my $op = $_;
 "    public boolean $op() {
         return false;
@@ -2582,7 +2582,7 @@ EOT
             }
             sort @boolean_unary ))
 
-    . <<'EOT'
+    , <<'EOT'
 
     public boolean is_hash() {
         return false;
@@ -2815,7 +2815,7 @@ EOT
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
             my $native  = $number_binop{$perl}{op};
             my $returns = $number_binop{$perl}{returns};
@@ -2836,7 +2836,7 @@ EOT
             }
             sort keys %number_binop ))
 
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
             my $native  = $string_binop{$perl}{op};
             my $returns = $string_binop{$perl}{returns};
@@ -2847,7 +2847,7 @@ EOT
             }
             sort keys %string_binop ))
 
-    . <<'EOT'
+    , <<'EOT'
 }
 class PlReference extends PlObject {
     public static final PlString REF = new PlString("REF");
@@ -2888,7 +2888,7 @@ class PlReference extends PlObject {
     }
 
 EOT
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
 "    public PlObject ${perl}2(PlObject s) {
         return PlClass.overload_${perl}(this, s, PlCx.INT1);
@@ -2901,7 +2901,7 @@ EOT
             )
       ))
 
-    . ( join('', map {
+    , ((map {
             my $op = $_;
 "    public PlObject $op() {
         return PlClass.overload_$op(this);
@@ -2910,7 +2910,7 @@ EOT
             }
             sort @number_unary ))
 
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
 "    public PlObject ${perl}(PlObject s) {
         return PlClass.overload_$perl(this, s, PlCx.UNDEF);
@@ -2928,7 +2928,7 @@ EOT
             )
       ))
 
-    . <<'EOT'
+    , <<'EOT'
     // end overload
 
     public PlInt refaddr() {
@@ -3290,7 +3290,7 @@ class PlArrayRef extends PlArray {
     }
 
 EOT
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
 "    public PlObject ${perl}2(PlObject s) {
         return PlClass.overload_${perl}(this, s, PlCx.INT1);
@@ -3303,7 +3303,7 @@ EOT
             )
       ))
 
-    . ( join('', map {
+    , ((map {
             my $op = $_;
 "    public PlObject $op() {
         return PlClass.overload_$op(this);
@@ -3312,7 +3312,7 @@ EOT
             }
             sort @number_unary ))
 
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
 "    public PlObject ${perl}(PlObject s) {
         return PlClass.overload_$perl(this, s, PlCx.UNDEF);
@@ -3330,7 +3330,7 @@ EOT
             )
       ))
 
-    . <<'EOT'
+    , <<'EOT'
     // end overload
 
     public PlString ref() {
@@ -3452,7 +3452,7 @@ class PlHashRef extends PlHash {
     }
 
 EOT
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
 "    public PlObject ${perl}2(PlObject s) {
         return PlClass.overload_${perl}(this, s, PlCx.INT1);
@@ -3465,7 +3465,7 @@ EOT
             )
       ))
 
-    . ( join('', map {
+    , ((map {
             my $op = $_;
 "    public PlObject $op() {
         return PlClass.overload_$op(this);
@@ -3474,7 +3474,7 @@ EOT
             }
             sort @number_unary ))
 
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
 "    public PlObject ${perl}(PlObject s) {
         return PlClass.overload_$perl(this, s, PlCx.UNDEF);
@@ -3492,7 +3492,7 @@ EOT
             )
       ))
 
-    . <<'EOT'
+    , <<'EOT'
     // end overload
 
     public PlString ref() {
@@ -3662,7 +3662,7 @@ class PlClass {
         return PlCx.TRUE;
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
             my $native;
             $native = $number_binop{$perl}{op} if exists $number_binop{$perl};
@@ -3697,7 +3697,7 @@ EOT
             )
       ))
 
-    . ( join('', map {
+    , ((map {
             my $op = $_;
 "    public static PlObject overload_$op(PlObject o) {
         return PlCORE.die(\"TODO - overload $op\");
@@ -3706,7 +3706,7 @@ EOT
             }
             sort @number_unary ))
 
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
             my $native;
             $native = $string_binop{$perl}{op} if exists $string_binop{$perl};
@@ -3734,7 +3734,7 @@ EOT
             )
       ))
 
-    . <<'EOT'
+    , <<'EOT'
 }
 class PlLazyIndex extends PlLazyLvalue {
     private PlArray la;    // @la
@@ -4241,7 +4241,7 @@ class PlTieScalar extends PlLvalue {
         return this.set(o.scalar());
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ? 
@@ -4252,7 +4252,7 @@ EOT
             }
             sort keys %native_to_perl ))
 
-    . <<'EOT'
+    , <<'EOT'
     public PlObject exists(PlObject a) {
         return PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
     }
@@ -4288,7 +4288,7 @@ EOT
         return this.get().bless(className);
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
 "    public PlObject ${perl}(PlObject s) {
         return this.get().${perl}(s);
@@ -4307,7 +4307,7 @@ EOT
 
         # unary operators
         #
-    . ( join('', map {
+    , ((map {
             my ($op, $type) = @$_;
 "    public $type $op() {
         return this.get().$op();
@@ -4342,7 +4342,7 @@ EOT
             ),
       ))
 
-    . <<'EOT'
+    , <<'EOT'
 }
 class PlLazyLvalue extends PlLvalue {
     public  PlLvalue llv;   // $$lv
@@ -4584,7 +4584,7 @@ class PlLazyLvalue extends PlLvalue {
         return llv.set(o);
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ? 
@@ -4598,7 +4598,7 @@ EOT
             }
             sort keys %native_to_perl ))
 
-    . <<'EOT'
+    , <<'EOT'
     public PlObject exists(PlObject a) {
         if (llv == null) {
             create_scalar();
@@ -4657,7 +4657,7 @@ EOT
         return llv.bless(className);
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
 "    public PlObject ${perl}(PlObject s) {
         return this.get().${perl}(s);
@@ -4676,7 +4676,7 @@ EOT
 
         # unary operators
         #
-    . ( join('', map {
+    , ((map {
             my ($op, $type) = @$_;
 "    public $type $op() {
         return this.get().$op();
@@ -4711,7 +4711,7 @@ EOT
             ),
       ))
 
-    . <<'EOT'
+    , <<'EOT'
 }
 class PlLvalue extends PlObject {
     public PlObject o;
@@ -5015,7 +5015,7 @@ class PlLvalue extends PlObject {
         return this;
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ? 
@@ -5027,7 +5027,7 @@ EOT
             }
             sort keys %native_to_perl ))
 
-    . <<'EOT'
+    , <<'EOT'
     public PlObject exists(PlObject a) {
         return this.o.exists(a);
     }
@@ -5073,7 +5073,7 @@ EOT
         return this.o.bless(className);
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
 "    public PlObject ${perl}(PlObject s) {
         return this.o.${perl}(s);
@@ -5092,7 +5092,7 @@ EOT
 
         # unary operators
         #
-    . ( join('', map {
+    , ((map {
             my ($op, $type) = @$_;
 "    public $type $op() {
         return this.o.$op();
@@ -5127,7 +5127,7 @@ EOT
             ),
       ))
 
-    . <<'EOT'
+    , <<'EOT'
 }
 
 EOT
@@ -5483,7 +5483,7 @@ EOT
             sort keys %java_classes
       ))
 
-    . <<'EOT'
+    , <<'EOT'
     public PlObject aget(PlObject i) {
         int pos  = i.to_int();
         if (pos < 0) {
@@ -5724,7 +5724,7 @@ EOT
         return v;
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ?
@@ -5742,7 +5742,7 @@ EOT
             }
             sort keys %native_to_perl ))
 
-    . <<'EOT'
+    , <<'EOT'
     public PlObject aset_alias(int i, PlLvalue lvalue) {
         return this.a.set(i, lvalue);
     }
@@ -6352,7 +6352,7 @@ class PlHash extends PlObject {
         return aa;
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ?
@@ -6366,7 +6366,7 @@ EOT
             }
             sort keys %native_to_perl ))
 
-    . <<'EOT'
+    , <<'EOT'
 
     public String toString() {
         // TODO
@@ -6607,7 +6607,7 @@ class PlDouble extends PlObject {
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
 EOT
-    . ( join('', map {
+    , ((map {
                 my $perl = $_;
                 my $native  = $number_binop{$perl}{op};
                 my $returns = $number_binop{$perl}{num_returns};
@@ -6636,7 +6636,7 @@ EOT
             }
             sort keys %number_binop ))
 
-    . <<'EOT'
+    , <<'EOT'
     public PlObject mod(PlObject o) {
         return PerlOp.mod(this, o);
     }
@@ -7009,7 +7009,7 @@ class PlString extends PlObject {
         return this.parse().is_integer_range();
     }
 EOT
-    . ( join('', map {
+    , ((map {
             my $perl = $_;
             my $native  = $number_binop{$perl}{op};
             my $returns = $number_binop{$perl}{returns};
@@ -7039,7 +7039,7 @@ EOT
             }
             sort keys %number_binop ))
 
-    . <<'EOT'
+    , <<'EOT'
 }
 EOT
         # add "box" classes to Java classes
@@ -7076,7 +7076,7 @@ EOT
             sort keys %java_classes
       ))
 
-    . <<'EOT'
+    , <<'EOT'
 // end Perl-Java runtime
 EOT
     );

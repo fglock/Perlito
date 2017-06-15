@@ -22946,7 +22946,7 @@ import java.util.concurrent.TimeUnit;
             $class->{"extends"} || $class->{"implements"} ? emit_java_extends($class, \%java_classes) : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))) . Perlito5::Java::CORE::->emit_java() . "class PlControlException extends RuntimeException {
+        } keys(%java_classes))) . Perlito5::Java::CORE::->emit_java(), "class PlControlException extends RuntimeException {
 }
 class PlNextException    extends PlControlException {
     public int label_id;
@@ -23010,8 +23010,8 @@ class PlCx {
         } (-2 .. 2)) . "
 " . "    " . join("
     ", @{$args{"java_constants"} // []}) . "
-" . "}
-" . Perlito5::Java::Crypt::->emit_java() . ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java() : ()) . "class PerlCompare implements Comparator<PlObject> {
+", "}
+" . Perlito5::Java::Crypt::->emit_java() . ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java() : ()), "class PerlCompare implements Comparator<PlObject> {
     public PlClosure sorter;
     public PlLvalue v_a;
     public PlLvalue v_b;
@@ -24916,7 +24916,7 @@ class PlObject {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))) . "    // public String toString() {
+        } keys(%java_classes))), "    // public String toString() {
     //     return this.toString();
     // }
     public int to_int() {
@@ -25168,7 +25168,7 @@ class PlObject {
         return this.to_num().mod(o);
     }
 
-" . (join('', map {
+", ((map {
             my $op = $_;
             "    public boolean " . $op . "() {
         return false;
@@ -25176,7 +25176,7 @@ class PlObject {
 "
         } sort {;
             $a cmp $b
-        } @boolean_unary)) . "
+        } @boolean_unary)), "
     public boolean is_hash() {
         return false;
     }
@@ -25407,7 +25407,7 @@ class PlObject {
         int c = blong.compareTo(this.to_long());
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
-" . (join('', map {
+", ((map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{"op"};
             my $returns = $number_binop{$perl}->{"returns"};
@@ -25423,7 +25423,7 @@ class PlObject {
 ")
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . (join('', map {
+        } keys(%number_binop))), ((map {
             my $perl = $_;
             my $native = $string_binop{$perl}->{"op"};
             my $returns = $string_binop{$perl}->{"returns"};
@@ -25433,7 +25433,7 @@ class PlObject {
 "
         } sort {;
             $a cmp $b
-        } keys(%string_binop))) . "}
+        } keys(%string_binop))), "}
 class PlReference extends PlObject {
     public static final PlString REF = new PlString(\"REF\");
     public PlClass bless;
@@ -25472,7 +25472,7 @@ class PlReference extends PlObject {
         return PlClass.overload_to_number(this).to_long();
     }
 
-" . (join('', map {
+", ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "2(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
@@ -25480,7 +25480,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", keys(%number_binop)))), ((map {
             my $op = $_;
             "    public PlObject " . $op . "() {
         return PlClass.overload_" . $op . "(this);
@@ -25488,7 +25488,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } @number_unary)) . (join('', map {
+        } @number_unary)), ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
@@ -25496,7 +25496,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))) . "    // end overload
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "    // end overload
 
     public PlInt refaddr() {
         // Scalar::Util::refaddr()
@@ -25853,7 +25853,7 @@ class PlArrayRef extends PlArray {
         return PlClass.overload_to_number(this).to_long();
     }
 
-" . (join('', map {
+", ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "2(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
@@ -25861,7 +25861,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", keys(%number_binop)))), ((map {
             my $op = $_;
             "    public PlObject " . $op . "() {
         return PlClass.overload_" . $op . "(this);
@@ -25869,7 +25869,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } @number_unary)) . (join('', map {
+        } @number_unary)), ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
@@ -25877,7 +25877,7 @@ class PlArrayRef extends PlArray {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))) . "    // end overload
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "    // end overload
 
     public PlString ref() {
         if ( this.bless == null ) {
@@ -25997,7 +25997,7 @@ class PlHashRef extends PlHash {
         return PlClass.overload_to_number(this).to_long();
     }
 
-" . (join('', map {
+", ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "2(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
@@ -26005,7 +26005,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", keys(%number_binop)))), ((map {
             my $op = $_;
             "    public PlObject " . $op . "() {
         return PlClass.overload_" . $op . "(this);
@@ -26013,7 +26013,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } @number_unary)) . (join('', map {
+        } @number_unary)), ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
@@ -26021,7 +26021,7 @@ class PlHashRef extends PlHash {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))) . "    // end overload
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "    // end overload
 
     public PlString ref() {
         if ( this.bless == null ) {
@@ -26189,7 +26189,7 @@ class PlClass {
         }
         return PlCx.TRUE;
     }
-" . (join('', map {
+", ((map {
             my $perl = $_;
             my $native;
             exists($number_binop{$perl}) && ($native = $number_binop{$perl}->{"op"});
@@ -26216,7 +26216,7 @@ class PlClass {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))), ((map {
             my $op = $_;
             "    public static PlObject overload_" . $op . "(PlObject o) {
         return PlCORE.die(\"TODO - overload " . $op . "\");
@@ -26224,7 +26224,7 @@ class PlClass {
 "
         } sort {;
             $a cmp $b
-        } @number_unary)) . (join('', map {
+        } @number_unary)), ((map {
             my $perl = $_;
             my $native;
             exists($string_binop{$perl}) && ($native = $string_binop{$perl}->{"op"});
@@ -26247,7 +26247,7 @@ class PlClass {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", keys(%string_binop)))) . "}
+        } ("str_cmp", keys(%string_binop)))), "}
 class PlLazyIndex extends PlLazyLvalue {
     private PlArray la;    // \@la
     private int i;         // \$la[\$i]
@@ -26752,7 +26752,7 @@ class PlTieScalar extends PlLvalue {
     public PlLvalue set(PlHash o) {
         return this.set(o.scalar());
     }
-" . (join('', map {
+", ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlLvalue set(" . $native . " s) {
@@ -26761,7 +26761,7 @@ class PlTieScalar extends PlLvalue {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))) . "    public PlObject exists(PlObject a) {
+        } keys(%native_to_perl))), "    public PlObject exists(PlObject a) {
         return PlCORE.die(\"exists argument is not a HASH or ARRAY element or a subroutine\");
     }
     public PlObject delete(PlObject a) {
@@ -26795,7 +26795,7 @@ class PlTieScalar extends PlLvalue {
     public PlObject bless(String className) {
         return this.get().bless(className);
     }
-" . (join('', map {
+", ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
         return this.get()." . $perl . "(s);
@@ -26806,7 +26806,7 @@ class PlTieScalar extends PlLvalue {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", "mod", keys(%number_binop)))), ((map {
             my($op, $type) = @{$_};
             "    public " . $type . " " . $op . "() {
         return this.get()." . $op . "();
@@ -26817,7 +26817,7 @@ class PlTieScalar extends PlLvalue {
             $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? [$class->{"perl_to_java"}, $class->{"java_type"}] : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes)))) . "}
+        } keys(%java_classes)))), "}
 class PlLazyLvalue extends PlLvalue {
     public  PlLvalue llv;   // \$\$lv
     public PlLvalue create_scalar() {
@@ -27057,7 +27057,7 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.set(o);
     }
-" . (join('', map {
+", ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlLvalue set(" . $native . " s) {
@@ -27069,7 +27069,7 @@ class PlLazyLvalue extends PlLvalue {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))) . "    public PlObject exists(PlObject a) {
+        } keys(%native_to_perl))), "    public PlObject exists(PlObject a) {
         if (llv == null) {
             create_scalar();
         }
@@ -27126,7 +27126,7 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.bless(className);
     }
-" . (join('', map {
+", ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
         return this.get()." . $perl . "(s);
@@ -27137,7 +27137,7 @@ class PlLazyLvalue extends PlLvalue {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", "mod", keys(%number_binop)))), ((map {
             my($op, $type) = @{$_};
             "    public " . $type . " " . $op . "() {
         return this.get()." . $op . "();
@@ -27148,7 +27148,7 @@ class PlLazyLvalue extends PlLvalue {
             $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? [$class->{"perl_to_java"}, $class->{"java_type"}] : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes)))) . "}
+        } keys(%java_classes)))), "}
 class PlLvalue extends PlObject {
     public PlObject o;
     public Integer pos;
@@ -27450,7 +27450,7 @@ class PlLvalue extends PlObject {
         this.o = o.scalar();
         return this;
     }
-" . (join('', map {
+", ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlLvalue set(" . $native . " s) {
@@ -27460,7 +27460,7 @@ class PlLvalue extends PlObject {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))) . "    public PlObject exists(PlObject a) {
+        } keys(%native_to_perl))), "    public PlObject exists(PlObject a) {
         return this.o.exists(a);
     }
     public PlObject delete(PlObject a) {
@@ -27504,7 +27504,7 @@ class PlLvalue extends PlObject {
     public PlObject bless(String className) {
         return this.o.bless(className);
     }
-" . (join('', map {
+", ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
         return this.o." . $perl . "(s);
@@ -27515,7 +27515,7 @@ class PlLvalue extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))) . (join('', map {
+        } ("num_cmp", "mod", keys(%number_binop)))), ((map {
             my($op, $type) = @{$_};
             "    public " . $type . " " . $op . "() {
         return this.o." . $op . "();
@@ -27526,7 +27526,7 @@ class PlLvalue extends PlObject {
             $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? [$class->{"perl_to_java"}, $class->{"java_type"}] : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes)))) . "}
+        } keys(%java_classes)))), "}
 
 ", "
 class PlROvalue extends PlLvalue {
@@ -27869,7 +27869,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))) . "    public PlObject aget(PlObject i) {
+        } keys(%java_classes))), "    public PlObject aget(PlObject i) {
         int pos  = i.to_int();
         if (pos < 0) {
             pos = this.a.size() + pos;
@@ -28108,7 +28108,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         }
         return v;
     }
-" . (join('', map {
+", ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlObject aset(PlObject i, " . $native . " s) {
@@ -28124,7 +28124,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))) . "    public PlObject aset_alias(int i, PlLvalue lvalue) {
+        } keys(%native_to_perl))), "    public PlObject aset_alias(int i, PlLvalue lvalue) {
         return this.a.set(i, lvalue);
     }
 
@@ -28732,7 +28732,7 @@ class PlHash extends PlObject {
         }
         return aa;
     }
-" . (join('', map {
+", ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlObject hset(PlObject s, " . $native . " v) {
@@ -28744,7 +28744,7 @@ class PlHash extends PlObject {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))) . "
+        } keys(%native_to_perl))), "
     public String toString() {
         // TODO
         return \"\" + this.hashCode();
@@ -28983,7 +28983,7 @@ class PlDouble extends PlObject {
         int c = new Double(b.to_double()).compareTo(this.i);
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
-" . (join('', map {
+", ((map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{"op"};
             my $returns = $number_binop{$perl}->{"num_returns"};
@@ -29011,7 +29011,7 @@ class PlDouble extends PlObject {
             }
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . "    public PlObject mod(PlObject o) {
+        } keys(%number_binop))), "    public PlObject mod(PlObject o) {
         return PerlOp.mod(this, o);
     }
     public boolean is_num() {
@@ -29382,7 +29382,7 @@ class PlString extends PlObject {
     public boolean is_integer_range() {
         return this.parse().is_integer_range();
     }
-" . (join('', map {
+", ((map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{"op"};
             my $returns = $number_binop{$perl}->{"returns"};
@@ -29411,7 +29411,7 @@ class PlString extends PlObject {
             }
         } sort {;
             $a cmp $b
-        } keys(%number_binop))) . "}
+        } keys(%number_binop))), "}
 " . join('', (map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{"java_type"};
@@ -29438,7 +29438,7 @@ class PlString extends PlObject {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))) . "// end Perl-Java runtime
+        } keys(%java_classes))), "// end Perl-Java runtime
 ")
     }
     1
