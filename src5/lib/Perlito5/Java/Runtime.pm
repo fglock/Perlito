@@ -2360,6 +2360,9 @@ EOT
     public boolean to_boolean() {
         return false;
     }
+    public PlObject to_num() {
+        return PlCx.INT0;
+    }
     public char to_char() {
         return (char)(this.to_int());
     }
@@ -2564,9 +2567,6 @@ EOT
     }
     public PlObject get() {
         return PlCORE.die("error .get!");
-    }
-    public PlObject to_num() {
-        return PlCORE.die("error .to_num!");
     }
     public PlObject mod(PlObject o) {
         return this.to_num().mod(o);
@@ -2879,6 +2879,9 @@ class PlReference extends PlObject {
     }
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
+    }
+    public PlObject to_num() {
+        return PlClass.overload_to_number(this);
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
@@ -3280,6 +3283,9 @@ class PlArrayRef extends PlArray {
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
     }
+    public PlObject to_num() {
+        return PlClass.overload_to_number(this);
+    }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
@@ -3439,6 +3445,9 @@ class PlHashRef extends PlHash {
     }
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
+    }
+    public PlObject to_num() {
+        return PlClass.overload_to_number(this);
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
