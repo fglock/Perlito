@@ -22935,18 +22935,18 @@ import static java.nio.file.attribute.PosixFilePermission.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
-" . ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java_imports() : ()) . join('', (map {
+", ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java_imports() : ()), ((map {
             my $class = $java_classes{$_};
             $class->{"import"} ? "import " . $class->{"import"} . ";
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))) . join('', (map {
+        } keys(%java_classes))), ((map {
             my $class = $java_classes{$_};
             $class->{"extends"} || $class->{"implements"} ? emit_java_extends($class, \%java_classes) : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))) . Perlito5::Java::CORE::->emit_java(), "class PlControlException extends RuntimeException {
+        } keys(%java_classes))), Perlito5::Java::CORE::->emit_java(), "class PlControlException extends RuntimeException {
 }
 class PlNextException    extends PlControlException {
     public int label_id;
@@ -23004,14 +23004,14 @@ class PlCx {
     public static final String OVERLOAD_NUM      = \"(0+\";
     public static final String OVERLOAD_BOOL     = \"(bool\";
     public static final PlRegex SPLIT_SPACE      = new PlRegex(\"\\\\s+\", Pattern.MULTILINE, false);
-" . "    " . join("
+", "    " . join("
     ", map {;
             "public static final PlInt " . ($_ < 0 ? "MIN" : "INT") . abs($_) . " = new PlInt(" . $_ . ");"
         } (-2 .. 2)) . "
-" . "    " . join("
+", "    " . join("
     ", @{$args{"java_constants"} // []}) . "
 ", "}
-" . Perlito5::Java::Crypt::->emit_java() . ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java() : ()), "class PerlCompare implements Comparator<PlObject> {
+", Perlito5::Java::Crypt::->emit_java(), ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java() : ()), "class PerlCompare implements Comparator<PlObject> {
     public PlClosure sorter;
     public PlLvalue v_a;
     public PlLvalue v_b;
@@ -24905,7 +24905,7 @@ class PlObject {
 
     public PlObject() {
     }
-" . join('', (map {
+", ((map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{"java_type"};
             my $perl_to_java = $class->{"perl_to_java"};
@@ -27845,7 +27845,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     }
 
     // TODO - Double[]
-" . join('', (map {
+", ((map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{"java_type"};
             my $perl_to_java = $class->{"perl_to_java"};
@@ -29412,7 +29412,7 @@ class PlString extends PlObject {
         } sort {;
             $a cmp $b
         } keys(%number_binop))), "}
-" . join('', (map {
+", ((map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{"java_type"};
             my $perl_to_java = $class->{"perl_to_java"};

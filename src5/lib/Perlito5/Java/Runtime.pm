@@ -304,14 +304,14 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
 EOT
-    . ( $Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler->emit_java_imports() : () )
+    , ( $Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler->emit_java_imports() : () )
 
         # import the Java classes
         # that were declared with
         #
         #   package My::Java { import => "org.My.Java", ... }
         #
-    . join('', ( map {
+    , (( map {
                     my $class = $java_classes{$_};
                     $class->{import} ? "import $class->{import};\n" : ()
             }
@@ -322,14 +322,14 @@ EOT
         #
         #   package My::Java { extends => "My::Java", ... }
         #
-    . join('', ( map {
+    , (( map {
                     my $class = $java_classes{$_};
                     $class->{extends} || $class->{implements} ? emit_java_extends($class, \%java_classes) : ()
             }
             sort keys %java_classes
       ))
 
-    . Perlito5::Java::CORE->emit_java()
+    , Perlito5::Java::CORE->emit_java()
 
         # Perl-Java exceptions
     , <<'EOT'
@@ -392,16 +392,16 @@ class PlCx {
     public static final String OVERLOAD_BOOL     = "(bool";
     public static final PlRegex SPLIT_SPACE      = new PlRegex("\\s+", Pattern.MULTILINE, false);
 EOT
-    . "    " . join("\n    ",
+    , "    " . join("\n    ",
         map { "public static final PlInt " . ($_ < 0 ? "MIN" : "INT") . abs($_) . " = new PlInt($_);" }
             (-2 .. 2) ) . "\n"
-    . "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
+    , "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
     , <<'EOT'
 }
 EOT
 
-    . Perlito5::Java::Crypt->emit_java()
-    . ( $Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler->emit_java() : () )
+    , Perlito5::Java::Crypt->emit_java()
+    , ( $Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler->emit_java() : () )
 
     , <<'EOT'
 class PerlCompare implements Comparator<PlObject> {
@@ -2307,7 +2307,7 @@ EOT
         #
         #   package MyJavaClass { Java }
         #
-    . join('', ( map {
+    , (( map {
                     my $class = $java_classes{$_};
                     my $java_class_name = $class->{java_type};
                     my $perl_to_java = $class->{perl_to_java};
@@ -5456,7 +5456,7 @@ EOT
         #
         #   package MyJavaClass { Java }
         #
-    . join('', ( map {
+    , (( map {
                     my $class = $java_classes{$_};
                     my $java_class_name = $class->{java_type};
                     my $perl_to_java    = $class->{perl_to_java};
@@ -7047,7 +7047,7 @@ EOT
         #
         #   package MyJavaClass { Java }
         #
-    . join('', ( map {
+    , (( map {
                     my $class = $java_classes{$_};
                     my $java_class_name = $class->{java_type};
                     my $perl_to_java    = $class->{perl_to_java};
