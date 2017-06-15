@@ -2873,6 +2873,24 @@ class PlReference extends PlObject {
         }
     }
 
+    public PlInt refaddr() {
+        // Scalar::Util::refaddr()
+        return new PlInt(this.hashCode());
+    }
+    public PlObject blessed() {
+        // Scalar::Util::blessed()
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.plClassName();
+        }
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return REF;
+    }
+
     // overload
     public String toString() {
         return PlClass.overload_to_string(this).toString();
@@ -2886,7 +2904,6 @@ class PlReference extends PlObject {
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-
 EOT
     , ((map {
             my $perl = $_;
@@ -2929,25 +2946,6 @@ EOT
       ))
 
     , <<'EOT'
-    // end overload
-
-    public PlInt refaddr() {
-        // Scalar::Util::refaddr()
-        return new PlInt(this.hashCode());
-    }
-    public PlObject blessed() {
-        // Scalar::Util::blessed()
-        if ( this.bless == null ) {
-            return PlCx.UNDEF;
-        }
-        else {
-            return this.bless.plClassName();
-        }
-    }
-    public PlObject reftype() {
-        // Scalar::Util::reftype()
-        return REF;
-    }
 }
 class PlGlobRef extends PlReference {
     public static final PlString REF = new PlString("GLOB");
@@ -3275,6 +3273,32 @@ class PlArrayRef extends PlArray {
         return this.bless;
     }
 
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.plClassName();
+        }
+    }
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.a);
+        return new PlInt(id);
+    }
+    public PlObject blessed() {
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.plClassName();
+        }
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return REF;
+    }
+
     // overload
     public String toString() {
         return PlClass.overload_to_string(this).toString();
@@ -3288,7 +3312,6 @@ class PlArrayRef extends PlArray {
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-
 EOT
     , ((map {
             my $perl = $_;
@@ -3331,33 +3354,6 @@ EOT
       ))
 
     , <<'EOT'
-    // end overload
-
-    public PlString ref() {
-        if ( this.bless == null ) {
-            return REF;
-        }
-        else {
-            return this.bless.plClassName();
-        }
-    }
-    public PlObject refaddr() {
-        // Scalar::Util::refaddr()
-        int id = System.identityHashCode(this.a);
-        return new PlInt(id);
-    }
-    public PlObject blessed() {
-        if ( this.bless == null ) {
-            return PlCx.UNDEF;
-        }
-        else {
-            return this.bless.plClassName();
-        }
-    }
-    public PlObject reftype() {
-        // Scalar::Util::reftype()
-        return REF;
-    }
 }
 
 // class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
@@ -3437,6 +3433,32 @@ class PlHashRef extends PlHash {
         return this.bless;
     }
 
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.plClassName();
+        }
+    }
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.h);
+        return new PlInt(id);
+    }
+    public PlObject blessed() {
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.plClassName();
+        }
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return REF;
+    }
+
     // overload
     public String toString() {
         return PlClass.overload_to_string(this).toString();
@@ -3450,7 +3472,6 @@ class PlHashRef extends PlHash {
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-
 EOT
     , ((map {
             my $perl = $_;
@@ -3493,33 +3514,6 @@ EOT
       ))
 
     , <<'EOT'
-    // end overload
-
-    public PlString ref() {
-        if ( this.bless == null ) {
-            return REF;
-        }
-        else {
-            return this.bless.plClassName();
-        }
-    }
-    public PlObject refaddr() {
-        // Scalar::Util::refaddr()
-        int id = System.identityHashCode(this.h);
-        return new PlInt(id);
-    }
-    public PlObject blessed() {
-        if ( this.bless == null ) {
-            return PlCx.UNDEF;
-        }
-        else {
-            return this.bless.plClassName();
-        }
-    }
-    public PlObject reftype() {
-        // Scalar::Util::reftype()
-        return REF;
-    }
 }
 class PlClass {
     public static HashMap<String, PlClass> classes = new HashMap<String, PlClass>();

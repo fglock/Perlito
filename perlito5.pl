@@ -25458,6 +25458,24 @@ class PlReference extends PlObject {
         }
     }
 
+    public PlInt refaddr() {
+        // Scalar::Util::refaddr()
+        return new PlInt(this.hashCode());
+    }
+    public PlObject blessed() {
+        // Scalar::Util::blessed()
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.plClassName();
+        }
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return REF;
+    }
+
     // overload
     public String toString() {
         return PlClass.overload_to_string(this).toString();
@@ -25471,7 +25489,6 @@ class PlReference extends PlObject {
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-
 ", ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "2(PlObject s) {
@@ -25496,26 +25513,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "    // end overload
-
-    public PlInt refaddr() {
-        // Scalar::Util::refaddr()
-        return new PlInt(this.hashCode());
-    }
-    public PlObject blessed() {
-        // Scalar::Util::blessed()
-        if ( this.bless == null ) {
-            return PlCx.UNDEF;
-        }
-        else {
-            return this.bless.plClassName();
-        }
-    }
-    public PlObject reftype() {
-        // Scalar::Util::reftype()
-        return REF;
-    }
-}
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "}
 class PlGlobRef extends PlReference {
     public static final PlString REF = new PlString(\"GLOB\");
     public PlFileHandle filehandle;
@@ -25839,46 +25837,6 @@ class PlArrayRef extends PlArray {
         return this.bless;
     }
 
-    // overload
-    public String toString() {
-        return PlClass.overload_to_string(this).toString();
-    }
-    public boolean to_boolean() {
-        return PlClass.overload_to_boolean(this).to_boolean();
-    }
-    public PlObject to_num() {
-        return PlClass.overload_to_number(this);
-    }
-    public long to_long() {
-        return PlClass.overload_to_number(this).to_long();
-    }
-
-", ((map {
-            my $perl = $_;
-            "    public PlObject " . $perl . "2(PlObject s) {
-        return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
-    }
-"
-        } sort {;
-            $a cmp $b
-        } ("num_cmp", keys(%number_binop)))), ((map {
-            my $op = $_;
-            "    public PlObject " . $op . "() {
-        return PlClass.overload_" . $op . "(this);
-    }
-"
-        } sort {;
-            $a cmp $b
-        } @number_unary)), ((map {
-            my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
-    }
-"
-        } sort {;
-            $a cmp $b
-        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "    // end overload
-
     public PlString ref() {
         if ( this.bless == null ) {
             return REF;
@@ -25904,7 +25862,45 @@ class PlArrayRef extends PlArray {
         // Scalar::Util::reftype()
         return REF;
     }
-}
+
+    // overload
+    public String toString() {
+        return PlClass.overload_to_string(this).toString();
+    }
+    public boolean to_boolean() {
+        return PlClass.overload_to_boolean(this).to_boolean();
+    }
+    public PlObject to_num() {
+        return PlClass.overload_to_number(this);
+    }
+    public long to_long() {
+        return PlClass.overload_to_number(this).to_long();
+    }
+", ((map {
+            my $perl = $_;
+            "    public PlObject " . $perl . "2(PlObject s) {
+        return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("num_cmp", keys(%number_binop)))), ((map {
+            my $op = $_;
+            "    public PlObject " . $op . "() {
+        return PlClass.overload_" . $op . "(this);
+    }
+"
+        } sort {;
+            $a cmp $b
+        } @number_unary)), ((map {
+            my $perl = $_;
+            "    public PlObject " . $perl . "(PlObject s) {
+        return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "}
 
 // class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
 //     public PlTieHash h;
@@ -25983,46 +25979,6 @@ class PlHashRef extends PlHash {
         return this.bless;
     }
 
-    // overload
-    public String toString() {
-        return PlClass.overload_to_string(this).toString();
-    }
-    public boolean to_boolean() {
-        return PlClass.overload_to_boolean(this).to_boolean();
-    }
-    public PlObject to_num() {
-        return PlClass.overload_to_number(this);
-    }
-    public long to_long() {
-        return PlClass.overload_to_number(this).to_long();
-    }
-
-", ((map {
-            my $perl = $_;
-            "    public PlObject " . $perl . "2(PlObject s) {
-        return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
-    }
-"
-        } sort {;
-            $a cmp $b
-        } ("num_cmp", keys(%number_binop)))), ((map {
-            my $op = $_;
-            "    public PlObject " . $op . "() {
-        return PlClass.overload_" . $op . "(this);
-    }
-"
-        } sort {;
-            $a cmp $b
-        } @number_unary)), ((map {
-            my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
-    }
-"
-        } sort {;
-            $a cmp $b
-        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "    // end overload
-
     public PlString ref() {
         if ( this.bless == null ) {
             return REF;
@@ -26048,7 +26004,45 @@ class PlHashRef extends PlHash {
         // Scalar::Util::reftype()
         return REF;
     }
-}
+
+    // overload
+    public String toString() {
+        return PlClass.overload_to_string(this).toString();
+    }
+    public boolean to_boolean() {
+        return PlClass.overload_to_boolean(this).to_boolean();
+    }
+    public PlObject to_num() {
+        return PlClass.overload_to_number(this);
+    }
+    public long to_long() {
+        return PlClass.overload_to_number(this).to_long();
+    }
+", ((map {
+            my $perl = $_;
+            "    public PlObject " . $perl . "2(PlObject s) {
+        return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("num_cmp", keys(%number_binop)))), ((map {
+            my $op = $_;
+            "    public PlObject " . $op . "() {
+        return PlClass.overload_" . $op . "(this);
+    }
+"
+        } sort {;
+            $a cmp $b
+        } @number_unary)), ((map {
+            my $perl = $_;
+            "    public PlObject " . $perl . "(PlObject s) {
+        return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "}
 class PlClass {
     public static HashMap<String, PlClass> classes = new HashMap<String, PlClass>();
     public String className;
