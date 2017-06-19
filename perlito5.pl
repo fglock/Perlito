@@ -22916,9 +22916,11 @@ import java.util.regex.Pattern;
         my @boolean_unary = ("is_int", "is_num", "is_string", "is_bool", "is_undef", "is_regex", "is_filehandle", "is_ref", "is_arrayref", "is_coderef", "is_hashref", "is_scalarref", "is_typeglobref");
         my %number_binop = ("add", {"op", "+", "returns", "PlInt", "num_returns", "PlDouble"}, "sub", {"op", "-", "returns", "PlInt", "num_returns", "PlDouble"}, "mul", {"op", "*", "returns", "PlInt", "num_returns", "PlDouble"}, "div", {"op", "/", "returns", "PlDouble", "num_returns", "PlDouble"}, "num_eq", {"op", "==", "returns", "PlBool", "num_returns", "PlBool"}, "num_ne", {"op", "!=", "returns", "PlBool", "num_returns", "PlBool"}, "num_lt", {"op", "<", "returns", "PlBool", "num_returns", "PlBool"}, "num_le", {"op", "<=", "returns", "PlBool", "num_returns", "PlBool"}, "num_gt", {"op", ">", "returns", "PlBool", "num_returns", "PlBool"}, "num_ge", {"op", ">=", "returns", "PlBool", "num_returns", "PlBool"}, "int_and", {"op", "&", "returns", "PlInt", "num_returns", "PlInt"}, "int_or", {"op", "|", "returns", "PlInt", "num_returns", "PlInt"}, "int_xor", {"op", "^", "returns", "PlInt", "num_returns", "PlInt"}, "int_shr", {"op", ">>>", "returns", "PlInt", "num_returns", "PlInt"}, "int_shl", {"op", "<<", "returns", "PlInt", "num_returns", "PlInt"});
         my %string_binop = ("str_eq", {"op", "== 0", "returns", "PlBool"}, "str_ne", {"op", "!= 0", "returns", "PlBool"}, "str_lt", {"op", "< 0", "returns", "PlBool"}, "str_le", {"op", "<= 0", "returns", "PlBool"}, "str_gt", {"op", "> 0", "returns", "PlBool"}, "str_ge", {"op", ">= 0", "returns", "PlBool"});
-        my %native_to_perl = ("int", "PlInt", "double", "PlDouble", "boolean", "PlBool", "String", "PlString");
+        my %native_to_perl = ("long", "PlInt", "double", "PlDouble", "boolean", "PlBool", "String", "PlString");
         for $_ (values(%java_classes)) {;
-            $native_to_perl{$_->{"java_type"}} = $_->{"java_native_to_perl"}
+            if ($_->{"import"} || $_->{"extends"} || $_->{"implements"}) {;
+                $native_to_perl{$_->{"java_type"}} = $_->{"java_native_to_perl"}
+            }
         }
         return ("// start Perl-Java runtime
 // this is generated code - see: lib/Perlito5/Java/Runtime.pm
@@ -27776,31 +27778,28 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         this.a = arr.a;
     }
 
-    // TODO - Double[]
 ", ((map {
-            my $java_class_name = $_->[0];
-            my $java_native_to_perl = $_->[1];
-            "    public PlObject set(" . $java_class_name . "[] stuffs) {
+            my $native = $_;
+            my $perl = $native_to_perl{$native};
+            $native && $perl ? "    public PlObject set(" . $native . "[] stuffs) {
         this.a.clear();
-        // \@x = " . $java_class_name . "[] native;
-        for(" . $java_class_name . " i : stuffs){
-            this.a.add(new " . $java_native_to_perl . "(i));
+        // \@x = " . $native . "[] native;
+        for(" . $native . " i : stuffs){
+            this.a.add(new " . $perl . "(i));
         }
         this.each_iterator = 0;
         return this;
     }
-    public PlArray(" . $java_class_name . "[] stuffs) {
+    public PlArray(" . $native . "[] stuffs) {
         PlArray aa = new PlArray();
         aa.set(stuffs);
         this.each_iterator = aa.each_iterator;
         this.a = aa.a;
     }
-"
-        } (["byte", "PlInt"], ["long", "PlInt"], ["int", "PlInt"], ["String", "PlString"], map([$java_classes{$_}->{"java_type"}, $java_classes{$_}->{"java_native_to_perl"}], sort {;
+" : ()
+        } sort {;
             $a cmp $b
-        } grep {;
-            $java_classes{$_}->{"import"} || $java_classes{$_}->{"extends"} || $java_classes{$_}->{"implements"}
-        } keys(%java_classes))))), "    public PlObject aget(PlObject i) {
+        } keys(%native_to_perl))), "    public PlObject aget(PlObject i) {
         int pos  = i.to_int();
         if (pos < 0) {
             pos = this.a.size() + pos;

@@ -277,13 +277,15 @@ EOT
     );
 
     my %native_to_perl = (
-        int     => 'PlInt',
+        long    => 'PlInt',
         double  => 'PlDouble',
         boolean => 'PlBool',
         String  => 'PlString',
     );
     for (values %java_classes) {
-        $native_to_perl{$_->{java_type}} = $_->{java_native_to_perl};
+        if ( $_->{import} || $_->{extends} || $_->{implements} ) {
+            $native_to_perl{$_->{java_type}} = $_->{java_native_to_perl};
+        }
     }
 
     return (
@@ -5381,44 +5383,34 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         this.a = arr.a;
     }
 
-    // TODO - Double[]
 EOT
         # add "box" array-of Java classes
         # that were declared with
         #
         #   package MyJavaClass { Java }
         #
-    , (( map {
-                my $java_class_name = $_->[0];
-                my $java_native_to_perl = $_->[1];
-"    public PlObject set(${java_class_name}[] stuffs) {
+    , ((map {
+            my $native = $_;
+            my $perl   = $native_to_perl{$native};
+            $native && $perl ? 
+"    public PlObject set(${native}[] stuffs) {
         this.a.clear();
-        // \@x = ${java_class_name}[] native;
-        for(${java_class_name} i : stuffs){
-            this.a.add(new ${java_native_to_perl}(i));
+        // \@x = ${native}[] native;
+        for(${native} i : stuffs){
+            this.a.add(new ${perl}(i));
         }
         this.each_iterator = 0;
         return this;
     }
-    public PlArray(${java_class_name}[] stuffs) {
+    public PlArray(${native}[] stuffs) {
         PlArray aa = new PlArray();
         aa.set(stuffs);
         this.each_iterator = aa.each_iterator;
         this.a = aa.a;
     }
-"
+" : ()
             }
-            (
-                [ 'byte',   'PlInt'    ],
-                [ 'long',   'PlInt'    ],
-                [ 'int',    'PlInt'    ],
-                [ 'String', 'PlString' ],
-                map [ $java_classes{$_}{java_type}, $java_classes{$_}{java_native_to_perl} ],
-                    sort
-                    grep { $java_classes{$_}{import} || $java_classes{$_}{extends} || $java_classes{$_}{implements} }
-                    keys %java_classes
-            )
-      ))
+            sort keys %native_to_perl ))
 
     , <<'EOT'
     public PlObject aget(PlObject i) {
