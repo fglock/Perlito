@@ -28048,8 +28048,10 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return this.aset(i, new " . $perl . "(s));
     }
     public PlObject push(" . $native . " s) {
-        this.a.add(new " . $perl . "(s));
-        return this.length_of_array();
+        return this.push(new " . $perl . "(s));
+    }
+    public PlObject unshift(" . $native . " s) {
+        return this.unshift(new " . $perl . "(s));
     }
 " : ()
         } sort {;
