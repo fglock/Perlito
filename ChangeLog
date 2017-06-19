@@ -23,6 +23,7 @@
 -- "require"
 -- "opendir", "readdir", "closedir"
 -- tied hash
+-- tied array
 -- /xx regex modifier
 
 9.022 cpan:Perlito5  2017-05-xx
