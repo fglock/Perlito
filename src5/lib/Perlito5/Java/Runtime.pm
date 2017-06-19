@@ -5838,6 +5838,7 @@ EOT
             this.push(PlCx.UNDEF);
         }
         while (size < this.a.size() && this.a.size() > 0) {
+            // TODO - use removeRange(fromIndex, toIndex)
             this.pop();
         }
         return o;
