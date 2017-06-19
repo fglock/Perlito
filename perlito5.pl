@@ -26367,6 +26367,20 @@ class PlTieArray extends PlArray {
 
     // TODO
 
+
+    public PlObject pop() {
+        return PerlOp.call(tied, \"POP\", new PlArray(), PlCx.SCALAR);
+    }
+    public PlObject shift() {
+        return PerlOp.call(tied, \"SHIFT\", new PlArray(), PlCx.SCALAR);
+    }
+    public PlObject exists(PlObject i) {
+        return PerlOp.call(tied, \"EXISTS\", new PlArray(i), PlCx.SCALAR);
+    }
+    public PlObject delete(int want, PlObject i) {
+        return PerlOp.call(tied, \"DELETE\", new PlArray(i), want);
+    }
+
     public long to_long() {
         return this.length_of_array().to_long();
     }
