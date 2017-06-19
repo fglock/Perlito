@@ -26368,6 +26368,30 @@ class PlTieArray extends PlArray {
     // TODO
 
 
+    public PlObject aget(int i) {
+        return PerlOp.call(tied, \"FETCH\", new PlArray(new PlInt(i)), PlCx.SCALAR);
+    }
+    public PlObject aget(PlObject i) {
+        return PerlOp.call(tied, \"FETCH\", new PlArray(i), PlCx.SCALAR);
+    }
+
+    public PlObject aset_alias(int i, PlObject v) {
+        return this.aset(i, v);
+    }
+    public PlObject aset(int i, PlObject v) {
+        return PerlOp.call(tied, \"STORE\", new PlArray(new PlInt(i), v), PlCx.SCALAR);
+    }
+    public PlObject aset(PlObject i, PlObject v) {
+        return PerlOp.call(tied, \"STORE\", new PlArray(i, v), PlCx.SCALAR);
+    }
+
+    public PlObject push(PlObject v) {
+        return PerlOp.call(tied, \"PUSH\", new PlArray(v), PlCx.SCALAR);
+    }
+    public PlObject unshift(PlObject v) {
+        return PerlOp.call(tied, \"UNSHIFT\", new PlArray(v), PlCx.SCALAR);
+    }
+
     public PlObject pop() {
         return PerlOp.call(tied, \"POP\", new PlArray(), PlCx.SCALAR);
     }
