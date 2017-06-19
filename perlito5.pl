@@ -26366,6 +26366,42 @@ class PlTieArray extends PlArray {
     }
 
     // TODO
+
+    public long to_long() {
+        return this.length_of_array().to_long();
+    }
+    public int to_int() {
+        return this.length_of_array().to_int();
+    }
+    public PlObject length_of_array() {
+        return PerlOp.call(tied, \"FETCHSIZE\", new PlArray(), PlCx.SCALAR);
+    }
+    public int length_of_array_int() {
+        return this.length_of_array().to_int();
+    }
+    public PlObject end_of_array_index() {
+        return new PlInt(this.length_of_array().to_int() - 1);
+    }
+    public PlObject set_end_of_array_index(PlObject o) {
+        int size = o.to_int() + 1;
+        PerlOp.call(tied, \"STORESIZE\", new PlArray(new PlInt(size)), PlCx.SCALAR);
+        return o;
+    }
+    public double to_double() {
+        return 0.0 + this.to_long();
+    }
+    public boolean to_boolean() {
+        return (this.to_long() > 0);
+    }
+    public PlObject to_num() {
+        return this.length_of_array();
+    }
+    public boolean is_array() {
+        return true;
+    }
+    public PlObject scalar() {
+        return this.length_of_array();
+    }
 }
 class PlTieHash extends PlHash {
     public PlObject tied;
@@ -28220,6 +28256,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
             this.push(PlCx.UNDEF);
         }
         while (size < this.a.size() && this.a.size() > 0) {
+            // TODO - use removeRange(fromIndex, toIndex)
             this.pop();
         }
         return o;
