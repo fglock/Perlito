@@ -5364,68 +5364,6 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         this.each_iterator = 0;
         return this;
     }
-    public PlObject set(byte[] bs) {
-        this.a.clear();
-        // @x = byte[] native;
-        for(byte b : bs){
-            int i = b;
-            this.a.add(new PlInt(i));
-        }
-        this.each_iterator = 0;
-        return this;
-    }
-    public PlArray(byte[] bs) {
-        PlArray aa = new PlArray();
-        aa.set(bs);
-        this.each_iterator = aa.each_iterator;
-        this.a = aa.a;
-    }
-
-    public PlObject set(long[] longs) {
-        this.a.clear();
-        // @x = long[] native;
-        for(long i : longs){
-            this.a.add(new PlInt(i));
-        }
-        this.each_iterator = 0;
-        return this;
-    }
-    public PlArray(long[] longs) {
-        PlArray aa = new PlArray();
-        aa.set(longs);
-        this.each_iterator = aa.each_iterator;
-        this.a = aa.a;
-    }
-
-    public PlObject set(int[] ints) {
-        this.a.clear();
-        // @x = int[] native;
-        for(int i : ints){
-            this.a.add(new PlInt(i));
-        }
-        this.each_iterator = 0;
-        return this;
-    }
-    public PlArray(int[] ints) {
-        PlArray aa = new PlArray();
-        aa.set(ints);
-        this.each_iterator = aa.each_iterator;
-        this.a = aa.a;
-    }
-    public PlObject set(String[] strings) {
-        this.a.clear();
-        for (String s : strings) {
-            this.a.add(new PlString(s));
-        }
-        this.each_iterator = 0;
-        return this;
-    }
-    public PlArray(String[] strings) {
-        PlArray arr = new PlArray();
-        arr.set(strings);
-        this.each_iterator = arr.each_iterator;
-        this.a = arr.a;
-    }
 
     public PlObject set(Map<String, String> env) {
         this.a.clear();
@@ -5451,12 +5389,8 @@ EOT
         #   package MyJavaClass { Java }
         #
     , (( map {
-                    my $class = $java_classes{$_};
-                    my $java_class_name = $class->{java_type};
-                    my $perl_to_java    = $class->{perl_to_java};
-                    my $perl_package    = $class->{perl_package};
-                    my $java_native_to_perl = $class->{java_native_to_perl};
-                    $class->{import} || $class->{extends} || $class->{implements} ? 
+                my $java_class_name = $_->[0];
+                my $java_native_to_perl = $_->[1];
 "    public PlObject set(${java_class_name}[] stuffs) {
         this.a.clear();
         // \@x = ${java_class_name}[] native;
@@ -5472,9 +5406,18 @@ EOT
         this.each_iterator = aa.each_iterator;
         this.a = aa.a;
     }
-" : ()
+"
             }
-            sort keys %java_classes
+            (
+                [ 'byte',   'PlInt'    ],
+                [ 'long',   'PlInt'    ],
+                [ 'int',    'PlInt'    ],
+                [ 'String', 'PlString' ],
+                map [ $java_classes{$_}{java_type}, $java_classes{$_}{java_native_to_perl} ],
+                    sort
+                    grep { $java_classes{$_}{import} || $java_classes{$_}{extends} || $java_classes{$_}{implements} }
+                    keys %java_classes
+            )
       ))
 
     , <<'EOT'
