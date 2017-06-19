@@ -28206,7 +28206,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     }
     public PlObject keys() {
         PlArray aa = new PlArray();
-        int size = this.a.size();
+        int size = this.to_int();
         for (int i = 0; i < size; i++) {
             aa.push(new PlInt(i));
         }
@@ -28214,7 +28214,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     }
     public PlObject each() {
         PlArray aa = new PlArray();
-        int size = this.a.size();
+        int size = this.to_int();
         if (this.each_iterator < size) {
             aa.push(new PlInt(this.each_iterator));
             aa.push(this.aget(this.each_iterator));
@@ -28228,9 +28228,9 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     }
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        int size = this.a.size();
+        int size = this.to_int();
         for (int i = 0; i < size; i++) {
-            String item = this.a.get(i).toString();
+            String item = this.aget(i).toString();
             sb.append(item);
         }
         return sb.toString();
