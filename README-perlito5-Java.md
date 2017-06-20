@@ -150,7 +150,7 @@ Perlito5-Java work-in-progress
 
   - overload is partially implemented
       - overload string, number, boolean work
-      - binary operators not implemented
+      - binary operators work
       - mutators and assignment not implemented
       - dereferencing, iterators, filetest not implemented
       - "nomethod" not implemented
@@ -186,6 +186,7 @@ Regex differences
 -----------------
 
   - regex modifiers /ismxgec work the same as Perl; other modifiers are not yet implemented.
+      - /xx works
       - /r not implemented
       - /ee not implemented, it depends on runtime eval-string
 
