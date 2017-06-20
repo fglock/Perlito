@@ -3542,7 +3542,7 @@ class PlClass {
     protected PlClass(String s) {
         this.className = s;
         this.plClassName = new PlString(s);
-        this.overload_flag = false;
+        this.overload_flag = null;
     }
     public static PlClass getInstance(PlObject s) {
         return PlClass.getInstance(s.toString());
