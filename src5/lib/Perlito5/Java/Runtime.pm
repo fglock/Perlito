@@ -3723,9 +3723,24 @@ EOT
       ))
 
     , ((map {
-            my $op = $_;
-"    public static PlObject overload_$op(PlObject o) {
-        return PlCORE.die(\"TODO - overload $op\");
+            my $perl = $_;
+            $native = $perl;
+            $native = "int"     if $perl eq "op_int";
+            $native = "~"       if $perl eq "complement";
+"    public static PlObject overload_${perl}(PlObject o) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null && bless.is_overloaded() ) {
+            PlObject methodCode = bless.method_lookup(\"(${native}\", 0);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+            }
+            // fallback
+            o = PlClass.overload_to_number(o);
+        }
+        else {
+            o = o.refaddr();
+        }
+        return o.${perl}();
     }
 "
             }
