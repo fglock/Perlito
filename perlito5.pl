@@ -25208,6 +25208,12 @@ class PlObject {
         // Scalar::Util::reftype()
         return PlCx.UNDEF;
     }
+    public PlObject refstring() {
+        if (this.is_ref()) {
+            return new PlString(this.ref().toString() + \"(0x\" + Integer.toHexString(this.refaddr().to_int()) + \")\");
+        }
+        return PlCx.EMPTY;
+    }
     public PlObject blessed() {
         // Scalar::Util::blessed()
         return PlCx.UNDEF;
@@ -26169,7 +26175,7 @@ class PlClass {
                 }
             }
         }
-        return new PlString(o.ref().toString() + \"(0x\" + Integer.toHexString(o.refaddr().to_int()) + \")\");
+        return o.refstring();
     }
     public static PlObject overload_to_number(PlObject o) {
         PlClass bless = o.blessed_class();
@@ -26214,6 +26220,9 @@ class PlClass {
             // fallback
             o = PlClass.overload_to_number(o);
         }
+        else {
+            o = o.refaddr();
+        }
         if (swap.to_boolean()) {
             return other." . $perl . "(o);
         }
@@ -26244,6 +26253,9 @@ class PlClass {
             }
             // fallback
             o = PlClass.overload_to_string(o);
+        }
+        else {
+            o = o.refstring();
         }
         if (swap.to_boolean()) {
             return other." . $perl . "(o);
