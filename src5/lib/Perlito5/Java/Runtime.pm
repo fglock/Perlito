@@ -3651,11 +3651,38 @@ class PlClass {
         }
         return PlCx.UNDEF;
     }
+EOT
 
-    // overload
-    // TODO: test "fallback" flag
-    // TODO: "nomethod"
-    // TODO: dispatch on indirect reference (method name instead of coderef); coderef = \&nil - See overload.pm
+    # overload
+    # TODO: test "fallback" flag with is_overload_fallback()
+    # TODO: "nomethod"
+    # TODO: dispatch on indirect reference (method name instead of coderef); coderef = \&nil - See overload.pm
+    # TODO: missing operators
+    #       with_assign         => "+ - * / % ** << >> x .",
+    #       assign              => "+= -= *= /= %= **= <<= >>= x= .=",
+    #       num_comparison      => "< <= >  >= == !=",
+    #       '3way_comparison'   => "<=> cmp",
+    #       str_comparison      => "lt le gt ge eq ne",
+    #       binary              => '& &= | |= ^ ^=',
+    #       unary               => "neg ! ~",
+    #       mutators            => '++ --',
+    #       func                => "atan2 cos sin exp abs log sqrt int",
+    #       conversion          => 'bool "" 0+ qr',
+    #       iterators           => '<>',
+    #       filetest            => "-X",
+    #       dereferencing       => '${} @{} %{} &{} *{}',
+    #       matching            => '~~',
+    #       special             => 'nomethod fallback =',
+    # 
+    # TODO: new error message:
+    #       Operation "*": no method found,
+    #           left argument has no overloaded magic,
+    #           right argument in overloaded package XYZ
+    #       Operation "*": no method found,
+    #           left argument in overloaded package XYZ,
+    #           right argument has no overloaded magic
+
+    , <<'EOT'
     public static PlObject overload_to_string(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
