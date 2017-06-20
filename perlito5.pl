@@ -26066,11 +26066,13 @@ class PlClass {
     public String className;
     public PlString plClassName;
     public Boolean overload_flag;
+    public Boolean overload_fallback_flag;
 
     protected PlClass(String s) {
         this.className = s;
         this.plClassName = new PlString(s);
         this.overload_flag = null;
+        this.overload_fallback_flag = null;
     }
     public static PlClass getInstance(PlObject s) {
         return PlClass.getInstance(s.toString());
@@ -26099,6 +26101,13 @@ class PlClass {
             this.overload_flag = methodCode1.is_coderef() || methodCode2.is_coderef();
         }
         return this.overload_flag;
+    }
+    public Boolean is_overload_fallback() {
+        if (this.overload_fallback_flag == null) {
+            PlObject methodCode = this.method_lookup(\"()\", 0);
+            this.overload_fallback_flag = methodCode.is_coderef();
+        }
+        return this.overload_fallback_flag;
     }
 
     public PlObject method_lookup(String method, int level) {
