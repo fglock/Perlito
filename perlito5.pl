@@ -26078,8 +26078,9 @@ class PlClass {
     }
     public Boolean is_overloaded() {
         if (this.overload_flag == null) {
-            PlObject methodCode = this.method_lookup(\"((\", 0);
-            this.overload_flag = methodCode.is_coderef();
+            PlObject methodCode1 = this.method_lookup(\"((\", 0);
+            PlObject methodCode2 = this.method_lookup(\"()\", 0);
+            this.overload_flag = methodCode1.is_coderef() || methodCode2.is_coderef();
         }
         return this.overload_flag;
     }
