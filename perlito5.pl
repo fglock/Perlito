@@ -25210,7 +25210,17 @@ class PlObject {
     }
     public PlObject refstring() {
         if (this.is_ref()) {
-            return new PlString(this.ref().toString() + \"(0x\" + Integer.toHexString(this.refaddr().to_int()) + \")\");
+            StringBuilder sb = new StringBuilder();
+            PlClass bless = this.blessed_class();
+            if ( bless != null ) {
+                sb.append(this.ref().toString());
+                sb.append(\"=\");
+            }
+            sb.append(this.reftype().toString());
+            sb.append(\"(0x\");
+            sb.append(Integer.toHexString(this.refaddr().to_int()));
+            sb.append(\")\");
+            return new PlString(sb.toString());
         }
         return PlCx.EMPTY;
     }
