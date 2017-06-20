@@ -22915,7 +22915,7 @@ import java.util.regex.Pattern;
         my @number_unary = ("op_int", "neg", "complement", "abs", "sqrt", "cos", "sin", "exp", "log");
         my @boolean_unary = ("is_int", "is_num", "is_string", "is_bool", "is_undef", "is_regex", "is_filehandle", "is_ref", "is_arrayref", "is_coderef", "is_hashref", "is_scalarref", "is_typeglobref");
         my %number_binop = ("add", {"op", "+", "returns", "PlInt", "num_returns", "PlDouble"}, "sub", {"op", "-", "returns", "PlInt", "num_returns", "PlDouble"}, "mul", {"op", "*", "returns", "PlInt", "num_returns", "PlDouble"}, "div", {"op", "/", "returns", "PlDouble", "num_returns", "PlDouble"}, "num_eq", {"op", "==", "returns", "PlBool", "num_returns", "PlBool"}, "num_ne", {"op", "!=", "returns", "PlBool", "num_returns", "PlBool"}, "num_lt", {"op", "<", "returns", "PlBool", "num_returns", "PlBool"}, "num_le", {"op", "<=", "returns", "PlBool", "num_returns", "PlBool"}, "num_gt", {"op", ">", "returns", "PlBool", "num_returns", "PlBool"}, "num_ge", {"op", ">=", "returns", "PlBool", "num_returns", "PlBool"}, "int_and", {"op", "&", "returns", "PlInt", "num_returns", "PlInt"}, "int_or", {"op", "|", "returns", "PlInt", "num_returns", "PlInt"}, "int_xor", {"op", "^", "returns", "PlInt", "num_returns", "PlInt"}, "int_shr", {"op", ">>>", "returns", "PlInt", "num_returns", "PlInt"}, "int_shl", {"op", "<<", "returns", "PlInt", "num_returns", "PlInt"});
-        my %string_binop = ("str_eq", {"op", "== 0", "returns", "PlBool"}, "str_ne", {"op", "!= 0", "returns", "PlBool"}, "str_lt", {"op", "< 0", "returns", "PlBool"}, "str_le", {"op", "<= 0", "returns", "PlBool"}, "str_gt", {"op", "> 0", "returns", "PlBool"}, "str_ge", {"op", ">= 0", "returns", "PlBool"});
+        my %string_binop = ("str_eq", {"op", "==", "str_op", "eq", "returns", "PlBool"}, "str_ne", {"op", "!=", "str_op", "ne", "returns", "PlBool"}, "str_lt", {"op", "<", "str_op", "lt", "returns", "PlBool"}, "str_le", {"op", "<=", "str_op", "le", "returns", "PlBool"}, "str_gt", {"op", ">", "str_op", "gt", "returns", "PlBool"}, "str_ge", {"op", ">=", "str_op", "ge", "returns", "PlBool"});
         my %native_to_perl = ("long", "PlInt", "double", "PlDouble", "boolean", "PlBool", "String", "PlString");
         for $_ (values(%java_classes)) {;
             if ($_->{"import"} || $_->{"extends"} || $_->{"implements"}) {;
@@ -25430,7 +25430,7 @@ class PlObject {
             my $native = $string_binop{$perl}->{"op"};
             my $returns = $string_binop{$perl}->{"returns"};
             "    public PlObject " . $perl . "(PlObject b) {
-        return new " . $returns . "(this.toString().compareTo(b.toString()) " . $native . ");
+        return new " . $returns . "(this.toString().compareTo(b.toString()) " . $native . " 0);
     }
 "
         } sort {;
@@ -26232,7 +26232,7 @@ class PlClass {
         } @number_unary)), ((map {
             my $perl = $_;
             my $native;
-            exists($string_binop{$perl}) && ($native = $string_binop{$perl}->{"op"});
+            exists($string_binop{$perl}) && ($native = $string_binop{$perl}->{"str_op"});
             $perl eq "str_cmp" && ($native = "cmp");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();

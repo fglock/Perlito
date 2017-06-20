@@ -268,12 +268,12 @@ EOT
         int_shl => { op => '<<',  returns => 'PlInt',    num_returns => 'PlInt'  }, 
     );
     my %string_binop = (
-        str_eq => { op => '== 0', returns => 'PlBool' },
-        str_ne => { op => '!= 0', returns => 'PlBool' },
-        str_lt => { op => '< 0',  returns => 'PlBool' },
-        str_le => { op => '<= 0', returns => 'PlBool' },
-        str_gt => { op => '> 0',  returns => 'PlBool' },
-        str_ge => { op => '>= 0', returns => 'PlBool' },
+        str_eq => { op => '==', str_op => 'eq',  returns => 'PlBool' },
+        str_ne => { op => '!=', str_op => 'ne',  returns => 'PlBool' },
+        str_lt => { op => '<',  str_op => 'lt',  returns => 'PlBool' },
+        str_le => { op => '<=', str_op => 'le',  returns => 'PlBool' },
+        str_gt => { op => '>',  str_op => 'gt',  returns => 'PlBool' },
+        str_ge => { op => '>=', str_op => 'ge',  returns => 'PlBool' },
     );
 
     my %native_to_perl = (
@@ -2843,7 +2843,7 @@ EOT
             my $native  = $string_binop{$perl}{op};
             my $returns = $string_binop{$perl}{returns};
 "    public PlObject ${perl}(PlObject b) {
-        return new ${returns}(this.toString().compareTo(b.toString()) ${native});
+        return new ${returns}(this.toString().compareTo(b.toString()) ${native} 0);
     }
 "
             }
@@ -3714,7 +3714,7 @@ EOT
     , ((map {
             my $perl = $_;
             my $native;
-            $native = $string_binop{$perl}{op} if exists $string_binop{$perl};
+            $native = $string_binop{$perl}{str_op} if exists $string_binop{$perl};
             $native = "cmp" if $perl eq "str_cmp";
 "    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
