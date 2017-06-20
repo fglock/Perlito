@@ -26365,8 +26365,7 @@ class PlTieArray extends PlArray {
         return tied;
     }
 
-    // TODO
-
+    // TODO - lazy index, See: PlLazyTiedLookup
 
     public PlObject aget(int i) {
         return PerlOp.call(tied, \"FETCH\", new PlArray(new PlInt(i)), PlCx.SCALAR);
@@ -28864,7 +28863,7 @@ class PlBool extends PlObject {
     public PlObject _incr() {
         // ++\$x
         if (i) {
-            return new PlInt(2);
+            return PlCx.INT2;
         }
         else {
             return PlCx.INT1;

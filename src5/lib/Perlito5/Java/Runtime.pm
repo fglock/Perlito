@@ -6485,7 +6485,7 @@ class PlBool extends PlObject {
     public PlObject _incr() {
         // ++$x
         if (i) {
-            return new PlInt(2);
+            return PlCx.INT2;
         }
         else {
             return PlCx.INT1;
