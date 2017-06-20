@@ -26049,10 +26049,12 @@ class PlClass {
     public static HashMap<String, PlClass> classes = new HashMap<String, PlClass>();
     public String className;
     public PlString plClassName;
+    public Boolean overload_flag;
 
     protected PlClass(String s) {
         this.className = s;
         this.plClassName = new PlString(s);
+        this.overload_flag = false;
     }
     public static PlClass getInstance(PlObject s) {
         return PlClass.getInstance(s.toString());
@@ -26073,6 +26075,13 @@ class PlClass {
     }
     public boolean is_undef() {
         return this.className == null;
+    }
+    public Boolean is_overloaded() {
+        if (this.overload_flag == null) {
+            PlObject methodCode = this.method_lookup(\"((\", 0);
+            this.overload_flag = methodCode.is_coderef();
+        }
+        return this.overload_flag;
     }
 
     public PlObject method_lookup(String method, int level) {
@@ -26151,7 +26160,7 @@ class PlClass {
     // TODO: dispatch on indirect reference (method name instead of coderef); coderef = \\&nil - See overload.pm
     public static PlObject overload_to_string(PlObject o) {
         PlClass bless = o.blessed_class();
-        if ( bless != null ) {
+        if ( bless != null && bless.is_overloaded() ) {
             for (String ovl : new String[] { PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_BOOL }) {
                 PlObject methodCode = bless.method_lookup(ovl, 0);
                 if (methodCode.is_coderef()) {
@@ -26163,7 +26172,7 @@ class PlClass {
     }
     public static PlObject overload_to_number(PlObject o) {
         PlClass bless = o.blessed_class();
-        if ( bless != null ) {
+        if ( bless != null && bless.is_overloaded() ) {
             for (String ovl : new String[] { PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_BOOL }) {
                 PlObject methodCode = bless.method_lookup(ovl, 0);
                 if (methodCode.is_coderef()) {
@@ -26175,7 +26184,7 @@ class PlClass {
     }
     public static PlObject overload_to_boolean(PlObject o) {
         PlClass bless = o.blessed_class();
-        if ( bless != null ) {
+        if ( bless != null && bless.is_overloaded() ) {
             for (String ovl : new String[] { PlCx.OVERLOAD_BOOL, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING }) {
                 PlObject methodCode = bless.method_lookup(ovl, 0);
                 if (methodCode.is_coderef()) {
@@ -26196,7 +26205,7 @@ class PlClass {
             $perl eq "int_shr" && ($native = ">>");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
-        if ( bless != null ) {
+        if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.method_lookup(\"(" . $native . "\", 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
@@ -26227,7 +26236,7 @@ class PlClass {
             $perl eq "str_cmp" && ($native = "cmp");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
-        if ( bless != null ) {
+        if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.method_lookup(\"(" . $native . "\", 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
