@@ -8,6 +8,7 @@ use strict;
 my %Perlito_internal_module = (
     strict         => 'Perlito5X::strict',
     warnings       => 'Perlito5X::warnings',
+    'warnings::register' => 'Perlito5X::warnings::register',
     feature        => 'Perlito5X::feature',
     utf8           => 'Perlito5X::utf8',
     bytes          => 'Perlito5X::bytes',
@@ -19,6 +20,9 @@ my %Perlito_internal_module = (
     'Data::Dumper' => 'Perlito5X::Dumper',
     UNIVERSAL      => 'Perlito5X::UNIVERSAL',
     JSON           => 'Perlito5X::JSON',
+    'Tie::Hash'    => 'Perlito5X::Tie::Hash',
+    'Tie::Array'   => 'Perlito5X::Tie::Array',
+    'Tie::Scalar'  => 'Perlito5X::Tie::Scalar',
     # vars     => 'Perlito5::vars',         # this is "hardcoded" in stmt_use()
     # constant => 'Perlito5::constant',
 );
