@@ -3654,7 +3654,6 @@ class PlClass {
 EOT
 
     # overload
-    # TODO: test "fallback" flag with is_overload_fallback()
     # TODO: "nomethod"
     # TODO: dispatch on indirect reference (method name instead of coderef); coderef = \&nil - See overload.pm
     # TODO: missing operators
@@ -3691,6 +3690,9 @@ EOT
                 if (methodCode.is_coderef()) {
                     return methodCode.apply(PlCx.SCALAR, new PlArray(o));
                 }
+                if (!bless.is_overload_fallback()) {
+                    break;
+                }
             }
         }
         return o.refstring();
@@ -3703,6 +3705,9 @@ EOT
                 if (methodCode.is_coderef()) {
                     return methodCode.apply(PlCx.SCALAR, new PlArray(o));
                 }
+                if (!bless.is_overload_fallback()) {
+                    break;
+                }
             }
         }
         return o.refaddr();
@@ -3714,6 +3719,9 @@ EOT
                 PlObject methodCode = bless.method_lookup(ovl, 0);
                 if (methodCode.is_coderef()) {
                     return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                }
+                if (!bless.is_overload_fallback()) {
+                    break;
                 }
             }
         }
@@ -3736,8 +3744,12 @@ EOT
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
             }
-            // fallback
-            o = PlClass.overload_to_number(o);
+            if (bless.is_overload_fallback()) {
+                o = PlClass.overload_to_number(o);
+            }
+            else {
+                o = o.refaddr();
+            }
         }
         else {
             o = o.refaddr();
@@ -3770,8 +3782,12 @@ EOT
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o));
             }
-            // fallback
-            o = PlClass.overload_to_number(o);
+            if (bless.is_overload_fallback()) {
+                o = PlClass.overload_to_number(o);
+            }
+            else {
+                o = o.refaddr();
+            }
         }
         else {
             o = o.refaddr();
@@ -3794,8 +3810,12 @@ EOT
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
             }
-            // fallback
-            o = PlClass.overload_to_string(o);
+            if (bless.is_overload_fallback()) {
+                o = PlClass.overload_to_string(o);
+            }
+            else {
+                o = o.refstring();
+            }
         }
         else {
             o = o.refstring();

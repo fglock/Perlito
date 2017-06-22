@@ -26187,6 +26187,9 @@ class PlClass {
                 if (methodCode.is_coderef()) {
                     return methodCode.apply(PlCx.SCALAR, new PlArray(o));
                 }
+                if (!bless.is_overload_fallback()) {
+                    break;
+                }
             }
         }
         return o.refstring();
@@ -26199,6 +26202,9 @@ class PlClass {
                 if (methodCode.is_coderef()) {
                     return methodCode.apply(PlCx.SCALAR, new PlArray(o));
                 }
+                if (!bless.is_overload_fallback()) {
+                    break;
+                }
             }
         }
         return o.refaddr();
@@ -26210,6 +26216,9 @@ class PlClass {
                 PlObject methodCode = bless.method_lookup(ovl, 0);
                 if (methodCode.is_coderef()) {
                     return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                }
+                if (!bless.is_overload_fallback()) {
+                    break;
                 }
             }
         }
@@ -26231,8 +26240,12 @@ class PlClass {
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
             }
-            // fallback
-            o = PlClass.overload_to_number(o);
+            if (bless.is_overload_fallback()) {
+                o = PlClass.overload_to_number(o);
+            }
+            else {
+                o = o.refaddr();
+            }
         }
         else {
             o = o.refaddr();
@@ -26257,8 +26270,12 @@ class PlClass {
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o));
             }
-            // fallback
-            o = PlClass.overload_to_number(o);
+            if (bless.is_overload_fallback()) {
+                o = PlClass.overload_to_number(o);
+            }
+            else {
+                o = o.refaddr();
+            }
         }
         else {
             o = o.refaddr();
@@ -26280,8 +26297,12 @@ class PlClass {
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
             }
-            // fallback
-            o = PlClass.overload_to_string(o);
+            if (bless.is_overload_fallback()) {
+                o = PlClass.overload_to_string(o);
+            }
+            else {
+                o = o.refstring();
+            }
         }
         else {
             o = o.refstring();
