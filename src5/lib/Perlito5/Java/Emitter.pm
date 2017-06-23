@@ -1043,6 +1043,7 @@ package Perlito5::Java::LexicalBlock;
                 if (  ( $decl->isa('Perlito5::AST::Int') )
                    || ( $decl->isa('Perlito5::AST::Num') )
                    || ( $decl->isa('Perlito5::AST::Buf') )
+                   || ( $decl->isa('Perlito5::AST::Var') )
                    )
                 {
                     # this looks like dead code
