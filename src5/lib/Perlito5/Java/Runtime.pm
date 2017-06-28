@@ -4412,30 +4412,6 @@ class PlTieScalar extends PlLvalue {
     public PlLvalue set(PlHash o) {
         return this.set(o.scalar());
     }
-
-    public PlObject pre_decr() {
-        // --$x
-        return this.set(this.get()._decr());
-    }
-    public PlObject post_decr() {
-        // $x--
-        PlObject res = this.get();
-        this.set(res._decr());
-        return res;
-    }
-    public PlObject pre_incr() {
-        // ++$x
-        return this.set(this.get()._incr());
-    }
-    public PlObject post_incr() {
-        // $x++
-        PlObject res = this.get();
-        if (res.is_undef()) {
-            res = PlCx.INT0;
-        }
-        this.set(res._incr());
-        return res;
-    }
 }
 class PlLazyLvalue extends PlLvalue {
     public  PlLvalue llv;   // $$lv
@@ -5035,30 +5011,41 @@ EOT
 
     public PlObject pre_decr() {
         // --$x
-        this.o = this.o._decr();
-        return this.o;
+        PlObject res = this.get();
+        if (res.is_ref()) {
+            // TODO - check if overload "--"
+        }
+        return this.set(res._decr());
     }
     public PlObject post_decr() {
         // $x--
-        PlObject res = this.o;
-        this.o = this.o._decr();
+        PlObject res = this.get();
+        if (res.is_ref()) {
+            // TODO - check if overload "--"
+        }
+        this.set(res._decr());
         return res;
     }
     public PlObject pre_incr() {
         // ++$x
-        this.o = this.o._incr();
-        return this.o;
+        PlObject res = this.get();
+        if (res.is_ref()) {
+            // TODO - check if overload "++"
+        }
+        return this.set(res._incr());
     }
     public PlObject post_incr() {
         // $x++
-        PlObject res = this.o;
+        PlObject res = this.get();
+        if (res.is_ref()) {
+            // TODO - check if overload "++"
+        }
         if (res.is_undef()) {
             res = PlCx.INT0;
         }
-        this.o = this.o._incr();
+        this.set(res._incr());
         return res;
     }
-
     public PlObject bless(String className) {
         return this.get().bless(className);
     }
