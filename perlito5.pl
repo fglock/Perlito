@@ -19098,7 +19098,7 @@ use feature 'say';
                     push(@str, $arg->emit_java_init($level, $wantarray))
                 }
                 if (!($decl->isa("Perlito5::AST::Decl") && ($decl->decl() eq "my" || $decl->decl() eq "our"))) {
-                    if (($decl->isa("Perlito5::AST::Int")) || ($decl->isa("Perlito5::AST::Num")) || ($decl->isa("Perlito5::AST::Buf"))) {}
+                    if (($decl->isa("Perlito5::AST::Int")) || ($decl->isa("Perlito5::AST::Num")) || ($decl->isa("Perlito5::AST::Buf")) || ($decl->isa("Perlito5::AST::Var"))) {}
                     elsif ($decl->isa("Perlito5::AST::Apply") && !($decl->{"namespace"} eq "Java" && $decl->{"code"} eq "inline") && !($Perlito5::Java::valid_java_statement{$decl->{"code"}})) {;
                         push(@str, "PerlOp.statement(" . $decl->emit_java($level + 1, "void") . ");")
                     }
@@ -22436,7 +22436,7 @@ class PlJavaCompiler {
             String className = \"PlEval\" + invocationCount;
             invocationCount++;
 
-            StringBuffer source5 = new StringBuffer();
+            StringBuilder source5 = new StringBuilder();
             source5.append(\"import org.perlito.Perlito5.*;\\n\");
             source5.append(\"import java.util.regex.Pattern;\\n\");
             source5.append(\"public class \" + className + \" {\\n\");
@@ -22571,7 +22571,7 @@ class PlJavaCompiler {
             String className = \"PlEval\" + invocationCount;
             invocationCount++;
 
-            StringBuffer source5 = new StringBuffer();
+            StringBuilder source5 = new StringBuilder();
             source5.append(\"import org.perlito.Perlito5.*;\\n\");
             source5.append(\"import java.util.regex.Pattern;\\n\");
             source5.append(\"public class \" + className + \" {\\n\");

@@ -92,7 +92,7 @@ class PlJavaCompiler {
             String className = "PlEval" + invocationCount;
             invocationCount++;
 
-            StringBuffer source5 = new StringBuffer();
+            StringBuilder source5 = new StringBuilder();
             source5.append("import org.perlito.Perlito5.*;\n");
             source5.append("import java.util.regex.Pattern;\n");
             source5.append("public class " + className + " {\n");
@@ -227,7 +227,7 @@ class PlJavaCompiler {
             String className = "PlEval" + invocationCount;
             invocationCount++;
 
-            StringBuffer source5 = new StringBuffer();
+            StringBuilder source5 = new StringBuilder();
             source5.append("import org.perlito.Perlito5.*;\n");
             source5.append("import java.util.regex.Pattern;\n");
             source5.append("public class " + className + " {\n");
