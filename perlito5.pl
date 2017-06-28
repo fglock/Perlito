@@ -26893,12 +26893,6 @@ class PlTieScalar extends PlLvalue {
     public PlLvalue set(PlHash o) {
         return this.set(o.scalar());
     }
-    public PlObject exists(PlObject a) {
-        return PlCORE.die(\"exists argument is not a HASH or ARRAY element or a subroutine\");
-    }
-    public PlObject delete(PlObject a) {
-        return PlCORE.die(\"delete argument is not a HASH or ARRAY element or slice\");
-    }
 
     public PlObject pre_decr() {
         // --\$x
@@ -27162,21 +27156,6 @@ class PlLazyLvalue extends PlLvalue {
             create_scalar();
         }
         return llv.set(o);
-    }
-    public PlObject exists(PlObject a) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.exists(a);
-    }
-    public PlObject delete(PlObject a) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.delete(a);
-    }
-    public boolean is_lvalue() {
-        return true;
     }
 
     public PlObject pre_decr() {
@@ -27520,10 +27499,12 @@ class PlLvalue extends PlObject {
         } sort {;
             $a cmp $b
         } keys(%native_to_perl))), "    public PlObject exists(PlObject a) {
-        return this.o.exists(a);
+        // exists \$v->{\$a}
+        return this.get().exists(a);
     }
     public PlObject delete(PlObject a) {
-        return this.o.delete(a);
+        // delete \$v->{\$a}
+        return this.get().delete(a);
     }
     public boolean is_lvalue() {
         return true;
