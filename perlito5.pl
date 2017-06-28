@@ -26893,16 +26893,7 @@ class PlTieScalar extends PlLvalue {
     public PlLvalue set(PlHash o) {
         return this.set(o.scalar());
     }
-", ((map {
-            my $native = $_;
-            my $perl = $native_to_perl{$native};
-            $native && $perl ? "    public PlLvalue set(" . $native . " s) {
-        return this.set(new " . $perl . "(s));
-    }
-" : ()
-        } sort {;
-            $a cmp $b
-        } keys(%native_to_perl))), "    public PlObject exists(PlObject a) {
+    public PlObject exists(PlObject a) {
         return PlCORE.die(\"exists argument is not a HASH or ARRAY element or a subroutine\");
     }
     public PlObject delete(PlObject a) {
@@ -26931,10 +26922,6 @@ class PlTieScalar extends PlLvalue {
         }
         this.set(res._incr());
         return res;
-    }
-
-    public PlObject bless(String className) {
-        return this.get().bless(className);
     }
 }
 class PlLazyLvalue extends PlLvalue {
@@ -27176,19 +27163,7 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.set(o);
     }
-", ((map {
-            my $native = $_;
-            my $perl = $native_to_perl{$native};
-            $native && $perl ? "    public PlLvalue set(" . $native . " s) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.set(s);
-    }
-" : ()
-        } sort {;
-            $a cmp $b
-        } keys(%native_to_perl))), "    public PlObject exists(PlObject a) {
+    public PlObject exists(PlObject a) {
         if (llv == null) {
             create_scalar();
         }
@@ -27231,13 +27206,6 @@ class PlLazyLvalue extends PlLvalue {
             create_scalar();
         }
         return llv.post_incr();
-    }
-
-    public PlObject bless(String className) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.bless(className);
     }
 }
 class PlLvalue extends PlObject {
@@ -27545,7 +27513,7 @@ class PlLvalue extends PlObject {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlLvalue set(" . $native . " s) {
-        this.o = new " . $perl . "(s);
+        this.set(new " . $perl . "(s));
         return this;
     }
 " : ()
@@ -27586,8 +27554,9 @@ class PlLvalue extends PlObject {
         this.o = this.o._incr();
         return res;
     }
+
     public PlObject bless(String className) {
-        return this.o.bless(className);
+        return this.get().bless(className);
     }
 
     // accessors

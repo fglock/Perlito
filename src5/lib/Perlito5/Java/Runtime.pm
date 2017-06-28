@@ -4412,19 +4412,6 @@ class PlTieScalar extends PlLvalue {
     public PlLvalue set(PlHash o) {
         return this.set(o.scalar());
     }
-EOT
-    , ((map {
-            my $native = $_;
-            my $perl   = $native_to_perl{$native};
-            $native && $perl ? 
-"    public PlLvalue set($native s) {
-        return this.set(new $perl(s));
-    }
-" : ()
-            }
-            sort keys %native_to_perl ))
-
-    , <<'EOT'
     public PlObject exists(PlObject a) {
         return PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
     }
@@ -4454,10 +4441,6 @@ EOT
         }
         this.set(res._incr());
         return res;
-    }
-
-    public PlObject bless(String className) {
-        return this.get().bless(className);
     }
 }
 class PlLazyLvalue extends PlLvalue {
@@ -4699,22 +4682,6 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.set(o);
     }
-EOT
-    , ((map {
-            my $native = $_;
-            my $perl   = $native_to_perl{$native};
-            $native && $perl ? 
-"    public PlLvalue set($native s) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.set(s);
-    }
-" : ()
-            }
-            sort keys %native_to_perl ))
-
-    , <<'EOT'
     public PlObject exists(PlObject a) {
         if (llv == null) {
             create_scalar();
@@ -4758,13 +4725,6 @@ EOT
             create_scalar();
         }
         return llv.post_incr();
-    }
-
-    public PlObject bless(String className) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.bless(className);
     }
 }
 class PlLvalue extends PlObject {
@@ -5074,7 +5034,7 @@ EOT
             my $perl   = $native_to_perl{$native};
             $native && $perl ? 
 "    public PlLvalue set($native s) {
-        this.o = new $perl(s);
+        this.set(new $perl(s));
         return this;
     }
 " : ()
@@ -5117,8 +5077,9 @@ EOT
         this.o = this.o._incr();
         return res;
     }
+
     public PlObject bless(String className) {
-        return this.o.bless(className);
+        return this.get().bless(className);
     }
 
     // accessors
