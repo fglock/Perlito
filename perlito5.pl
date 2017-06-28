@@ -26936,29 +26936,7 @@ class PlTieScalar extends PlLvalue {
     public PlObject bless(String className) {
         return this.get().bless(className);
     }
-", ((map {
-            my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return this.get()." . $perl . "(s);
-    }
-    public PlObject " . $perl . "2(PlObject s) {
-        return s." . $perl . "(this.get());
-    }
-"
-        } sort {;
-            $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))), ((map {
-            my($op, $type) = @{$_};
-            "    public " . $type . " " . $op . "() {
-        return this.get()." . $op . "();
-    }
-"
-        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"], (map {
-            my $class = $java_classes{$_};
-            $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? [$class->{"perl_to_java"}, $class->{"java_type"}] : ()
-        } sort {;
-            $a cmp $b
-        } keys(%java_classes)))), "}
+}
 class PlLazyLvalue extends PlLvalue {
     public  PlLvalue llv;   // \$\$lv
     public PlLvalue create_scalar() {
@@ -27255,41 +27233,13 @@ class PlLazyLvalue extends PlLvalue {
         return llv.post_incr();
     }
 
-    public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
-    public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
-
-    public PlObject scalar() {
-        return this.get();
-    }
     public PlObject bless(String className) {
         if (llv == null) {
             create_scalar();
         }
         return llv.bless(className);
     }
-", ((map {
-            my $perl = $_;
-            "    public PlObject " . $perl . "(PlObject s) {
-        return this.get()." . $perl . "(s);
-    }
-    public PlObject " . $perl . "2(PlObject s) {
-        return s." . $perl . "(this.get());
-    }
-"
-        } sort {;
-            $a cmp $b
-        } ("num_cmp", "mod", keys(%number_binop)))), ((map {
-            my($op, $type) = @{$_};
-            "    public " . $type . " " . $op . "() {
-        return this.get()." . $op . "();
-    }
-"
-        } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"], (map {
-            my $class = $java_classes{$_};
-            $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? [$class->{"perl_to_java"}, $class->{"java_type"}] : ()
-        } sort {;
-            $a cmp $b
-        } keys(%java_classes)))), "}
+}
 class PlLvalue extends PlObject {
     public PlObject o;
     public Integer pos;
@@ -27636,22 +27586,24 @@ class PlLvalue extends PlObject {
         this.o = this.o._incr();
         return res;
     }
-    public PlObject pow(PlObject arg)    { return this.o.pow(arg); }
-    public PlObject atan2(PlObject arg)  { return this.o.atan2(arg); }
-
-    public PlObject scalar() {
-        return this.o;
-    }
     public PlObject bless(String className) {
         return this.o.bless(className);
+    }
+
+    // accessors
+    public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
+    public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
+
+    public PlObject scalar() {
+        return this.get();
     }
 ", ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
-        return this.o." . $perl . "(s);
+        return this.get()." . $perl . "(s);
     }
     public PlObject " . $perl . "2(PlObject s) {
-        return s." . $perl . "(this.o);
+        return s." . $perl . "(this.get());
     }
 "
         } sort {;
@@ -27659,7 +27611,7 @@ class PlLvalue extends PlObject {
         } ("num_cmp", "mod", keys(%number_binop)))), ((map {
             my($op, $type) = @{$_};
             "    public " . $type . " " . $op . "() {
-        return this.o." . $op . "();
+        return this.get()." . $op . "();
     }
 "
         } map([$_, "PlObject"], (@number_unary, "blessed", "refaddr", "reftype", "to_num")), map([$_, "boolean"], (@boolean_unary, "is_integer_range")), ["toString", "String"], ["to_long", "long"], ["to_double", "double"], ["to_boolean", "boolean"], ["blessed_class", "PlClass"], ["ref", "PlString"], (map {
