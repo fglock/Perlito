@@ -26353,7 +26353,7 @@ class PlLazyTiedLookup extends PlLazyLvalue {
         return la.hget(i);
     }
 
-    public PlLvalue set(PlObject o) {
+    public PlObject set(PlObject o) {
         la.hset(i, o);
         return this;
     }
@@ -26738,7 +26738,7 @@ class PlTieHash extends PlHash {
         return PerlOp.call(tied, \"FIRSTKEY\", new PlArray(), PlCx.SCALAR);
     }
 }
-class PlTieScalar extends PlLvalue {
+class PlTieScalar extends PlObject {
     public PlObject tied;
     public PlObject old_var;
 
@@ -26763,122 +26763,16 @@ class PlTieScalar extends PlLvalue {
         old_var = v;
         return v;
     }
-    public PlObject get_scalarref() {
-        return this.get();
-    }
 
-    public PlObject get_arrayref() {
-        PlObject o = this.get();
-        if (o.is_undef()) {
-            PlArrayRef ar = new PlArrayRef();
-            this.set(ar);
-            return ar;
-        }
-        else if (o.is_arrayref()) {
-            return o;
-        }
-        return PlCORE.die(\"Not an ARRAY reference\");
-    }
-    public PlObject get_hashref() {
-        return this.get();
-    }
-    public PlObject aget(PlObject i) {
-        return this.get().aget(i);
-    }
-    public PlObject aget(int i) {
-        return this.get().aget(i);
-    }
-
-    public PlObject aget_scalarref(int i) {
-        return this.get_arrayref().aget_scalarref(i);
-    }
-    public PlObject aget_arrayref(int i) {
-        return this.get_arrayref().aget_arrayref(i);
-    }
-    public PlObject aget_lvalue(int pos) {
-        return this.get_arrayref().aget_lvalue(pos);
-    }
-    public PlObject aget_hashref(int i) {
-        return this.get_arrayref().aget_hashref(i);
-    }
-
-    public PlObject aset(int i, PlObject v) {
-        return this.get_arrayref().aset(i, v);
-    }
-    public PlObject aset(PlObject i, PlObject v) {
-        return this.get_arrayref().aset(i, v);
-    }
-    public PlObject hget(PlObject i) {
-        return this.get().hget(i);
-    }
-    public PlObject hget(String i) {
-        return this.get().hget(i);
-    }
-    public PlObject hget_lvalue(String i) {
-        return this.get().hget_lvalue(i);
-    }
-
-    public PlObject hget_scalarref(String i) {
-        return this.get().hget_scalarref(i);
-    }
-    public PlObject hget_arrayref(String i) {
-        return this.get().hget_arrayref(i);
-    }
-    public PlObject hget_arrayref(PlObject i) {
-        return this.get().hget_arrayref(i);
-    }
-    public PlObject hget_hashref(String i) {
-        return this.get().hget_hashref(i);
-    }
-    public PlObject hget_hashref(PlObject i) {
-        return this.get().hget_hashref(i);
-    }
-
-    public PlObject hset(PlObject s, PlObject v) {
-        return this.get().hset(s, v);
-    }
-    public PlObject hset(String s, PlObject v) {
-        return this.get().hset(s, v);
-    }
-
-    public PlObject scalar_deref(String namespace) {
-        return new PlLazyScalarref(this);
-    }
-    public PlObject scalar_deref_lvalue(String namespace) {
-        return this.get().scalar_deref_lvalue(namespace);
-    }
-    public PlObject scalar_deref_set(String namespace, PlObject v) {
-        return this.get().scalar_deref_set(namespace, v);
-    }
-
-
-    public PlArray array_deref_lvalue() {
-        return this.get().array_deref_lvalue();
-    }
-    public PlArray array_deref() {
-        return this.get().array_deref();
-    }
-    public PlObject array_deref_set(PlObject v) {
-        return this.get().array_deref_set(v);
-    }
-
-    public PlObject hash_deref() {
-        return this.get().hash_deref();
-    }
-    public PlObject hash_deref_set(PlObject v) {
-        return this.get().hash_deref_set(v);
-    }
-
-    // Note: several versions of set()
-    public PlLvalue set(PlObject o) {
+    public PlObject set(PlObject o) {
         PerlOp.call(tied, \"STORE\", new PlArray(o), PlCx.VOID);
         return this;
     }
-    public PlLvalue set(PlString o) {
+    public PlObject set(PlString o) {
         PerlOp.call(tied, \"STORE\", new PlArray(o), PlCx.VOID);
         return this;
     }
-    public PlLvalue set(PlInt o) {
+    public PlObject set(PlInt o) {
         PerlOp.call(tied, \"STORE\", new PlArray(o), PlCx.VOID);
         return this;
     }
@@ -27080,19 +26974,19 @@ class PlLazyLvalue extends PlLvalue {
     }
 
     // Note: several versions of set()
-    public PlLvalue set(PlObject o) {
+    public PlObject set(PlObject o) {
         if (llv == null) {
             create_scalar();
         }
         return llv.set(o);
     }
-    public PlLvalue set(PlString o) {
+    public PlObject set(PlString o) {
         if (llv == null) {
             create_scalar();
         }
         return llv.set(o);
     }
-    public PlLvalue set(PlInt o) {
+    public PlObject set(PlInt o) {
         if (llv == null) {
             create_scalar();
         }
@@ -27184,85 +27078,96 @@ class PlLvalue extends PlObject {
         return this.o;
     }
     public PlObject get_arrayref() {
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             PlArrayRef ar = new PlArrayRef();
             this.set(ar);
             return ar;
         }
-        else if (this.o.is_arrayref()) {
-            return this.o;
+        else if (o.is_arrayref()) {
+            return o;
         }
         return PlCORE.die(\"Not an ARRAY reference\");
     }
     public PlObject get_hashref() {
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             PlHashRef hr = new PlHashRef();
             this.set(hr);
-            return this.o;
+            return hr;
         }
-        else if (this.o.is_hashref()) {
-            return this.o;
+        else if (o.is_hashref()) {
+            return o;
         }
         return PlCORE.die(\"Not a HASH reference\");
     }
     public PlObject aget(PlObject i) {
-        if (this.o.is_undef()) {
-            this.set(new PlArrayRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlArrayRef());
         }
-        return this.o.aget(i);
+        return o.aget(i);
     }
     public PlObject aget(int i) {
-        if (this.o.is_undef()) {
-            this.set(new PlArrayRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlArrayRef());
         }
-        return this.o.aget(i);
+        return o.aget(i);
     }
 
     public PlObject aget_scalarref(int i) {
-        if (this.o.is_undef()) {
-            this.set(new PlArrayRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlArrayRef());
         }
-        return this.o.aget_scalarref(i);
+        return o.aget_scalarref(i);
     }
     public PlObject aget_arrayref(int i) {
-        if (this.o.is_undef()) {
-            this.set(new PlArrayRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlArrayRef());
         }
-        return this.o.aget_arrayref(i);
+        return o.aget_arrayref(i);
     }
     public PlObject aget_lvalue(int pos) {
         return this.o.aget_lvalue(pos);
     }
     public PlObject aget_hashref(int i) {
-        if (this.o.is_undef()) {
-            this.set(new PlArrayRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlArrayRef());
         }
-        return this.o.aget_hashref(i);
+        return o.aget_hashref(i);
     }
 
     public PlObject aset(int i, PlObject v) {
-        if (this.o.is_undef()) {
-            this.set(new PlArrayRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlArrayRef());
         }
-        return this.o.aset(i, v);
+        return o.aset(i, v);
     }
     public PlObject aset(PlObject i, PlObject v) {
-        if (this.o.is_undef()) {
-            this.set(new PlArrayRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlArrayRef());
         }
-        return this.o.aset(i, v);
+        return o.aset(i, v);
     }
     public PlObject hget(PlObject i) {
-        if (this.o.is_undef()) {
-            this.set(new PlHashRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hget(i);
+        return o.hget(i);
     }
     public PlObject hget(String i) {
-        if (this.o.is_undef()) {
-            this.set(new PlHashRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hget(i);
+        return o.hget(i);
     }
     public PlObject hget_lvalue(String i) {
         if (this.o.is_undef()) {
@@ -27393,7 +27298,7 @@ class PlLvalue extends PlObject {
     }
 
     // Note: several versions of set()
-    public PlLvalue set(PlObject o) {
+    public PlObject set(PlObject o) {
         if (o == null) {
             o = PlCx.UNDEF;
         }
@@ -27401,41 +27306,44 @@ class PlLvalue extends PlObject {
             o = o.get();
         }
         if (this.o.is_tiedScalar()) {
-            return ((PlTieScalar)this.o).set(o);
+            ((PlTieScalar)this.o).set(o);
+            return this;
         }
         this.o = o;
         return this;
     }
-    public PlLvalue set(PlString o) {
+    public PlObject set(PlString o) {
         if (this.o.is_tiedScalar()) {
-            return ((PlTieScalar)this.o).set(o);
+            ((PlTieScalar)this.o).set(o);
+            return this;
         }
         this.o = o;
         return this;
     }
-    public PlLvalue set(PlInt o) {
+    public PlObject set(PlInt o) {
         if (this.o.is_tiedScalar()) {
-            return ((PlTieScalar)this.o).set(o);
+            ((PlTieScalar)this.o).set(o);
+            return this;
         }
         this.o = o;
         return this;
     }
 
-    public PlLvalue set(PlLvalue o) {
+    public PlObject set(PlLvalue o) {
         return this.set(o.get());
     }
-    public PlLvalue set(PlArray o) {
+    public PlObject set(PlArray o) {
         // \$a = \@x
         return this.set(o.scalar());
     }
-    public PlLvalue set(PlHash o) {
+    public PlObject set(PlHash o) {
         // \$a = %x
         return this.set(o.scalar());
     }
 ", ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
-            $native && $perl ? "    public PlLvalue set(" . $native . " s) {
+            $native && $perl ? "    public PlObject set(" . $native . " s) {
         this.set(new " . $perl . "(s));
         return this;
     }
@@ -27551,7 +27459,7 @@ class PlROvalue extends PlLvalue {
         this.o = o.scalar();
     }
 
-    public PlLvalue set(Object o) {
+    public PlObject set(Object o) {
         PlCORE.die(\"Modification of a read-only value attempted\");
         return this;
     }
