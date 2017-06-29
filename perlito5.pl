@@ -24810,7 +24810,7 @@ class PlV {
             PlV.aset(name, value);
         }
         else if (value.is_scalarref()) {
-            PlV.sset(name, value.get());
+            PlV.sset(name, value.scalar_deref(nameSpace));
         }
         else if (value.is_typeglobref()) {
             // *x = \\*y
@@ -25796,9 +25796,6 @@ class PlLvalueRef extends PlReference {
     }
     public boolean is_scalarref() {
         return true;
-    }
-    public PlObject get() {
-        return this.o;
     }
 }
 class PlArrayRef extends PlArray {
