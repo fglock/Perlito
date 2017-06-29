@@ -18113,7 +18113,7 @@ use feature 'say';
                 $meth = "array"
             }
             elsif ($v->isa("Perlito5::AST::Var") && $v->sigil() eq "\$") {;
-                $meth = "scalar"
+                return $v->emit_java($level) . ".tie(" . Perlito5::Java::to_list(\@arguments, $level) . ")"
             }
             else {;
                 die("tie '", ref($v), "' not implemented")
@@ -18130,6 +18130,9 @@ use feature 'say';
             my @arguments = @{$self->{"arguments"}};
             my $v = shift(@arguments);
             my $tie = $v->emit_java($level) . ".untie()";
+            if ($v->{"sigil"} eq "\$") {;
+                return $tie
+            }
             if ($v->{"_decl"} eq "global") {;
                 return $v->emit_java_global_set_alias($tie, $level)
             }
@@ -23783,14 +23786,6 @@ class PerlOp {
         return PlCx.UNDEF;
     }
 
-    public static final PlTieScalar tie_scalar(PlLvalue old_var, PlArray args) {
-        PlTieScalar v = new PlTieScalar();
-        PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name.toString(), \"TIESCALAR\", args, PlCx.VOID);
-        v.tied = self;
-        v.old_var = old_var;
-        return v;
-    }
     public static final PlTieArray tie_array(PlArray old_var, PlArray args) {
         PlTieArray v = new PlTieArray();
         PlObject class_name = args.shift();
@@ -26765,7 +26760,7 @@ class PlTieScalar extends PlLvalue {
 
     public PlObject get() {
         PlObject v = PerlOp.call(tied, \"FETCH\", new PlArray(), PlCx.VOID);
-        old_var.set(v);
+        old_var = v;
         return v;
     }
     public PlObject get_scalarref() {
@@ -27129,8 +27124,8 @@ class PlLvalue extends PlObject {
     }
 
     // tie scalar
-    public PlLvalue tie(PlArray args) {
-        if (o.is_tiedScalar()) {
+    public PlObject tie(PlArray args) {
+        if (this.o.is_tiedScalar()) {
             this.untie();
         }
         PlTieScalar v = new PlTieScalar();
@@ -27139,47 +27134,24 @@ class PlLvalue extends PlObject {
         v.tied = self;
         v.old_var = this.o;
         this.o = v;
-        return this;
+        return self;
     }
 
     public PlObject untie() {
-        if (o.is_tiedScalar()) {
-            PlObject tied = o.tied();
+        if (this.o.is_tiedScalar()) {
+            PlObject tied = this.o.tied();
             this.o = ((PlTieScalar)o).old_var;
             return tied;
         }
         return this;
     }
     public PlObject tied() {
-        if (o.is_tiedScalar()) {
+        if (this.o.is_tiedScalar()) {
             return o.tied();
         }
         return PlCx.UNDEF;
     }
  
-    // public PlObject untie() {
-    //     if (o.is_tiedScalar()) {
-    //         PlObject untie = PerlOp.call(tied, \"can\", new PlArray(new PlString(\"UNTIE\")), PlCx.SCALAR);
-    //         if (untie.to_boolean()) {
-    //             untie.apply(PlCx.VOID, new PlArray(tied));
-    //         };
-    //         tied = null;
-    //     }
-    //     return this;
-    // }
-    // public PlObject get() {
-    //     if (o.is_tiedScalar()) {
-    //         PlObject v = PerlOp.call(tied, \"FETCH\", new PlArray(), PlCx.VOID);
-    //         if (v.is_lvalue()) {
-    //             v = v.get();
-    //         }
-    //         o = v;
-    //         return v;
-    //     }
-    //     return o;
-    // }
-
-
     // internal lazy api
     public PlLvalue create_scalar() {
         if (this.o.is_undef()) {
@@ -27194,6 +27166,9 @@ class PlLvalue extends PlObject {
     }
 
     public PlObject get() {
+        if (this.o.is_tiedScalar()) {
+            return this.o.get();
+        }
         return this.o;
     }
     public PlObject get_scalarref() {
@@ -27425,14 +27400,23 @@ class PlLvalue extends PlObject {
         if (o.is_lvalue()) {
             o = o.get();
         }
+        if (this.o.is_tiedScalar()) {
+            return ((PlTieScalar)this.o).set(o);
+        }
         this.o = o;
         return this;
     }
     public PlLvalue set(PlString o) {
+        if (this.o.is_tiedScalar()) {
+            return ((PlTieScalar)this.o).set(o);
+        }
         this.o = o;
         return this;
     }
     public PlLvalue set(PlInt o) {
+        if (this.o.is_tiedScalar()) {
+            return ((PlTieScalar)this.o).set(o);
+        }
         this.o = o;
         return this;
     }
