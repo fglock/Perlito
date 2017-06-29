@@ -4622,6 +4622,38 @@ class PlLvalue extends PlObject {
     public Integer pos;
     public boolean regex_zero_length_flag;
 
+    // // tie scalar
+    // public PlObject tied;
+    //
+    // public PlLvalue untie() {
+    //     if (tied != null) {
+    //         PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+    //         if (untie.to_boolean()) {
+    //             untie.apply(PlCx.VOID, new PlArray(tied));
+    //         };
+    //         tied = null;
+    //     }
+    //     return this;
+    // }
+    // public PlObject tied() {
+    //     if (tied != null) {
+    //         return tied;
+    //     }
+    //     return PlCx.UNDEF;
+    // }
+    //
+    // public PlObject get() {
+    //     if (tied != null) {
+    //         PlObject v = PerlOp.call(tied, "FETCH", new PlArray(), PlCx.VOID);
+    //         if (v.is_lvalue()) {
+    //             v = v.get();
+    //         }
+    //         o = v;
+    //         return v;
+    //     }
+    //     return o;
+    // }
+
     // Note: several versions of PlLvalue()
     public PlLvalue() {
         this.o = PlCx.UNDEF;
