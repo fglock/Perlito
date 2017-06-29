@@ -26867,9 +26867,6 @@ class PlTieScalar extends PlLvalue {
     public PlObject hash_deref_set(PlObject v) {
         return this.get().hash_deref_set(v);
     }
-    public PlObject apply(int want, PlArray List__) {
-        return this.get().apply(want, List__);
-    }
 
     // Note: several versions of set()
     public PlLvalue set(PlObject o) {
@@ -27079,12 +27076,6 @@ class PlLazyLvalue extends PlLvalue {
             create_scalar();
         }
         return llv.hash_deref_set(v);
-    }
-    public PlObject apply(int want, PlArray List__) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.apply(want, List__);
     }
 
     // Note: several versions of set()
@@ -27371,9 +27362,6 @@ class PlLvalue extends PlObject {
         }
         return this.o.hash_deref_set(v);
     }
-    public PlObject apply(int want, PlArray List__) {
-        return this.o.apply(want, List__);
-    }
 
     // Note: several versions of set()
     public PlLvalue set(PlObject o) {
@@ -27416,7 +27404,10 @@ class PlLvalue extends PlObject {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))), "    public PlObject exists(PlObject a) {
+        } keys(%native_to_perl))), "    public PlObject apply(int want, PlArray List__) {
+        return this.get().apply(want, List__);
+    }
+    public PlObject exists(PlObject a) {
         // exists \$v->{\$a}
         return this.get().exists(a);
     }
