@@ -2598,6 +2598,9 @@ EOT
     public boolean is_lvalue() {
         return false;
     }
+    public boolean is_tiedScalar() {
+        return false;
+    }
     public boolean is_regex_result() {
         return false;
     }
@@ -4264,6 +4267,9 @@ class PlTieScalar extends PlLvalue {
     public PlLvalue old_var;
 
     public PlTieScalar() {
+    }
+    public boolean is_tiedScalar() {
+        return true;
     }
     public PlLvalue untie() {
         PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
