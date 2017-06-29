@@ -18112,8 +18112,8 @@ use feature 'say';
             elsif ($v->isa("Perlito5::AST::Var") && $v->sigil() eq "\@") {;
                 $meth = "array"
             }
-            elsif ($v->isa("Perlito5::AST::Var") && $v->sigil() eq "\$") {;
-                return $v->emit_java($level) . ".tie(" . Perlito5::Java::to_list(\@arguments, $level) . ")"
+            elsif (($v->isa("Perlito5::AST::Var") && $v->sigil() eq "\$") || ($v->isa("Perlito5::AST::Apply") && $v->code() eq "prefix:<\$>")) {;
+                return $v->emit_java($level, "scalar", "lvalue") . ".tie(" . Perlito5::Java::to_list(\@arguments, $level) . ")"
             }
             else {;
                 die("tie '", ref($v), "' not implemented")
@@ -25194,6 +25194,12 @@ class PlObject {
     }
     public boolean is_integer_range() {
         return new PlDouble(this.to_double()).is_integer_range();
+    }
+    public PlObject tie(PlArray args) {
+        if (this.is_lvalue()) {
+            return ((PlLvalue)this).tie(args);
+        }
+        return PlCORE.die(\"Can't modify constant item in tie\");
     }
     public PlString ref() {
         return REF;

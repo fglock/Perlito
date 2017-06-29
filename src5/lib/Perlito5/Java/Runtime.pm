@@ -2599,6 +2599,12 @@ EOT
     public boolean is_integer_range() {
         return new PlDouble(this.to_double()).is_integer_range();
     }
+    public PlObject tie(PlArray args) {
+        if (this.is_lvalue()) {
+            return ((PlLvalue)this).tie(args);
+        }
+        return PlCORE.die("Can't modify constant item in tie");
+    }
     public PlString ref() {
         return REF;
     }
