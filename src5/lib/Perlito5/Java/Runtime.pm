@@ -4264,14 +4264,14 @@ class PlTieHash extends PlHash {
 }
 class PlTieScalar extends PlLvalue {
     public PlObject tied;
-    public PlLvalue old_var;
+    public PlObject old_var;
 
     public PlTieScalar() {
     }
     public boolean is_tiedScalar() {
         return true;
     }
-    public PlLvalue untie() {
+    public PlObject untie() {
         PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
         if (untie.to_boolean()) {
             untie.apply(PlCx.VOID, new PlArray(tied));
@@ -4648,7 +4648,25 @@ class PlLvalue extends PlObject {
     }
 
     // tie scalar
-    public PlLvalue untie() {
+    public PlLvalue tie(PlArray args) {
+        if (o.is_tiedScalar()) {
+            this.untie();
+        }
+        PlTieScalar v = new PlTieScalar();
+        PlObject class_name = args.shift();
+        PlObject self = PerlOp.call(class_name.toString(), "TIESCALAR", args, PlCx.VOID);
+        v.tied = self;
+        v.old_var = this.o;
+        this.o = v;
+        return this;
+    }
+
+    public PlObject untie() {
+        if (o.is_tiedScalar()) {
+            PlObject tied = o.tied();
+            this.o = ((PlTieScalar)o).old_var;
+            return tied;
+        }
         return this;
     }
     public PlObject tied() {
@@ -4658,7 +4676,7 @@ class PlLvalue extends PlObject {
         return PlCx.UNDEF;
     }
  
-    // public PlLvalue untie() {
+    // public PlObject untie() {
     //     if (o.is_tiedScalar()) {
     //         PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
     //         if (untie.to_boolean()) {
