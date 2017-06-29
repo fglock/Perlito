@@ -1219,13 +1219,8 @@ package Perlito5::AST::Apply;
             elsif ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '@' ) {
                 $meth = 'array';
             }
-            elsif ( ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '$' )
-                 || ( $v->isa('Perlito5::AST::Apply') && $v->code eq 'prefix:<$>' ) )
-            {
-                return $v->emit_java( $level, 'scalar', 'lvalue' ) . '.tie(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
-            }
             else {
-                die "tie '", ref($v), "' not implemented";
+                return $v->emit_java( $level, 'scalar', 'lvalue' ) . '.tie(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
             }
             # old api
             my $tie = 'PerlOp.tie_' . $meth . '(' . $v->emit_java( $level ) . ', ' . Perlito5::Java::to_list(\@arguments, $level) . ')';

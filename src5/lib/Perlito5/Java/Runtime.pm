@@ -4588,16 +4588,17 @@ class PlLvalue extends PlObject {
         return this.o;
     }
     public PlObject get_scalarref() {
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
             this.set(ar);
             return ar;
         }
-        else if (this.o.is_scalarref()) {
-            return this.o;
+        else if (o.is_scalarref()) {
+            return o;
         }
         // Modification of a read-only value attempted
-        return this.o;
+        return o;
     }
     public PlObject get_arrayref() {
         PlObject o = this.get();
@@ -4653,7 +4654,11 @@ class PlLvalue extends PlObject {
         return o.aget_arrayref(i);
     }
     public PlObject aget_lvalue(int pos) {
-        return this.o.aget_lvalue(pos);
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlArrayRef());
+        }
+        return o.aget_lvalue(pos);
     }
     public PlObject aget_hashref(int i) {
         PlObject o = this.get();
@@ -4692,131 +4697,147 @@ class PlLvalue extends PlObject {
         return o.hget(i);
     }
     public PlObject hget_lvalue(String i) {
-        if (this.o.is_undef()) {
-            this.set(new PlHashRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hget_lvalue(i);
+        return o.hget_lvalue(i);
     }
 
     public PlObject hget_scalarref(String i) {
-        if (this.o.is_undef()) {
-            this.set(new PlHashRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hget_scalarref(i);
+        return o.hget_scalarref(i);
     }
     public PlObject hget_arrayref(String i) {
-        if (this.o.is_undef()) {
-            this.set(new PlArrayRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hget_arrayref(i);
+        return o.hget_arrayref(i);
     }
     public PlObject hget_arrayref(PlObject i) {
-        if (this.o.is_undef()) {
-            this.set(new PlArrayRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hget_arrayref(i);
+        return o.hget_arrayref(i);
     }
     public PlObject hget_hashref(String i) {
-        if (this.o.is_undef()) {
-            this.set(new PlHashRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hget_hashref(i);
+        return o.hget_hashref(i);
     }
     public PlObject hget_hashref(PlObject i) {
-        if (this.o.is_undef()) {
-            this.set(new PlHashRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hget_hashref(i);
+        return o.hget_hashref(i);
     }
 
     public PlObject hset(PlObject s, PlObject v) {
-        if (this.o.is_undef()) {
-            this.set(new PlHashRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hset(s, v);
+        return o.hset(s, v);
     }
     public PlObject hset(String s, PlObject v) {
-        if (this.o.is_undef()) {
-            this.set(new PlHashRef());
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
         }
-        return this.o.hset(s, v);
+        return o.hset(s, v);
     }
 
     public PlObject scalar_deref(String namespace) {
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             return new PlLazyScalarref(this);
         }
-        return this.o.scalar_deref(namespace);
+        return o.scalar_deref(namespace);
     }
     public PlObject scalar_deref_lvalue(String namespace) {
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             PlLvalue lv = new PlLvalue();
             this.set(new PlLvalueRef(lv));
             return lv;
         }
-        return this.o.scalar_deref_lvalue(namespace);
+        return o.scalar_deref_lvalue(namespace);
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
             this.set(ar);
         }
-        return this.o.scalar_deref_set(namespace, v);
+        return o.scalar_deref_set(namespace, v);
     }
 
     public PlArray array_deref() {
         // @$x doesn't autovivify
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             return new PlArray();
         }
-        else if (this.o.is_arrayref()) {
-            return (PlArray)(this.o.array_deref());
+        else if (o.is_arrayref()) {
+            return (PlArray)(o.array_deref());
         }
-        return this.o.array_deref();
+        return o.array_deref();
     }
     public PlArray array_deref_lvalue() {
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             PlArray ar = new PlArrayRef();
             this.set(ar);
             return ar;
         }
-        else if (this.o.is_arrayref()) {
-            return (PlArray)(this.o.array_deref_lvalue());
+        else if (o.is_arrayref()) {
+            return (PlArray)(o.array_deref_lvalue());
         }
-        return this.o.array_deref();
+        return o.array_deref();
     }
     public PlObject array_deref_set(PlObject v) {
         // @$x = ...
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             this.set(new PlArrayRef());
-            return this.o.array_deref_set(v);
+            return o.array_deref_set(v);
         }
-        else if (this.o.is_arrayref()) {
-            return this.o.array_deref_set(v);
+        else if (o.is_arrayref()) {
+            return o.array_deref_set(v);
         }
-        return this.o.array_deref_set(v);
+        return o.array_deref_set(v);
     }
 
     public PlObject hash_deref() {
         // %$x doesn't autovivify
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             return new PlHash();
         }
-        else if (this.o.is_hashref()) {
-            return this.o.hash_deref();
+        else if (o.is_hashref()) {
+            return o.hash_deref();
         }
-        return this.o.hash_deref();
+        return o.hash_deref();
     }
     public PlObject hash_deref_set(PlObject v) {
         // %$x = ...
-        if (this.o.is_undef()) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
             this.set(new PlHashRef());
-            return this.o.hash_deref_set(v);
+            return o.hash_deref_set(v);
         }
-        else if (this.o.is_hashref()) {
-            return this.o.hash_deref_set(v);
+        else if (o.is_hashref()) {
+            return o.hash_deref_set(v);
         }
-        return this.o.hash_deref_set(v);
+        return o.hash_deref_set(v);
     }
 
     // Note: several versions of set()
