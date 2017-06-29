@@ -26884,15 +26884,6 @@ class PlTieScalar extends PlLvalue {
         PerlOp.call(tied, \"STORE\", new PlArray(o), PlCx.VOID);
         return this;
     }
-    public PlLvalue set(PlLvalue o) {
-        return this.set(o.get());
-    }
-    public PlLvalue set(PlArray o) {
-        return this.set(o.scalar());
-    }
-    public PlLvalue set(PlHash o) {
-        return this.set(o.scalar());
-    }
 }
 class PlLazyLvalue extends PlLvalue {
     public  PlLvalue llv;   // \$\$lv
@@ -27114,53 +27105,6 @@ class PlLazyLvalue extends PlLvalue {
             create_scalar();
         }
         return llv.set(o);
-    }
-    public PlLvalue set(PlLvalue o) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.set(o);
-    }
-    public PlLvalue set(PlArray o) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.set(o);
-    }
-    public PlLvalue set(PlHash o) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.set(o);
-    }
-
-    public PlObject pre_decr() {
-        // --\$x
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.pre_decr();
-    }
-    public PlObject post_decr() {
-        // \$x--
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.post_decr();
-    }
-    public PlObject pre_incr() {
-        // ++\$x
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.pre_incr();
-    }
-    public PlObject post_incr() {
-        // \$x++
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.post_incr();
     }
 }
 class PlLvalue extends PlObject {
@@ -27450,19 +27394,17 @@ class PlLvalue extends PlObject {
         this.o = o;
         return this;
     }
+
     public PlLvalue set(PlLvalue o) {
-        this.o = o.get();
-        return this;
+        return this.set(o.get());
     }
     public PlLvalue set(PlArray o) {
         // \$a = \@x
-        this.o = o.scalar();
-        return this;
+        return this.set(o.scalar());
     }
     public PlLvalue set(PlHash o) {
         // \$a = %x
-        this.o = o.scalar();
-        return this;
+        return this.set(o.scalar());
     }
 ", ((map {
             my $native = $_;
