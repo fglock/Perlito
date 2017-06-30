@@ -5549,7 +5549,7 @@ class PlTieHashMap extends PlHashMap {
     // containsKey(String)
     // remove(String)
     // clear()
-    // entrySet().iterator() == iterator()
+    // entrySet().iterator()
 
     public PlObject get(String i) {
         return PerlOp.call(tied, "FETCH", new PlArray(new PlString(i)), PlCx.SCALAR);
@@ -5571,11 +5571,6 @@ class PlTieHashMap extends PlHashMap {
     //  FIRSTKEY this
     //  NEXTKEY this, lastkey
 
-    public Iterator<Map.Entry<String, PlObject>> iterator() {
-        // TODO
-        return this.entrySet().iterator();
-    }
-
     public PlObject scalar() {
         return new PlString(this.hashCode().toString());
         return PerlOp.call(tied, "SCALAR", new PlArray(), PlCx.SCALAR);
@@ -5592,7 +5587,7 @@ class PlHashIterator {
         iterator = null;
     }
 }
-class PlHashMap extends HashMap<String, PlObject> implements Iterable<Map.Entry<String, PlObject>> {
+class PlHashMap extends HashMap<String, PlObject> {
     public PlHashMap() {
     }
     // get(String)
@@ -5600,11 +5595,11 @@ class PlHashMap extends HashMap<String, PlObject> implements Iterable<Map.Entry<
     // containsKey(String)
     // remove(String)
     // clear()
-    // entrySet().iterator() == iterator()
+    // entrySet().iterator()
 
-    public Iterator<Map.Entry<String, PlObject>> iterator() {
-        return this.entrySet().iterator();
-    }
+    // public Iterator<Map.Entry<String, PlObject>> entrySetIterator {
+    //     return this.entrySet().iterator();
+    // }
 
     public PlObject scalar() {
         return new PlInt(this.hashCode());
@@ -5720,7 +5715,7 @@ class PlHash extends PlObject {
 
     public PlObject to_array() {
         PlArray aa = new PlArray();
-        for (Map.Entry<String, PlObject> entry : this.h) {
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             String key = entry.getKey();
             PlObject value = entry.getValue();
             aa.push(new PlString(key));
@@ -5731,7 +5726,7 @@ class PlHash extends PlObject {
 
     public PlArray to_list_of_aliases() {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
-        for (Map.Entry<String, PlObject> entry : this.h) {
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             String key = entry.getKey();
             aa.add(new PlString(key));
             PlObject value = entry.getValue();
@@ -6000,7 +5995,7 @@ class PlHash extends PlObject {
     }
     public PlObject values() {
         PlArray aa = new PlArray();
-        for (Map.Entry<String, PlObject> entry : this.h) {
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             PlObject value = entry.getValue();
             aa.push(value);
         }
@@ -6008,7 +6003,7 @@ class PlHash extends PlObject {
     }
     public PlObject keys() {
         PlArray aa = new PlArray();
-        for (Map.Entry<String, PlObject> entry : this.h) {
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             String key = entry.getKey();
             aa.push(new PlString(key));
         }
@@ -6017,7 +6012,7 @@ class PlHash extends PlObject {
     public PlObject each() {
         PlArray aa = new PlArray();
         if (this.each_iterator.iterator == null) {
-            this.each_iterator.iterator = this.h.iterator();
+            this.each_iterator.iterator = this.h.entrySet().iterator();
         }
         if (this.each_iterator.iterator.hasNext()) {
             Map.Entry<String, PlObject> entry = this.each_iterator.iterator.next();
@@ -6061,7 +6056,7 @@ EOT
         return 0.0 + this.to_long();
     }
     public boolean to_boolean() {
-        for (Map.Entry<String, PlObject> entry : this.h) {
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             return true;
         }
         return false;
