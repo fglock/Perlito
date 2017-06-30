@@ -2821,7 +2821,7 @@ EOT
         return b.num_cmp2(this);
     }
     public PlObject num_cmp2(PlObject b) {
-        Long blong = new Long(b.to_long());
+        Long blong = b.to_long();
         int c = blong.compareTo(this.to_long());
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
@@ -6093,11 +6093,11 @@ class PlDouble extends PlObject {
         return new PlDouble(i < 0.0 ? -i : i);
     }
     public PlObject num_cmp(PlObject b) {
-        int c = new Double(this.i).compareTo(b.to_double());
+        int c = ((Double)this.i).compareTo(b.to_double());
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
     public PlObject num_cmp2(PlObject b) {
-        int c = new Double(b.to_double()).compareTo(this.i);
+        int c = ((Double)b.to_double()).compareTo(this.i);
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
 EOT

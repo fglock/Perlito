@@ -1523,7 +1523,7 @@ EOT
         pack_pointers.append(s);
 
         pack_pointers_size.put(pointer, s.length());
-        return pack_q(new Long(pointer).toString());
+        return pack_q(((Long)(pointer)).toString());
     }
     public static final String pack_u(String s) {
         int index = 0;
@@ -1588,7 +1588,7 @@ EOT
         return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
     }
     public static final PlObject sleep(int want, PlArray List__) {
-        long s = (new Double(List__.shift().to_double() * 1000)).longValue();
+        long s = ((Double)(List__.shift().to_double() * 1000)).longValue();
         try {
             TimeUnit.MILLISECONDS.sleep(s);
         } catch (InterruptedException e) {

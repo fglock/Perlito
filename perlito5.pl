@@ -21619,7 +21619,7 @@ class PlCORE {
         pack_pointers.append(s);
 
         pack_pointers_size.put(pointer, s.length());
-        return pack_q(new Long(pointer).toString());
+        return pack_q(((Long)(pointer)).toString());
     }
     public static final String pack_u(String s) {
         int index = 0;
@@ -21684,7 +21684,7 @@ class PlCORE {
         return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
     }
     public static final PlObject sleep(int want, PlArray List__) {
-        long s = (new Double(List__.shift().to_double() * 1000)).longValue();
+        long s = ((Double)(List__.shift().to_double() * 1000)).longValue();
         try {
             TimeUnit.MILLISECONDS.sleep(s);
         } catch (InterruptedException e) {
@@ -25410,7 +25410,7 @@ class PlObject {
         return b.num_cmp2(this);
     }
     public PlObject num_cmp2(PlObject b) {
-        Long blong = new Long(b.to_long());
+        Long blong = b.to_long();
         int c = blong.compareTo(this.to_long());
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
@@ -28512,11 +28512,11 @@ class PlDouble extends PlObject {
         return new PlDouble(i < 0.0 ? -i : i);
     }
     public PlObject num_cmp(PlObject b) {
-        int c = new Double(this.i).compareTo(b.to_double());
+        int c = ((Double)this.i).compareTo(b.to_double());
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
     public PlObject num_cmp2(PlObject b) {
-        int c = new Double(b.to_double()).compareTo(this.i);
+        int c = ((Double)b.to_double()).compareTo(this.i);
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
 ", ((map {
