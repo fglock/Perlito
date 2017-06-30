@@ -27952,24 +27952,30 @@ class PlArray extends PlObject implements Iterable<PlObject> {
 }
 
 
-// class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
-//     public PlTieHash h;
-//     private PlObject key;
-// 
-//     public PlTieHashIterator(PlTieHash h) {
-//         this.h = h;
-//         this.key = PerlOp.call(tied, \"FIRSTKEY\", new PlArray(), PlCx.SCALAR);
-//     }
-//     public Map.Entry<String, PlObject> next() {
-//         return new Map.Entry<String, PlObject>(key.toString(), this.h.hget(key));
-//     }
-//     public boolean hasNext() {
-//         this.key = PerlOp.call(tied, \"NEXTKEY\", new PlArray(), PlCx.SCALAR);
-//         return !key.is_undef();
-//     }
-// }
+class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
+    public PlObject tied;
+    private PlObject key;
+
+    public PlTieHashIterator(PlObject tied) {
+        this.tied = tied;
+        this.key = PerlOp.call(this.tied, \"FIRSTKEY\", new PlArray(), PlCx.SCALAR);
+    }
+    public Map.Entry<String, PlObject> next() {
+        return new Map.Entry<String, PlObject>(
+                    this.key.toString(),
+                    PerlOp.call(this.tied, \"FETCH\", new PlArray(this.key), PlCx.SCALAR)
+               );
+    }
+    public boolean hasNext() {
+        this.key = PerlOp.call(this.tied, \"NEXTKEY\", new PlArray(), PlCx.SCALAR);
+        return !this.key.is_undef();
+    }
+}
 class PlTieHashMap extends PlHashMap {
-    public PlHashMap() {
+    public PlObject tied;
+
+    public PlTieHashMap(PlObject tied) {
+        this.tied = tied;
     }
     // get(String)
     // put(String, PlObject)
@@ -27979,33 +27985,26 @@ class PlTieHashMap extends PlHashMap {
     // entrySet().iterator() == iterator()
 
     public PlObject get(String i) {
-        return PerlOp.call(tied, \"FETCH\", new PlArray(new PlString(i)), PlCx.SCALAR);
+        return PerlOp.call(this.tied, \"FETCH\", new PlArray(new PlString(i)), PlCx.SCALAR);
     }
     public PlObject put(String i, PlObject v) {
-        return PerlOp.call(tied, \"STORE\", new PlArray(new PlString(i), v), PlCx.SCALAR);
+        return PerlOp.call(this.tied, \"STORE\", new PlArray(new PlString(i), v), PlCx.SCALAR);
     }
     public PlObject containsKey(String i) {
-        return PerlOp.call(tied, \"EXISTS\", new PlArray(new PlString(i)), PlCx.SCALAR);
+        return PerlOp.call(this.tied, \"EXISTS\", new PlArray(new PlString(i)), PlCx.SCALAR);
     }
     public PlObject remove(String i) {
-        return PerlOp.call(tied, \"DELETE\", new PlArray(new PlString(i)), PlCx.SCALAR);
+        return PerlOp.call(this.tied, \"DELETE\", new PlArray(new PlString(i)), PlCx.SCALAR);
     }
     public PlObject clear() {
-        return PerlOp.call(tied, \"CLEAR\", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call(this.tied, \"CLEAR\", new PlArray(), PlCx.SCALAR);
     }
-
-    // TODO:
-    //  FIRSTKEY this
-    //  NEXTKEY this, lastkey
-
     public Iterator<Map.Entry<String, PlObject>> iterator() {
-        // TODO
-        return this.entrySet().iterator();
+        return new PlTieHashIterator(this.tied);
     }
-
     public PlObject scalar() {
         return new PlString(this.hashCode().toString());
-        return PerlOp.call(tied, \"SCALAR\", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call(this.tied, \"SCALAR\", new PlArray(), PlCx.SCALAR);
     }
 
 } // PlTieHashMap
