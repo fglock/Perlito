@@ -25923,7 +25923,7 @@ class PlHashRef extends PlHash {
     public PlClass bless;
 
     public PlHashRef() {
-        this.h = new PlHashInternal();
+        this.h = new PlHashMap();
         this.each_iterator = new PlHashIterator();
     }
     public PlHashRef(PlHash o) {
@@ -27968,9 +27968,9 @@ class PlArray extends PlObject implements Iterable<PlObject> {
 //         return !key.is_undef();
 //     }
 // }
-// class PlTieHashInternal extends PlHashInternal {
+// class PlTieHashMap extends PlHashMap {
 //     ...
-//     public PlHashInternal() {
+//     public PlHashMap() {
 //     }
 //     // get(String)
 //     // put(String, PlObject)
@@ -27989,8 +27989,8 @@ class PlHashIterator {
         iterator = null;
     }
 }
-class PlHashInternal extends HashMap<String, PlObject> {
-    public PlHashInternal() {
+class PlHashMap extends HashMap<String, PlObject> {
+    public PlHashMap() {
     }
     // get(String)
     // put(String, PlObject)
@@ -28000,12 +28000,12 @@ class PlHashInternal extends HashMap<String, PlObject> {
     // entrySet().iterator()
 }
 class PlHash extends PlObject {
-    public PlHashInternal h;
+    public PlHashMap h;
     public PlHashIterator each_iterator;
 
     public PlHash() {
         this.each_iterator = new PlHashIterator();
-        this.h = new PlHashInternal();
+        this.h = new PlHashMap();
         this.each_iterator.reset();
     }
     public PlHash(PlObject... args) {
@@ -28050,9 +28050,6 @@ class PlHash extends PlObject {
         this.h = hh.h;
         this.each_iterator = hh.each_iterator;
         this.each_iterator.reset();
-    }
-    private PlHashInternal to_HashMap() {
-        return this.h;
     }
 
     public PlHash untie() {
