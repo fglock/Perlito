@@ -69,7 +69,7 @@ import org.perlito.Perlito5.PlSlice;
 import org.perlito.Perlito5.PlString;
 import org.perlito.Perlito5.PlStringReader;
 import org.perlito.Perlito5.PlTieArray;
-import org.perlito.Perlito5.PlTieHashMap;
+import org.perlito.Perlito5.PlTieHash;
 import org.perlito.Perlito5.PlTieScalar;
 import org.perlito.Perlito5.PlUndef;
 import org.perlito.Perlito5.PlV;
