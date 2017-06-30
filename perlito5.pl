@@ -25918,32 +25918,6 @@ class PlArrayRef extends PlArray {
             $a cmp $b
         } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "}
 
-// class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
-//     public PlTieHash h;
-//     private PlObject key;
-// 
-//     public PlTieHashIterator(PlTieHash h) {
-//         this.h = h;
-//         this.key = PerlOp.call(tied, \"FIRSTKEY\", new PlArray(), PlCx.SCALAR);
-//     }
-//     public Map.Entry<String, PlObject> next() {
-//         return new Map.Entry<String, PlObject>(key.toString(), this.h.hget(key));
-//     }
-//     public boolean hasNext() {
-//         this.key = PerlOp.call(tied, \"NEXTKEY\", new PlArray(), PlCx.SCALAR);
-//         return !key.is_undef();
-//     }
-// }
-
-class PlHashIterator {
-    public Iterator<Map.Entry<String, PlObject>> iterator;
-
-    public PlHashIterator() {
-    }
-    public void reset() {
-        iterator = null;
-    }
-}
 class PlHashRef extends PlHash {
     public static final PlString REF = new PlString(\"HASH\");
     public PlClass bless;
@@ -27976,6 +27950,45 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return this.length_of_array();
     }
 }
+
+
+// class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
+//     public PlTieHash h;
+//     private PlObject key;
+// 
+//     public PlTieHashIterator(PlTieHash h) {
+//         this.h = h;
+//         this.key = PerlOp.call(tied, \"FIRSTKEY\", new PlArray(), PlCx.SCALAR);
+//     }
+//     public Map.Entry<String, PlObject> next() {
+//         return new Map.Entry<String, PlObject>(key.toString(), this.h.hget(key));
+//     }
+//     public boolean hasNext() {
+//         this.key = PerlOp.call(tied, \"NEXTKEY\", new PlArray(), PlCx.SCALAR);
+//         return !key.is_undef();
+//     }
+// }
+// class PlTieHashInternal extends PlHashInternal {
+//     ...
+//     public PlHashInternal() {
+//     }
+//     // get(String)
+//     // put(String, PlObject)
+//     // clear()
+//     // containsKey(String)
+//     // remove(String)
+//     // entrySet().iterator()
+// }
+
+class PlHashIterator {
+    public Iterator<Map.Entry<String, PlObject>> iterator;
+
+    public PlHashIterator() {
+    }
+    public void reset() {
+        iterator = null;
+    }
+}
 class PlHashInternal extends HashMap<String, PlObject> {
     public PlHashInternal() {
     }
@@ -27985,9 +27998,6 @@ class PlHashInternal extends HashMap<String, PlObject> {
     // containsKey(String)
     // remove(String)
     // entrySet().iterator()
-    public PlObject myGet() {
-        return this.get(\"aaa\");
-    }
 }
 class PlHash extends PlObject {
     public PlHashInternal h;
