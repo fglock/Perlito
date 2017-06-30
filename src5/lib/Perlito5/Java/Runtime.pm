@@ -2877,7 +2877,7 @@ class PlReference extends PlObject {
 
     public PlString ref() {
         if ( this.bless == null ) {
-            return REF;
+            return this.REF;
         }
         else {
             return this.bless.plClassName();
@@ -3364,57 +3364,22 @@ EOT
     , <<'EOT'
 }
 
-class PlHashRef extends PlHash {
+class PlHashRef extends PlReference {
     public static final PlString REF = new PlString("HASH");
-    public PlClass bless;
+    public PlHash ha;
 
     public PlHashRef() {
-        this.h = new PlHashMap();
-        this.each_iterator = new PlHashIterator();
+        this.ha = new PlHash();
     }
     public PlHashRef(PlHash o) {
-        this.h = o.h;
-        this.each_iterator = o.each_iterator;
+        this.ha = o;
     }
     public PlHashRef(PlObject o) {
-        this.h = ((PlHash)o).h;
-        this.each_iterator = ((PlHash)o).each_iterator;
-    }
-    public PlObject set(PlHash o) {
-        this.h = o.h;
-        this.each_iterator = o.each_iterator;
-        return o;
-    }
-    public PlHash hash_deref() {
-        PlHash o = new PlHash();
-        o.h = this.h;
-        o.each_iterator = this.each_iterator;
-        return o;
-    }
-    public PlObject hash_deref_set(PlObject v) {
-        super.set(v);
-        return v;
-    }
-    public boolean is_hash() {
-        return false;
-    }
-    public boolean is_ref() {
-        return true;
+        this.ha = (PlHash)o;
     }
     public boolean is_hashref() {
         return true;
     }
-    public PlObject scalar() {
-        return this;
-    }
-    public PlHashRef bless(String className) {
-        this.bless = PlClass.getInstance(className);
-        return this;
-    }
-    public PlClass blessed_class() {
-        return this.bless;
-    }
-
     public PlString ref() {
         if ( this.bless == null ) {
             return REF;
@@ -3423,79 +3388,93 @@ class PlHashRef extends PlHash {
             return this.bless.plClassName();
         }
     }
-    public PlObject refaddr() {
-        // Scalar::Util::refaddr()
-        int id = System.identityHashCode(this.h);
-        return new PlInt(id);
+
+    public PlObject set(PlHash o) {
+        this.ha = o;
+        return o;
     }
-    public PlObject blessed() {
-        if ( this.bless == null ) {
-            return PlCx.UNDEF;
-        }
-        else {
-            return this.bless.plClassName();
-        }
+    public PlHash hash_deref() {
+        return this.ha;
     }
-    public PlObject reftype() {
-        // Scalar::Util::reftype()
-        return REF;
+    public PlObject hash_deref_set(PlObject v) {
+        this.ha.set(v);
+        return v;
     }
 
-    // overload
-    public String toString() {
-        return PlClass.overload_to_string(this).toString();
+    public PlObject hget(PlObject i) {
+        return this.ha.hget(i);
     }
-    public boolean to_boolean() {
-        return PlClass.overload_to_boolean(this).to_boolean();
+    public PlObject hget(String i) {
+        return this.ha.hget(i);
     }
-    public PlObject to_num() {
-        return PlClass.overload_to_number(this);
-    }
-    public long to_long() {
-        return PlClass.overload_to_number(this).to_long();
-    }
-EOT
-    , ((map {
-            my $perl = $_;
-"    public PlObject ${perl}2(PlObject s) {
-        return PlClass.overload_${perl}(this, s, PlCx.INT1);
-    }
-"
-            }
-            sort (
-                'num_cmp',
-                keys(%number_binop),
-            )
-      ))
 
-    , ((map {
-            my $op = $_;
-"    public PlObject $op() {
-        return PlClass.overload_$op(this);
+    public PlObject hget_lvalue(String i) {
+        return this.ha.hget_lvalue(i);
     }
-"
-            }
-            sort @number_unary ))
-
-    , ((map {
-            my $perl = $_;
-"    public PlObject ${perl}(PlObject s) {
-        return PlClass.overload_$perl(this, s, PlCx.UNDEF);
+    public PlObject hget_lvalue_local(String i) {
+        return this.ha.hget_lvalue_local(i);
     }
-"
-            }
-            sort (
-                'str_cmp',
-                'pow',
-                'atan2',
-                'mod',
-                'num_cmp',
-                keys(%string_binop),
-                keys(%number_binop),
-            )
-      ))
 
-    , <<'EOT'
+    public PlObject hget_scalarref(String i) {
+        return this.ha.hget_scalarref(i);
+    }
+
+    public PlObject hget_arrayref(PlObject i) {
+        return this.ha.hget_arrayref(i);
+    }
+    public PlObject hget_arrayref(String i) {
+        return this.ha.hget_arrayref(i);
+    }
+
+    public PlObject hget_hashref(PlObject i) {
+        return this.ha.hget_hashref(i);
+    }
+    public PlObject hget_hashref(String i) {
+        return this.ha.hget_hashref(i);
+    }
+
+    public PlObject hset(PlObject i, PlObject v) {
+        return this.ha.hset(i, v);
+    }
+    public PlObject hset(String i, PlObject v) {
+        return this.ha.hset(i, v);
+    }
+    public PlObject hset(PlObject i, PlLvalue v) {
+        return this.ha.hset(i, v);
+    }
+    public PlObject hset(String i, PlLvalue v) {
+        return this.ha.hset(i, v);
+    }
+    public PlObject hset(int want, PlArray i, PlArray v) {
+        return this.ha.hset(want, i, v);
+    }
+    public PlObject hset_alias(String i, PlObject v) {
+        return this.ha.hset_alias(i, v);
+    }
+    public PlObject exists(PlObject i) {
+        return this.ha.exists(i);
+    }
+    public PlObject delete(PlObject i) {
+        return this.ha.delete(i);
+    }
+    public PlObject delete(int want, PlArray a) {
+        return this.ha.delete(want, a);
+    }
+    public PlObject delete(int want, PlString a) {
+        return this.ha.delete(want, a);
+    }
+    public PlObject delete(int want, PlLvalue a) {
+        return this.ha.delete(want, a);
+    }
+    public PlObject values() {
+        return this.ha.values();
+    }
+    public PlObject keys() {
+        return this.ha.keys();
+    }
+    public PlObject each() {
+        return this.ha.each();
+    }
 }
 class PlClass {
     public static HashMap<String, PlClass> classes = new HashMap<String, PlClass>();
