@@ -3403,7 +3403,7 @@ class PlHashRef extends PlHash {
     public PlClass bless;
 
     public PlHashRef() {
-        this.h = new PlHashInternal();
+        this.h = new HashMap<String, PlObject>();
         this.each_iterator = new PlHashIterator();
     }
     public PlHashRef(PlHash o) {
@@ -5549,26 +5549,13 @@ EOT
         return this.length_of_array();
     }
 }
-class PlHashInternal extends HashMap<String, PlObject> {
-    public PlHashInternal() {
-    }
-    // get(String)
-    // put(String, PlObject)
-    // clear()
-    // containsKey(String)
-    // remove(String)
-    // entrySet().iterator()
-    public PlObject myGet() {
-        return this.get("aaa");
-    }
-}
 class PlHash extends PlObject {
-    public PlHashInternal h;
+    public HashMap<String, PlObject> h;
     public PlHashIterator each_iterator;
 
     public PlHash() {
         this.each_iterator = new PlHashIterator();
-        this.h = new PlHashInternal();
+        this.h = new HashMap<String, PlObject>();
         this.each_iterator.reset();
     }
     public PlHash(PlObject... args) {
@@ -5614,7 +5601,7 @@ class PlHash extends PlObject {
         this.each_iterator = hh.each_iterator;
         this.each_iterator.reset();
     }
-    private PlHashInternal to_HashMap() {
+    private HashMap<String, PlObject> to_HashMap() {
         return this.h;
     }
 
