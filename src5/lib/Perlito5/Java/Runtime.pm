@@ -5570,7 +5570,11 @@ class PlTieHashMap extends PlHashMap {
     // TODO:
     //  FIRSTKEY this
     //  NEXTKEY this, lastkey
-    //  SCALAR this
+
+    public PlObject scalar() {
+        return new PlString(this.hashCode().toString());
+        return PerlOp.call(tied, "SCALAR", new PlArray(), PlCx.SCALAR);
+    }
 
 } // PlTieHashMap
 
@@ -5596,6 +5600,11 @@ class PlHashMap extends HashMap<String, PlObject> {
     // public Iterator<Map.Entry<String, PlObject>> entrySetIterator {
     //     return this.entrySet().iterator();
     // }
+
+    public PlObject scalar() {
+        return new PlInt(this.hashCode());
+    }
+
 }
 class PlHash extends PlObject {
     public PlHashMap h;
@@ -6059,7 +6068,7 @@ EOT
         return true;
     }
     public PlObject scalar() {
-        return new PlString(this.toString());
+        return this.h.scalar();
     }
 }
 class PlUndef extends PlObject {
