@@ -27968,38 +27968,17 @@ class PlArray extends PlObject implements Iterable<PlObject> {
 //         return !key.is_undef();
 //     }
 // }
-class PlTieHashMap extends PlHashMap {
-    public PlHashMap() {
-    }
-    // get(String)
-    // put(String, PlObject)
-    // containsKey(String)
-    // remove(String)
-    // clear()
-    // entrySet().iterator()
-
-    public PlObject get(String i) {
-        return PerlOp.call(tied, \"FETCH\", new PlArray(new PlString(i)), PlCx.SCALAR);
-    }
-    public PlObject put(String i, PlObject v) {
-        return PerlOp.call(tied, \"STORE\", new PlArray(new PlString(i), v), PlCx.SCALAR);
-    }
-    public PlObject containsKey(String i) {
-        return PerlOp.call(tied, \"EXISTS\", new PlArray(new PlString(i)), PlCx.SCALAR);
-    }
-    public PlObject remove(String i) {
-        return PerlOp.call(tied, \"DELETE\", new PlArray(new PlString(i)), PlCx.SCALAR);
-    }
-    public PlObject clear() {
-        return PerlOp.call(tied, \"CLEAR\", new PlArray(), PlCx.SCALAR);
-    }
-
-    // TODO:
-    //  FIRSTKEY this
-    //  NEXTKEY this, lastkey
-    //  SCALAR this
-
-} // PlTieHashMap
+// class PlTieHashMap extends PlHashMap {
+//     ...
+//     public PlHashMap() {
+//     }
+//     // get(String)
+//     // put(String, PlObject)
+//     // clear()
+//     // containsKey(String)
+//     // remove(String)
+//     // entrySet().iterator()
+// }
 
 class PlHashIterator {
     public Iterator<Map.Entry<String, PlObject>> iterator;
@@ -28015,14 +27994,10 @@ class PlHashMap extends HashMap<String, PlObject> {
     }
     // get(String)
     // put(String, PlObject)
+    // clear()
     // containsKey(String)
     // remove(String)
-    // clear()
     // entrySet().iterator()
-
-    // public Iterator<Map.Entry<String, PlObject>> entrySetIterator {
-    //     return this.entrySet().iterator();
-    // }
 }
 class PlHash extends PlObject {
     public PlHashMap h;
