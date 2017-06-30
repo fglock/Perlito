@@ -27716,7 +27716,6 @@ class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
 
     public PlTieHashIterator(PlObject tied) {
         this.tied = tied;
-        this.key = PerlOp.call(this.tied, \"FIRSTKEY\", new PlArray(), PlCx.SCALAR);
     }
     public Map.Entry<String, PlObject> next() {
         return new AbstractMap.SimpleEntry<String, PlObject>(
@@ -27725,7 +27724,12 @@ class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
                );
     }
     public boolean hasNext() {
-        this.key = PerlOp.call(this.tied, \"NEXTKEY\", new PlArray(), PlCx.SCALAR);
+        if (this.key == null) {
+            this.key = PerlOp.call(this.tied, \"FIRSTKEY\", new PlArray(), PlCx.SCALAR);
+        }
+        else {
+            this.key = PerlOp.call(this.tied, \"NEXTKEY\", new PlArray(), PlCx.SCALAR);
+        }
         return !this.key.is_undef();
     }
 }
