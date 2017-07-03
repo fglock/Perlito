@@ -5515,20 +5515,8 @@ class PlHash extends PlObject {
         for (Map.Entry<String, PlObject> entry : this.h) {
             String key = entry.getKey();
             aa.add(new PlString(key));
-            PlObject value = entry.getValue();
-            if (value == null) {
-                PlLvalue a = new PlLvalue();
-                this.h.put(key, a);
-                aa.add(a);
-            }
-            else if (value.is_lvalue()) {
-                aa.add(value);
-            }
-            else {
-                PlLvalue a = new PlLvalue(value);
-                this.h.put(key, a);
-                aa.add(a);
-            }
+            PlObject value = this.hget_lvalue(key);
+            aa.add(value);
         }
         PlSlice result = new PlSlice();
         result.a = aa;
@@ -5554,20 +5542,8 @@ class PlHash extends PlObject {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (int i = 0; i < a.to_int(); i++) {
             String key = a.aget(i).toString();
-            PlObject value = this.h.get(key);
-            if (value == null) {
-                PlLvalue v = new PlLvalue();
-                this.h.put(key, v);
-                aa.add(v);
-            }
-            else if (value.is_lvalue()) {
-                aa.add(value);
-            }
-            else {
-                PlLvalue v = new PlLvalue(value);
-                this.h.put(key, v);
-                aa.add(v);
-            }
+            PlObject value = this.hget_lvalue(key);
+            aa.add(value);
         }
         PlSlice result = new PlSlice();
         result.a = aa;
@@ -5582,20 +5558,8 @@ class PlHash extends PlObject {
         for (int i = 0; i < a.to_int(); i++) {
             String key = a.aget(i).toString();
             aa.add(new PlString(key));
-            PlObject value = this.h.get(key);
-            if (value == null) {
-                PlLvalue v = new PlLvalue();
-                this.h.put(key, v);
-                aa.add(v);
-            }
-            else if (value.is_lvalue()) {
-                aa.add(value);
-            }
-            else {
-                PlLvalue v = new PlLvalue(value);
-                this.h.put(key, v);
-                aa.add(v);
-            }
+            PlObject value = this.hget_lvalue(key);
+            aa.add(value);
         }
         PlArray result = new PlArray();
         result.a = aa;
