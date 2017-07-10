@@ -3226,61 +3226,36 @@ class PlLvalueRef extends PlReference {
         return true;
     }
 }
-class PlArrayRef extends PlArray {
+class PlArrayRef extends PlReference {
     public static final PlString REF = new PlString("ARRAY");
-    public PlClass bless;
+    public PlArray ar;
 
     public PlArrayRef() {
-        this.each_iterator = 0;
-        this.a = new ArrayList<PlObject>();
+        this.ar = new PlArray();
     }
     public PlArrayRef(PlArray o) {
-        this.a = o.a;
-        this.each_iterator = o.each_iterator;
+        this.ar = o;
     }
     public PlArrayRef(PlObject o) {
-        this.a = ((PlArray)o).a;
-        this.each_iterator = ((PlArray)o).each_iterator;
+        this.ar = (PlArray)o;
     }
     public PlObject set(PlArray o) {
-        this.a = o.a;
-        this.each_iterator = o.each_iterator;
+        this.ar = o;
         return o;
     }
     public PlArray array_deref_lvalue() {
-        PlArray o = new PlArray();
-        o.a = this.a;
-        return o;
+        return this.ar;
     }
     public PlArray array_deref() {
-        PlArray o = new PlArray();
-        o.a = this.a;
-        return o;
+        return this.ar;
     }
     public PlObject array_deref_set(PlObject v) {
-        super.set(v);
+        this.ar.set(v);
         return v;
-    }
-    public boolean is_array() {
-        return false;
-    }
-    public boolean is_ref() {
-        return true;
     }
     public boolean is_arrayref() {
         return true;
     }
-    public PlObject scalar() {
-        return this;
-    }
-    public PlArrayRef bless(String className) {
-        this.bless = PlClass.getInstance(className);
-        return this;
-    }
-    public PlClass blessed_class() {
-        return this.bless;
-    }
-
     public PlString ref() {
         if ( this.bless == null ) {
             return REF;
@@ -3289,79 +3264,50 @@ class PlArrayRef extends PlArray {
             return this.bless.plClassName();
         }
     }
-    public PlObject refaddr() {
-        // Scalar::Util::refaddr()
-        int id = System.identityHashCode(this.a);
-        return new PlInt(id);
-    }
-    public PlObject blessed() {
-        if ( this.bless == null ) {
-            return PlCx.UNDEF;
-        }
-        else {
-            return this.bless.plClassName();
-        }
-    }
-    public PlObject reftype() {
-        // Scalar::Util::reftype()
-        return REF;
-    }
 
-    // overload
-    public String toString() {
-        return PlClass.overload_to_string(this).toString();
+    public PlObject aget(int i) {
+        return this.ar.aget(i);
     }
-    public boolean to_boolean() {
-        return PlClass.overload_to_boolean(this).to_boolean();
+    public PlObject aget(PlObject i) {
+        return this.ar.aget(i);
     }
-    public PlObject to_num() {
-        return PlClass.overload_to_number(this);
+    public PlObject aget_lvalue(int i) {
+        return this.ar.aget_lvalue(i);
     }
-    public long to_long() {
-        return PlClass.overload_to_number(this).to_long();
+    public PlObject aget_lvalue(PlObject i) {
+        return this.ar.aget_lvalue(i);
     }
-EOT
-    , ((map {
-            my $perl = $_;
-"    public PlObject ${perl}2(PlObject s) {
-        return PlClass.overload_${perl}(this, s, PlCx.INT1);
+    public PlObject aget_scalarref(int i) {
+        return this.ar.aget_scalarref(i);
     }
-"
-            }
-            sort (
-                'num_cmp',
-                keys(%number_binop),
-            )
-      ))
-
-    , ((map {
-            my $op = $_;
-"    public PlObject $op() {
-        return PlClass.overload_$op(this);
+    public PlObject aget_hashref(int i) {
+        return this.ar.aget_hashref(i);
     }
-"
-            }
-            sort @number_unary ))
-
-    , ((map {
-            my $perl = $_;
-"    public PlObject ${perl}(PlObject s) {
-        return PlClass.overload_$perl(this, s, PlCx.UNDEF);
+    public PlObject aget_arrayref(int i) {
+        return this.ar.aget_arrayref(i);
     }
-"
-            }
-            sort (
-                'str_cmp',
-                'pow',
-                'atan2',
-                'mod',
-                'num_cmp',
-                keys(%string_binop),
-                keys(%number_binop),
-            )
-      ))
-
-    , <<'EOT'
+    public PlObject aset(int i, PlObject v) {
+        return this.ar.aset(i, v);
+    }
+    public PlObject aset(PlObject i, PlObject v) {
+        return this.ar.aset(i, v);
+    }
+ 
+    public PlObject exists(PlObject i) {
+        return this.ar.exists(i);
+    }
+    public PlObject delete(int want, PlObject i) {
+        return this.ar.delete(want, i);
+    }
+    public PlObject values() {
+        return this.ar.values();
+    }
+    public PlObject keys() {
+        return this.ar.keys();
+    }
+    public PlObject each() {
+        return this.ar.each();
+    }
 }
 
 class PlHashRef extends PlReference {
@@ -4327,9 +4273,9 @@ class PlLvalue extends PlObject {
     public PlArray array_deref_lvalue() {
         PlObject o = this.get();
         if (o.is_undef()) {
-            PlArray ar = new PlArrayRef();
+            PlArrayRef ar = new PlArrayRef();
             this.set(ar);
-            return ar;
+            return (PlArray)(ar.array_deref_lvalue());
         }
         else if (o.is_arrayref()) {
             return (PlArray)(o.array_deref_lvalue());
