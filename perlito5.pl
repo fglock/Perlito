@@ -26885,6 +26885,21 @@ class PlSlice extends PlArray {
         return true;
     }
 }
+
+class PlTieArrayIterator implements Iterator<PlObject> {
+    public PlObject tied;
+    private int key;
+
+    public PlTieArrayIterator(PlObject tied) {
+        this.tied = tied;
+    }
+    public PlObject next() {
+        return PerlOp.call(this.tied, \"FETCH\", new PlArray(new PlInt(this.key)), PlCx.SCALAR);
+    }
+    public boolean hasNext() {
+        return this.key < PerlOp.call(tied, \"FETCHSIZE\", new PlArray(), PlCx.SCALAR).to_int();
+    }
+}
 class PlTieArrayList extends PlArrayList {
     public PlObject tied;
     public PlArrayList old_var;
@@ -26921,12 +26936,11 @@ class PlTieArrayList extends PlArrayList {
     public void clear() {
         PerlOp.call(tied, \"STORESIZE\", new PlArray(PlCx.INT0), PlCx.SCALAR);
     }
+    public Iterator<PlObject> iterator() {
+        return new PlTieArrayIterator(this.tied);
+    }
 
     // TODO - STORESIZE, PUSH, UNSHIFT, EXISTS, DELETE
-
-    // public Iterator<PlObject> iterator() {
-    //     // TODO - iterator()
-    // }
 
     // Perl API
 
