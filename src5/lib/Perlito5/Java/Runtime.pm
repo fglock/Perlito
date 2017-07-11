@@ -1176,15 +1176,6 @@ class PerlOp {
         return PlCx.UNDEF;
     }
 
-    public static final PlTieArray tie_array(PlArray old_var, PlArray args) {
-        PlTieArray v = new PlTieArray();
-        PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name.toString(), "TIEARRAY", args, PlCx.VOID);
-        v.tied = self;
-        v.old_var = old_var;
-        return v;
-    }
-
     private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length, boolean flag_xx) {
         // [ ... ]
         for ( ; offset < length; ) {
@@ -3828,98 +3819,6 @@ class PlLazyScalarref extends PlLazyLvalue {
         return this.llv;
     }
 }
-class PlTieArray extends PlArray {
-    public PlObject tied;
-    public PlArray old_var;
-
-    public PlTieArray() {
-    }
-    public PlArray untie() {
-        PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
-        if (untie.to_boolean()) {
-            untie.apply(PlCx.VOID, new PlArray(tied));
-        };
-        return old_var;
-    }
-    public PlObject tied() {
-        return tied;
-    }
-
-    // TODO - lazy index, See: PlLazyTiedLookup
-
-    public PlObject aget(int i) {
-        return PerlOp.call(tied, "FETCH", new PlArray(new PlInt(i)), PlCx.SCALAR);
-    }
-    public PlObject aget(PlObject i) {
-        return PerlOp.call(tied, "FETCH", new PlArray(i), PlCx.SCALAR);
-    }
-
-    public PlObject aset_alias(int i, PlObject v) {
-        return this.aset(i, v);
-    }
-    public PlObject aset(int i, PlObject v) {
-        return PerlOp.call(tied, "STORE", new PlArray(new PlInt(i), v), PlCx.SCALAR);
-    }
-    public PlObject aset(PlObject i, PlObject v) {
-        return PerlOp.call(tied, "STORE", new PlArray(i, v), PlCx.SCALAR);
-    }
-
-    public PlObject push(PlObject v) {
-        return PerlOp.call(tied, "PUSH", new PlArray(v), PlCx.SCALAR);
-    }
-    public PlObject unshift(PlObject v) {
-        return PerlOp.call(tied, "UNSHIFT", new PlArray(v), PlCx.SCALAR);
-    }
-
-    public PlObject pop() {
-        return PerlOp.call(tied, "POP", new PlArray(), PlCx.SCALAR);
-    }
-    public PlObject shift() {
-        return PerlOp.call(tied, "SHIFT", new PlArray(), PlCx.SCALAR);
-    }
-    public PlObject exists(PlObject i) {
-        return PerlOp.call(tied, "EXISTS", new PlArray(i), PlCx.SCALAR);
-    }
-    public PlObject delete(int want, PlObject i) {
-        return PerlOp.call(tied, "DELETE", new PlArray(i), want);
-    }
-
-    public long to_long() {
-        return this.length_of_array().to_long();
-    }
-    public int to_int() {
-        return this.length_of_array().to_int();
-    }
-    public PlObject length_of_array() {
-        return PerlOp.call(tied, "FETCHSIZE", new PlArray(), PlCx.SCALAR);
-    }
-    public int length_of_array_int() {
-        return this.length_of_array().to_int();
-    }
-    public PlObject end_of_array_index() {
-        return new PlInt(this.length_of_array().to_int() - 1);
-    }
-    public PlObject set_end_of_array_index(PlObject o) {
-        int size = o.to_int() + 1;
-        PerlOp.call(tied, "STORESIZE", new PlArray(new PlInt(size)), PlCx.SCALAR);
-        return o;
-    }
-    public double to_double() {
-        return 0.0 + this.to_long();
-    }
-    public boolean to_boolean() {
-        return (this.to_long() > 0);
-    }
-    public PlObject to_num() {
-        return this.length_of_array();
-    }
-    public boolean is_array() {
-        return true;
-    }
-    public PlObject scalar() {
-        return this.length_of_array();
-    }
-}
 
 class PlTieScalar extends PlObject {
     public PlObject tied;
@@ -4563,17 +4462,33 @@ class PlTieArrayList extends PlArrayList {
         return PerlOp.call(tied, "STORE", new PlArray(new PlInt(i), v), PlCx.SCALAR);
     }
     public int size() {
-        return PerlOp.call(tied, "FETCHSIZE", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call(tied, "FETCHSIZE", new PlArray(), PlCx.SCALAR).to_int();
     }
-    public int clear() {
-        return PerlOp.call(tied, "STORESIZE", new PlArray(PlCx.INT0), PlCx.SCALAR);
+    public void clear() {
+        PerlOp.call(tied, "STORESIZE", new PlArray(PlCx.INT0), PlCx.SCALAR);
     }
 
-    // TODO - STORESIZE, PUSH, POP, UNSHIFT, EXISTS, DELETE
+    // TODO - STORESIZE, PUSH, UNSHIFT, EXISTS, DELETE
 
     // public Iterator<PlObject> iterator() {
     //     // TODO - iterator()
     // }
+
+    // Perl API
+
+    public PlObject aset(int i, PlObject v) {
+        this.set(i, v);
+        return v;
+    }
+    public PlObject aget(int i) {
+        return this.get(i);
+    }
+    public PlObject shift() {
+        return PerlOp.call(tied, "SHIFT", new PlArray(), PlCx.SCALAR);
+    }
+    public PlObject pop() {
+        return PerlOp.call(tied, "POP", new PlArray(), PlCx.SCALAR);
+    }
 
     public PlObject scalar() {
         return PerlOp.call(this.tied, "SCALAR", new PlArray(), PlCx.SCALAR);
@@ -4595,6 +4510,60 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
     // size()
     // clear()
     // iterator()
+
+    // Perl API
+
+    public PlObject aset(int i, PlObject v) {
+        int size = this.size();
+        int pos  = i;
+        if (pos < 0) {
+            pos = size + pos;
+        }
+        if (size <= pos) {
+            while (size < pos) {
+                this.add( PlCx.UNDEF );
+                size++;
+            }
+            this.add(v.scalar());
+            return v;
+        }
+        PlObject old = this.get(pos);
+        if (old.is_lvalue()) {
+            old.set(v.scalar());
+        }
+        else {
+            this.set(pos, v.scalar());
+        }
+        return v;
+    }
+    public PlObject aget(int i) {
+        int pos  = i;
+        if (pos < 0) {
+            pos = this.size() + pos;
+        }
+        if (pos < 0 || pos >= this.size()) {
+            return PlCx.UNDEF;
+        }
+        return this.get(pos);
+    }
+    public PlObject shift() {
+        int size = this.size();
+        if (size > 0) {
+            return this.remove(0);
+        }
+        else {
+            return PlCx.UNDEF;
+        }
+    }
+    public PlObject pop() {
+        int size = this.size() - 1;
+        if (size >= 0) {
+            return this.remove(size);
+        }
+        else {
+            return PlCx.UNDEF;
+        }
+    }
 
     public PlObject scalar() {
         return new PlInt(this.hashCode());
@@ -4650,8 +4619,34 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         this.a = aa;
     }
 
-    public PlArray untie() {
+    // tie hash
+    public PlObject tie(PlArray args) {
+        if (this.a.is_tiedArray()) {
+            this.untie();
+        }
+        PlTieArrayList v = new PlTieArrayList();
+        PlObject class_name = args.shift();
+        PlObject self = PerlOp.call(class_name.toString(), "TIEARRAY", args, PlCx.VOID);
+        v.tied = self;
+        v.old_var = this.a;
+        this.a = v;
+        return self;
+    }
+
+    public PlObject untie() {
+        if (this.a.is_tiedArray()) {
+            PlObject tied = this.a.tied();
+            PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+            if (untie.to_boolean()) {
+                untie.apply(PlCx.VOID, new PlArray(tied));
+            };
+            this.a = ((PlTieArrayList)a).old_var;
+            return tied;
+        }
         return this;
+    }
+    public PlObject tied() {
+        return a.tied();
     }
 
     // internal lazy api
@@ -4839,24 +4834,10 @@ EOT
 
     , <<'EOT'
     public PlObject aget(PlObject i) {
-        int pos  = i.to_int();
-        if (pos < 0) {
-            pos = this.a.size() + pos;
-        }
-        if (pos < 0 || pos >= this.a.size()) {
-            return PlCx.UNDEF;
-        }
-        return this.a.get(pos);
+        return this.a.aget(i.to_int());
     }
     public PlObject aget(int i) {
-        int pos  = i;
-        if (pos < 0) {
-            pos = this.a.size() + pos;
-        }
-        if (pos < 0 || pos >= this.a.size()) {
-            return PlCx.UNDEF;
-        }
-        return this.a.get(pos);
+        return this.a.aget(i);
     }
     public PlObject aget_lvalue(int pos) {
         int size = this.a.size();
@@ -4986,96 +4967,16 @@ EOT
 
     // Note: multiple versions of set()
     public PlObject aset(PlObject i, PlObject v) {
-        int size = this.a.size();
-        int pos  = i.to_int();
-        if (pos < 0) {
-            pos = size + pos;
-        }
-        if (size <= pos) {
-            while (size < pos) {
-                this.a.add( PlCx.UNDEF );
-                size++;
-            }
-            this.a.add(v.scalar());
-            return v;
-        }
-        PlObject old = this.a.get(pos);
-        if (old.is_lvalue()) {
-            old.set(v.scalar());
-        }
-        else {
-            this.a.set(pos, v.scalar());
-        }
-        return v;
+        return this.a.aset(i.to_int(), v);
     }
     public PlObject aset(int i, PlObject v) {
-        int size = this.a.size();
-        int pos  = i;
-        if (pos < 0) {
-            pos = size + pos;
-        }
-        if (size <= pos) {
-            while (size < pos) {
-                this.a.add( PlCx.UNDEF );
-                size++;
-            }
-            this.a.add(v.scalar());
-            return v;
-        }
-        PlObject old = this.a.get(pos);
-        if (old.is_lvalue()) {
-            old.set(v.scalar());
-        }
-        else {
-            this.a.set(pos, v.scalar());
-        }
-        return v;
+        return this.a.aset(i, v);
     }
     public PlObject aset(PlObject i, PlLvalue v) {
-        int size = this.a.size();
-        int pos  = i.to_int();
-        if (pos < 0) {
-            pos = size + pos;
-        }
-        if (size <= pos) {
-            while (size < pos) {
-                this.a.add( PlCx.UNDEF );
-                size++;
-            }
-            this.a.add(v.scalar());
-            return v;
-        }
-        PlObject old = this.a.get(pos);
-        if (old.is_lvalue()) {
-            old.set(v.get());
-        }
-        else {
-            this.a.set(pos, v.get());
-        }
-        return v;
+        return this.a.aset(i.to_int(), v.get());
     }
     public PlObject aset(int i, PlLvalue v) {
-        int size = this.a.size();
-        int pos  = i;
-        if (pos < 0) {
-            pos = size + pos;
-        }
-        if (size <= pos) {
-            while (size < pos) {
-                this.a.add( PlCx.UNDEF );
-                size++;
-            }
-            this.a.add(v.scalar());
-            return v;
-        }
-        PlObject old = this.a.get(pos);
-        if (old.is_lvalue()) {
-            old.set(v.get());
-        }
-        else {
-            this.a.set(pos, v.get());
-        }
-        return v;
+        return this.a.aset(i, v.get());
     }
 EOT
     , ((map {
@@ -5165,22 +5066,10 @@ EOT
     }
 
     public PlObject pop() {
-        int size = this.a.size() - 1;
-        if (size >= 0) {
-            return this.a.remove(size);
-        }
-        else {
-            return PlCx.UNDEF;
-        }
+        return this.a.pop();
     }
     public PlObject shift() {
-        int size = this.a.size();
-        if (size > 0) {
-            return this.a.remove(0);
-        }
-        else {
-            return PlCx.UNDEF;
-        }
+        return this.a.shift();
     }
     public PlObject exists(PlObject i) {
         int pos  = i.to_int();

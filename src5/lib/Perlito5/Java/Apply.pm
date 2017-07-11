@@ -1212,17 +1212,7 @@ package Perlito5::AST::Apply;
                  # this argument can be a 'Decl' instead of 'Var'
                 $v = $v->{var};
             }
-            if ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '@' ) {
-                # old api
-                my $tie = 'PerlOp.tie_array(' . $v->emit_java( $level ) . ', ' . Perlito5::Java::to_list(\@arguments, $level) . ')';
-                if ($v->{_decl} eq 'global') {
-                    return $v->emit_java_global_set_alias($tie, $level);
-                }
-                else {
-                    return $v->emit_java( $level ) . ' = ' . $tie;
-                }
-            }
-            if ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '%' ) {
+            if ( $v->isa('Perlito5::AST::Var') && ($v->sigil eq '%' || $v->sigil eq '@') ) {
                 return $v->emit_java($level) . '.tie(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
             }
             return $v->emit_java( $level, 'scalar', 'lvalue' ) . '.tie(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
@@ -1231,17 +1221,7 @@ package Perlito5::AST::Apply;
             my ( $self, $level, $wantarray ) = @_;
             my @arguments = @{ $self->{arguments} };
             my $v         = shift @arguments;
-            my $tie       = $v->emit_java($level) . '.untie()';
-            if ( $v->{sigil} ne '@' ) {
-                return $tie;
-            }
-            # old api
-            if ( $v->{_decl} eq 'global' ) {
-                return $v->emit_java_global_set_alias( $tie, $level );
-            }
-            else {
-                return $v->emit_java($level) . ' = ' . $tie;
-            }
+            return $v->emit_java($level) . '.untie()';
         },
         'tied' => sub {
             my ($self, $level, $wantarray) = @_;
