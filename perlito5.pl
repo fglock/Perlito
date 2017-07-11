@@ -18105,7 +18105,7 @@ use feature 'say';
             if (ref($v) eq "Perlito5::AST::Decl") {;
                 $v = $v->{"var"}
             }
-            if ($v->isa("Perlito5::AST::Var") && ($v->sigil() eq "%" || $v->sigil() eq "\@")) {;
+            if (($v->isa("Perlito5::AST::Var") && ($v->{"sigil"} eq "%" || $v->{"sigil"} eq "\@")) || ($v->isa("Perlito5::AST::Apply") && ($v->{"code"} eq "prefix:<\@>" || $v->{"code"} eq "prefix:<%>"))) {;
                 return $v->emit_java($level) . ".tie(" . Perlito5::Java::to_list(\@arguments, $level) . ")"
             }
             return $v->emit_java($level, "scalar", "lvalue") . ".tie(" . Perlito5::Java::to_list(\@arguments, $level) . ")"
