@@ -595,7 +595,7 @@ class PerlOp {
     // TODO - see Perlito5/JavaScript2/Runtime.pm for more operator implementations
     // TODO - 'boolean_stack' should be reset when an exception happens
 
-    private static ArrayList<PlObject> boolean_stack = new ArrayList<PlObject>();
+    private static PlArrayList boolean_stack = new PlArrayList();
     private static PlArray local_stack = new PlArray();
     private static Random random = new Random();
 
@@ -4532,24 +4532,45 @@ class PlSlice extends PlArray {
         return true;
     }
 }
+class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
+    public PlArrayList() {
+    }
+    // add(PlObject)
+    // get(pos)
+    // remove(pos)
+    // set(pos, PlObject)
+    // size()
+    // clear()
+    // iterator()
+
+    public PlObject scalar() {
+        return new PlInt(this.hashCode());
+    }
+    public boolean is_tiedArray() {
+        return false;
+    }
+    public PlObject tied() {
+        return PlCx.UNDEF;
+    }
+}
 class PlArray extends PlObject implements Iterable<PlObject> {
-    public ArrayList<PlObject> a;
+    public PlArrayList a;
     public int each_iterator;
 
     public final Iterator<PlObject> iterator() {
         return this.a.iterator(); 
     }
 
-    public PlArray( ArrayList<PlObject> a ) {
+    public PlArray( PlArrayList a ) {
         this.each_iterator = 0;
         this.a = a;
     }
     public PlArray() {
         this.each_iterator = 0;
-        this.a = new ArrayList<PlObject>();
+        this.a = new PlArrayList();
     }
     public PlArray(PlObject... args) {
-        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        PlArrayList aa = new PlArrayList();
         for (PlObject s : args) {
             if (s.is_hash()) {
                 // @x = %x;
@@ -4609,7 +4630,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     }
 
     public static PlArray construct_list_of_aliases(PlObject... args) {
-        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        PlArrayList aa = new PlArrayList();
         for (PlObject s : args) {
             if (s.is_hash()) {
                 // ( %x );
@@ -4819,7 +4840,7 @@ EOT
 
     public PlObject aget_list_of_aliases(int want, PlArray a) {
         // @a[LIST]
-        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        PlArrayList aa = new PlArrayList();
         for (PlObject i : a) {
             aa.add( this.aget_lvalue(i) );
         }
@@ -4832,7 +4853,7 @@ EOT
     }
     public PlObject aget_hash_list_of_aliases(int want, PlArray a) {
         // %a[LIST]
-        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        PlArrayList aa = new PlArrayList();
         for (PlObject i : a) {
             aa.add( i );
             aa.add( this.aget_lvalue(i) );
@@ -5457,7 +5478,7 @@ class PlHash extends PlObject {
     }
 
     public PlArray to_list_of_aliases() {
-        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        PlArrayList aa = new PlArrayList();
         for (Map.Entry<String, PlObject> entry : this.h) {
             String key = entry.getKey();
             aa.add(new PlString(key));
@@ -5485,7 +5506,7 @@ class PlHash extends PlObject {
     }
     public PlObject hget_list_of_aliases(int want, PlArray a) {
         // @a{LIST}
-        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        PlArrayList aa = new PlArrayList();
         for (int i = 0; i < a.to_int(); i++) {
             String key = a.aget(i).toString();
             PlObject value = this.hget_lvalue(key);
@@ -5500,7 +5521,7 @@ class PlHash extends PlObject {
     }
     public PlObject hget_hash_list_of_aliases(int want, PlArray a) {
         // %a{LIST}
-        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        PlArrayList aa = new PlArrayList();
         for (int i = 0; i < a.to_int(); i++) {
             String key = a.aget(i).toString();
             aa.add(new PlString(key));
