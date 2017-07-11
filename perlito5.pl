@@ -25709,6 +25709,9 @@ class PlClosure extends PlReference implements Runnable {
             return this.bless.plClassName();
         }
     }
+    public PlObject reftype() {
+        return REF;
+    }
     public boolean is_coderef() {
         return true;
     }
@@ -25797,6 +25800,9 @@ class PlArrayRef extends PlReference {
             return this.bless.plClassName();
         }
     }
+    public PlObject reftype() {
+        return REF;
+    }
 
     public PlObject aget(int i) {
         return this.ar.aget(i);
@@ -25866,6 +25872,9 @@ class PlHashRef extends PlReference {
         else {
             return this.bless.plClassName();
         }
+    }
+    public PlObject reftype() {
+        return REF;
     }
 
     public PlObject set(PlHash o) {
