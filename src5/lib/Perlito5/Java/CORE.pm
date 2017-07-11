@@ -825,6 +825,17 @@ EOT
 
     public static final PlObject hex(int want, PlObject List__) {
         String s = List__.toString();
+
+        final int length = s.length();
+        int c;
+
+        for (int i = 0; i < length; i++ ) {
+            c = s.codePointAt(i);
+            if (c > 254) {
+                PlCORE.die("Wide character in hex");
+            }
+        }
+
         if (s.startsWith("0x") || s.startsWith("0X")) {
             s = s.substring(2);
         }

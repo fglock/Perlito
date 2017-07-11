@@ -1879,12 +1879,21 @@ class PerlOp {
     }
     public static long oct(String s) {
         final int length = s.length();
+        int c;
+
+        for (int i = 0; i < length; i++ ) {
+            c = s.codePointAt(i);
+            if (c > 254) {
+                PlCORE.die("Wide character in oct");
+            }
+        }
+
         int offset = _parse_space(s, length, 0);
         if (offset >= length) {
             return 0;
         }
         int start = offset;
-        int c = s.codePointAt(offset);
+        c = s.codePointAt(offset);
         if (c == '0') {
             start++;
             offset++;
