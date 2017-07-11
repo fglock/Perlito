@@ -27004,6 +27004,59 @@ class PlSlice extends PlArray {
         return true;
     }
 }
+class PlTieArrayList extends PlArrayList {
+    public PlObject tied;
+    public PlArrayList old_var;
+
+    public PlTieArrayList() {
+    }
+    // add(PlObject)
+    // get(pos)
+    // remove(pos)
+    // set(pos, PlObject)
+    // size()
+    // clear()
+    // iterator()
+
+    public boolean add(PlObject v) {
+        PerlOp.call(tied, \"PUSH\", new PlArray(v), PlCx.SCALAR);
+        return true;
+    }
+    public PlObject get(int i) {
+        return PerlOp.call(tied, \"FETCH\", new PlArray(new PlInt(i)), PlCx.SCALAR);
+    }
+    public PlObject remove(int i) {
+        if (i == 0) {
+            return PerlOp.call(tied, \"SHIFT\", new PlArray(), PlCx.SCALAR);
+        }
+        return PerlOp.call(tied, \"POP\", new PlArray(), PlCx.SCALAR);
+    }
+    public PlObject set(int i, PlObject v) {
+        return PerlOp.call(tied, \"STORE\", new PlArray(new PlInt(i), v), PlCx.SCALAR);
+    }
+    public int size() {
+        return PerlOp.call(tied, \"FETCHSIZE\", new PlArray(), PlCx.SCALAR);
+    }
+    public int clear() {
+        return PerlOp.call(tied, \"STORESIZE\", new PlArray(PlCx.INT0), PlCx.SCALAR);
+    }
+
+    // TODO - STORESIZE, PUSH, POP, UNSHIFT, EXISTS, DELETE
+
+    // public Iterator<PlObject> iterator() {
+    //     // TODO - iterator()
+    // }
+
+    public PlObject scalar() {
+        return PerlOp.call(this.tied, \"SCALAR\", new PlArray(), PlCx.SCALAR);
+    }
+    public boolean is_tiedArray() {
+        return true;
+    }
+    public PlObject tied() {
+        return this.tied;
+    }
+} // PlTieArrayList
 class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
     public PlArrayList() {
     }
