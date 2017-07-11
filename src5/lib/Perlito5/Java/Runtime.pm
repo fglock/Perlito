@@ -1868,6 +1868,95 @@ class PerlOp {
         }
         return looks_like_number(arg.toString());
     }
+    public static long _parse_oct(String s, int base) {
+        try {
+            s = s.replace("_","");
+            return Long.parseLong(s, base);
+        } catch (NumberFormatException n) {
+        } catch (Exception e) {
+        }
+        return 0;
+    }
+    public static long oct(String s) {
+        final int length = s.length();
+        int offset = _parse_space(s, length, 0);
+        if (offset >= length) {
+            return 0;
+        }
+        int start = offset;
+        int c = s.codePointAt(offset);
+        if (c == '0') {
+            start++;
+            offset++;
+            if (offset >= length) {
+                return 0;
+            }
+            c = s.codePointAt(offset);
+        }
+        boolean ul = false;
+        switch (c) {
+            case 'x': case 'X':
+                    start++;
+                    offset++;
+                    for ( ; offset < length; offset++ ) {
+                        c = s.codePointAt(offset);
+                        if (c == '_') {
+                            if (ul) {
+                                return _parse_oct(s.substring(start, offset), 16);
+                            }
+                            ul = true;
+                        }
+                        else if ((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9')) {
+                            ul = false;
+                        }
+                        else {
+                            return _parse_oct(s.substring(start, offset), 16);
+                        }
+                    }
+                    return _parse_oct(s.substring(start, offset), 16);
+            case 'b': case 'B':
+                    start++;
+                    offset++;
+                    for ( ; offset < length; offset++ ) {
+                        c = s.codePointAt(offset);
+                        switch (c) {
+                            case '_':
+                                if (ul) {
+                                    return _parse_oct(s.substring(start, offset), 2);
+                                }
+                                ul = true;
+                                break;
+                            case '0': case '1':
+                                ul = false;
+                                break;
+                            default:
+                                return _parse_oct(s.substring(start, offset), 2);
+                        }
+                    }
+                    return _parse_oct(s.substring(start, offset), 2);
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '_':
+                    for ( ; offset < length; offset++ ) {
+                        c = s.codePointAt(offset);
+                        switch (c) {
+                            case '_':
+                                if (ul) {
+                                    return _parse_oct(s.substring(start, offset), 8);
+                                }
+                                ul = true;
+                                break;
+                            case '0': case '1': case '2': case '3': case '4':
+                            case '5': case '6': case '7':
+                                ul = false;
+                                break;
+                            default:
+                                return _parse_oct(s.substring(start, offset), 8);
+                        }
+                    }
+                    return _parse_oct(s.substring(start, offset), 8);
+        }
+        return 0;
+    }
 
 }
 

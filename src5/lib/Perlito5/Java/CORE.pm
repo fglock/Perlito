@@ -841,29 +841,7 @@ EOT
     }
     public static final PlObject oct(int want, PlObject List__) {
         String s = List__.toString();
-        try {
-            if (s.startsWith("0x") || s.startsWith("0X")) {
-                s = s.replace("_","");
-                return new PlInt(Long.parseLong(s.substring(2), 16));
-            } else if (s.startsWith("x") || s.startsWith("X")) {
-                s = s.replace("_","");
-                return new PlInt(Long.parseLong(s.substring(1), 16));
-            } else if (s.startsWith("0b") || s.startsWith("0B")) {
-                s = s.replace("_","");
-                return new PlInt(Long.parseLong(s.substring(2), 2));
-            } else if (s.startsWith("b") || s.startsWith("B")) {
-                s = s.replace("_","");
-                return new PlInt(Long.parseLong(s.substring(1), 2));
-            } else {
-                s = s.replace("_","");
-                return new PlInt(Long.parseLong(s, 8));
-            }
-        } catch (NumberFormatException n) {
-            
-        } catch (Exception e) {
-            // result = e.getMessage();
-        }
-        return new PlInt(0);
+        return new PlInt(PerlOp.oct(s));
     }
     public static final PlObject sprintf(int want, PlObject List__) {
         String format = List__.aget(0).toString();
