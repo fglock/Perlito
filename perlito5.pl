@@ -27045,11 +27045,16 @@ class PlTieArrayList extends PlArrayList {
         return new PlTieArrayIterator(this.tied);
     }
 
-    // TODO - EXISTS, DELETE
+    // Perl API
     // add == PUSH
     // add(0, v) == UNSHIFT
 
-    // Perl API
+    public PlObject exists(PlObject i) {
+        return PerlOp.call(tied, \"EXISTS\", new PlArray(i), PlCx.SCALAR);
+    }
+    public PlObject delete(int want, PlObject i) {
+        return PerlOp.call(tied, \"DELETE\", new PlArray(i), want);
+    }
 
     public PlObject set_end_of_array_index(int i) {
         return PerlOp.call(tied, \"STORESIZE\", new PlArray(), PlCx.SCALAR);
@@ -27091,6 +27096,32 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
     // iterator()
 
     // Perl API
+
+    public PlObject exists(PlObject i) {
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = this.size() + pos;
+        }
+        if (pos < 0 || pos >= this.size()) {
+            return PlCx.FALSE;
+        }
+        return PlCx.TRUE;
+    }
+    public PlObject delete(int want, PlObject i) {
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = this.size() + pos;
+        }
+        if ((pos+1) == this.size()) {
+            return this.pop();
+        }
+        if (pos < 0 || pos >= this.size()) {
+            return PlCx.FALSE;
+        }
+        PlObject res = this.aget(pos);
+        this.aset(pos, PlCx.UNDEF);
+        return res;
+    }
 
     public PlObject set_end_of_array_index(int i) {
         int size = i + 1;
@@ -27648,29 +27679,10 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return this.a.shift();
     }
     public PlObject exists(PlObject i) {
-        int pos  = i.to_int();
-        if (pos < 0) {
-            pos = this.a.size() + pos;
-        }
-        if (pos < 0 || pos >= this.a.size()) {
-            return PlCx.FALSE;
-        }
-        return PlCx.TRUE;
+        return this.a.exists(i);
     }
     public PlObject delete(int want, PlObject i) {
-        int pos  = i.to_int();
-        if (pos < 0) {
-            pos = this.a.size() + pos;
-        }
-        if ((pos+1) == this.a.size()) {
-            return this.pop();
-        }
-        if (pos < 0 || pos >= this.a.size()) {
-            return PlCx.FALSE;
-        }
-        PlObject res = this.aget(i);
-        this.aset(i, PlCx.UNDEF);
-        return res;
+        return this.a.delete(want, i);
     }
     public PlObject values() {
         // return a copy
