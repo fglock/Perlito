@@ -237,23 +237,6 @@ sub term_sigil {
                             name        => $name,
                         );
                         $m->{to} = $spc->{to};
-
-                        my $obj = $m->{capture};
-                        if ( $obj->isa("Perlito5::AST::Index") ) {
-                            $m->{capture} = Perlito5::AST::Call->new(
-                                method    => "postcircumfix:<[ ]>",
-                                invocant  => $obj->{obj},
-                                arguments => $obj->{index_exp},
-                            );
-                        }
-                        elsif ( $obj->isa("Perlito5::AST::Lookup") ) {
-                            $m->{capture} = Perlito5::AST::Call->new(
-                                method    => "postcircumfix:<{ }>",
-                                invocant  => $obj->{obj},
-                                arguments => $obj->{index_exp},
-                            );
-                        }
-
                         # hijack some string interpolation code to parse the subscript
                         $m = Perlito5::Grammar::String::double_quoted_var_with_subscript($m);
                         $m->{capture} = [ 'term', $m->{capture} ];
