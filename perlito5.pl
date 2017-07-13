@@ -4689,10 +4689,10 @@ use feature 'say';
             if ($m) {
                 my $ast = Perlito5::Match::flat($m);
                 if (@{$ast->{"stmts"}} == 1 && (ref($ast->{"stmts"}->[0]) eq "Perlito5::AST::Apply" || ref($ast->{"stmts"}->[0]) eq "Perlito5::AST::Call" || ref($ast->{"stmts"}->[0]) eq "Perlito5::AST::Var" || ref($ast->{"stmts"}->[0]) eq "Perlito5::AST::Buf" || ref($ast->{"stmts"}->[0]) eq "Perlito5::AST::Index" || ref($ast->{"stmts"}->[0]) eq "Perlito5::AST::Lookup")) {
-                    $m->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "prefix:<" . $sigil . ">", "namespace", '', "arguments", [$ast->{"stmts"}->[0]])];
+                    $m->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "prefix:<" . $sigil . ">", "namespace", '', "arguments", [$ast->{"stmts"}->[0]], "_strict_refs", (${^H} & $Perlito5::STRICT_REFS))];
                     return $m
                 }
-                $m->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "prefix:<" . $sigil . ">", "arguments", [Perlito5::AST::Apply::->new("code", "do", "namespace", '', "arguments", [$ast])])];
+                $m->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "prefix:<" . $sigil . ">", "arguments", [Perlito5::AST::Apply::->new("code", "do", "namespace", '', "arguments", [$ast])], "_strict_refs", (${^H} & $Perlito5::STRICT_REFS))];
                 return $m
             }
         }
@@ -4709,7 +4709,7 @@ use feature 'say';
             if ($c2 ne "," && $c2 ne ";") {
                 $m = term_sigil($str, $p);
                 if ($m) {
-                    $m->{"capture"} = ["term", Perlito5::AST::Apply::->new("arguments", [$m->{"capture"}->[1]], "code", "prefix:<" . $sigil . ">", "namespace", '')];
+                    $m->{"capture"} = ["term", Perlito5::AST::Apply::->new("arguments", [$m->{"capture"}->[1]], "code", "prefix:<" . $sigil . ">", "namespace", '', "_strict_refs", (${^H} & $Perlito5::STRICT_REFS))];
                     return $m
                 }
             }
@@ -5006,7 +5006,7 @@ use feature 'say';
                     my $version = $MATCH->{"version_string"}->[0]->{"capture"}->{"buf"};
                     my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::exp_parse"});
                     if (ref($list) eq "Perlito5::AST::Buf") {;
-                        $list = $list->{"buf"}
+                        $list = [$list->{"buf"}]
                     }
                     elsif ($list) {
                         Perlito5::Grammar::Scope::check_variable_declarations();

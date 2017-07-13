@@ -92,7 +92,7 @@ token stmt_use {
             my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::exp_parse"});
             if (ref($list) eq 'Perlito5::AST::Buf') {
                 # use feature 'say';
-                $list = $list->{buf};
+                $list = [ $list->{buf} ];
             }
             elsif ($list) {
                 # evaluate the parameter list in a BEGIN-block context

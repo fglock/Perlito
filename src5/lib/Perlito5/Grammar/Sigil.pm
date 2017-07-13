@@ -315,6 +315,7 @@ sub term_sigil {
                         code      => 'prefix:<' . $sigil . '>',
                         namespace => '',
                         arguments => [ $ast->{stmts}[0] ],
+                        _strict_refs => ( $^H & $Perlito5::STRICT_REFS ),
                     ),
                 ];
                 return $m;
@@ -330,7 +331,8 @@ sub term_sigil {
                             namespace => '',
                             arguments => [ $ast ],
                         )
-                    ]
+                    ],
+                    _strict_refs => ( $^H & $Perlito5::STRICT_REFS ),
                 )
             ];
             return $m;
@@ -360,9 +362,10 @@ sub term_sigil {
             if ($m) {
                 $m->{capture} = [ 'term',  
                         Perlito5::AST::Apply->new( 
-                                'arguments' => [ $m->{capture}[1] ],
-                                'code'      => 'prefix:<' . $sigil . '>', 
-                                'namespace' => ''
+                                arguments  => [ $m->{capture}[1] ],
+                                code       => 'prefix:<' . $sigil . '>', 
+                                namespace  => '',
+                                _strict_refs => ( $^H & $Perlito5::STRICT_REFS ),
                             )
                     ];
                 return $m;
