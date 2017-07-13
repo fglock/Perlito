@@ -1532,8 +1532,11 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $res = exp_stmt($str, $pos);
-        if ($res) {;
-            return $res
+        if ($res) {
+            if (ref($res->{"capture"}) eq "Perlito5::AST::Apply" && $res->{"capture"}->{"code"} eq "circumfix:<{ }>") {}
+            else {;
+                return $res
+            }
         }
         $res = Perlito5::Grammar::Expression::exp_parse($str, $pos);
         if (!$res) {;

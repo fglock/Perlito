@@ -317,7 +317,13 @@ sub statement_parse_inner {
 
     my $res = exp_stmt($str, $pos);
     if ($res) {
-        return $res;
+        # looks like a statement
+        if ( ref($res->{capture}) eq 'Perlito5::AST::Apply' && $res->{capture}{code} eq 'circumfix:<{ }>' ) {
+            # doesn't really look like a statement - maybe it is a { hash } instead of { block }
+        }
+        else {
+            return $res
+        }
     }
     $res = Perlito5::Grammar::Expression::exp_parse($str, $pos);
     if (!$res) {
