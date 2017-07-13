@@ -217,10 +217,8 @@ sub s_quote_parse {
     }
     else {
         # $part2 is string
-        if (exists($pair{$delimiter})) {
-            $interpolate = 2;
-            $delimiter eq chr(39) && ($interpolate = 3);
-        }
+        $interpolate = 1;
+        $delimiter eq chr(39) && ($interpolate = 3);
         my $m = string_interpolation_parse( [ $open_delimiter, @replace, $closing_delimiter ], 1, $open_delimiter, $closing_delimiter, $interpolate);
         if (!$m) {;
             Perlito5::Compiler::error('syntax error')
