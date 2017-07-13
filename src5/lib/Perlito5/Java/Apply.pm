@@ -594,6 +594,11 @@ package Perlito5::AST::Apply;
                     . Perlito5::Java::escape_string($Perlito5::PKG_NAME )
                     . ')';
             }
+            elsif ( $self->{_strict_refs} ) {
+                return $arg->emit_java( $level, 'scalar', 'scalar' ) . '.scalar_deref_strict('
+                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME )
+                    . ')';
+            }
             return $arg->emit_java( $level, 'scalar', 'scalar' ) . '.scalar_deref('
                     . Perlito5::Java::escape_string($Perlito5::PKG_NAME )
                     . ')';
@@ -604,6 +609,9 @@ package Perlito5::AST::Apply;
             my $s;
             if ($autovivification_type eq 'lvalue') {
                 $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref_lvalue()';
+            }
+            elsif ( $self->{_strict_refs} ) {
+                $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref_strict()';
             }
             else {
                 $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref()';
@@ -618,8 +626,14 @@ package Perlito5::AST::Apply;
             return  Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref().end_of_array_index()';
         },
         'prefix:<%>' => sub {
-            my ($self, $level, $wantarray) = @_;
+            my ($self, $level, $wantarray, $autovivification_type) = @_;
             my $arg   = $self->{arguments}->[0];
+            if ($autovivification_type eq 'lvalue') {
+                return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref()';
+            }
+            elsif ( $self->{_strict_refs} ) {
+                return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref_strict()';
+            }
             return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref()';
         },
         'prefix:<&>' => sub {

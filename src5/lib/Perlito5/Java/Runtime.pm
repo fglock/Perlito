@@ -2477,16 +2477,16 @@ EOT
         return this;
     }
     public PlObject scalar_deref_lvalue(String namespace) {
-        PlCORE.die("Not a SCALAR reference");
-        return this;
+        return PlCORE.die("Not a SCALAR reference");
     }
     public PlObject scalar_deref(String namespace) {
-        PlCORE.die("Not a SCALAR reference");
-        return this;
+        return PlCORE.die("Not a SCALAR reference");
+    }
+    public PlObject scalar_deref_strict(String namespace) {
+        return PlCORE.die("Not a SCALAR reference");
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
-        PlCORE.die("Not a SCALAR reference");
-        return this;
+        return PlCORE.die("Not a SCALAR reference");
     }
     public PlObject aget_list_of_aliases(int want, PlArray a) {
         if (this.is_array()) {
@@ -2513,6 +2513,10 @@ EOT
         return (PlArray)this;
     }
     public PlArray array_deref() {
+        PlCORE.die("Not an ARRAY reference");
+        return (PlArray)this;
+    }
+    public PlArray array_deref_strict() {
         PlCORE.die("Not an ARRAY reference");
         return (PlArray)this;
     }
@@ -2552,6 +2556,10 @@ EOT
     }
 
     public PlObject hash_deref() {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hash_deref_strict() {
         PlCORE.die("Not a HASH reference");
         return this;
     }
@@ -3311,6 +3319,9 @@ class PlLvalueRef extends PlReference {
     public PlObject scalar_deref(String namespace) {
         return this.o;
     }
+    public PlObject scalar_deref_strict(String namespace) {
+        return this.o;
+    }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
         return this.o.set(v);
     }
@@ -3339,6 +3350,9 @@ class PlArrayRef extends PlReference {
         return this.ar;
     }
     public PlArray array_deref() {
+        return this.ar;
+    }
+    public PlArray array_deref_strict() {
         return this.ar;
     }
     public PlObject array_deref_set(PlObject v) {
@@ -3438,6 +3452,9 @@ class PlHashRef extends PlReference {
         return o;
     }
     public PlHash hash_deref() {
+        return this.ha;
+    }
+    public PlHash hash_deref_strict() {
         return this.ha;
     }
     public PlObject hash_deref_set(PlObject v) {
@@ -4247,6 +4264,10 @@ class PlLvalue extends PlObject {
         }
         return o.scalar_deref(namespace);
     }
+    public PlObject scalar_deref_strict(String namespace) {
+        PlObject o = this.get();
+        return o.scalar_deref_strict(namespace);
+    }
     public PlObject scalar_deref_lvalue(String namespace) {
         PlObject o = this.get();
         if (o.is_undef()) {
@@ -4275,6 +4296,11 @@ class PlLvalue extends PlObject {
             return (PlArray)(o.array_deref());
         }
         return o.array_deref();
+    }
+    public PlArray array_deref_strict() {
+        // @$x doesn't autovivify
+        PlObject o = this.get();
+        return (PlArray)(o.array_deref_strict());
     }
     public PlArray array_deref_lvalue() {
         PlObject o = this.get();
@@ -4311,6 +4337,11 @@ class PlLvalue extends PlObject {
             return o.hash_deref();
         }
         return o.hash_deref();
+    }
+    public PlObject hash_deref_strict() {
+        // %$x doesn't autovivify
+        PlObject o = this.get();
+        return o.hash_deref_strict();
     }
     public PlObject hash_deref_set(PlObject v) {
         // %$x = ...
@@ -5920,6 +5951,17 @@ class PlUndef extends PlObject {
     public boolean is_undef() {
         return true;
     }
+
+    public PlObject scalar_deref_strict(String namespace) {
+        return PlCORE.die("Can't use an undefined value as a SCALAR reference");
+    }
+    public PlArray array_deref_strict() {
+        return (PlArray)PlCORE.die("Can't use an undefined value as an ARRAY reference");
+    }
+    public PlObject hash_deref_strict() {
+        return PlCORE.die("Can't use an undefined value as a HASH reference");
+    }
+
 }
 class PlBool extends PlObject {
     private boolean i;
@@ -6176,6 +6218,10 @@ class PlString extends PlObject {
         }
         return PlV.sget(s);
     }
+    public PlObject scalar_deref_strict(String namespace) {
+        PlCORE.die("Can't use string (\"" + this.s + "\") as a SCALAR ref while \"strict refs\" in use");
+        return PlV.sget(s);
+    }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
         if (s.indexOf("::") == -1) {
             s = namespace + "::" + s;
@@ -6184,6 +6230,11 @@ class PlString extends PlObject {
     }
     public PlArray array_deref_lvalue() {
         // TODO - concatenate current namespace if needed
+        return PlV.array_get(s);
+    }
+    public PlArray array_deref_strict() {
+        // TODO - concatenate current namespace if needed
+        PlCORE.die("Can't use string (\"" + this.s + "\") as an ARRAY ref while \"strict refs\" in use");
         return PlV.array_get(s);
     }
     public PlArray array_deref() {
@@ -6196,6 +6247,11 @@ class PlString extends PlObject {
     }
     public PlObject hash_deref() {
         // TODO - concatenate current namespace if needed
+        return PlV.hash_get(s);
+    }
+    public PlObject hash_deref_strict() {
+        // TODO - concatenate current namespace if needed
+        PlCORE.die("Can't use string (\"" + this.s + "\") as a HASH ref while \"strict refs\" in use");
         return PlV.hash_get(s);
     }
     public PlObject hash_deref_set(PlObject v) {
