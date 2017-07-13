@@ -595,9 +595,7 @@ package Perlito5::AST::Apply;
                     . ')';
             }
             elsif ( $self->{_strict_refs} ) {
-                return $arg->emit_java( $level, 'scalar', 'scalar' ) . '.scalar_deref_strict('
-                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME )
-                    . ')';
+                return $arg->emit_java( $level, 'scalar', 'scalar' ) . '.scalar_deref_strict()';
             }
             return $arg->emit_java( $level, 'scalar', 'scalar' ) . '.scalar_deref('
                     . Perlito5::Java::escape_string($Perlito5::PKG_NAME )

@@ -2482,7 +2482,7 @@ EOT
     public PlObject scalar_deref(String namespace) {
         return PlCORE.die("Not a SCALAR reference");
     }
-    public PlObject scalar_deref_strict(String namespace) {
+    public PlObject scalar_deref_strict() {
         return PlCORE.die("Not a SCALAR reference");
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
@@ -3319,7 +3319,7 @@ class PlLvalueRef extends PlReference {
     public PlObject scalar_deref(String namespace) {
         return this.o;
     }
-    public PlObject scalar_deref_strict(String namespace) {
+    public PlObject scalar_deref_strict() {
         return this.o;
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
@@ -4264,9 +4264,9 @@ class PlLvalue extends PlObject {
         }
         return o.scalar_deref(namespace);
     }
-    public PlObject scalar_deref_strict(String namespace) {
+    public PlObject scalar_deref_strict() {
         PlObject o = this.get();
-        return o.scalar_deref_strict(namespace);
+        return o.scalar_deref_strict();
     }
     public PlObject scalar_deref_lvalue(String namespace) {
         PlObject o = this.get();
@@ -5952,7 +5952,7 @@ class PlUndef extends PlObject {
         return true;
     }
 
-    public PlObject scalar_deref_strict(String namespace) {
+    public PlObject scalar_deref_strict() {
         return PlCORE.die("Can't use an undefined value as a SCALAR reference");
     }
     public PlArray array_deref_strict() {
@@ -6218,9 +6218,8 @@ class PlString extends PlObject {
         }
         return PlV.sget(s);
     }
-    public PlObject scalar_deref_strict(String namespace) {
-        PlCORE.die("Can't use string (\"" + this.s + "\") as a SCALAR ref while \"strict refs\" in use");
-        return PlV.sget(s);
+    public PlObject scalar_deref_strict() {
+        return PlCORE.die("Can't use string (\"" + this.s + "\") as a SCALAR ref while \"strict refs\" in use");
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
         if (s.indexOf("::") == -1) {
