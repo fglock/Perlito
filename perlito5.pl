@@ -27003,6 +27003,7 @@ class PlTieArrayList extends PlArrayList {
     public PlTieArrayList() {
     }
     // add(PlObject)
+    // add(pos, PlObject)
     // get(pos)
     // remove(pos)
     // set(pos, PlObject)
@@ -27013,6 +27014,14 @@ class PlTieArrayList extends PlArrayList {
     public boolean add(PlObject v) {
         PerlOp.call(tied, \"PUSH\", new PlArray(v), PlCx.SCALAR);
         return true;
+    }
+    public void add(int i, PlObject v) {
+        if (i == 0) {
+            PerlOp.call(tied, \"UNSHIFT\", new PlArray(v), PlCx.SCALAR);
+        }
+        else {
+            PerlOp.call(tied, \"PUSH\", new PlArray(v), PlCx.SCALAR);
+        }
     }
     public PlObject get(int i) {
         return PerlOp.call(tied, \"FETCH\", new PlArray(new PlInt(i)), PlCx.SCALAR);
@@ -27036,10 +27045,15 @@ class PlTieArrayList extends PlArrayList {
         return new PlTieArrayIterator(this.tied);
     }
 
-    // TODO - STORESIZE, PUSH, UNSHIFT, EXISTS, DELETE
+    // TODO - EXISTS, DELETE
+    // add == PUSH
+    // add(0, v) == UNSHIFT
 
     // Perl API
 
+    public PlObject set_end_of_array_index(int i) {
+        return PerlOp.call(tied, \"STORESIZE\", new PlArray(), PlCx.SCALAR);
+    }
     public PlObject aset(int i, PlObject v) {
         this.set(i, v);
         return v;
@@ -27068,6 +27082,7 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
     public PlArrayList() {
     }
     // add(PlObject)
+    // add(pos, PlObject)
     // get(pos)
     // remove(pos)
     // set(pos, PlObject)
@@ -27077,6 +27092,16 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
 
     // Perl API
 
+    public PlObject set_end_of_array_index(int i) {
+        int size = i + 1;
+        while (this.size() < size) {
+            this.add(PlCx.UNDEF);
+        }
+        if (size < this.size() && this.size() > 0) {
+            this.removeRange(size, this.size() - 1);
+        }
+        return new PlInt(this.size());
+    }
     public PlObject aset(int i, PlObject v) {
         int size = this.size();
         int pos  = i;
@@ -27698,15 +27723,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return new PlInt(this.a.size() - 1);
     }
     public PlObject set_end_of_array_index(PlObject o) {
-        int size = o.to_int() + 1;
-        while (this.a.size() < size) {
-            this.push(PlCx.UNDEF);
-        }
-        while (size < this.a.size() && this.a.size() > 0) {
-            // TODO - use removeRange(fromIndex, toIndex)
-            this.pop();
-        }
-        return o;
+        return this.a.set_end_of_array_index(o.to_int());
     }
     public double to_double() {
         return 0.0 + this.to_long();
