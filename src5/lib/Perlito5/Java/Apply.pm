@@ -289,7 +289,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
               'PerlOp.srand('
             . ( $self->{arguments}->[0]
-              ? $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long()'
+              ? $self->{arguments}->[0]->emit_java($level, 'scalar')
               : ''
               )
             . ')'

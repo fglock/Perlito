@@ -29,6 +29,7 @@
 -- overload implemented for about half of the operators
 -- /xx regex modifier
 -- strict refs
+-- srand() returns true, warns on overflow
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:

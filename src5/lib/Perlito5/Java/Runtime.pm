@@ -926,8 +926,15 @@ class PerlOp {
         random = new Random();
         return PlCx.UNDEF;
     }
-    public static final PlObject srand(long s) {
+    public static final PlObject srand(PlObject o) {
+        if (!o.is_integer_range()) {
+            PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Integer overflow in srand")));
+        }
+        long s = o.to_long();
         random = new Random(s);
+        if (s == 0) {
+            return new PlString("0E0");
+        }
         return new PlInt(s);
     }
 
