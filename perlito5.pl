@@ -17535,15 +17535,6 @@ use feature 'say';
         }, "lc", sub {
             (my($self), my($level), my($wantarray)) = @_;
             "new PlString(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".toString().toLowerCase())"
-        }, "ucfirst", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".ucfirst()"
-        }, "lcfirst", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".lcfirst()"
-        }, "quotemeta", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".quotemeta()"
         }, "index", sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($self->{"arguments"}->[2]) {;
@@ -17578,7 +17569,7 @@ use feature 'say';
                 my($self, $level, $wantarray) = @_;
                 $self->{"arguments"}->[0]->emit_java($level, "scalar") . "." . $op . "()"
             })
-        } "abs", "sqrt", "cos", "sin", "exp", "log"), (map {
+        } "abs", "sqrt", "cos", "sin", "exp", "log", "ucfirst", "lcfirst", "quotemeta"), (map {
             my $op = $_;
             ($op, sub {
                 my($self, $level, $wantarray) = @_;
@@ -18185,24 +18176,6 @@ use feature 'say';
             }
             my $list = "new PlArray(PlCORE.sprintf(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list(\@in, $level) . "))";
             "PlCORE.print(" . Perlito5::Java::to_context($wantarray) . ", " . $fun . ", " . $list . ")"
-        }, "hex", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            "PlCORE.hex(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
-        }, "oct", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            "PlCORE.oct(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
-        }, "fc", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            "PlCORE.fc(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
-        }, "values", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            "PlCORE.values(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
-        }, "keys", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            "PlCORE.keys(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
-        }, "each", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            "PlCORE.each(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
         }, "mkdir", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{"arguments"}};
@@ -18234,12 +18207,6 @@ use feature 'say';
                 push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
             }
             "PlCORE.unlink(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}, $level) . ")"
-        }, "chomp", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            "PlCORE.chomp(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
-        }, "chop", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            "PlCORE.chop(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
         }, "getc", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{"arguments"}};
@@ -18397,6 +18364,12 @@ use feature 'say';
                 my @in = @{$self->{"arguments"}};
                 my $fun = shift(@in);
                 "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_filehandle($fun, $level + 1) . ", " . Perlito5::Java::to_param_list(\@in, $level + 1) . ")"
+            }
+        }
+        for my $op ("chomp", "chop", "hex", "oct", "fc", "values", "keys", "each") {;
+            $emit_js{$op} = sub {
+                (my($self), my($level), my($wantarray)) = @_;
+                "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
             }
         }
         for my $op ("sleep", "ref", "exit", "warn", "die", "system", "qx", "pack", "unpack", "sprintf", "crypt", "join", "reverse", "select") {;
