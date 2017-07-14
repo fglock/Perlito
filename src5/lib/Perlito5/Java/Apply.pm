@@ -1639,8 +1639,11 @@ package Perlito5::AST::Apply;
             if ( ref($code) eq 'Perlito5::AST::Apply' && $code->code eq "prefix:<&>") {
                 # &$c()
 
-                my $arg   = $code->{arguments}->[0];
-                my $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')';
+                my $invocant = $code->{arguments}->[0]->emit_java($level);
+                if ( !$code->{_strict_refs} ) {
+
+                    $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $invocant . ')';
+                }
 
                 return $invocant . '.apply('
                     . Perlito5::Java::to_context($wantarray) . ', '
