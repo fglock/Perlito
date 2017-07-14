@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..8";
+say "1..9";
 
 my $v = 0;
 my $r = 0;
@@ -83,4 +83,12 @@ eval ' $r = &{"with_proto"}->(4) ';
 $e = $@;
 print "not " if !$e;
 print "ok 8  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' \n";
+
+# plain &
+
+$v = 3;
+$r = 0;
+&with_proto;
+print "not " if $v != 11;
+print "ok 9  - with_proto $v\n";
 
