@@ -567,9 +567,9 @@ package Perlito5::AST::Apply;
             my $arg  = $self->{arguments}->[0];
             if ($arg->{is_version_string}) {
                 # require VERSION
-                return 'p5pkg["Perlito5"]["test_perl_version"]([' 
-                        . Perlito5::Java::to_str( $self->{arguments}[0] )
-                    . '], ' . Perlito5::Java::to_context($wantarray) . ')';
+                return 'PlV.apply("Perlito5::test_perl_version", PlCx.VOID, new PlArray('
+                    .       $arg->emit_java( $level, 'scalar' )
+                    . '))';
             }
             # require FILE
             'PlCORE.require('
@@ -577,14 +577,6 @@ package Perlito5::AST::Apply;
                 . Perlito5::Java::to_str( $self->{arguments}[0] ) . ', ' 
                 . ($self->{arguments}[0]{bareword} ? 'true' : 'false') 
             . ')';
-        },
-        'select' => sub {
-            my ($self, $level, $wantarray) = @_;
-            'p5pkg["CORE"]["select"]([' 
-                . ( $self->{arguments}[0]{bareword}
-                  ? Perlito5::Java::to_str( $self->{arguments}[0] )
-                  : $self->{arguments}[0]->emit_java( $level, 'scalar' ) )
-            . '])';
         },
         'prefix:<$>' => sub {
             my ($self, $level, $wantarray, $autovivification_type) = @_;
@@ -1607,7 +1599,7 @@ package Perlito5::AST::Apply;
         };
     }
 
-    for my $op (qw/ sleep ref exit warn die system qx pack unpack sprintf crypt join reverse /) {
+    for my $op (qw/ sleep ref exit warn die system qx pack unpack sprintf crypt join reverse select /) {
         $emit_js{$op} = sub {
             my ($self, $level, $wantarray) = @_;
             'PlCORE.' . $op . '('

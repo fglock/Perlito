@@ -30,6 +30,7 @@
 -- /xx regex modifier
 -- strict refs
 -- srand() returns true, warns on overflow
+-- require VERSION
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:

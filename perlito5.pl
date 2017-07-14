@@ -17736,12 +17736,9 @@ use feature 'say';
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{"arguments"}->[0];
             if ($arg->{"is_version_string"}) {;
-                return "p5pkg[\"Perlito5\"][\"test_perl_version\"]([" . Perlito5::Java::to_str($self->{"arguments"}->[0]) . "], " . Perlito5::Java::to_context($wantarray) . ")"
+                return "PlV.apply(\"Perlito5::test_perl_version\", PlCx.VOID, new PlArray(" . $arg->emit_java($level, "scalar") . "))"
             }
             "PlCORE.require(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_str($self->{"arguments"}->[0]) . ", " . ($self->{"arguments"}->[0]->{"bareword"} ? "true" : "false") . ")"
-        }, "select", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            "p5pkg[\"CORE\"][\"select\"]([" . ($self->{"arguments"}->[0]->{"bareword"} ? Perlito5::Java::to_str($self->{"arguments"}->[0]) : $self->{"arguments"}->[0]->emit_java($level, "scalar")) . "])"
         }, "prefix:<\$>", sub {
             (my($self), my($level), my($wantarray), my($autovivification_type)) = @_;
             my $arg = $self->{"arguments"}->[0];
@@ -18399,7 +18396,7 @@ use feature 'say';
                 "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_filehandle($fun, $level + 1) . ", " . Perlito5::Java::to_param_list(\@in, $level + 1) . ")"
             }
         }
-        for my $op ("sleep", "ref", "exit", "warn", "die", "system", "qx", "pack", "unpack", "sprintf", "crypt", "join", "reverse") {;
+        for my $op ("sleep", "ref", "exit", "warn", "die", "system", "qx", "pack", "unpack", "sprintf", "crypt", "join", "reverse", "select") {;
             $emit_js{$op} = sub {
                 (my($self), my($level), my($wantarray)) = @_;
                 "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}, $level) . ")"
@@ -20565,6 +20562,9 @@ class PlCORE {
             PlV.sset(\"main::!\", new PlString(e.getMessage()));
         }
         return PlCx.UNDEF;
+    }
+    public static final PlObject select(int want, PlArray List__) {
+        return PlCORE.die(\"select() not implemented\");
     }
     public static final PlObject exit(int want, PlArray List__) {
         int arg = List__.aget(0).to_int();

@@ -458,6 +458,9 @@ EOT
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject select(int want, PlArray List__) {
+        return PlCORE.die("select() not implemented");
+    }
     public static final PlObject exit(int want, PlArray List__) {
         int arg = List__.aget(0).to_int();
         System.exit(arg);
