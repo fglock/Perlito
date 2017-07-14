@@ -27043,6 +27043,26 @@ class PlROvalue extends PlLvalue {
         PlCORE.die(\"Modification of a read-only value attempted\");
         return this;
     }
+    public PlObject set(PlString o) {
+        return PlCORE.die(\"Modification of a read-only value attempted\");
+    }
+    public PlObject set(PlInt o) {
+        return PlCORE.die(\"Modification of a read-only value attempted\");
+    }
+
+    public PlObject pre_decr() {
+        return PlCORE.die(\"Modification of a read-only value attempted\");
+    }
+    public PlObject post_decr() {
+        return PlCORE.die(\"Modification of a read-only value attempted\");
+    }
+    public PlObject pre_incr() {
+        return PlCORE.die(\"Modification of a read-only value attempted\");
+    }
+    public PlObject post_incr() {
+        return PlCORE.die(\"Modification of a read-only value attempted\");
+    }
+
 }
 class PlSlice extends PlArray {
     public boolean is_slice() {
