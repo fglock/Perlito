@@ -17575,73 +17575,13 @@ use feature 'say';
                 my($self, $level, $wantarray) = @_;
                 $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".op_" . $op . "()"
             })
-        } "int"), "infix:<%>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            return $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".mod(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<>>>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_shr(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<<<>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_shl(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<^>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_xor(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<&>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_and(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<|>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".int_or(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<+>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".add(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<->", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".sub(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<*>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".mul(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:</>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".div(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<==>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".num_eq(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<!=>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".num_ne(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<>>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".num_gt(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<>=>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".num_ge(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<<>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".num_lt(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<<=>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".num_le(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<eq>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".str_eq(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<ne>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".str_ne(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<gt>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".str_gt(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<ge>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".str_ge(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<lt>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".str_lt(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<le>", sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".str_le(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
-        }, "infix:<~~>", sub {
+        } "int"), (map {
+            my($op, $java_op) = @{$_};
+            ($op, sub {
+                my($self, $level, $wantarray) = @_;
+                $self->{"arguments"}->[0]->emit_java($level, "scalar") . "." . $java_op . "(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
+            })
+        } (["infix:<%>", "mod"], ["infix:<>>>", "int_shr"], ["infix:<<<>", "int_shl"], ["infix:<^>", "int_xor"], ["infix:<&>", "int_and"], ["infix:<|>", "int_or"], ["infix:<+>", "add"], ["infix:<->", "sub"], ["infix:<*>", "mul"], ["infix:</>", "div"], ["infix:<==>", "num_eq"], ["infix:<!=>", "num_ne"], ["infix:<>>", "num_gt"], ["infix:<>=>", "num_ge"], ["infix:<<>", "num_lt"], ["infix:<<=>", "num_le"], ["infix:<eq>", "str_eq"], ["infix:<ne>", "str_ne"], ["infix:<gt>", "str_gt"], ["infix:<ge>", "str_ge"], ["infix:<lt>", "str_lt"], ["infix:<le>", "str_le"])), "infix:<~~>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg0 = $self->{"arguments"}->[0];
             my $arg1 = $self->{"arguments"}->[1];
