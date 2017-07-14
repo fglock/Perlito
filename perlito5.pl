@@ -19108,7 +19108,7 @@ use feature 'say';
                     push(@str, $arg->emit_java_init($level, $wantarray))
                 }
                 if (!($decl->isa("Perlito5::AST::Decl") && ($decl->decl() eq "my" || $decl->decl() eq "our"))) {
-                    if (($decl->isa("Perlito5::AST::Int")) || ($decl->isa("Perlito5::AST::Num")) || ($decl->isa("Perlito5::AST::Buf")) || ($decl->isa("Perlito5::AST::Var"))) {}
+                    if (($decl->isa("Perlito5::AST::Int")) || ($decl->isa("Perlito5::AST::Num")) || ($decl->isa("Perlito5::AST::Buf")) || ($decl->isa("Perlito5::AST::Var") && $decl->{"sigil"} ne "&")) {}
                     elsif ($decl->isa("Perlito5::AST::Apply") && !($decl->{"namespace"} eq "Java" && $decl->{"code"} eq "inline") && !($Perlito5::Java::valid_java_statement{$decl->{"code"}})) {;
                         push(@str, "PerlOp.statement(" . $decl->emit_java($level + 1, "void") . ");")
                     }
