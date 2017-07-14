@@ -137,15 +137,7 @@ Perlito5-Java work-in-progress
 
   - tied variables are partially implemented
       - DESTROY not used, because we use Java memory management
-      - tie scalar works
-      - tie hash incomplete
-
-          - "each()" in reference to hash: see t5/unit/tie_hash_each.t
-          - "our" hash: need to tie both the global variable and the lexical alias
-          - lazy lookup: possibly incomplete impl for proxy objects, this needs more tests
-          - tie() in non-void context: need to return the tied object, see Config.pm
-
-      - tie array incomplete
+      - lazy lookup: possibly incomplete impl for proxy objects, this needs more tests
       - tie filehandle todo
 
   - overload is partially implemented
@@ -597,7 +589,7 @@ the bytecode of a method must not be bigger than 65536 bytes:
 
   - when compiling misc/Java/code_too_large.pl
 
-  - possible workaround: insert a closure every 100s of lines in a block:
+  - current workaround: insert a closure every 100s of lines in a block:
 
 ~~~perl
         code...
