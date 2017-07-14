@@ -311,28 +311,32 @@ package Perlito5::AST::Apply;
                       }
                 )
             } (
-              [ 'infix:<%>',  'mod' ],
-              [ 'infix:<>>>', 'int_shr' ],
-              [ 'infix:<<<>', 'int_shl' ],
-              [ 'infix:<^>',  'int_xor' ],
-              [ 'infix:<&>',  'int_and' ],
-              [ 'infix:<|>',  'int_or' ],
-              [ 'infix:<+>',  'add' ],
-              [ 'infix:<->',  'sub' ],
-              [ 'infix:<*>',  'mul' ],
-              [ 'infix:</>',  'div' ],
-              [ 'infix:<==>', 'num_eq' ],
-              [ 'infix:<!=>', 'num_ne' ],
-              [ 'infix:<>>',  'num_gt' ],
-              [ 'infix:<>=>', 'num_ge' ],
-              [ 'infix:<<>',  'num_lt' ],
-              [ 'infix:<<=>', 'num_le' ],
-              [ 'infix:<eq>', 'str_eq' ],
-              [ 'infix:<ne>', 'str_ne' ],
-              [ 'infix:<gt>', 'str_gt' ],
-              [ 'infix:<ge>', 'str_ge' ],
-              [ 'infix:<lt>', 'str_lt' ],
-              [ 'infix:<le>', 'str_le' ],
+              [ 'infix:<%>',   'mod' ],
+              [ 'infix:<>>>',  'int_shr' ],
+              [ 'infix:<<<>',  'int_shl' ],
+              [ 'infix:<^>',   'int_xor' ],
+              [ 'infix:<&>',   'int_and' ],
+              [ 'infix:<|>',   'int_or' ],
+              [ 'infix:<+>',   'add' ],
+              [ 'infix:<->',   'sub' ],
+              [ 'infix:<*>',   'mul' ],
+              [ 'infix:</>',   'div' ],
+              [ 'infix:<==>',  'num_eq' ],
+              [ 'infix:<!=>',  'num_ne' ],
+              [ 'infix:<>>',   'num_gt' ],
+              [ 'infix:<>=>',  'num_ge' ],
+              [ 'infix:<<>',   'num_lt' ],
+              [ 'infix:<<=>',  'num_le' ],
+              [ 'infix:<eq>',  'str_eq' ],
+              [ 'infix:<ne>',  'str_ne' ],
+              [ 'infix:<gt>',  'str_gt' ],
+              [ 'infix:<ge>',  'str_ge' ],
+              [ 'infix:<lt>',  'str_lt' ],
+              [ 'infix:<le>',  'str_le' ],
+              [ 'infix:<cmp>', 'str_cmp' ],
+              [ 'infix:<<=>>', 'num_cmp' ],
+              [ 'infix:<**>',  'pow'     ],
+              [ 'atan2',       'atan2'   ],
             )
         ),
         'infix:<~~>' => sub {
@@ -407,26 +411,6 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
               Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_java($level)  . ', ' 
             . $self->{arguments}[1]->emit_java($level)
-        },
-        'infix:<cmp>' => sub {
-            my ($self, $level, $wantarray) = @_;
-                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.str_cmp('
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
-        },
-        'infix:<<=>>' => sub {
-            my ($self, $level, $wantarray) = @_;
-                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.num_cmp('
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
-        },
-        'infix:<**>' => sub {
-            my ($self, $level, $wantarray) = @_;
-                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.pow('
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
-        },
-        'atan2' => sub {
-            my ($self, $level, $wantarray) = @_;
-                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.atan2('
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'prefix:<!>' => sub {
             my $self      = shift;
