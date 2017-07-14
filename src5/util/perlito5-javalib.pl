@@ -1,7 +1,8 @@
-package Perlito5;
+# package Perlito5;
 use strict;
 use warnings;
 
+use Perlito5;
 use Perlito5::Compiler;
 use Perlito5::Java::Emitter;
 use Perlito5::Java::Runtime;
