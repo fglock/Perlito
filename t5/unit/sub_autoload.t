@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..9";
+say "1..10";
 
 {
     package A;
@@ -83,6 +83,20 @@ say "1..9";
     my $x = exists &{"a"};
     print "not " if $x;
     say "ok 9 - exists() doesn't call AUTOLOAD # $x ";
+}
+
+{
+    package H;
+    our $AUTOLOAD;
+    my $f = 1;
+    sub AUTOLOAD {
+        $f = 2;
+        print "# HERE\n";
+        return wantarray ? ( 6, 7 ) : 456;
+    }
+    my $x = \&{"subr"};
+    print "not " if $f != 1;
+    say "ok 10 - ref doesn't call AUTOLOAD # $x ";
 }
 
 
