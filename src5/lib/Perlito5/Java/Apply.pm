@@ -628,12 +628,14 @@ package Perlito5::AST::Apply;
         },
         'prefix:<&>' => sub {
             my ($self, $level, $wantarray) = @_;
-            my $arg   = $self->{arguments}->[0];
-            'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')'
-                . '.apply('
+            my $invocant = $self->{arguments}->[0]->emit_java($level);
+            if ( !$self->{_strict_refs} ) {
+                $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $invocant . ')';
+            }
+            return $invocant . '.apply('
                     . Perlito5::Java::to_context($wantarray) . ', '
                     . 'List__'
-                . ')'
+                . ')';
         },
         'prefix:<*>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1638,13 +1640,10 @@ package Perlito5::AST::Apply;
 
             if ( ref($code) eq 'Perlito5::AST::Apply' && $code->code eq "prefix:<&>") {
                 # &$c()
-
                 my $invocant = $code->{arguments}->[0]->emit_java($level);
                 if ( !$code->{_strict_refs} ) {
-
                     $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $invocant . ')';
                 }
-
                 return $invocant . '.apply('
                     . Perlito5::Java::to_context($wantarray) . ', '
                     . Perlito5::Java::to_param_list($items, $level+1)

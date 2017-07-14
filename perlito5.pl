@@ -17779,8 +17779,11 @@ use feature 'say';
             return Perlito5::Java::emit_java_autovivify($arg, $level, "hash") . ".hash_deref()"
         }, "prefix:<&>", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            my $arg = $self->{"arguments"}->[0];
-            "PlV.code_lookup_by_name(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ", " . $arg->emit_java($level) . ")" . ".apply(" . Perlito5::Java::to_context($wantarray) . ", " . "List__" . ")"
+            my $invocant = $self->{"arguments"}->[0]->emit_java($level);
+            if (!$self->{"_strict_refs"}) {;
+                $invocant = "PlV.code_lookup_by_name(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ", " . $invocant . ")"
+            }
+            return $invocant . ".apply(" . Perlito5::Java::to_context($wantarray) . ", " . "List__" . ")"
         }, "prefix:<*>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{"arguments"}->[0];
