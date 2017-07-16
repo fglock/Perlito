@@ -29,7 +29,7 @@ sub ok {
     return $ok;
 }
 
-print "1..37\n";
+print "1..39\n";
 
 # Test do &sub and proper @_ handling.
 $_[0] = 0;
@@ -123,11 +123,16 @@ ok(defined $x && $x == 1, 'return do { } receives caller scalar context');
 @x = sub { do { return do { @a } }; 2 }->();
 ok("@x" eq "7", 'return do { } receives caller list context');
 
+my $want;
 @a = (7, 8);
-$x = sub { do { return do { 1; @a } }; 3 }->();
+$x = sub { do { return do { 1; $want = wantarray; @a } }; 3 }->();
 ok(defined $x && $x == 2, 'return do { ; } receives caller scalar context');
-@x = sub { do { return do { 1; @a } }; 3 }->();
+print "# want ", ( $want ? $want : defined $want ? $want : "undef" ), "\n";
+ok( defined($want) && $want eq "", 'want is ""' );
+@x = sub { do { return do { 1; $want = wantarray; @a } }; 3 }->();
 ok("@x" eq "7 8", 'return do { ; } receives caller list context');
+print "# want ", ( $want ? $want : defined $want ? $want : "undef" ), "\n";
+ok( defined($want) && $want eq "1", 'want is "1"' );
 
 @b = (11 .. 15);
 $x = sub { do { return do { 1; @a, @b } }; 3 }->();
