@@ -399,7 +399,7 @@ package Perlito5::JavaScript2;
     sub to_context {
         my $wantarray = shift;
          $wantarray eq 'list'   ? '1' 
-        :$wantarray eq 'scalar' ? '0' 
+        :$wantarray eq 'scalar' ? '""'
         :$wantarray eq 'void'   ? 'null'
         :                         'p5want'
     }

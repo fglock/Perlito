@@ -11637,7 +11637,7 @@ use feature 'say';
         }
         sub Perlito5::JavaScript2::to_context {
             my $wantarray = shift;
-            $wantarray eq "list" ? 1 : $wantarray eq "scalar" ? 0 : $wantarray eq "void" ? "null" : "p5want"
+            $wantarray eq "list" ? 1 : $wantarray eq "scalar" ? "\"\"" : $wantarray eq "void" ? "null" : "p5want"
         }
         sub Perlito5::JavaScript2::autoquote {
             my $index = shift;
