@@ -23380,7 +23380,7 @@ class PerlOp {
         PlArray caller = PlV.array_get(\"Perlito5::CALLER\");
         if (caller.length_of_array().to_boolean()) {
             if (ctx == 2) {
-                return caller.aget(item).array_deref();
+                return caller.aget(item).array_deref_strict();
             }
             return caller.aget(item).aget(0);
         };
@@ -24666,13 +24666,13 @@ class PlV {
 
     // hash
     public static final PlHash hash_get(String name) {
-        return (PlHash)hvar.hget_hashref(name).hash_deref();
+        return (PlHash)hvar.hget_hashref(name).hash_deref_strict();
     }
     public static final PlHash hash_get_local(String name) {
         PlLvalue o = (PlLvalue)hvar.hget_lvalue_local(name);
         PlHashRef hr = new PlHashRef();
         o.set(hr);
-        return hr.hash_deref();
+        return hr.hash_deref_strict();
     }
     public static final PlObject hash_set(String name, PlObject v) {
         return hvar.hget_hashref(name).hash_deref_set(v);
@@ -24698,13 +24698,13 @@ class PlV {
 
     // array
     public static final PlArray array_get(String name) {
-        return (PlArray)avar.hget_arrayref(name).array_deref();
+        return (PlArray)avar.hget_arrayref(name).array_deref_strict();
     }
     public static final PlArray array_get_local(String name) {
         PlLvalue o = (PlLvalue)avar.hget_lvalue_local(name);
         PlArrayRef ar = new PlArrayRef();
         o.set(ar);
-        return ar.array_deref();
+        return ar.array_deref_strict();
     }
     public static final PlObject array_set(String name, PlObject v) {
         return avar.hget_arrayref(name).array_deref_set(v);
@@ -26740,7 +26740,7 @@ class PlLvalue extends PlObject {
         else if (o.is_arrayref()) {
             return (PlArray)(o.array_deref_lvalue());
         }
-        return o.array_deref();
+        return o.array_deref_strict();
     }
     public PlObject array_deref_set(PlObject v) {
         // \@\$x = ...
@@ -28619,7 +28619,6 @@ class PlString extends PlObject {
         return PlV.array_get(s);
     }
     public PlArray array_deref_strict() {
-        // TODO - concatenate current namespace if needed
         PlCORE.die(\"Can't use string (\\\"\" + this.s + \"\\\") as an ARRAY ref while \\\"strict refs\\\" in use\");
         return PlV.array_get(s);
     }
@@ -28636,7 +28635,6 @@ class PlString extends PlObject {
         return PlV.hash_get(s);
     }
     public PlObject hash_deref_strict() {
-        // TODO - concatenate current namespace if needed
         PlCORE.die(\"Can't use string (\\\"\" + this.s + \"\\\") as a HASH ref while \\\"strict refs\\\" in use\");
         return PlV.hash_get(s);
     }
