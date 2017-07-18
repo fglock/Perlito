@@ -215,7 +215,7 @@ package Perlito5::AST::Apply;
         },
         'wantarray' => sub {
             my ($self, $level, $wantarray) = @_;
-            '(want == PlCx.VOID ? PlCx.UNDEF : new PlInt(want-1))';
+            '(want == PlCx.VOID ? PlCx.UNDEF : want == PlCx.SCALAR ? PlCx.EMPTY : new PlInt(want-1))';
         },
         'uc' => sub {
             my ($self, $level, $wantarray) = @_;
