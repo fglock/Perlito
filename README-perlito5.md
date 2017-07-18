@@ -467,6 +467,14 @@ Add tests for fixed bugs
     http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
     http://perlbuzz.com/mechanix/2008/02/the-perils-of-perl-5s-indirect.html
 
+    $ perl perlito5.pl -I src5/lib -Cperl5 -e '  YO { x();z } ' 
+    Missing right curly or square bracket near 20 at -e line 2
+    $ perl -MO=Deparse -e '  YO { x();z } ' 
+    do {
+        x();
+        'z'
+    }->YO;
+
     method Module $param;
     new Class( arg => $value );
     new Class::($args);
