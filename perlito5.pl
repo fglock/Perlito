@@ -23615,6 +23615,9 @@ class PerlOp {
         }
     }
     public static final PlObject list_replicate(PlArray o, PlObject c, int wantarray) {
+        if (wantarray == PlCx.SCALAR) {
+            return PerlOp.string_replicate(o.aget(-1), c);
+        }
         int count = c.to_int();
         PlArray a = new PlArray();
         if (count > 0) {
@@ -23622,7 +23625,7 @@ class PerlOp {
                 a.push( o );
             }
         }
-        return (wantarray == PlCx.LIST ) ? a : a.length_of_array();
+        return a;
     }
     public static final PlObject grep(PlClosure c, PlArray a, PlArray list__, int wantarray) {
         PlArray ret = new PlArray();
