@@ -495,7 +495,9 @@ package Perlito5::AST::Apply;
                 $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref_strict()';
             }
             else {
-                $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref()';
+                $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref('
+                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME )
+                    . ')';
             }
             return $wantarray eq 'scalar'
                 ? "$s.scalar()"
@@ -504,7 +506,12 @@ package Perlito5::AST::Apply;
         'prefix:<$#>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            return  Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref().end_of_array_index()';
+            if ( $self->{_strict_refs} ) {
+                return  Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref_strict().end_of_array_index()';
+            }
+            return  Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref('
+                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME )
+                    . ').end_of_array_index()';
         },
         'prefix:<%>' => sub {
             my ($self, $level, $wantarray, $autovivification_type) = @_;
@@ -515,7 +522,9 @@ package Perlito5::AST::Apply;
             elsif ( $self->{_strict_refs} ) {
                 return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref_strict()';
             }
-            return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref()';
+            return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref('
+                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME )
+                    . ')';
         },
         'prefix:<&>' => sub {
             my ($self, $level, $wantarray) = @_;

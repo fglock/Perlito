@@ -2519,7 +2519,7 @@ EOT
         PlCORE.die("Not an ARRAY reference");
         return (PlArray)this;
     }
-    public PlArray array_deref() {
+    public PlArray array_deref(String namespace) {
         PlCORE.die("Not an ARRAY reference");
         return (PlArray)this;
     }
@@ -2562,7 +2562,7 @@ EOT
         return this;
     }
 
-    public PlObject hash_deref() {
+    public PlObject hash_deref(String namespace) {
         PlCORE.die("Not a HASH reference");
         return this;
     }
@@ -3356,7 +3356,7 @@ class PlArrayRef extends PlReference {
     public PlArray array_deref_lvalue() {
         return this.ar;
     }
-    public PlArray array_deref() {
+    public PlArray array_deref(String namespace) {
         return this.ar;
     }
     public PlArray array_deref_strict() {
@@ -3458,7 +3458,7 @@ class PlHashRef extends PlReference {
         this.ha = o;
         return o;
     }
-    public PlHash hash_deref() {
+    public PlHash hash_deref(String namespace) {
         return this.ha;
     }
     public PlHash hash_deref_strict() {
@@ -4293,16 +4293,16 @@ class PlLvalue extends PlObject {
         return o.scalar_deref_set(namespace, v);
     }
 
-    public PlArray array_deref() {
+    public PlArray array_deref(String namespace) {
         // @$x doesn't autovivify
         PlObject o = this.get();
         if (o.is_undef()) {
             return new PlArray();
         }
         else if (o.is_arrayref()) {
-            return (PlArray)(o.array_deref());
+            return (PlArray)(o.array_deref(namespace));
         }
-        return o.array_deref();
+        return o.array_deref(namespace);
     }
     public PlArray array_deref_strict() {
         // @$x doesn't autovivify
@@ -4334,16 +4334,16 @@ class PlLvalue extends PlObject {
         return o.array_deref_set(v);
     }
 
-    public PlObject hash_deref() {
+    public PlObject hash_deref(String namespace) {
         // %$x doesn't autovivify
         PlObject o = this.get();
         if (o.is_undef()) {
             return new PlHash();
         }
         else if (o.is_hashref()) {
-            return o.hash_deref();
+            return o.hash_deref(namespace);
         }
-        return o.hash_deref();
+        return o.hash_deref(namespace);
     }
     public PlObject hash_deref_strict() {
         // %$x doesn't autovivify
@@ -6262,16 +6262,20 @@ class PlString extends PlObject {
         PlCORE.die("Can't use string (\"" + this.s + "\") as an ARRAY ref while \"strict refs\" in use");
         return PlV.array_get(s);
     }
-    public PlArray array_deref() {
-        // TODO - concatenate current namespace if needed
+    public PlArray array_deref(String namespace) {
+        if (s.indexOf("::") == -1) {
+            s = namespace + "::" + s;
+        }
         return PlV.array_get(s);
     }
     public PlObject array_deref_set(PlObject v) {
         // TODO - concatenate current namespace if needed
         return PlV.aset(s, v);
     }
-    public PlObject hash_deref() {
-        // TODO - concatenate current namespace if needed
+    public PlObject hash_deref(String namespace) {
+        if (s.indexOf("::") == -1) {
+            s = namespace + "::" + s;
+        }
         return PlV.hash_get(s);
     }
     public PlObject hash_deref_strict() {

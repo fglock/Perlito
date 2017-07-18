@@ -184,7 +184,7 @@ class PlJavaCompiler {
         try {
 
             PlV.sset("main::" + (char)8, scalar_hints);                   // $^H
-            PlV.hash_set("main::" + (char)8, hash_hints.hash_deref());    // %^H
+            PlV.hash_set("main::" + (char)8, hash_hints.hash_deref_strict());    // %^H
             // Perlito5::Java::JavaCompiler::perl5_to_java($source, $namespace, $want, $scope_java)
             PlObject code[] = org.perlito.Perlito5.LibPerl.apply(
                 "Perlito5::Java::Runtime::perl5_to_java",

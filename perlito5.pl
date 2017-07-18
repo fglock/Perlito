@@ -17680,13 +17680,16 @@ use feature 'say';
                 $s = Perlito5::Java::emit_java_autovivify($arg, $level, "array") . ".array_deref_strict()"
             }
             else {;
-                $s = Perlito5::Java::emit_java_autovivify($arg, $level, "array") . ".array_deref()"
+                $s = Perlito5::Java::emit_java_autovivify($arg, $level, "array") . ".array_deref(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")"
             }
             return $wantarray eq "scalar" ? $s . ".scalar()" : $s
         }, "prefix:<\$#>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{"arguments"}->[0];
-            return Perlito5::Java::emit_java_autovivify($arg, $level, "array") . ".array_deref().end_of_array_index()"
+            if ($self->{"_strict_refs"}) {;
+                return Perlito5::Java::emit_java_autovivify($arg, $level, "array") . ".array_deref_strict().end_of_array_index()"
+            }
+            return Perlito5::Java::emit_java_autovivify($arg, $level, "array") . ".array_deref(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ").end_of_array_index()"
         }, "prefix:<%>", sub {
             (my($self), my($level), my($wantarray), my($autovivification_type)) = @_;
             my $arg = $self->{"arguments"}->[0];
@@ -17696,7 +17699,7 @@ use feature 'say';
             elsif ($self->{"_strict_refs"}) {;
                 return Perlito5::Java::emit_java_autovivify($arg, $level, "hash") . ".hash_deref_strict()"
             }
-            return Perlito5::Java::emit_java_autovivify($arg, $level, "hash") . ".hash_deref()"
+            return Perlito5::Java::emit_java_autovivify($arg, $level, "hash") . ".hash_deref(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")"
         }, "prefix:<&>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $invocant = $self->{"arguments"}->[0]->emit_java($level);
@@ -22432,7 +22435,7 @@ class PlJavaCompiler {
         try {
 
             PlV.sset(\"main::\" + (char)8, scalar_hints);                   // \$^H
-            PlV.hash_set(\"main::\" + (char)8, hash_hints.hash_deref());    // %^H
+            PlV.hash_set(\"main::\" + (char)8, hash_hints.hash_deref_strict());    // %^H
             // Perlito5::Java::JavaCompiler::perl5_to_java(\$source, \$namespace, \$want, \$scope_java)
             PlObject code[] = org.perlito.Perlito5.LibPerl.apply(
                 \"Perlito5::Java::Runtime::perl5_to_java\",
@@ -25019,7 +25022,7 @@ class PlObject {
         PlCORE.die(\"Not an ARRAY reference\");
         return (PlArray)this;
     }
-    public PlArray array_deref() {
+    public PlArray array_deref(String namespace) {
         PlCORE.die(\"Not an ARRAY reference\");
         return (PlArray)this;
     }
@@ -25062,7 +25065,7 @@ class PlObject {
         return this;
     }
 
-    public PlObject hash_deref() {
+    public PlObject hash_deref(String namespace) {
         PlCORE.die(\"Not a HASH reference\");
         return this;
     }
@@ -25824,7 +25827,7 @@ class PlArrayRef extends PlReference {
     public PlArray array_deref_lvalue() {
         return this.ar;
     }
-    public PlArray array_deref() {
+    public PlArray array_deref(String namespace) {
         return this.ar;
     }
     public PlArray array_deref_strict() {
@@ -25926,7 +25929,7 @@ class PlHashRef extends PlReference {
         this.ha = o;
         return o;
     }
-    public PlHash hash_deref() {
+    public PlHash hash_deref(String namespace) {
         return this.ha;
     }
     public PlHash hash_deref_strict() {
@@ -26714,16 +26717,16 @@ class PlLvalue extends PlObject {
         return o.scalar_deref_set(namespace, v);
     }
 
-    public PlArray array_deref() {
+    public PlArray array_deref(String namespace) {
         // \@\$x doesn't autovivify
         PlObject o = this.get();
         if (o.is_undef()) {
             return new PlArray();
         }
         else if (o.is_arrayref()) {
-            return (PlArray)(o.array_deref());
+            return (PlArray)(o.array_deref(namespace));
         }
-        return o.array_deref();
+        return o.array_deref(namespace);
     }
     public PlArray array_deref_strict() {
         // \@\$x doesn't autovivify
@@ -26755,16 +26758,16 @@ class PlLvalue extends PlObject {
         return o.array_deref_set(v);
     }
 
-    public PlObject hash_deref() {
+    public PlObject hash_deref(String namespace) {
         // %\$x doesn't autovivify
         PlObject o = this.get();
         if (o.is_undef()) {
             return new PlHash();
         }
         else if (o.is_hashref()) {
-            return o.hash_deref();
+            return o.hash_deref(namespace);
         }
-        return o.hash_deref();
+        return o.hash_deref(namespace);
     }
     public PlObject hash_deref_strict() {
         // %\$x doesn't autovivify
@@ -28622,16 +28625,20 @@ class PlString extends PlObject {
         PlCORE.die(\"Can't use string (\\\"\" + this.s + \"\\\") as an ARRAY ref while \\\"strict refs\\\" in use\");
         return PlV.array_get(s);
     }
-    public PlArray array_deref() {
-        // TODO - concatenate current namespace if needed
+    public PlArray array_deref(String namespace) {
+        if (s.indexOf(\"::\") == -1) {
+            s = namespace + \"::\" + s;
+        }
         return PlV.array_get(s);
     }
     public PlObject array_deref_set(PlObject v) {
         // TODO - concatenate current namespace if needed
         return PlV.aset(s, v);
     }
-    public PlObject hash_deref() {
-        // TODO - concatenate current namespace if needed
+    public PlObject hash_deref(String namespace) {
+        if (s.indexOf(\"::\") == -1) {
+            s = namespace + \"::\" + s;
+        }
         return PlV.hash_get(s);
     }
     public PlObject hash_deref_strict() {
