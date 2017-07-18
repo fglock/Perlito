@@ -17529,7 +17529,7 @@ use feature 'say';
             "this.getCurrentSub()"
         }, "wantarray", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "(want == PlCx.VOID ? PlCx.UNDEF : want == PlCx.SCALAR ? PlCx.EMPTY : new PlInt(want-1))"
+            "(want == PlCx.VOID ? PlCx.UNDEF : want == PlCx.SCALAR ? PlCx.EMPTY : PlCx.INT1)"
         }, "uc", sub {
             (my($self), my($level), my($wantarray)) = @_;
             "new PlString(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".toString().toUpperCase())"
