@@ -18298,7 +18298,13 @@ use feature 'say';
                 "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_filehandle($fun, $level + 1) . ", " . Perlito5::Java::to_param_list(\@in, $level + 1) . ")"
             }
         }
-        for my $op ("chomp", "chop", "hex", "oct", "fc", "values", "keys", "each") {;
+        for my $op ("chomp", "chop") {;
+            $emit_js{$op} = sub {
+                (my($self), my($level), my($wantarray)) = @_;
+                "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level, "scalar", "lvalue") . ")"
+            }
+        }
+        for my $op ("hex", "oct", "fc", "values", "keys", "each") {;
             $emit_js{$op} = sub {
                 (my($self), my($level), my($wantarray)) = @_;
                 "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"

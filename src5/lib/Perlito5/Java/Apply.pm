@@ -1469,7 +1469,16 @@ package Perlito5::AST::Apply;
         };
     }
 
-    for my $op (qw/ chomp chop hex oct fc values keys each /) {
+    for my $op (qw/ chomp chop /) {
+        $emit_js{$op} = sub {
+            my ($self, $level, $wantarray) = @_;
+            'PlCORE.' . $op . '('
+            .   Perlito5::Java::to_context($wantarray) . ', '
+            .   $self->{arguments}[0]->emit_java($level, 'scalar', 'lvalue')
+            . ')';
+        };
+    }
+    for my $op (qw/ hex oct fc values keys each /) {
         $emit_js{$op} = sub {
             my ($self, $level, $wantarray) = @_;
             'PlCORE.' . $op . '('
