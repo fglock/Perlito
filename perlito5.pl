@@ -18301,7 +18301,7 @@ use feature 'say';
         for my $op ("chomp", "chop") {;
             $emit_js{$op} = sub {
                 (my($self), my($level), my($wantarray)) = @_;
-                "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level, "scalar", "lvalue") . ")"
+                "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_param_list($self->{"arguments"}, $level + 1) . ")"
             }
         }
         for my $op ("hex", "oct", "fc", "values", "keys", "each") {;

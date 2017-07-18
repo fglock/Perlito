@@ -1474,7 +1474,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             'PlCORE.' . $op . '('
             .   Perlito5::Java::to_context($wantarray) . ', '
-            .   $self->{arguments}[0]->emit_java($level, 'scalar', 'lvalue')
+            .   Perlito5::Java::to_param_list($self->{arguments}, $level+1)
             . ')';
         };
     }
