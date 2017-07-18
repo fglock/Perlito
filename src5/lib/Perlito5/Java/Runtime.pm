@@ -3867,6 +3867,88 @@ class PlLazyIndex extends PlLazyLvalue {
     }
 
 }
+class PlLvalueSubstring extends PlLazyLvalue {
+    private PlLvalue lv;
+    private PlObject offset;
+    private PlObject length;
+
+    public PlLvalueSubstring(PlLvalue lv, PlObject offset, PlObject length) {
+        this.lv = lv;
+        this.offset = offset;
+        this.length = length;
+    }
+
+    // PlObjecternal lazy api
+    public PlLvalue create_scalar() {
+        return this.lv;
+    }
+
+    public PlObject get() {
+        return this.lv.substr(this.offset, this.length)
+    }
+
+    public PlObject set(PlObject o) {
+        String s = lv.toString();
+        int ofs = offset.to_int();
+        int len = length.to_int();
+        if (ofs < 0) {
+            ofs = s.length() + ofs;
+        }
+        if (ofs >= s.length()) {
+            return o;
+        }
+
+        if (len < 0) {
+            len = s.length() + len;
+        }
+        else {
+            len = ofs + len;
+        }
+
+        if (len >= s.length()) {
+            len = s.length();
+        }
+        if (len < 0) {
+            return o;
+        }
+        if (ofs < 0) {
+            ofs = 0;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if ( ofs > 0 ) {
+            sb.append(lv.toString().substring(0, ofs - 1);
+        }
+        sb.append( o.toString() );
+        if ( len > 0 ) {
+            sb.append(lv.toString().substring(0, this.offset.to_int() - 1);
+        }
+        return sb.toString();
+    }
+
+    public PlObject pre_decr() {
+        // --$x
+        PlObject o = this.get()._decr();
+        return this.set(o);
+    }
+    public PlObject post_decr() {
+        // $x--
+        PlObject o = this.get();
+        this.set(o._decr());
+        return o;
+    }
+    public PlObject pre_incr() {
+        // ++$x
+        PlObject o = this.get()._incr();
+        return this.set(o);
+    }
+    public PlObject post_incr() {
+        // $x++
+        PlObject o = this.get();
+        this.set(o._incr());
+        return o;
+    }
+}
 class PlLazyTiedLookup extends PlLazyLvalue {
     private PlHash la;    // %la
     private String i;     // $la{$i}
@@ -3915,8 +3997,6 @@ class PlLazyTiedLookup extends PlLazyLvalue {
         this.set(o._incr());
         return o;
     }
-
-
 }
 class PlLazyLookup extends PlLazyLvalue {
     private PlHash la;    // %la
@@ -3934,7 +4014,6 @@ class PlLazyLookup extends PlLazyLvalue {
         }
         return llv;
     }
-
 }
 class PlLazyScalarref extends PlLazyLvalue {
     private PlLvalue lv;    // $lv
