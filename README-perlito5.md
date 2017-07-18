@@ -616,6 +616,14 @@ Add tests for fixed bugs
     expected result:
     # args [ X xxx ]
 
+-- test lvalue substr()
+
+    $ perl -e ' use Data::Dumper; sub x { $_[0] = "x"; print Dumper(\@_) }  $v = "abcdef"; x( substr($v,1,3), substr($v,1,4) ); '
+    $VAR1 = [
+          'x',
+          'xef'
+        ];
+
  
 Perl6 backend
 -------------
