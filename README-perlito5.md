@@ -623,6 +623,12 @@ Add tests for fixed bugs
           'x',
           'xef'
         ];
+    $ perl -e ' use Data::Dumper; sub x { $_[0] = "123456"; print Dumper(\@_) }  $v = "abcdef"; x( $v, substr($v,1,3), substr($v,1,4) ); '
+    $VAR1 = [
+          '123456',
+          '234',
+          '2345'
+        ];
 
  
 Perl6 backend
