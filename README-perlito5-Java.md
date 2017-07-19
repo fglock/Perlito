@@ -160,7 +160,7 @@ Perlito5-Java work-in-progress
   - subroutines
       - "my sub x {...}" not implemented
 
-  - lvalue $#a and other expressions: substr, ternary, chop, keys, pos
+  - lvalue $#a and other expressions: substr, ternary, keys, pos
 
   - CORE::GLOBAL namespace
 
