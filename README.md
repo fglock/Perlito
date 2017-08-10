@@ -1,4 +1,4 @@
-"Perlito" Perl compiler
+"Perlito" Perl Language Compiler
 =======================
 
 This is Perlito, a compiler collection that implements a subset of Perl 5 and Perl 6.
