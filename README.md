@@ -1,7 +1,7 @@
-"Perlito" Perl Language Compiler
+"Perlito" Perl programming language compiler
 =======================
 
-This is Perlito, a compiler collection that implements a subset of Perl 5 and Perl 6.
+This is Perlito, a compiler collection that implements Perl 5 and Perl 6 programming languages.
 
 Backends
 --------
