@@ -3884,7 +3884,7 @@ class PlLvalueSubstring extends PlLazyLvalue {
     }
 
     public PlObject get() {
-        return this.lv.substr(this.offset, this.length)
+        return this.lv.substr(this.offset, this.length);
     }
 
     public PlObject set(PlObject o) {
@@ -3917,13 +3917,13 @@ class PlLvalueSubstring extends PlLazyLvalue {
 
         StringBuilder sb = new StringBuilder();
         if ( ofs > 0 ) {
-            sb.append(lv.toString().substring(0, ofs - 1);
+            sb.append(lv.toString().substring(0, ofs - 1));
         }
         sb.append( o.toString() );
         if ( len > 0 ) {
-            sb.append(lv.toString().substring(0, this.offset.to_int() - 1);
+            sb.append(lv.toString().substring(0, this.offset.to_int() - 1));
         }
-        return sb.toString();
+        return new PlString(sb.toString());
     }
 
     public PlObject pre_decr() {
