@@ -286,7 +286,7 @@ if (!$expand_use) {
 if ($backend) {
     local $Perlito5::LINE_NUMBER = 1;
     if (@e_switch) {
-        $source = "@e_switch";
+        $source = join( "\n", @e_switch );
     }
     else {
         $Perlito5::FILE_NAME = $ARGV[0];
