@@ -20,6 +20,9 @@ test-6to5 ::
 	set -x
 	find t6/*.t | perl -ne ' chomp; print "# $$_\n" . ` perl -I./lib5 perlito6.pl -Cperl5 $$_ | perl -I./lib5 ` '
 
+build-6browser ::
+	perl -Ilib5 perlito6.pl -Cjs src6/util/perlito6-browser.pl > docs/perlito/perlito6.js
+
 build-6to5 ::
 	set -x
 
@@ -135,8 +138,8 @@ build-6py ::
 # Perl 5
 
 minify ::
-	jsmin < html/perlito5.js > html/perlito5.min.js
-	jsmin < html/perlito6.js > html/perlito6.min.js
+	jsmin < docs/perlito/perlito5.js > docs/perlito/perlito5.min.js
+	jsmin < docs/perlito/perlito6.js > docs/perlito/perlito6.min.js
 
 build-5to5 ::
 	perl perlito5.pl --bootstrapping -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && cp perlito5-new.pl perlito5.pl
@@ -148,10 +151,10 @@ build-5java ::
 	. ./make_perlito5-lib-jar.sh
 
 build-5browser ::
-	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5-browser.pl > html/perlito5.js
+	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5-browser.pl > docs/perlito/perlito5.js
 
 build-5to6browser ::
-	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5-browser-perl6.pl > html/perlito5to6.js
+	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5-browser-perl6.pl > docs/perlito/perlito5to6.js
 
 build-5js3 ::
 	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs3 src5/util/perlito5.pl > perlito5.js
