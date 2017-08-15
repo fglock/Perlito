@@ -15,15 +15,18 @@ Perlito5 - a Perl5 compiler
     use Perlito5::Compiler;
     use Perlito5::JavaScript2::Emitter;
     use Perlito5::JavaScript2::Runtime;
+    use Data::Dumper;
 
     my $perl5_source = ' print "hello, World!\n" ';
     $Perlito5::PKG_NAME = 'main';
     $Perlito5::PROTO    = {};
     my $ast = Perlito5::Grammar::exp_stmts($perl5_source, 0);
-    print Dumper $ast;
+    print "Syntax Tree:\n";
+    print Dumper Perlito5::Match::flat($ast);
     my $js_source = Perlito5::AST::CompUnit::emit_javascript2_program([
         Perlito5::AST::CompUnit->new( name => 'main', body => Perlito5::Match::flat($ast) )
     ]);
+    print "JavaScript source code:\n";
     print $js_source;
 
 
