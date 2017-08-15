@@ -11,7 +11,7 @@ languages:
 
   - Perl 5 to Perl 5
   - Perl 5 to JavaScript
-  - Perl 5 to Java 7
+  - Perl 5 to Java (compile to Java source code) and Perl 5 in the JVM (runs Perl directly in the JVM)
   - Perl 6 to Perl 5
   - Perl 6 to JavaScript
   - Perl 6 to Python 2.6
@@ -37,6 +37,12 @@ Run Perlito online, in the browser:
   - [http://fglock.github.io/Perlito/perlito/perlito5.html](http://fglock.github.io/Perlito/perlito/perlito5.html)
 
   - [http://fglock.github.io/Perlito/perlito/perlito6.html](http://fglock.github.io/Perlito/perlito/perlito6.html)
+  
+CPAN distribution:
+
+  - http://search.cpan.org/dist/v6/lib/v6.pm
+
+  - http://search.cpan.org/dist/Perlito5/lib/Perlito5.pm
 
 Source code
 -----------
