@@ -254,7 +254,9 @@ https://github.com/TimDumol/unix-crypt-td-js/blob/master/src/unix-crypt-td.js
 Regex
 --------------
 
-- regex extension library: http://xregexp.com
+- regex extension libraries
+
+    See: http://xregexp.com https://github.com/benekastah/empcre
 
 - modifiers: g i m s x
 
