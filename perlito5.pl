@@ -29366,7 +29366,8 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.
     if ($backend) {
         local $Perlito5::LINE_NUMBER = 1;
         if (@e_switch) {;
-            $source = join(${"\""}, @e_switch)
+            $source = join("
+", @e_switch)
         }
         else {
             $Perlito5::FILE_NAME = $ARGV[0];
