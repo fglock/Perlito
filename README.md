@@ -23,7 +23,7 @@ Check the Changelog file for details:
   - Perl 6 to Ruby 1.9
   - Perl 6 to Go
   - Perl 6 to Common Lisp (SBCL)
-  - Perl 6 to Ruby 1.9
+
 
 Web
 ---
