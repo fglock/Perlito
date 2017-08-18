@@ -87,6 +87,23 @@ Perlito5-in-JavaScript differences from "perl"
 - runtime error messages often do not include the right line number in the Perl code
 
 
+Calling Perl subroutines from JavaScript
+=========
+
+- var myfun = p5cget( "My::Module", "mysub" );
+
+    Export a Perl subroutine to a JavaScript variable
+
+- var myobj = p5cget( "My::Module", "mysub" )( [ arg1, arg2 ], null );
+
+    Call a Perl subroutine.
+    The "null" in the end means calling in scalar context.
+
+- var myobj = p5call( "Statistics::Distributions", "new", [ arg1, arg2 ], null );
+
+    Method call.
+
+
 Internals
 =========
 
