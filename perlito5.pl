@@ -20215,6 +20215,10 @@ use feature 'say';
 ", "print", "        for (int i = 0; i < List__.to_int(); i++) {
             fh.outputStream.print(List__.aget(i).toString());
         }
+        PlObject plsep = PlV.sget(\"main::\\\\\");
+        if (!plsep.is_undef()) {
+            fh.outputStream.print(plsep.toString());
+        }
         return PlCx.INT1;
 ", "say", "        for (int i = 0; i < List__.to_int(); i++) {
             fh.outputStream.print(List__.aget(i).toString());
