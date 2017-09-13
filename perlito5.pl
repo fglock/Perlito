@@ -25658,10 +25658,18 @@ class PlFileHandle extends PlReference {
             return PlV.cget(typeglob_name);
         }
         else if (i.equals(\"NAME\")) {
-            return new PlString(\"TODO NAME \"+typeglob_name);
+            int pos = typeglob_name.lastIndexOf(\"::\");
+            if (pos != -1) {
+                String name = typeglob_name.substring(pos+2);
+                return new PlString(name);
+            }
         }
         else if (i.equals(\"PACKAGE\")) {
-            return new PlString(\"TODO PACKAGE \"+typeglob_name);
+            int pos = typeglob_name.lastIndexOf(\"::\");
+            if (pos != -1) {
+                String namespace = typeglob_name.substring(0, pos);
+                return new PlString(namespace);
+            }
         }
         return PlCx.UNDEF;
     }
