@@ -3095,6 +3095,7 @@ class PlGlobRef extends PlReference {
     }
     public PlObject hget(String i) {
         // *{ $name }{CODE}->()
+        // PlCORE.say( "PlGlobRef.hget " + i + " " + this.filehandle.hget(i) );
         return this.filehandle.hget(i);
     }
     public PlObject hset(String s, PlObject v) {
@@ -3165,6 +3166,7 @@ class PlFileHandle extends PlReference {
 
     public PlObject hget(String i) {
         // *{ $name }{CODE}->()
+        // PlCORE.say( "PlFileHandle.hget " + i );
 
         if (i.equals("CODE")) {
             return PlV.cget(typeglob_name);
