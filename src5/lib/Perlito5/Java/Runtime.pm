@@ -3162,6 +3162,12 @@ class PlFileHandle extends PlReference {
         if (i.equals("CODE")) {
             return PlV.cget(typeglob_name);
         }
+        else if (i.equals("NAME")) {
+            return new PlString("TODO NAME "+typeglob_name);
+        }
+        else if (i.equals("PACKAGE")) {
+            return new PlString("TODO PACKAGE "+typeglob_name);
+        }
         return PlCx.UNDEF;
     }
     public PlObject hset(String s, PlObject v) {
