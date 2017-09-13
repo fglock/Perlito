@@ -3093,6 +3093,13 @@ class PlGlobRef extends PlReference {
     public PlObject reftype() {
         return REF;
     }
+    public PlObject hget(String i) {
+        // *{ $name }{CODE}->()
+        return this.filehandle.hget(i);
+    }
+    public PlObject hset(String s, PlObject v) {
+        return this.filehandle.hset(s, v);
+    }
 }
 
 class PlStringReader extends Reader{
