@@ -881,6 +881,9 @@ use feature 'say';
         elsif ($ref eq "CODE") {;
             return "sub { \"DUMMY\" }"
         }
+        elsif ($ref eq "GLOB") {;
+            return "\\*TODO_FIXME"
+        }
         my @out;
         my $res;
         local ${"\@"};
@@ -1737,8 +1740,9 @@ use feature 'say';
             return $v
         }
         if ($v->[1] eq "block") {
-            if (ref($value) eq "Perlito5::AST::Var") {;
-                $value->{"_real_sigil"} = "%"
+            if (ref($value) eq "Perlito5::AST::Var") {
+                $value->{"_real_sigil"} = "%";
+                $value->{"sigil"} eq "*" && ($value->{"_real_sigil"} = "*")
             }
             $v = Perlito5::AST::Lookup::->new("obj", $value, "index_exp", $v->[2]->[0]);
             return $v
@@ -25577,6 +25581,13 @@ class PlGlobRef extends PlReference {
     public PlObject reftype() {
         return REF;
     }
+    public PlObject hget(String i) {
+        // *{ \$name }{CODE}->()
+        return this.filehandle.hget(i);
+    }
+    public PlObject hset(String s, PlObject v) {
+        return this.filehandle.hset(s, v);
+    }
 }
 
 class PlStringReader extends Reader{
@@ -25645,6 +25656,12 @@ class PlFileHandle extends PlReference {
 
         if (i.equals(\"CODE\")) {
             return PlV.cget(typeglob_name);
+        }
+        else if (i.equals(\"NAME\")) {
+            return new PlString(\"TODO NAME \"+typeglob_name);
+        }
+        else if (i.equals(\"PACKAGE\")) {
+            return new PlString(\"TODO PACKAGE \"+typeglob_name);
         }
         return PlCx.UNDEF;
     }

@@ -4915,6 +4915,11 @@ var List__ = [];
 					if ( (p5str(v_ref_264) == 'CODE') ) {
 					throw(p5context(['sub { "DUMMY" }'], p5want));
 				}
+				else (function () {
+					if ( (p5str(v_ref_264) == 'GLOB') ) {
+					throw(p5context([String.fromCharCode(92) + '*TODO_FIXME'], p5want));
+				}
+				})()
 				})()
 				})()
 				})()
@@ -7109,6 +7114,9 @@ var List__ = [];
 					(function () {
 						if ( (p5pkg['Perlito5::Grammar::Expression'].ref([v_value_440], "") == 'Perlito5::AST::Var') ) {
 						(v_value_440 || (v_value_440 = new p5HashRef({})))._hash_.p5hset('_real_sigil', ('%'));
+						p5and((p5str((v_value_440 || (v_value_440 = new p5HashRef({})))._hash_.p5hget('sigil')) == '*'), function () {
+							return (v_value_440 || (v_value_440 = new p5HashRef({})))._hash_.p5hset('_real_sigil', ('*'))
+						});
 					}
 					})();
 					v_v_441 = (p5call('Perlito5::AST::Lookup', 'new', p5list_to_a(['obj', v_value_440, 'index_exp', (v_v_441 || (v_v_441 = new p5ArrayRef([])))._array_.p5aget_array(2)._array_.p5aget(0)]), ""));

@@ -212,6 +212,7 @@ sub reduce_postfix {
     if ($v->[1] eq 'block') {
         if (ref($value) eq 'Perlito5::AST::Var') {
             $value->{_real_sigil} = '%';
+            $value->{_real_sigil} = '*' if $value->{sigil} eq '*';  # *main{CODE}
         }
         $v = Perlito5::AST::Lookup->new( obj => $value, index_exp => $v->[2][0] );
         return $v;
