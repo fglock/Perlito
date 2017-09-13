@@ -64,7 +64,10 @@ sub _dumper {
         # TODO
         return 'sub { "DUMMY" }';
     }
-
+    elsif ($ref eq 'GLOB') {
+        # TODO
+        return '\\*TODO_FIXME';
+    }
     
     my @out;
     my $res;
