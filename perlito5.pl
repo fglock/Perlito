@@ -25566,6 +25566,17 @@ class PlGlobRef extends PlReference {
     public boolean is_typeglobref() {
         return true;
     }
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.plClassName();
+        }
+    }
+    public PlObject reftype() {
+        return REF;
+    }
 }
 
 class PlStringReader extends Reader{
