@@ -609,7 +609,12 @@ class PerlOp {
             fh = fh.get();
         }
         if (fh.is_filehandle()) {
+            // *FILE
             return (PlFileHandle)fh;
+        }
+        if (fh.is_typeglobref()) {
+            // \*FILE
+            return ((PlGlobRef)fh).filehandle;
         }
         return get_filehandle(fh.toString(), nameSpace);    // get "GLOB" by name
     }
