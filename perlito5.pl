@@ -25630,8 +25630,8 @@ class PlStringReader extends Reader{
     }
 }
 
-class PlFileHandle extends PlReference {
-    public static final PlString REF = new PlString(\"GLOB\");
+class PlFileHandle extends PlObject {
+    // public static final PlString REF = new PlString(\"GLOB\");
     public String typeglob_name;
     public PrintStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in

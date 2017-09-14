@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # typeglob-name-package.pl
 
-print "1..15\n";
+print "1..18\n";
 
 package X::Y;
 
@@ -16,6 +16,8 @@ who_am_i( \*foo,    4, "X::Y", "foo", "GLOB" );
 who_am_i( *{"foo"}, 7, "X::Y", "foo", "" );
 who_am_i( $f,      10, "X::Y", "xyz", "GLOB" );
 who_am_i( $g,      13, "X::Y", "xyz", "" );
+who_am_i( \$g,     16, "X::Y", "xyz", "GLOB" );
+# who_am_i( \$f,     16, "X::Y", "xyz", "REF" );
 
 sub who_am_i {
     my ( $glob, $num, $pkg, $name, $ref ) = @_;
