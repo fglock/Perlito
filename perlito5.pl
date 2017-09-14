@@ -25669,11 +25669,12 @@ class PlFileHandle extends PlObject {
         this.eof = true;
         this.is_argv = false;
     }
-
     public boolean is_filehandle() {
         return true;
     }
-
+    public String toString() {
+        return \"*\" + this.typeglob_name;
+    }
     public PlObject hget(String i) {
         // *{ \$name }{CODE}->()
         // PlCORE.say( \"PlFileHandle.hget \" + i );
