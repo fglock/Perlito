@@ -700,16 +700,21 @@ class PerlOp {
         PlClass pClass = invocant.blessed_class();
 
         if ( pClass == null ) {
-            if (!invocant.is_ref()) {
-                // invocant can be a package name
-                return call( invocant.toString(), method, args, context );
+            if (invocant.is_typeglobref()) {
+                // \*FILE
+                invocant = ((PlGlobRef)invocant).filehandle;
             }
 
-            if (invocant.is_filehandle()) {
-                // $fh->print() is allowed, even if $fh is unblessed
-                if (method.equals("print")) {
-                    return PlCORE.print(context, (PlFileHandle)invocant, args);
+            if (!invocant.is_ref()) {
+                // invocant can be a package name or a nonref-typeglob
+                if (invocant.is_filehandle()) {
+                    // *FILE
+                    // $fh->print() is allowed, even if $fh is unblessed
+                    if (method.equals("print")) {
+                        return PlCORE.print(context, (PlFileHandle)invocant, args);
+                    }
                 }
+                return call( invocant.toString(), method, args, context );
             }
 
             PlCORE.die( "Can't call method \"" + method
