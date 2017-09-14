@@ -846,7 +846,12 @@ use feature 'say';
         (my($obj), my($tab), my($seen), my($pos)) = @_;
         !defined($obj) && return "undef";
         my $ref = ref($obj);
-        !$ref && return escape_string($obj);
+        if (!$ref) {
+            if (ref(\$ref) eq "GLOB") {;
+                return "GLOB:: " . $obj
+            }
+            return escape_string($obj)
+        }
         my $as_string = $obj;
         $seen->{$as_string} && return $seen->{$as_string};
         $seen->{$as_string} = $pos;
@@ -882,7 +887,7 @@ use feature 'say';
             return "sub { \"DUMMY\" }"
         }
         elsif ($ref eq "GLOB") {;
-            return "\\*TODO_FIXME"
+            return "\\" . *{$obj}
         }
         my @out;
         my $res;

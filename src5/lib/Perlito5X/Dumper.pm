@@ -24,7 +24,12 @@ sub _dumper {
     return 'undef' if !defined $obj;
 
     my $ref = ref($obj);
-    return escape_string($obj) if !$ref;
+    if (!$ref) {
+        if (ref(\$ref) eq 'GLOB') {
+            return "GLOB: $obj";  # *main::x
+        }
+        return escape_string($obj);
+    }
 
     my $as_string = "$obj";
     return $seen->{$as_string} if $seen->{$as_string};
@@ -65,8 +70,7 @@ sub _dumper {
         return 'sub { "DUMMY" }';
     }
     elsif ($ref eq 'GLOB') {
-        # TODO
-        return '\\*TODO_FIXME';
+        return '\\' . *$obj;
     }
 
     # local $@;

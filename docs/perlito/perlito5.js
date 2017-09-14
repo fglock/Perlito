@@ -4858,9 +4858,16 @@ var List__ = [];
 				});
 				var v_ref_264;
 				v_ref_264 = (p5pkg['Perlito5::Dumper'].ref([v_obj_260], ""));
-				p5and(!( p5bool(v_ref_264)), function () {
-					throw(p5pkg['Perlito5::Dumper'].escape_string([v_obj_260], p5want))
-				});
+				(function () {
+					if ( !( p5bool(v_ref_264)) ) {
+					(function () {
+						if ( (p5pkg['Perlito5::Dumper'].ref([(new p5ScalarRef(v_ref_264))], "") == 'GLOB') ) {
+						throw(p5context([('GLOB:: ' + p5str(v_obj_260))], p5want));
+					}
+					})();
+					throw(p5pkg['Perlito5::Dumper'].escape_string([v_obj_260], p5want));
+				}
+				})();
 				var v_as_string_265;
 				v_as_string_265 = (v_obj_260);
 				p5and((v_seen_262 || (v_seen_262 = new p5HashRef({})))._hash_.p5hget(p5str(v_as_string_265)), function () {
@@ -4917,7 +4924,7 @@ var List__ = [];
 				}
 				else (function () {
 					if ( (p5str(v_ref_264) == 'GLOB') ) {
-					throw(p5context([String.fromCharCode(92) + '*TODO_FIXME'], p5want));
+					throw(p5context([(String.fromCharCode(92) + p5str(p5cget('Perlito5::Dumper', 'prefix:<*>')([v_obj_260], "")))], p5want));
 				}
 				})()
 				})()
