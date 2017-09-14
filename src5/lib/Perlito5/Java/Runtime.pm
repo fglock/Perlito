@@ -3192,13 +3192,13 @@ class PlFileHandle extends PlObject {
         // PlCORE.say( "PlFileHandle.hget " + i );
 
         if (i.equals("SCALAR")) {
-            // TODO
+            return PlV.make_reference(PlV.sget(typeglob_name));
         }
         else if (i.equals("ARRAY")) {
-            // TODO
+            return PlV.aget(typeglob_name);
         }
         else if (i.equals("HASH")) {
-            // TODO
+            return PlV.hget(typeglob_name);
         }
         else if (i.equals("CODE")) {
             return PlV.cget(typeglob_name);
@@ -3230,6 +3230,9 @@ class PlFileHandle extends PlObject {
     }
     public PlObject hset(String s, PlObject v) {
         return PlCORE.die("Can't modify glob elem in scalar assignment");
+    }
+    public PlObject hget_scalarref(String i) {
+        return this.hget(i);
     }
 }
 
