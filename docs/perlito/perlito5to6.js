@@ -4861,8 +4861,8 @@ var List__ = [];
 				(function () {
 					if ( !( p5bool(v_ref_264)) ) {
 					(function () {
-						if ( (p5pkg['Perlito5::Dumper'].ref([(new p5ScalarRef(v_ref_264))], "") == 'GLOB') ) {
-						throw(p5context([('GLOB:: ' + p5str(v_obj_260))], p5want));
+						if ( (p5pkg['Perlito5::Dumper'].ref([(new p5ScalarRef(v_obj_260))], "") == 'GLOB') ) {
+						throw(p5context([v_obj_260], p5want));
 					}
 					})();
 					throw(p5pkg['Perlito5::Dumper'].escape_string([v_obj_260], p5want));

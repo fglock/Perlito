@@ -847,8 +847,8 @@ use feature 'say';
         !defined($obj) && return "undef";
         my $ref = ref($obj);
         if (!$ref) {
-            if (ref(\$ref) eq "GLOB") {;
-                return "GLOB:: " . $obj
+            if (ref(\$obj) eq "GLOB") {;
+                return $obj
             }
             return escape_string($obj)
         }

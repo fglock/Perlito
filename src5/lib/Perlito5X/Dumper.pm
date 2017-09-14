@@ -25,8 +25,8 @@ sub _dumper {
 
     my $ref = ref($obj);
     if (!$ref) {
-        if (ref(\$ref) eq 'GLOB') {
-            return "GLOB: $obj";  # *main::x
+        if (ref(\$obj) eq 'GLOB') {
+            return "$obj";  # *main::x
         }
         return escape_string($obj);
     }
@@ -70,7 +70,7 @@ sub _dumper {
         return 'sub { "DUMMY" }';
     }
     elsif ($ref eq 'GLOB') {
-        return '\\' . *$obj;
+        return '\\' . *$obj;    # \*main::x
     }
 
     # local $@;
