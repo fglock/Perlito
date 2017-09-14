@@ -17753,7 +17753,7 @@ use feature 'say';
                     return "PlV.cget(" . Perlito5::Java::escape_string($namespace . "::" . $arg->{"name"}) . ")"
                 }
             }
-            return "(new PlLvalueRef(" . $arg->emit_java($level) . "))"
+            return "PlV.make_reference(" . $arg->emit_java($level) . ")"
         }, "postfix:<++>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{"arguments"}->[0];
@@ -24903,6 +24903,18 @@ class PlV {
             PlCORE.die(\"not implemented assign \" + value.ref() + \" to typeglob\");
         }
         return value;
+    }
+    public static final PlObject make_reference(PlObject value) {
+        if (value.is_filehandle()) {
+            return new PlGlobRef(value);
+        }
+        return new PlLvalueRef(value);
+    }
+    public static final PlObject make_reference(PlLvalue value) {
+        if (value.is_filehandle()) {
+            return new PlGlobRef(value);
+        }
+        return new PlLvalueRef(value);
     }
 
 }

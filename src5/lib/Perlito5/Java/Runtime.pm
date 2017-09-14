@@ -2379,6 +2379,18 @@ class PlV {
         }
         return value;
     }
+    public static final PlObject make_reference(PlObject value) {
+        if (value.is_filehandle()) {
+            return new PlGlobRef(value);
+        }
+        return new PlLvalueRef(value);
+    }
+    public static final PlObject make_reference(PlLvalue value) {
+        if (value.is_filehandle()) {
+            return new PlGlobRef(value);
+        }
+        return new PlLvalueRef(value);
+    }
 
 }
 class PlObject {

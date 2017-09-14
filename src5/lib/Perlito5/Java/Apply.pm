@@ -587,7 +587,7 @@ package Perlito5::AST::Apply;
                     return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $arg->{name} ) . ')'
                 }
             }
-            return '(new PlLvalueRef(' . $arg->emit_java($level) . '))';
+            return 'PlV.make_reference(' . $arg->emit_java($level) . ')';
         },
         'postfix:<++>' => sub {
             my ($self, $level, $wantarray) = @_;
