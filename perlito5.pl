@@ -17960,6 +17960,7 @@ use feature 'say';
                 }
             }
             my $scope = Perlito5::DumpToAST::dump_to_ast($self->{"_scope"}, {}, "s")->emit_java(0);
+            $self->{"_hash_hints"} ||= {};
             my $hash_hints = Perlito5::DumpToAST::dump_to_ast($self->{"_hash_hints"}, {}, "s")->emit_java(0);
             my @out;
             {

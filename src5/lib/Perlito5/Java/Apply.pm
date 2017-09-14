@@ -950,6 +950,7 @@ package Perlito5::AST::Apply;
             my $scope = Perlito5::DumpToAST::dump_to_ast( $self->{_scope}, {}, "s" )->emit_java(0);
             # print STDERR "SCOPE [ $scope ]\n";
 
+            $self->{_hash_hints} ||= {};    # FIXME
             my $hash_hints = Perlito5::DumpToAST::dump_to_ast( $self->{_hash_hints}, {}, "s" )->emit_java(0);
 
             my @out;
