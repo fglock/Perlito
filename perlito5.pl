@@ -25684,8 +25684,26 @@ class PlFileHandle extends PlObject {
         // *{ \$name }{CODE}->()
         // PlCORE.say( \"PlFileHandle.hget \" + i );
 
-        if (i.equals(\"CODE\")) {
+        if (i.equals(\"SCALAR\")) {
+            // TODO
+        }
+        else if (i.equals(\"ARRAY\")) {
+            // TODO
+        }
+        else if (i.equals(\"HASH\")) {
+            // TODO
+        }
+        else if (i.equals(\"CODE\")) {
             return PlV.cget(typeglob_name);
+        }
+        else if (i.equals(\"IO\")) {
+            return this;    // close enough
+        }
+        else if (i.equals(\"GLOB\")) {
+            return new PlGlobRef(this);
+        }
+        else if (i.equals(\"FORMAT\")) {
+            // TODO
         }
         else if (i.equals(\"NAME\")) {
             int pos = typeglob_name.lastIndexOf(\"::\");
