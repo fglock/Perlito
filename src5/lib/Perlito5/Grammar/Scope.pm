@@ -157,8 +157,13 @@ sub check_variable_declarations {
                     # warn "look: ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
                     my $sigil = $var->{_real_sigil} || $var->{sigil};
                     if ($sigil ne '*' && $sigil ne '&') {
-                        Perlito5::Compiler::error( 'Global symbol "' . $sigil . $var->{name} . '"'
-                            . ' requires explicit package name' );
+                        if (length($var->{name}) >= 2 && substr($var->{name}, -2) eq '::') {
+                            # looks like a symbol table reference
+                        }
+                        else {
+                            Perlito5::Compiler::error( 'Global symbol "' . $sigil . $var->{name} . '"'
+                                . ' requires explicit package name' );
+                        }
                     }
                 }
                 $var->{_decl} = 'global';

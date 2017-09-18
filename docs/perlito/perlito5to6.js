@@ -15231,7 +15231,12 @@ var List__ = [];
 														}));
 												(function () {
 													if ( ((p5str(v_sigil_1211) != '*') && (p5str(v_sigil_1211) != '&')) ) {
-													p5pkg['Perlito5::Compiler'].error([('Global symbol "' + p5str(v_sigil_1211) + p5str((v_var_1209 || (v_var_1209 = new p5HashRef({})))._hash_.p5hget('name')) + '"' + ' requires explicit package name')], null);
+													(function () {
+														if ( ((p5pkg['Perlito5::Grammar::Scope'].length([(v_var_1209 || (v_var_1209 = new p5HashRef({})))._hash_.p5hget('name')], "") >= 2) && (CORE.substr(p5list_to_a([(v_var_1209 || (v_var_1209 = new p5HashRef({})))._hash_.p5hget('name'), p5negative( 2)]), "") == '::')) ) {}
+													else {
+														p5pkg['Perlito5::Compiler'].error([('Global symbol "' + p5str(v_sigil_1211) + p5str((v_var_1209 || (v_var_1209 = new p5HashRef({})))._hash_.p5hget('name')) + '"' + ' requires explicit package name')], null);
+													}
+													})();
 												}
 												})();
 											})();

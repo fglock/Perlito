@@ -5673,8 +5673,11 @@ use feature 'say';
                 else {
                     if (${^H} & $Perlito5::STRICT_VARS) {
                         my $sigil = $var->{"_real_sigil"} || $var->{"sigil"};
-                        if ($sigil ne "*" && $sigil ne "&") {;
-                            Perlito5::Compiler::error("Global symbol \"" . $sigil . $var->{"name"} . "\"" . " requires explicit package name")
+                        if ($sigil ne "*" && $sigil ne "&") {
+                            if (length($var->{"name"}) >= 2 && substr($var->{"name"}, -2) eq "::") {}
+                            else {;
+                                Perlito5::Compiler::error("Global symbol \"" . $sigil . $var->{"name"} . "\"" . " requires explicit package name")
+                            }
                         }
                     }
                     $var->{"_decl"} = "global";
