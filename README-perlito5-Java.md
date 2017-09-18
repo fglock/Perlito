@@ -1131,12 +1131,15 @@ Missing features, or partially implemented, or untested
 
         TODO - add tests (See: Symbol.pm)
 
-        $ java -jar perlito5.jar -I src5/lib  -e ' use Data::Dumper; %This::xyz = (); $This::X::y = 0; $This::vvv = 234; %x = %This::; print Dumper (\%x); '
+        $ java -jar perlito5.jar -I src5/lib  -e ' use Data::Dumper; %This::xyz = (); $This::X::y = 0; $This::vvv = 234; %x = %This::; print Dumper (\%x); print Dumper \%This::X::; '
         $VAR1 = {
-                  'X::' => *{'This::X::'},
-                  'xyz' => *This::xyz,
-                  'vvv' => *This::vvv
-                };
+                'X::' => *This::X::,
+                'vvv' => *This::vvv,
+                'xyz' => *This::xyz,
+            };
+        $VAR1 = {
+                'y' => *This::X::y,
+            };
 
         TODO - < $This::X::y > is not creating a "namespace"; but < $This::X::y = 0 > does work.
 
