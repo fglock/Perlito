@@ -1143,6 +1143,10 @@ Missing features, or partially implemented, or untested
 
         TODO - < $This::X::y > is not creating a "namespace"; but < $This::X::y = 0 > does work.
 
+        TODO - remove redundant "main" string in "main::"
+
+        TODO - all namespaces are "inner" to %main::
+
     caller
 
         $ perl -e ' sub x { print "in " . __PACKAGE__ . "\n"; v() }  x(); { package X; *x = \&main::x; x() } sub v { $v = caller(); print "called from $v\n" } '
