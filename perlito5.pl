@@ -19501,7 +19501,10 @@ use feature 'say';
                 }
                 return $s
             }
-            if ($sigil eq "%") {;
+            if ($sigil eq "%") {
+                if (!defined($str_name)) {;
+                    return "PerlOp.getSymbolTable(" . $index . ")"
+                }
                 return "PlV.hash_get" . $local . "(" . $index . ")"
             }
             die("don't know how to access variable ", $sigil, $self->name())
@@ -28832,7 +28835,7 @@ class PlString extends PlObject {
             s = namespace + \"::\" + s;
         }
         else if (pos == s.length() - 2) {
-            // %Module::
+            // %{\"Module::\"}
             return PerlOp.getSymbolTable(this.s);
         }
         return PlV.hash_get(s);

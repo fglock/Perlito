@@ -2005,6 +2005,10 @@ package Perlito5::AST::Var;
             return $s;
         }
         if ($sigil eq '%') {
+            if (!defined($str_name)) {
+                # %Module::
+                return "PerlOp.getSymbolTable(" . $index . ')';
+            }
             return "PlV.hash_get$local(" . $index . ')';
         }
         die "don't know how to access variable ", $sigil, $self->name;
