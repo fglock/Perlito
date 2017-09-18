@@ -602,7 +602,7 @@ class PerlOp {
     // symbol tables
     // like %Module::
     public static final PlObject getSymbolTable(String nameSpace) {
-        // TODO - create the typeglobs that link to "inner" namespaces, like "Java::" in %Perlito5::Java::
+        // TODO - create the typeglobs that link to "inner" namespaces, like *Java:: in %Perlito5::Java::
         int pos = nameSpace.lastIndexOf("::");
         PlHash out = new PlHash();
         getSymbolTableScan(out, PlV.cvar, nameSpace, pos);

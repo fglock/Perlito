@@ -1137,6 +1137,14 @@ Missing features, or partially implemented, or untested
                 'xyz' => *This::xyz,
             };
 
+        TODO - "inner" namespaces like:
+
+        $ perl  -e ' use Data::Dumper; %This::xyz = (); $This::X::y; $This::vvv = 234; %x = %This::; print Dumper (\%x); '
+        $VAR1 = {
+                  'X::' => *{'This::X::'},
+                  'xyz' => *This::xyz,
+                  'vvv' => *This::vvv
+                };
 
     caller
 
