@@ -603,8 +603,16 @@ class PerlOp {
     // like %Module::
     public static final PlObject getSymbolTable(String nameSpace) {
         // TODO
-        PlCORE.die( "getSymbolTable() - Not implemented %" + nameSpace );
-        return PlCx.UNDEF;
+        // PlCORE.die( "getSymbolTable() - Not implemented %" + nameSpace );
+        int pos = nameSpace.lastIndexOf("::");
+        PlHash out = new PlHash();
+        for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, PlV.hvar)) {
+            String name = o.toString();
+            if (name.indexOf(nameSpace) == 0 && name.lastIndexOf("::") == pos) {
+                out.hset(name, PlV.fget(name));
+            }
+        }
+        return out;
     }
 
     // filehandles
