@@ -599,6 +599,14 @@ class PerlOp {
     private static PlArray local_stack = new PlArray();
     private static Random random = new Random();
 
+    // symbol tables
+    // like %Module::
+    public static final PlObject getSymbolTable(String nameSpace) {
+        // TODO
+        PlCORE.die( "getSymbolTable() - Not implemented %" + nameSpace );
+        return PlCx.UNDEF;
+    }
+
     // filehandles
     public static final PlFileHandle get_filehandle(PlObject fh, String nameSpace) {
         if (fh.is_lvalue()) {
@@ -6433,8 +6441,13 @@ class PlString extends PlObject {
         return PlV.aset(s, v);
     }
     public PlObject hash_deref(String namespace) {
-        if (s.indexOf("::") == -1) {
+        int pos = s.lastIndexOf("::");
+        if (pos == -1) {
             s = namespace + "::" + s;
+        }
+        else if (pos == s.length() - 2) {
+            // %{"Module::"}
+            return PerlOp.getSymbolTable(this.s);
         }
         return PlV.hash_get(s);
     }
