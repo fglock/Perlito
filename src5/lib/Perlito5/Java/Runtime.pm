@@ -615,8 +615,16 @@ class PerlOp {
     private static final void getSymbolTableScan(PlHash out, PlHash vars, String nameSpace, int pos) {
         for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, vars)) {
             String name = o.toString();
-            if (name.indexOf(nameSpace) == 0 && name.lastIndexOf("::") == pos) {
-                out.hset(name.substring(pos+2), PlV.fget(name));
+            if (name.indexOf(nameSpace) == 0) {
+                if (name.lastIndexOf("::") == pos) {
+                    // normal variable like "ARGV" in $main::ARGV
+                    out.hset(name.substring(pos+2), PlV.fget(name));
+                }
+                else {
+                    // "inner" namespace
+                    String inner = name.substring(pos+2, name.indexOf("::", pos+2)+2);
+                    out.hset(inner, PlV.fget(name.substring(0, name.indexOf("::", pos+2)+2)));
+                }
             }
         }
     }
