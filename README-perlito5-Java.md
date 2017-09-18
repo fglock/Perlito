@@ -1127,8 +1127,16 @@ Missing features, or partially implemented, or untested
     pack
     unpack
 
-    typeglob operations
-        TODO - add tests
+    typeglob and symbol table operations
+
+        TODO - add tests (See: Symbol.pm)
+
+        $ java -jar perlito5.jar -I src5/lib  -e ' use Data::Dumper; %This::xyz = (); $This::vvv = 234; print Dumper (\%This::); '
+        $VAR1 = {
+                'vvv' => *This::vvv,
+                'xyz' => *This::xyz,
+            };
+
 
     caller
 

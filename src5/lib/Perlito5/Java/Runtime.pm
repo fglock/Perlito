@@ -602,17 +602,23 @@ class PerlOp {
     // symbol tables
     // like %Module::
     public static final PlObject getSymbolTable(String nameSpace) {
-        // TODO
-        // PlCORE.die( "getSymbolTable() - Not implemented %" + nameSpace );
+        // TODO - create the typeglobs that link to "inner" namespaces, like "Java::" in %Perlito5::Java::
         int pos = nameSpace.lastIndexOf("::");
         PlHash out = new PlHash();
-        for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, PlV.hvar)) {
+        getSymbolTableScan(out, PlV.cvar, nameSpace, pos);
+        getSymbolTableScan(out, PlV.svar, nameSpace, pos);
+        getSymbolTableScan(out, PlV.avar, nameSpace, pos);
+        getSymbolTableScan(out, PlV.hvar, nameSpace, pos);
+        getSymbolTableScan(out, PlV.fvar, nameSpace, pos);
+        return out;
+    }
+    private static final void getSymbolTableScan(PlHash out, PlHash vars, String nameSpace, int pos) {
+        for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, vars)) {
             String name = o.toString();
             if (name.indexOf(nameSpace) == 0 && name.lastIndexOf("::") == pos) {
-                out.hset(name, PlV.fget(name));
+                out.hset(name.substring(pos+2), PlV.fget(name));
             }
         }
-        return out;
     }
 
     // filehandles
