@@ -25714,6 +25714,9 @@ class PlFileHandle extends PlObject {
         return true;
     }
     public String toString() {
+        if (this.typeglob_name.indexOf(\"main::\") == 0) {
+            return \"*\" + this.typeglob_name.substring(4);
+        }
         return \"*\" + this.typeglob_name;
     }
     public PlObject hget(String i) {
