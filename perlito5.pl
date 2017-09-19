@@ -20067,7 +20067,7 @@ use feature 'say';
             my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", ["public PlObject apply(int want, PlArray List__) {", [@js_block], "}"], "}");
             if ($self->{"name"}) {
                 my $idx = Perlito5::Java::get_label();
-                return Perlito5::Java::emit_wrap_java($level, "if (!PlV.sget(\"Perlito5::init_" . $idx . "\").to_boolean()) {", ["PlV.sset(\"Perlito5::init_" . $idx . "\", (PlCx.INT1));", "PlV.cset(" . Perlito5::Java::escape_string($self->{"namespace"} . "::" . $self->{"name"}) . ", " . Perlito5::Java::emit_wrap_java($level + 1, @s) . ");"], "}")
+                return Perlito5::Java::emit_wrap_java($level, "PlV.cset(" . Perlito5::Java::escape_string($self->{"namespace"} . "::" . $self->{"name"}) . ", " . Perlito5::Java::emit_wrap_java($level + 1, @s) . ");")
             }
             else {;
                 return '' . Perlito5::Java::emit_wrap_java($level, @s)

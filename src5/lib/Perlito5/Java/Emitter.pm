@@ -2821,14 +2821,14 @@ package Perlito5::AST::Sub;
         if ( $self->{name} ) {
             my $idx  = Perlito5::Java::get_label();
             return Perlito5::Java::emit_wrap_java($level,
-                   'if (!PlV.sget("Perlito5::init_' . $idx . '").to_boolean()) {',
-                     [  'PlV.sset("Perlito5::init_' . $idx . '", (PlCx.INT1));',
+                   # 'if (!PlV.sget("Perlito5::init_' . $idx . '").to_boolean()) {',
+                   #   [  'PlV.sset("Perlito5::init_' . $idx . '", (PlCx.INT1));',
                         'PlV.cset('
                           . Perlito5::Java::escape_string($self->{namespace} . '::' . $self->{name} ) . ", "
                           . Perlito5::Java::emit_wrap_java($level + 1, @s)
                       . ');',
-                     ],
-                  '}',
+                   #   ],
+                   # '}',
             );
         }
         else {
