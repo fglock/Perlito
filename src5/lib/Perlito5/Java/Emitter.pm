@@ -2801,10 +2801,10 @@ package Perlito5::AST::Sub;
         }
 
         my @closure_args = (
-                  $prototype,
-                  "new PlObject[]{ " . join(', ', @captures_java) . " }",
-                  Perlito5::Java::pkg,
-            );
+              $prototype,
+              "new PlObject[]{ " . join(', ', @captures_java) . " }",
+              Perlito5::Java::pkg,
+        );
         if (($self->{_do_block} || $self->{_eval_block}) && $outer_sub) {
             push @closure_args, $outer_sub;
         }
@@ -2819,16 +2819,12 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            my $idx  = Perlito5::Java::get_label();
             return Perlito5::Java::emit_wrap_java($level,
-                   # 'if (!PlV.sget("Perlito5::init_' . $idx . '").to_boolean()) {',
-                   #   [  'PlV.sset("Perlito5::init_' . $idx . '", (PlCx.INT1));',
-                        'PlV.cset('
-                          . Perlito5::Java::escape_string($self->{namespace} . '::' . $self->{name} ) . ", "
-                          . Perlito5::Java::emit_wrap_java($level + 1, @s)
-                      . ');',
-                   #   ],
-                   # '}',
+                'PlV.cset(',
+                    [ Perlito5::Java::escape_string( $self->{namespace} . '::' . $self->{name} ) . ",",
+                      @s,
+                    ],
+                ');',
             );
         }
         else {
