@@ -1048,6 +1048,8 @@ Slices
     DONE @hash{qw(foo baz)} = @array; # %hash{foo} is @array[0] && %hash{bar} is @array[1]
 
     -- TEST
+
+~~~perl
     %hash = (foo => 11, bar => 22, baz => 33); $scalar = delete @hash{qw(foo bar)}; print "$scalar\n"
     %hash = (foo => 11, bar => 22, baz => 33); @array = delete @hash{qw(foo bar)}; print "@array\n"
 
@@ -1058,6 +1060,7 @@ Slices
 
     my $scalar = 11; @hash{qw(foo bar)} = $scalar; use feature "say"; say $hash{foo}
     my @array = (11, 22); @hash{qw(foo bar)} = @array; use feature "say"; say "@array"
+~~~
 
 Variables
 ---------
@@ -1073,8 +1076,11 @@ Overflow from int to double
     partially implemented - needs more work, tests
 
     Note: integer operations may have problems with type erasure
+
     example:
+
         $i + subr();  # subr() returns pObject instead of pInt
+
     this needs more tests
 
 
@@ -1095,10 +1101,12 @@ Missing features, or partially implemented, or untested
 - Object-related
 
     bless (DONE)
+
     UNIVERSAL::
         can
         isa
         DOES
+
     (DONE) Scalar::blessed
 
     TODO - unit tests (work in progress)
@@ -1110,27 +1118,44 @@ Missing features, or partially implemented, or untested
 - Perl features
 
     overload
+
     tie()
+
     exceptions
+
         "goto", "last", "redo"
+
         Note: remember to cleanup the stacks (boolean, local).
+
     "continue" blocks
+
     "dualvars"
+
         for string-to-number optimization
+
     unicode-strings vs. byte-strings
+
     subroutine signatures
+
     return (list)
+
     assignment to splice
+
     (DONE) sprintf
+
         http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String,%20java.lang.Object...)
+
         http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html
+
     pack
+
     unpack
 
     typeglob and symbol table operations
 
         TODO - add tests (See: Symbol.pm)
 
+~~~bash
         $ java -jar perlito5.jar -I src5/lib  -e ' use Data::Dumper; %This::xyz = (); $This::X::y = 0; $This::vvv = 234; %x = %This::; print Dumper (\%x); print Dumper \%This::X::; print Dumper \%::; '
         $VAR1 = {
                 'X::' => *This::X::,
@@ -1140,32 +1165,37 @@ Missing features, or partially implemented, or untested
         $VAR1 = {
                 'y' => *This::X::y,
             };
+~~~
 
         TODO - < $This::X::y > is not creating a "namespace"; but < $This::X::y = 0 > does work.
 
 
     caller
 
+~~~bash
         $ perl -e ' sub x { print "in " . __PACKAGE__ . "\n"; v() }  x(); { package X; *x = \&main::x; x() } sub v { $v = caller(); print "called from $v\n" } '
         in main
         called from main
         in main
         called from main
-
+~~~
 
     __DATA__ sections
 
         %Perlito5::DATA_SECTION contains the __DATA__ for each package
 
     add test:
-    ' print " ${\__PACKAGE__} \n" '
+
+        ' print " ${\__PACKAGE__} \n" '
 
 - Add tests
 
     NaN, Inf, -0
 
     @perl_array = java_native[]
+
         supported types: byte[], int[], and imported_class[]
+
         not implemented: long[], String[], Double[], char[]
 
 Regex
