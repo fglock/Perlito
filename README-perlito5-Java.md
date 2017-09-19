@@ -1131,7 +1131,7 @@ Missing features, or partially implemented, or untested
 
         TODO - add tests (See: Symbol.pm)
 
-        $ java -jar perlito5.jar -I src5/lib  -e ' use Data::Dumper; %This::xyz = (); $This::X::y = 0; $This::vvv = 234; %x = %This::; print Dumper (\%x); print Dumper \%This::X::; '
+        $ java -jar perlito5.jar -I src5/lib  -e ' use Data::Dumper; %This::xyz = (); $This::X::y = 0; $This::vvv = 234; %x = %This::; print Dumper (\%x); print Dumper \%This::X::; print Dumper \%::; '
         $VAR1 = {
                 'X::' => *This::X::,
                 'vvv' => *This::vvv,
