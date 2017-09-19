@@ -604,26 +604,43 @@ class PerlOp {
     public static final PlObject getSymbolTable(String nameSpace) {
         // TODO - create the typeglobs that link to "inner" namespaces, like *Java:: in %Perlito5::Java::
         int pos = nameSpace.lastIndexOf("::");
+        boolean isMain = nameSpace.equals("main::");
         PlHash out = new PlHash();
-        getSymbolTableScan(out, PlV.cvar, nameSpace, pos);
-        getSymbolTableScan(out, PlV.svar, nameSpace, pos);
-        getSymbolTableScan(out, PlV.avar, nameSpace, pos);
-        getSymbolTableScan(out, PlV.hvar, nameSpace, pos);
-        getSymbolTableScan(out, PlV.fvar, nameSpace, pos);
+        getSymbolTableScan(out, PlV.cvar, nameSpace, pos, isMain);
+        getSymbolTableScan(out, PlV.svar, nameSpace, pos, isMain);
+        getSymbolTableScan(out, PlV.avar, nameSpace, pos, isMain);
+        getSymbolTableScan(out, PlV.hvar, nameSpace, pos, isMain);
+        getSymbolTableScan(out, PlV.fvar, nameSpace, pos, isMain);
         return out;
     }
-    private static final void getSymbolTableScan(PlHash out, PlHash vars, String nameSpace, int pos) {
-        for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, vars)) {
-            String name = o.toString();
-            if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0) {
-                if (name.lastIndexOf("::") == pos) {
+    private static final void getSymbolTableScan(PlHash out, PlHash vars, String nameSpace, int pos, boolean isMain) {
+        if (isMain) {
+            for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, vars)) {
+                String name = o.toString();
+                if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0 && name.lastIndexOf("::") == pos) {
                     // normal variable like "ARGV" in $main::ARGV
                     out.hset(name.substring(pos+2), PlV.fget(name));
                 }
                 else {
                     // "inner" namespace
-                    String inner = name.substring(pos+2, name.indexOf("::", pos+2)+2);
-                    out.hset(inner, PlV.fget(name.substring(0, name.indexOf("::", pos+2)+2)));
+                    String inner = name.substring(0, name.indexOf("::")+2);
+                    out.hset(inner, PlV.fget(inner));
+                }
+            }
+        }
+        else {
+            for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, vars)) {
+                String name = o.toString();
+                if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0) {
+                    if (name.lastIndexOf("::") == pos) {
+                        // normal variable like "ARGV" in $main::ARGV
+                        out.hset(name.substring(pos+2), PlV.fget(name));
+                    }
+                    else {
+                        // "inner" namespace
+                        String inner = name.substring(pos+2, name.indexOf("::", pos+2)+2);
+                        out.hset(inner, PlV.fget(name.substring(0, name.indexOf("::", pos+2)+2)));
+                    }
                 }
             }
         }
