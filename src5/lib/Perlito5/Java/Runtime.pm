@@ -645,6 +645,16 @@ class PerlOp {
             }
         }
     }
+    public static final PlObject deleteSymbolTable(String nameSpace, PlObject index) {
+        // delete $Foo::{foo}
+        PlString name = new PlString(nameSpace + index.toString());
+        PlV.cvar.delete(name);
+        PlV.svar.delete(name);
+        PlV.avar.delete(name);
+        PlV.hvar.delete(name);
+        PlV.fvar.delete(name);
+        return PlCx.UNDEF; 
+    }
 
     // filehandles
     public static final PlFileHandle get_filehandle(PlObject fh, String nameSpace) {

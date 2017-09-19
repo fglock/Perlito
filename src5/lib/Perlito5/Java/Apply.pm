@@ -702,6 +702,13 @@ package Perlito5::AST::Apply;
                    )
                 {
                     $v = Perlito5::AST::Var->new(%$v, sigil => '%');
+
+                    if (!defined($v->{name})) {
+                        # delete $Module::{foo}
+                        my $index = Perlito5::Java::escape_string($v->{namespace} . '::');
+                        return "PerlOp.deleteSymbolTable(" . $index . ', ' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                    }
+
                     return $v->emit_java($level) . '.delete('
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';

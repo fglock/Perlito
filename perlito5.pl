@@ -17836,6 +17836,10 @@ use feature 'say';
                 my $v = $arg->obj();
                 if ($v->isa("Perlito5::AST::Var") && $v->{"_real_sigil"} eq "%") {
                     $v = Perlito5::AST::Var::->new(%{$v}, "sigil", "%");
+                    if (!defined($v->{"name"})) {
+                        my $index = Perlito5::Java::escape_string($v->{"namespace"} . "::");
+                        return "PerlOp.deleteSymbolTable(" . $index . ", " . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
+                    }
                     return $v->emit_java($level) . ".delete(" . Perlito5::Java::to_context($wantarray) . ", " . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
                 }
                 return $v->emit_java($level, $wantarray, "hash") . ".delete(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
@@ -23183,6 +23187,16 @@ class PerlOp {
                 }
             }
         }
+    }
+    public static final PlObject deleteSymbolTable(String nameSpace, PlObject index) {
+        // delete \$Foo::{foo}
+        PlString name = new PlString(nameSpace + index.toString());
+        PlV.cvar.delete(name);
+        PlV.svar.delete(name);
+        PlV.avar.delete(name);
+        PlV.hvar.delete(name);
+        PlV.fvar.delete(name);
+        return PlCx.UNDEF; 
     }
 
     // filehandles
