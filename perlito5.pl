@@ -6416,14 +6416,12 @@ use feature 'say';
                 }
             }
             my $sub = Perlito5::AST::Sub::->new("name", $name, "namespace", $namespace, "sig", $sig, "block", $MATCH->{"_tmp"}, "attributes", $attributes);
-            if ($Perlito5::EXPAND_USE) {
+            if ($Perlito5::EXPAND_USE && $name) {
+                my $full_name = $namespace . "::" . $name;
                 my $block = Perlito5::AST::Block::->new("stmts", [$sub]);
                 Perlito5::Grammar::Block::eval_begin_block($block, "BEGIN");
-                if ($name) {
-                    my $full_name = $namespace . "::" . $name;
-                    $Perlito5::GLOBAL->{$full_name} = $sub;
-                    $sub = ast_nop()
-                }
+                $Perlito5::GLOBAL->{$full_name} = $sub;
+                $sub = ast_nop();
                 $MATCH->{"capture"} = $sub
             }
             else {;

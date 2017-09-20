@@ -16664,21 +16664,15 @@ var List__ = [];
 														var v_sub_1333;
 														v_sub_1333 = (p5call('Perlito5::AST::Sub', 'new', p5list_to_a(['name', v_name_1326, 'namespace', v_namespace_1330, 'sig', v_sig_1327, 'block', (v_MATCH_1315 || (v_MATCH_1315 = new p5HashRef({})))._hash_.p5hget('_tmp'), 'attributes', v_attributes_1328]), ""));
 														(function () {
-															if ( p5bool(p5make_package('Perlito5')['v_EXPAND_USE']) ) {
+															if ( (p5bool(p5make_package('Perlito5')['v_EXPAND_USE']) && p5bool(v_name_1326)) ) {
 															(function () {
-																var v_block_1334;
-																v_block_1334 = (p5call('Perlito5::AST::Block', 'new', p5list_to_a(['stmts', (new p5ArrayRef([v_sub_1333]))]), ""));
-																p5pkg['Perlito5::Grammar::Block'].eval_begin_block([v_block_1334, 'BEGIN'], null);
-																(function () {
-																	if ( p5bool(v_name_1326) ) {
-																	(function () {
-																		var v_full_name_1335;
-																		v_full_name_1335 = ((p5str(v_namespace_1330) + '::' + p5str(v_name_1326)));
-																		(p5make_package('Perlito5')['v_GLOBAL'] || (p5make_package('Perlito5')['v_GLOBAL'] = new p5HashRef({})))._hash_.p5hset(p5str(v_full_name_1335), (v_sub_1333));
-																		v_sub_1333 = (p5pkg['Perlito5::Grammar::Block'].ast_nop([], ""));
-																	})();
-																}
-																})();
+																var v_full_name_1334;
+																v_full_name_1334 = ((p5str(v_namespace_1330) + '::' + p5str(v_name_1326)));
+																var v_block_1335;
+																v_block_1335 = (p5call('Perlito5::AST::Block', 'new', p5list_to_a(['stmts', (new p5ArrayRef([v_sub_1333]))]), ""));
+																p5pkg['Perlito5::Grammar::Block'].eval_begin_block([v_block_1335, 'BEGIN'], null);
+																(p5make_package('Perlito5')['v_GLOBAL'] || (p5make_package('Perlito5')['v_GLOBAL'] = new p5HashRef({})))._hash_.p5hset(p5str(v_full_name_1334), (v_sub_1333));
+																v_sub_1333 = (p5pkg['Perlito5::Grammar::Block'].ast_nop([], ""));
 																(v_MATCH_1315 || (v_MATCH_1315 = new p5HashRef({})))._hash_.p5hset('capture', (v_sub_1333));
 															})();
 														}

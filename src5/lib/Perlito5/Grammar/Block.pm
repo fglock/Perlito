@@ -331,22 +331,19 @@ token named_sub_def {
             attributes => $attributes,
         );
 
-        if ( $Perlito5::EXPAND_USE ) {
-            # normal compiler (not "bootstrapping")
+        if ( $Perlito5::EXPAND_USE && $name ) {
+            # named sub in the normal compiler (not "bootstrapping")
+            my $full_name = "${namespace}::$name";
 
             # evaluate the sub definition in a BEGIN block
-
             my $block = Perlito5::AST::Block->new( stmts => [$sub] );
             Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');  
 
-            if ($name) {
-                # add named sub to SCOPE
-                my $full_name = "${namespace}::$name";
-                $Perlito5::GLOBAL->{$full_name} = $sub;
-                # runtime effect of subroutine declaration is "undef"
-                $sub = ast_nop();
-            }
+            # add named sub to SCOPE
+            $Perlito5::GLOBAL->{$full_name} = $sub;
 
+            # runtime effect of subroutine declaration is "undef"
+            $sub = ast_nop();
             $MATCH->{capture} = $sub;
         }
         else {
