@@ -378,6 +378,7 @@ class PlDieException  extends PlControlException {
     }
 }
 class PlCx {
+    public static final Thread mainThread = Thread.currentThread();
     public static final int     VOID   = 0;
     public static final int     SCALAR = 1;
     public static final int     LIST   = 2;
@@ -3428,9 +3429,8 @@ class PlClosure extends PlReference implements Runnable {
         this.currentSub = this;
 
         // initialize metadata for caller()
-        Thread t = Thread.currentThread();
-        StackTraceElement firstStack = this.firstLine(t);
-        StackTraceElement lastStack = this.lastLine(t);
+        StackTraceElement firstStack = this.firstLine();
+        StackTraceElement lastStack = this.lastLine();
         if ( firstStack != null ) {
              javaClassName = firstStack.getClassName();
              firstLineNumber = firstStack.getLineNumber();
@@ -3451,7 +3451,7 @@ class PlClosure extends PlReference implements Runnable {
 
     // subclasses override firstLine() and lastLine()
     // these methods are used by caller() to identify where the sub is implemented in the source code
-    public StackTraceElement firstLine(Thread t) {
+    public StackTraceElement firstLine() {
         return null;
     }
     // Note: apply() overrides PlObject.apply(), which throws an error
@@ -3459,7 +3459,7 @@ class PlClosure extends PlReference implements Runnable {
         PlCORE.die("it looks like you have a closure without a block");
         return this;
     }
-    public StackTraceElement lastLine(Thread t) {
+    public StackTraceElement lastLine() {
         return null;
     }
     public void run() {

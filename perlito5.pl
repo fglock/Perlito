@@ -20066,7 +20066,7 @@ use feature 'say';
             if (($self->{"_do_block"} || $self->{"_eval_block"}) && $outer_sub) {;
                 push(@closure_args, $outer_sub)
             }
-            my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", ["public StackTraceElement firstLine(Thread t) {", ["return t.getStackTrace()[1];"], "}", "public PlObject apply(int want, PlArray List__) {", [@js_block], "}", "public StackTraceElement lastLine(Thread t) {", ["return t.getStackTrace()[1];"], "}"], "}");
+            my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", ["public StackTraceElement firstLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}", "public PlObject apply(int want, PlArray List__) {", [@js_block], "}", "public StackTraceElement lastLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}"], "}");
             if ($self->{"name"}) {;
                 return Perlito5::Java::emit_wrap_java($level, "PlV.cset(", [Perlito5::Java::escape_string($self->{"namespace"} . "::" . $self->{"name"}) . ",", @s], ");")
             }
@@ -22923,6 +22923,7 @@ class PlDieException  extends PlControlException {
     }
 }
 class PlCx {
+    public static final Thread mainThread = Thread.currentThread();
     public static final int     VOID   = 0;
     public static final int     SCALAR = 1;
     public static final int     LIST   = 2;
@@ -25924,9 +25925,8 @@ class PlClosure extends PlReference implements Runnable {
         this.currentSub = this;
 
         // initialize metadata for caller()
-        Thread t = Thread.currentThread();
-        StackTraceElement firstStack = this.firstLine(t);
-        StackTraceElement lastStack = this.lastLine(t);
+        StackTraceElement firstStack = this.firstLine();
+        StackTraceElement lastStack = this.lastLine();
         if ( firstStack != null ) {
              javaClassName = firstStack.getClassName();
              firstLineNumber = firstStack.getLineNumber();
@@ -25947,7 +25947,7 @@ class PlClosure extends PlReference implements Runnable {
 
     // subclasses override firstLine() and lastLine()
     // these methods are used by caller() to identify where the sub is implemented in the source code
-    public StackTraceElement firstLine(Thread t) {
+    public StackTraceElement firstLine() {
         return null;
     }
     // Note: apply() overrides PlObject.apply(), which throws an error
@@ -25955,7 +25955,7 @@ class PlClosure extends PlReference implements Runnable {
         PlCORE.die(\"it looks like you have a closure without a block\");
         return this;
     }
-    public StackTraceElement lastLine(Thread t) {
+    public StackTraceElement lastLine() {
         return null;
     }
     public void run() {
