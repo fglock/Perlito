@@ -20066,7 +20066,7 @@ use feature 'say';
             if (($self->{"_do_block"} || $self->{"_eval_block"}) && $outer_sub) {;
                 push(@closure_args, $outer_sub)
             }
-            my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", ["public PlObject apply(int want, PlArray List__) {", [@js_block], "}"], "}");
+            my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", ["public StackTraceElement firstLine(Thread t) {", ["return t.getStackTrace()[1];"], "}", "public PlObject apply(int want, PlArray List__) {", [@js_block], "}", "public StackTraceElement lastLine(Thread t) {", ["return t.getStackTrace()[1];"], "}"], "}");
             if ($self->{"name"}) {;
                 return Perlito5::Java::emit_wrap_java($level, "PlV.cset(", [Perlito5::Java::escape_string($self->{"namespace"} . "::" . $self->{"name"}) . ",", @s], ");")
             }
@@ -23484,8 +23484,12 @@ class PerlOp {
 
         // PlCORE.die(\"caller() not implemented\");
 
-        // TODO - this code works, needs some tweaks
-        // StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
+        // The last element of the array represents the bottom of the stack,
+        // which is the least recent method invocation in the sequence.
+
+        // Thread t = Thread.currentThread();
+        // StackTraceElement[] stackTraceElements = t.getStackTrace();
         // for (StackTraceElement elem : stackTraceElements) {
         //     PlCORE.say(
         //         elem.getClassName()  + \" \\t\" +
@@ -23493,22 +23497,31 @@ class PerlOp {
         //         elem.getFileName()   + \" \\t\" +
         //         elem.getLineNumber()
         //     );
-        // }
-        // for (SourceCode source : PlJavaCompiler.compilationUnits) {
-        //     try {
-        //         PlCORE.say(
-        //             \"Class \" + source.getClassName() + \" ---------\\n\" +
-        //             source.getCharContent(true).toString()
-        //         );
-        //     }
-        //     catch(IOException e) {
-        //         PlCORE.warn(PlCx.VOID, new PlArray(new PlString(\"IOException in caller(): \" + e.getMessage())));
-        //     }
-        // }
 
-        // The last element of the array represents the bottom of the stack,
-        // which is the least recent method invocation in the sequence.
-        // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
+        //     // TODO - move this inner loop outside, this is very expensive
+
+        //     // Symbol table scan - PlV.cvar
+        //     for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
+        //         String name = o.toString();
+        //         PlObject value = PlV.cget_no_autoload(name);
+        //         if (value.is_lvalue()) {
+        //             value = value.get();
+        //         }
+        //         if (value.is_coderef()) {
+        //             PlClosure code = (PlClosure)value;
+        //             StackTraceElement firstStack = code.firstLine(t);
+        //             StackTraceElement lastStack = code.lastLine(t);
+        //             // PlCORE.say(\"sub \" + name + \" \" + firstStack.getLineNumber() + \" \" + lastStack.getLineNumber() );
+        //             if ( firstStack != null &&
+        //                  elem.getClassName().equals( firstStack.getClassName()) &&
+        //                  elem.getLineNumber() > firstStack.getLineNumber() &&
+        //                  elem.getLineNumber() < lastStack.getLineNumber()
+        //             ) {
+        //                 PlCORE.say(\" Perl sub &\" + name);
+        //             }
+        //         }
+        //     }
+        // }
 
         return context(ctx);
     }
@@ -25918,10 +25931,18 @@ class PlClosure extends PlReference implements Runnable {
         return this.currentSub;
     }
 
-    // Note: apply() is inherited from PlObject
+    // subclasses override firstLine() and lastLine()
+    // these methods are used by caller() to identify where the sub is implemented in the source code
+    public StackTraceElement firstLine(Thread t) {
+        return null;
+    }
+    // Note: apply() overrides PlObject.apply(), which throws an error
     public PlObject apply(int want, PlArray List__) {
         PlCORE.die(\"it looks like you have a closure without a block\");
         return this;
+    }
+    public StackTraceElement lastLine(Thread t) {
+        return null;
     }
     public void run() {
         // run as a thread

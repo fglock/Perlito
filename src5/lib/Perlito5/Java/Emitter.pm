@@ -2811,8 +2811,17 @@ package Perlito5::AST::Sub;
 
         my @s = (
             "new PlClosure(" . join( ", ", @closure_args ) . ") {",
-                [ "public PlObject apply(int want, PlArray List__) {",
+                [
+                  "public StackTraceElement firstLine(Thread t) {",
+                    [ "return t.getStackTrace()[1];",
+                    ],
+                  "}",
+                  "public PlObject apply(int want, PlArray List__) {",
                     [ @js_block ],
+                  "}",
+                  "public StackTraceElement lastLine(Thread t) {",
+                    [ "return t.getStackTrace()[1];",
+                    ],
                   "}",
                 ],
             "}",
