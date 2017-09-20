@@ -946,8 +946,14 @@ class PerlOp {
         // TODO - this code works, needs some tweaks
         // StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         // for (StackTraceElement elem : stackTraceElements) {
-        //     PlCORE.say(elem.getMethodName());
+        //     PlCORE.say(
+        //                elem.getClassName()  + " \t" +
+        //                elem.getMethodName() + " \t" +
+        //                elem.getFileName()   + " \t" +
+        //                elem.getLineNumber()
+        //     );
         // }
+        // ArrayList<SourceCode> source = PlJavaCompiler.compilationUnits;
 
         // The last element of the array represents the bottom of the stack,
         // which is the least recent method invocation in the sequence.
