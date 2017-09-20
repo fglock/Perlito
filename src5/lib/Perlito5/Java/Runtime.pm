@@ -947,13 +947,23 @@ class PerlOp {
         // StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         // for (StackTraceElement elem : stackTraceElements) {
         //     PlCORE.say(
-        //                elem.getClassName()  + " \t" +
-        //                elem.getMethodName() + " \t" +
-        //                elem.getFileName()   + " \t" +
-        //                elem.getLineNumber()
+        //         elem.getClassName()  + " \t" +
+        //         elem.getMethodName() + " \t" +
+        //         elem.getFileName()   + " \t" +
+        //         elem.getLineNumber()
         //     );
         // }
-        // ArrayList<SourceCode> source = PlJavaCompiler.compilationUnits;
+        // for (SourceCode source : PlJavaCompiler.compilationUnits) {
+        //     try {
+        //         PlCORE.say(
+        //             "Class " + source.getClassName() + " ---------\n" +
+        //             source.getCharContent(true).toString()
+        //         );
+        //     }
+        //     catch(IOException e) {
+        //         PlCORE.warn(PlCx.VOID, new PlArray(new PlString("IOException in caller(): " + e.getMessage())));
+        //     }
+        // }
 
         // The last element of the array represents the bottom of the stack,
         // which is the least recent method invocation in the sequence.

@@ -49,7 +49,7 @@ sub emit_java {
 class PlJavaCompiler {
     private PlJavaCompiler() {} // defined so class can't be instantiated.
 
-    public static ArrayList<SourceCode> compilationUnits;
+    static ArrayList<SourceCode> compilationUnits;
     static ExtendedStandardJavaFileManager fileManager;
     static DynamicClassLoader classLoader;
     static JavaCompiler javac;
