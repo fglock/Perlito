@@ -958,27 +958,27 @@ class PerlOp {
         //         elem.getFileName()   + " \t" +
         //         elem.getLineNumber()
         //     );
-
-        //     // TODO - move this inner loop outside, this is very expensive
-
-        //     // Symbol table scan - PlV.cvar
-        //     for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
-        //         String name = o.toString();
-        //         PlObject value = PlV.cget_no_autoload(name);
-        //         if (value.is_lvalue()) {
-        //             value = value.get();
-        //         }
-        //         if (value.is_coderef()) {
-        //             PlClosure code = (PlClosure)value;
-        //             StackTraceElement firstStack = code.firstLine(t);
-        //             StackTraceElement lastStack = code.lastLine(t);
-        //             // PlCORE.say("sub " + name + " " + firstStack.getLineNumber() + " " + lastStack.getLineNumber() );
-        //             if ( firstStack != null &&
-        //                  elem.getClassName().equals( firstStack.getClassName()) &&
-        //                  elem.getLineNumber() > firstStack.getLineNumber() &&
-        //                  elem.getLineNumber() < lastStack.getLineNumber()
-        //             ) {
-        //                 PlCORE.say(" Perl sub &" + name);
+        //     if (elem.getMethodName().equals("apply")) {
+        //         // stack trace element comes from PlClosure.apply()
+        //         // TODO - move this inner loop outside, this is very expensive
+        //         // TODO - this code doesn't account for inner-subs - it might match an outer sub instead
+        //         // this loop does a symbol table scan - PlV.cvar
+        //         for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
+        //             String name = o.toString();
+        //             PlObject value = PlV.cget_no_autoload(name);
+        //             if (value.is_lvalue()) {
+        //                 value = value.get();
+        //             }
+        //             if (value.is_coderef()) {
+        //                 PlClosure code = (PlClosure)value;
+        //                 // PlCORE.say("sub " + name + " " + firstStack.getLineNumber() + " " + lastStack.getLineNumber() );
+        //                 if ( code.javaClassName != null &&
+        //                      elem.getClassName().equals(code.javaClassName) &&
+        //                      elem.getLineNumber() > code.firstLineNumber &&
+        //                      elem.getLineNumber() < code.lastLineNumber
+        //                 ) {
+        //                     PlCORE.say(" Perl sub &" + name);
+        //                 }
         //             }
         //         }
         //     }
@@ -3416,12 +3416,26 @@ class PlClosure extends PlReference implements Runnable {
     public String pkg_name;      // 'main'
     public static final PlString REF = new PlString("CODE");
     public PlClosure currentSub;
+    // metadata for caller()
+    public String  javaClassName;
+    public Integer firstLineNumber;
+    public Integer lastLineNumber;
 
     public PlClosure(PlObject prototype, PlObject[] env, String pkg_name) {
         this.prototype = prototype;
         this.env = env;
         this.pkg_name = pkg_name;
         this.currentSub = this;
+
+        // initialize metadata for caller()
+        Thread t = Thread.currentThread();
+        StackTraceElement firstStack = this.firstLine(t);
+        StackTraceElement lastStack = this.lastLine(t);
+        if ( firstStack != null ) {
+             javaClassName = firstStack.getClassName();
+             firstLineNumber = firstStack.getLineNumber();
+             lastLineNumber = lastStack.getLineNumber();
+        }
     }
     public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, PlClosure currentSub) {
         // this is the constructor for do-BLOCK; currentSub points to the "sub" outside
