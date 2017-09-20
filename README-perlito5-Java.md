@@ -1180,6 +1180,34 @@ Missing features, or partially implemented, or untested
         called from main
 ~~~
 
+        the java stack trace:
+
+~~~java
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        for (StackTraceElement elem : stackTraceElements) {
+            PlCORE.say(
+                elem.getClassName()  + " \t" +
+                elem.getMethodName() + " \t" +
+                elem.getFileName()   + " \t" +
+                elem.getLineNumber()
+            );
+        }
+~~~
+
+        possible implementation to translate back to Perl subroutine names:
+
+        grab first and last lines of the closure definition using 2 methods
+
+            firstLine() and lastLine()
+
+        implementing https://stackoverflow.com/questions/18950201/get-current-line-number-java
+
+            Thread.currentThread().getStackTrace()[2].getLineNumber()
+
+        then scan the CODE symbol table to find the range that contains the line number we are looking for.
+
+        See: PerlOp.getSymbolTableScan() in src5/lib/Perlito5/Java/Runtime.pm
+
     __DATA__ sections
 
         %Perlito5::DATA_SECTION contains the __DATA__ for each package
