@@ -938,54 +938,54 @@ class PerlOp {
 
         PlArray caller = PlV.array_get("Perlito5::CALLER");
         if (caller.length_of_array().to_boolean()) {
+            // maybe we are inside an import() subroutine
             if (ctx == 2) {
                 return caller.aget(item).array_deref_strict();
             }
             return caller.aget(item).aget(0);
         };
 
-        // PlCORE.die("caller() not implemented");
-
         // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
         // The last element of the array represents the bottom of the stack,
         // which is the least recent method invocation in the sequence.
-
-        // Thread t = Thread.currentThread();
-        // StackTraceElement[] stackTraceElements = t.getStackTrace();
-        // for (StackTraceElement elem : stackTraceElements) {
-        //     PlCORE.say(
-        //         elem.getClassName()  + " \t" +
-        //         elem.getMethodName() + " \t" +
-        //         elem.getFileName()   + " \t" +
-        //         elem.getLineNumber()
-        //     );
-        //     if (elem.getMethodName().equals("apply")) {
-        //         // stack trace element comes from PlClosure.apply()
-        //         // TODO - move this inner loop outside, this is very expensive
-        //         // TODO - this code doesn't account for inner-subs - it might match an outer sub instead
-        //         // this loop does a symbol table scan - PlV.cvar
-        //         for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
-        //             String name = o.toString();
-        //             PlObject value = PlV.cget_no_autoload(name);
-        //             if (value.is_lvalue()) {
-        //                 value = value.get();
-        //             }
-        //             if (value.is_coderef()) {
-        //                 PlClosure code = (PlClosure)value;
-        //                 // PlCORE.say("sub " + name + " " + firstStack.getLineNumber() + " " + lastStack.getLineNumber() );
-        //                 if ( code.javaClassName != null &&
-        //                      elem.getClassName().equals(code.javaClassName) &&
-        //                      elem.getLineNumber() > code.firstLineNumber &&
-        //                      elem.getLineNumber() < code.lastLineNumber
-        //                 ) {
-        //                     PlCORE.say(" Perl sub &" + name);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        return context(ctx);
+        caller = new PlArray();
+        Thread t = Thread.currentThread();
+        StackTraceElement[] stackTraceElements = t.getStackTrace();
+        for (StackTraceElement elem : stackTraceElements) {
+            // PlCORE.say(
+            //     elem.getClassName()  + " \t" +
+            //     elem.getMethodName() + " \t" +
+            //     elem.getFileName()   + " \t" +
+            //     elem.getLineNumber()
+            // );
+            if (elem.getMethodName().equals("apply")) {
+                // stack trace element comes from PlClosure.apply()
+                // TODO - move this inner loop outside, this is very expensive
+                // TODO - this code doesn't account for inner-subs - it might match an outer sub instead
+                // this loop does a symbol table scan - PlV.cvar
+                for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
+                    String name = perlSubName.toString();
+                    PlObject value = PlV.cget_no_autoload(name);
+                    if (value.is_lvalue()) {
+                        value = value.get();
+                    }
+                    if (value.is_coderef()) {
+                        PlClosure code = (PlClosure)value;
+                        // PlCORE.say("sub " + name + " " + firstStack.getLineNumber() + " " + lastStack.getLineNumber() );
+                        if ( code.javaClassName != null &&
+                             elem.getClassName().equals(code.javaClassName) &&
+                             elem.getLineNumber() > code.firstLineNumber &&
+                             elem.getLineNumber() < code.lastLineNumber
+                        ) {
+                            // PlCORE.say(" Perl sub &" + name);
+                            caller.push(perlSubName);
+                        }
+                    }
+                }
+            }
+        }
+        // return context(ctx);
+        return caller.aget(item);
     }
 
     public static final PlObject mod(PlInt aa, PlObject bb) {
