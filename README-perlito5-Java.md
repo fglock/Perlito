@@ -1182,10 +1182,12 @@ Missing features, or partially implemented, or untested
         called from main
 ~~~
 
+        TODO - line number is off by 1:
+
 ~~~bash
         $ java -jar perlito5.jar -I src5/lib -e ' sub x { print "@{[ caller(0) ]}\n"; print "@{[ caller(1) ]}\n"; } sub yy { x } yy'
-        main 0  main::x
-        main 0  main::yy
+        main -e 2 main::x
+        main -e 2 main::yy
         
         $ perl -e ' sub x { print "@{[ caller(0) ]}\n"; print "@{[ caller(1) ]}\n"; } sub yy { x } yy'
         main -e 1 main::x 1    0  

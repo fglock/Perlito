@@ -23501,6 +23501,7 @@ class PerlOp {
         // The last element of the array represents the bottom of the stack,
         // which is the least recent method invocation in the sequence.
         caller = new PlArray();
+        PlArray coderef = new PlArray();
         Thread t = Thread.currentThread();
         StackTraceElement[] stackTraceElements = t.getStackTrace();
         for (StackTraceElement elem : stackTraceElements) {
@@ -23532,6 +23533,7 @@ class PerlOp {
                         ) {
                             // PlCORE.say(\" Perl sub &\" + fullName);
                             caller.push(perlSubName);
+                            coderef.push(value);
                         }
                     }
                 }
@@ -23551,12 +23553,17 @@ class PerlOp {
             return packageName;
         }
 
-        int lineNumber = 0;     // TODO
-        String fileName = \"\";   // TODO
+\x{9}\x{9}PlObject plCoderef = coderef.aget(item);
+        int lineNumber = 0;
+        String fileName = \"\";
+        if (plCoderef.is_coderef()) {
+            lineNumber = ((PlClosure)plCoderef).perlLineNumber();
+            fileName   = ((PlClosure)plCoderef).perlFileName();
+        }
 
         if (!argDefined) {
 \x{9}\x{9}\x{9}// caller() in list context, without args
-            return new PlArray( packageName, new PlInt(lineNumber), new PlString(fileName) );
+            return new PlArray( packageName, new PlString(fileName), new PlInt(lineNumber) );
         }
 
 \x{9}\x{9}// caller(EXPR) in list context, with args
@@ -23565,7 +23572,7 @@ class PerlOp {
         //   (\$package, \$filename, \$line, \$subroutine, \$hasargs,
         //   #  5          6          7            8       9         10
         //   \$wantarray, \$evaltext, \$is_require, \$hints, \$bitmask, \$hinthash)
-        return new PlArray( packageName, new PlInt(lineNumber), new PlString(fileName), plFullName );
+        return new PlArray( packageName, new PlString(fileName), new PlInt(lineNumber), plFullName );
     }
 
     public static final PlObject mod(PlInt aa, PlObject bb) {
