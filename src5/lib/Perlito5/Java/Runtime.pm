@@ -933,17 +933,21 @@ class PerlOp {
         return PlCORE.die("goto() not implemented");
     }
 
-    public static final PlObject caller(int ctx, PlArray List__) {
-        int item = List__.aget(0).to_int();
+    public static final PlObject caller(int wantarray, PlArray List__) {
+        PlObject arg = List__.aget(0);
+        boolean argDefined = !arg.is_undef();
+        int item = arg.to_int();
 
         PlArray caller = PlV.array_get("Perlito5::CALLER");
         if (caller.length_of_array().to_boolean()) {
             // maybe we are inside an import() subroutine
-            if (ctx == 2) {
+            if (wantarray == PlCx.LIST) {
                 return caller.aget(item).array_deref_strict();
             }
             return caller.aget(item).aget(0);
         };
+
+        String fullName = "";
 
         // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
         // The last element of the array represents the bottom of the stack,
@@ -962,30 +966,58 @@ class PerlOp {
                 // stack trace element comes from PlClosure.apply()
                 // TODO - move this inner loop outside, this is very expensive
                 // TODO - this code doesn't account for inner-subs - it might match an outer sub instead
+                // TODO - this code doesn't account for package name changes inside a sub
                 // this loop does a symbol table scan - PlV.cvar
                 for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
-                    String name = perlSubName.toString();
-                    PlObject value = PlV.cget_no_autoload(name);
+                    fullName = perlSubName.toString();
+                    PlObject value = PlV.cget_no_autoload(fullName);
                     if (value.is_lvalue()) {
                         value = value.get();
                     }
                     if (value.is_coderef()) {
                         PlClosure code = (PlClosure)value;
-                        // PlCORE.say("sub " + name + " " + firstStack.getLineNumber() + " " + lastStack.getLineNumber() );
+                        // PlCORE.say("sub " + fullName + " " + firstStack.getLineNumber() + " " + lastStack.getLineNumber() );
                         if ( code.javaClassName != null &&
                              elem.getClassName().equals(code.javaClassName) &&
                              elem.getLineNumber() > code.firstLineNumber &&
                              elem.getLineNumber() < code.lastLineNumber
                         ) {
-                            // PlCORE.say(" Perl sub &" + name);
+                            // PlCORE.say(" Perl sub &" + fullName);
                             caller.push(perlSubName);
                         }
                     }
                 }
             }
         }
-        // return context(ctx);
-        return caller.aget(item);
+		PlObject plFullName = caller.aget(item);
+        fullName = plFullName.toString();
+
+        PlObject packageName = PlCx.UNDEF;
+        int pos = fullName.lastIndexOf("::");
+        if (pos != -1) {
+            packageName = new PlString(fullName.substring(0, pos));
+        }
+
+        if (wantarray != PlCx.LIST) {
+			// caller() in scalar or void context
+            return packageName;
+        }
+
+        int lineNumber = 0;     // TODO
+        String fileName = "";   // TODO
+
+        if (!argDefined) {
+			// caller() in list context, without args
+            return new PlArray( packageName, new PlInt(lineNumber), new PlString(fileName) );
+        }
+
+		// caller(EXPR) in list context, with args
+        // TODO - add other components
+        //   #  0         1          2      3            4
+        //   ($package, $filename, $line, $subroutine, $hasargs,
+        //   #  5          6          7            8       9         10
+        //   $wantarray, $evaltext, $is_require, $hints, $bitmask, $hinthash)
+        return new PlArray( packageName, new PlInt(lineNumber), new PlString(fileName), plFullName );
     }
 
     public static final PlObject mod(PlInt aa, PlObject bb) {

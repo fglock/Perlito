@@ -1172,6 +1172,8 @@ Missing features, or partially implemented, or untested
 
     caller
 
+        TODO - add tests (See: perldoc -f caller)
+
 ~~~bash
         $ perl -e ' sub x { print "in " . __PACKAGE__ . "\n"; v() }  x(); { package X; *x = \&main::x; x() } sub v { $v = caller(); print "called from $v\n" } '
         in main
@@ -1180,11 +1182,10 @@ Missing features, or partially implemented, or untested
         called from main
 ~~~
 
-
 ~~~bash
         $ java -jar perlito5.jar -I src5/lib -e ' sub x { print "@{[ caller(0) ]}\n"; print "@{[ caller(1) ]}\n"; } sub yy { x } yy'
-        main::x
-        main::yy
+        main 0  main::x
+        main 0  main::yy
         
         $ perl -e ' sub x { print "@{[ caller(0) ]}\n"; print "@{[ caller(1) ]}\n"; } sub yy { x } yy'
         main -e 1 main::x 1    0  
