@@ -1182,16 +1182,23 @@ Missing features, or partially implemented, or untested
         called from main
 ~~~
 
-        TODO - line number is off by 1:
+        TODO - line number is off by 1
+
+        TODO - anonymous subroutines and eval string are not shown in the call stack
+
+        TODO - the compiler stack is "leaking" into the script stack. The "Perlito5" namespace belongs to the compiler.
 
 ~~~bash
-        $ java -jar perlito5.jar -I src5/lib -e ' sub x { print "@{[ caller(0) ]}\n"; print "@{[ caller(1) ]}\n"; } sub yy { x } yy'
+        $ java -jar perlito5.jar -I src5/lib -e ' sub x { print "@{[ caller($_) ]}\n" for 0..3; } sub yy { eval "x()"; }; ( sub { yy() } )->(); '
         main -e 2 main::x
         main -e 2 main::yy
-        
-        $ perl -e ' sub x { print "@{[ caller(0) ]}\n"; print "@{[ caller(1) ]}\n"; } sub yy { x } yy'
-        main -e 1 main::x 1    0  
-        main -e 1 main::yy 1    256  
+        Perlito5 src5/util/jperl.pl 9 Perlito5::eval_string
+
+        $ perl -e ' sub x { print "@{[ caller($_) ]}\n" for 0..3; } sub yy { eval "x()"; }; ( sub { yy() } )->(); '
+        main (eval 1) 1 main::x 1    0
+        main -e 1 (eval) 0  x()  256
+        main -e 1 main::yy 1    0
+        main -e 1 main::__ANON__ 1    256
 ~~~
 
     __DATA__ sections
