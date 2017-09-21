@@ -725,7 +725,9 @@ package Perlito5::AST::Apply;
                     );
                 }
                 else {
-                    return $v->emit_java($level, $wantarray, 'hash') . '.hdelete(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                    return $v->emit_java($level, $wantarray, 'hash') . '.hdelete('
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
@@ -751,15 +753,21 @@ package Perlito5::AST::Apply;
                     );
                 }
                 else {
-                    return $v->emit_java($level, $wantarray, 'array') . '.adelete(' . $arg->{index_exp}->emit_java($level) . ')';
+                    return $v->emit_java($level, $wantarray, 'array') . '.adelete('
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . $arg->{index_exp}->emit_java($level) . ')';
                 }
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.hdelete(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
+                    return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.hdelete('
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
-                    return $arg->invocant->emit_java($level, $wantarray, 'array') . '.adelete(' . $arg->{arguments}->emit_java($level) . ')';
+                    return $arg->invocant->emit_java($level, $wantarray, 'array') . '.adelete('
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . $arg->{arguments}->emit_java($level) . ')';
                 }
             }
             if (  $arg->isa('Perlito5::AST::Var')

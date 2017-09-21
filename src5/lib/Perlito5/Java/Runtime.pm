@@ -651,11 +651,11 @@ class PerlOp {
     public static final PlObject deleteSymbolTable(String nameSpace, PlObject index) {
         // delete $Foo::{foo}
         PlString name = new PlString(nameSpace + index.toString());
-        PlV.cvar.hdelete(name);
-        PlV.svar.hdelete(name);
-        PlV.avar.hdelete(name);
-        PlV.hvar.hdelete(name);
-        PlV.fvar.hdelete(name);
+        PlV.cvar.hdelete(PlCx.VOID, name);
+        PlV.svar.hdelete(PlCx.VOID, name);
+        PlV.avar.hdelete(PlCx.VOID, name);
+        PlV.hvar.hdelete(PlCx.VOID, name);
+        PlV.fvar.hdelete(PlCx.VOID, name);
         return PlCx.UNDEF; 
     }
 
@@ -2805,11 +2805,11 @@ EOT
         PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
         return this;
     }
-    public PlObject adelete(PlObject i) {
+    public PlObject adelete(int want, PlObject i) {
         PlCORE.die("delete argument is not a HASH or ARRAY element or slice");
         return this;
     }
-    public PlObject hdelete(PlObject i) {
+    public PlObject hdelete(int want, PlObject i) {
         PlCORE.die("delete argument is not a HASH or ARRAY element or slice");
         return this;
     }
@@ -3772,8 +3772,8 @@ class PlHashRef extends PlReference {
     public PlObject hexists(PlObject i) {
         return this.ha.hexists(i);
     }
-    public PlObject hdelete(PlObject i) {
-        return this.ha.hdelete(i);
+    public PlObject hdelete(int want, PlObject a) {
+        return this.ha.hdelete(want, a);
     }
     public PlObject hdelete(int want, PlArray a) {
         return this.ha.hdelete(want, a);
@@ -4760,13 +4760,13 @@ EOT
         // exists $v->[$a]
         return this.get().aexists(a);
     }
-    public PlObject hdelete(PlObject a) {
+    public PlObject hdelete(int want, PlObject a) {
         // delete $v->{$a}
-        return this.get().hdelete(a);
+        return this.get().hdelete(want, a);
     }
-    public PlObject adelete(PlObject a) {
+    public PlObject adelete(int want, PlObject a) {
         // delete $v->[$a]
-        return this.get().adelete(a);
+        return this.get().adelete(want, a);
     }
     public boolean is_lvalue() {
         return true;
@@ -6179,7 +6179,7 @@ class PlHash extends PlObject {
     public PlObject hexists(PlObject i) {
         return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
     }
-    public PlObject hdelete(PlObject i) {
+    public PlObject hdelete(int want, PlObject i) {
         PlObject r = this.h.remove(i.toString());
         if (r == null) {
             return PlCx.UNDEF;
@@ -6190,7 +6190,7 @@ class PlHash extends PlObject {
         PlArray aa = new PlArray();
 
         for (int i = 0; i < a.to_int(); i++) {
-            PlObject r = this.hdelete(a.aget(i));
+            PlObject r = this.hdelete(want, a.aget(i));
             aa.push(r);
         }
         if (want == PlCx.LIST) {
