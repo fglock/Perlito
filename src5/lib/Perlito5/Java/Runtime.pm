@@ -3481,6 +3481,14 @@ class PlClosure extends PlReference implements Runnable {
         return this.currentSub;
     }
 
+    // subclasses override perlFileName() and perlLineNumber()
+    public String perlFileName() {
+        return null;
+    }
+    public Integer perlLineNumber() {
+        return null;
+    }
+
     // subclasses override firstLine() and lastLine()
     // these methods are used by caller() to identify where the sub is implemented in the source code
     public StackTraceElement firstLine() {

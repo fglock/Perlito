@@ -2812,6 +2812,14 @@ package Perlito5::AST::Sub;
         my @s = (
             "new PlClosure(" . join( ", ", @closure_args ) . ") {",
                 [
+                  "public String perlFileName() {",
+                    [ "return null;",   # TODO
+                    ],
+                  "}",
+                  "public Integer perlLineNumber() {",
+                    [ "return null;",   # TODO
+                    ],
+                  "}",
                   "public StackTraceElement firstLine() {",
                     [ "return PlCx.mainThread.getStackTrace()[1];",
                     ],
