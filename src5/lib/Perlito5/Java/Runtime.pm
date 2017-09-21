@@ -1007,16 +1007,16 @@ class PerlOp {
         }
 
 		PlObject plCoderef = coderef.aget(item);
-        int lineNumber = 0;
+        PlObject lineNumber = PlCx.UNDEF;
         String fileName = "";
         if (plCoderef.is_coderef()) {
-            lineNumber = ((PlClosure)plCoderef).perlLineNumber();
+            lineNumber = new PlInt(((PlClosure)plCoderef).perlLineNumber());
             fileName   = ((PlClosure)plCoderef).perlFileName();
         }
 
         if (!argDefined) {
 			// caller() in list context, without args
-            return new PlArray( packageName, new PlString(fileName), new PlInt(lineNumber) );
+            return new PlArray( packageName, new PlString(fileName), lineNumber );
         }
 
 		// caller(EXPR) in list context, with args
@@ -1025,7 +1025,7 @@ class PerlOp {
         //   ($package, $filename, $line, $subroutine, $hasargs,
         //   #  5          6          7            8       9         10
         //   $wantarray, $evaltext, $is_require, $hints, $bitmask, $hinthash)
-        return new PlArray( packageName, new PlString(fileName), new PlInt(lineNumber), plFullName );
+        return new PlArray( packageName, new PlString(fileName), lineNumber, plFullName );
     }
 
     public static final PlObject mod(PlInt aa, PlObject bb) {

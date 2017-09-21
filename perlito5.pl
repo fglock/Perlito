@@ -23516,6 +23516,7 @@ class PerlOp {
                 // TODO - move this inner loop outside, this is very expensive
                 // TODO - this code doesn't account for inner-subs - it might match an outer sub instead
                 // TODO - this code doesn't account for package name changes inside a sub
+                // TODO - this code skips anonymous subroutines
                 // this loop does a symbol table scan - PlV.cvar
                 for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
                     fullName = perlSubName.toString();
@@ -23554,16 +23555,16 @@ class PerlOp {
         }
 
 \x{9}\x{9}PlObject plCoderef = coderef.aget(item);
-        int lineNumber = 0;
+        PlObject lineNumber = PlCx.UNDEF;
         String fileName = \"\";
         if (plCoderef.is_coderef()) {
-            lineNumber = ((PlClosure)plCoderef).perlLineNumber();
+            lineNumber = new PlInt(((PlClosure)plCoderef).perlLineNumber());
             fileName   = ((PlClosure)plCoderef).perlFileName();
         }
 
         if (!argDefined) {
 \x{9}\x{9}\x{9}// caller() in list context, without args
-            return new PlArray( packageName, new PlString(fileName), new PlInt(lineNumber) );
+            return new PlArray( packageName, new PlString(fileName), lineNumber );
         }
 
 \x{9}\x{9}// caller(EXPR) in list context, with args
@@ -23572,7 +23573,7 @@ class PerlOp {
         //   (\$package, \$filename, \$line, \$subroutine, \$hasargs,
         //   #  5          6          7            8       9         10
         //   \$wantarray, \$evaltext, \$is_require, \$hints, \$bitmask, \$hinthash)
-        return new PlArray( packageName, new PlString(fileName), new PlInt(lineNumber), plFullName );
+        return new PlArray( packageName, new PlString(fileName), lineNumber, plFullName );
     }
 
     public static final PlObject mod(PlInt aa, PlObject bb) {
