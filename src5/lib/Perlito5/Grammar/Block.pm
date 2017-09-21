@@ -98,6 +98,7 @@ sub eval_end_block {
                 'name'       => undef,
                 'namespace'  => $Perlito5::PKG_NAME,
                 'sig'        => undef,
+                'pos'        => Perlito5::Compiler::compiler_pos(),
             )
         ]
     );
@@ -249,6 +250,7 @@ sub special_named_block {
             'name'       => $block_name,
             'namespace'  => $Perlito5::PKG_NAME,
             'sig'        => undef,
+            'pos'        => Perlito5::Compiler::compiler_pos(),
         );
         # add named sub to SCOPE
         my $full_name = $sub->{namespace} . "::" . $sub->{name};
@@ -329,6 +331,7 @@ token named_sub_def {
             sig        => $sig, 
             block      => $MATCH->{_tmp},
             attributes => $attributes,
+            pos        => Perlito5::Compiler::compiler_pos(),
         );
 
         if ( $Perlito5::EXPAND_USE && $name ) {
@@ -420,11 +423,12 @@ token anon_sub_def {
         }
 
         $MATCH->{capture} = Perlito5::AST::Sub->new(
-            name  => undef, 
-            namespace => undef,
-            sig   => $sig, 
-            block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block::closure_block'}),
+            name       => undef, 
+            namespace  => undef,
+            sig        => $sig, 
+            block      => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block::closure_block'}),
             attributes => $attributes,
+            pos        => Perlito5::Compiler::compiler_pos(),
         ) 
     }
 };

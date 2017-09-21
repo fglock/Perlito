@@ -27,6 +27,13 @@ sub error {
     die join('', @_) . ' at ' . $Perlito5::FILE_NAME . ' line ' . $Perlito5::LINE_NUMBER . "\n";
 }
 
+sub compiler_pos {
+    return {
+        file => $Perlito5::FILE_NAME,
+        line => $Perlito5::LINE_NUMBER,
+    };
+}
+
 1;
 
 __END__
