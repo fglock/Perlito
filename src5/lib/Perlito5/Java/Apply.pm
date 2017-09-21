@@ -713,7 +713,20 @@ package Perlito5::AST::Apply;
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
-                return $v->emit_java($level, $wantarray, 'hash') . '.hdelete(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                if (  $v->isa('Perlito5::AST::Apply')
+                   && $v->{code} eq 'prefix:<$>'
+                   )
+                {
+                    # $$a{0} ==> $a->{0}
+                    $arg = Perlito5::AST::Call->new(
+                        'method' => 'postcircumfix:<{ }>',
+                        'invocant' => $v->{arguments}[0],
+                        'arguments' => $arg->{index_exp},
+                    );
+                }
+                else {
+                    return $v->emit_java($level, $wantarray, 'hash') . '.hdelete(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                }
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
@@ -726,7 +739,20 @@ package Perlito5::AST::Apply;
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . $arg->{index_exp}->emit_java($level) . ')';
                 }
-                return $v->emit_java($level, $wantarray, 'array') . '.adelete(' . $arg->{index_exp}->emit_java($level) . ')';
+                if (  $v->isa('Perlito5::AST::Apply')
+                   && $v->{code} eq 'prefix:<$>'
+                   )
+                {
+                    # $$a[0] ==> $a->[0]
+                    $arg = Perlito5::AST::Call->new(
+                        'method' => 'postcircumfix:<[ ]>',
+                        'invocant' => $v->{arguments}[0],
+                        'arguments' => $arg->{index_exp},
+                    );
+                }
+                else {
+                    return $v->emit_java($level, $wantarray, 'array') . '.adelete(' . $arg->{index_exp}->emit_java($level) . ')';
+                }
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
