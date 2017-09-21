@@ -6144,7 +6144,7 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Block::eval_end_block {
         (my($block), my($phase)) = @_;
-        $block = Perlito5::AST::Block::->new("stmts", [Perlito5::AST::Sub::->new("attributes", [], "block", $block, "name", undef, "namespace", $Perlito5::PKG_NAME, "sig", undef)]);
+        $block = Perlito5::AST::Block::->new("stmts", [Perlito5::AST::Sub::->new("attributes", [], "block", $block, "name", undef, "namespace", $Perlito5::PKG_NAME, "sig", undef, "pos", Perlito5::Compiler::compiler_pos())]);
         return Perlito5::Grammar::Block::eval_begin_block($block, "BEGIN")
     }
     sub Perlito5::Grammar::Block::eval_begin_block {
@@ -6273,7 +6273,7 @@ use feature 'say';
             $m->{"capture"} = ast_nop()
         }
         elsif ($block_name eq "AUTOLOAD" || $block_name eq "DESTROY") {
-            my $sub = Perlito5::AST::Sub::->new("attributes", [], "block", $block, "name", $block_name, "namespace", $Perlito5::PKG_NAME, "sig", undef);
+            my $sub = Perlito5::AST::Sub::->new("attributes", [], "block", $block, "name", $block_name, "namespace", $Perlito5::PKG_NAME, "sig", undef, "pos", Perlito5::Compiler::compiler_pos());
             my $full_name = $sub->{"namespace"} . "::" . $sub->{"name"};
             $Perlito5::PROTO->{$full_name} = undef;
             $Perlito5::GLOBAL->{$full_name} = $sub;
@@ -6415,7 +6415,7 @@ use feature 'say';
                     $block->{"name"} = $full_name
                 }
             }
-            my $sub = Perlito5::AST::Sub::->new("name", $name, "namespace", $namespace, "sig", $sig, "block", $MATCH->{"_tmp"}, "attributes", $attributes);
+            my $sub = Perlito5::AST::Sub::->new("name", $name, "namespace", $namespace, "sig", $sig, "block", $MATCH->{"_tmp"}, "attributes", $attributes, "pos", Perlito5::Compiler::compiler_pos());
             if ($Perlito5::EXPAND_USE && $name) {
                 my $full_name = $namespace . "::" . $name;
                 my $block = Perlito5::AST::Block::->new("stmts", [$sub]);
@@ -6698,7 +6698,7 @@ use feature 'say';
                 } @{$attributes}];
                 $sig = $proto->[1]
             }
-            $MATCH->{"capture"} = Perlito5::AST::Sub::->new("name", undef, "namespace", undef, "sig", $sig, "block", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block::closure_block"}), "attributes", $attributes);
+            $MATCH->{"capture"} = Perlito5::AST::Sub::->new("name", undef, "namespace", undef, "sig", $sig, "block", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block::closure_block"}), "attributes", $attributes, "pos", Perlito5::Compiler::compiler_pos());
             1
         })));
         $tmp ? $MATCH : undef
@@ -9587,6 +9587,9 @@ use feature 'say';
     sub Perlito5::Compiler::error {;
         die(join('', @_) . " at " . $Perlito5::FILE_NAME . " line " . $Perlito5::LINE_NUMBER . "
 ")
+    }
+    sub Perlito5::Compiler::compiler_pos {;
+        return {"file", $Perlito5::FILE_NAME, "line", $Perlito5::LINE_NUMBER}
     }
     1
 }
