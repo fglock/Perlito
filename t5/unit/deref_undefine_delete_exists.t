@@ -2,7 +2,7 @@
 
 use feature 'say';
 
-say "1..3";
+say "1..5";
 
 package Class;
 
@@ -45,3 +45,22 @@ package main;
     print "not " if (exists($obj2->{'foo'}->[1]));
     say ("ok 3 - delete(\$obj->x) on dereference is working.");
 }
+
+{
+    my $obj2 = Class->new;
+
+    undef (${$obj2->foo}[1]);
+
+    print "not " if (defined($obj2->{'foo'}->[1]));
+    say ("ok 4 - undef(\$obj->x) on dereference is working.");
+}
+
+{
+    my $obj2 = Class->new;
+
+    delete (${$obj2->foo}[1]);
+
+    print "not " if (exists(${$obj2->{'foo'}}[1]));
+    say ("ok 5 - delete(\$obj->x) on dereference is working.");
+}
+
