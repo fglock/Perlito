@@ -1383,9 +1383,9 @@ package Perlito5::AST::Apply;
                    )
                 {
                     # $v->{sigil} = '%';
-                    return $v->emit_java($level, $wantarray) . '.exists(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                    return $v->emit_java($level, $wantarray) . '.hexists(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
-                return $v->emit_java($level, $wantarray, 'hash') . '.exists(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                return $v->emit_java($level, $wantarray, 'hash') . '.hexists(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
@@ -1393,16 +1393,16 @@ package Perlito5::AST::Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    return $v->emit_java($level, 'array') . '.exists(' . $arg->{index_exp}->emit_java($level) . ')';
+                    return $v->emit_java($level, 'array') . '.aexists(' . $arg->{index_exp}->emit_java($level) . ')';
                 }
-                return $v->emit_java($level, $wantarray, 'array') . '.exists(' . $arg->{index_exp}->emit_java($level) . ')';
+                return $v->emit_java($level, $wantarray, 'array') . '.aexists(' . $arg->{index_exp}->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.exists(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
+                    return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.hexists(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
-                    return $arg->invocant->emit_java($level, $wantarray, 'array') . '.exists(' . $arg->{arguments}->emit_java($level) . ')';
+                    return $arg->invocant->emit_java($level, $wantarray, 'array') . '.aexists(' . $arg->{arguments}->emit_java($level) . ')';
                 }
             }
             if (  $arg->isa('Perlito5::AST::Var')

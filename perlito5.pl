@@ -18254,23 +18254,23 @@ use feature 'say';
             if ($arg->isa("Perlito5::AST::Lookup")) {
                 my $v = $arg->obj();
                 if ($v->isa("Perlito5::AST::Var") && $v->sigil() eq "\$") {;
-                    return $v->emit_java($level, $wantarray) . ".exists(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
+                    return $v->emit_java($level, $wantarray) . ".hexists(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
                 }
-                return $v->emit_java($level, $wantarray, "hash") . ".exists(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
+                return $v->emit_java($level, $wantarray, "hash") . ".hexists(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
             }
             if ($arg->isa("Perlito5::AST::Index")) {
                 my $v = $arg->obj();
                 if ($v->isa("Perlito5::AST::Var") && $v->sigil() eq "\$") {;
-                    return $v->emit_java($level, "array") . ".exists(" . $arg->{"index_exp"}->emit_java($level) . ")"
+                    return $v->emit_java($level, "array") . ".aexists(" . $arg->{"index_exp"}->emit_java($level) . ")"
                 }
-                return $v->emit_java($level, $wantarray, "array") . ".exists(" . $arg->{"index_exp"}->emit_java($level) . ")"
+                return $v->emit_java($level, $wantarray, "array") . ".aexists(" . $arg->{"index_exp"}->emit_java($level) . ")"
             }
             if ($arg->isa("Perlito5::AST::Call")) {
                 if ($arg->method() eq "postcircumfix:<{ }>") {;
-                    return $arg->invocant()->emit_java($level, $wantarray, "hash") . ".exists(" . Perlito5::AST::Lookup::->autoquote($arg->{"arguments"})->emit_java($level) . ")"
+                    return $arg->invocant()->emit_java($level, $wantarray, "hash") . ".hexists(" . Perlito5::AST::Lookup::->autoquote($arg->{"arguments"})->emit_java($level) . ")"
                 }
                 if ($arg->method() eq "postcircumfix:<[ ]>") {;
-                    return $arg->invocant()->emit_java($level, $wantarray, "array") . ".exists(" . $arg->{"arguments"}->emit_java($level) . ")"
+                    return $arg->invocant()->emit_java($level, $wantarray, "array") . ".aexists(" . $arg->{"arguments"}->emit_java($level) . ")"
                 }
             }
             if ($arg->isa("Perlito5::AST::Var") && $arg->sigil() eq "&") {
@@ -25334,7 +25334,11 @@ class PlObject {
         PlCORE.die(\"Type of argument to each on reference must be unblessed hashref or arrayref\");
         return this;
     }
-    public PlObject exists(PlObject i) {
+    public PlObject aexists(PlObject i) {
+        PlCORE.die(\"exists argument is not a HASH or ARRAY element or a subroutine\");
+        return this;
+    }
+    public PlObject hexists(PlObject i) {
         PlCORE.die(\"exists argument is not a HASH or ARRAY element or a subroutine\");
         return this;
     }
@@ -26160,8 +26164,8 @@ class PlArrayRef extends PlReference {
         return this.ar.aset(i, v);
     }
  
-    public PlObject exists(PlObject i) {
-        return this.ar.exists(i);
+    public PlObject aexists(PlObject i) {
+        return this.ar.aexists(i);
     }
     public PlObject adelete(int want, PlObject i) {
         return this.ar.adelete(want, i);
@@ -26270,8 +26274,8 @@ class PlHashRef extends PlReference {
     public PlObject hset_alias(String i, PlObject v) {
         return this.ha.hset_alias(i, v);
     }
-    public PlObject exists(PlObject i) {
-        return this.ha.exists(i);
+    public PlObject hexists(PlObject i) {
+        return this.ha.hexists(i);
     }
     public PlObject hdelete(PlObject i) {
         return this.ha.hdelete(i);
@@ -27202,9 +27206,13 @@ class PlLvalue extends PlObject {
         } keys(%native_to_perl))), "    public PlObject apply(int want, PlArray List__) {
         return this.get().apply(want, List__);
     }
-    public PlObject exists(PlObject a) {
+    public PlObject hexists(PlObject a) {
         // exists \$v->{\$a}
-        return this.get().exists(a);
+        return this.get().hexists(a);
+    }
+    public PlObject aexists(PlObject a) {
+        // exists \$v->[\$a]
+        return this.get().aexists(a);
     }
     public PlObject hdelete(PlObject a) {
         // delete \$v->{\$a}
@@ -27410,7 +27418,7 @@ class PlTieArrayList extends PlArrayList {
     // add == PUSH
     // add(0, v) == UNSHIFT
 
-    public PlObject exists(PlObject i) {
+    public PlObject aexists(PlObject i) {
         return PerlOp.call(tied, \"EXISTS\", new PlArray(i), PlCx.SCALAR);
     }
     public PlObject adelete(int want, PlObject i) {
@@ -27458,7 +27466,7 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
 
     // Perl API
 
-    public PlObject exists(PlObject i) {
+    public PlObject aexists(PlObject i) {
         int pos  = i.to_int();
         if (pos < 0) {
             pos = this.size() + pos;
@@ -28039,8 +28047,8 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     public PlObject shift() {
         return this.a.shift();
     }
-    public PlObject exists(PlObject i) {
-        return this.a.exists(i);
+    public PlObject aexists(PlObject i) {
+        return this.a.aexists(i);
     }
     public PlObject adelete(int want, PlObject i) {
         return this.a.adelete(want, i);
@@ -28572,7 +28580,7 @@ class PlHash extends PlObject {
     public PlObject hset_alias(String s, PlObject lvalue) {
         return this.h.put(s, lvalue);
     }
-    public PlObject exists(PlObject i) {
+    public PlObject hexists(PlObject i) {
         return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
     }
     public PlObject hdelete(PlObject i) {
