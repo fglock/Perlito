@@ -709,11 +709,11 @@ package Perlito5::AST::Apply;
                         return "PerlOp.deleteSymbolTable(" . $index . ', ' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                     }
 
-                    return $v->emit_java($level) . '.delete('
+                    return $v->emit_java($level) . '.hdelete('
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
-                return $v->emit_java($level, $wantarray, 'hash') . '.delete(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                return $v->emit_java($level, $wantarray, 'hash') . '.hdelete(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
@@ -722,18 +722,18 @@ package Perlito5::AST::Apply;
                    )
                 {
                     $v = Perlito5::AST::Var->new(%$v, sigil => '@');
-                    return $v->emit_java($level) . '.delete('
+                    return $v->emit_java($level) . '.adelete('
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . $arg->{index_exp}->emit_java($level) . ')';
                 }
-                return $v->emit_java($level, $wantarray, 'array') . '.delete(' . $arg->{index_exp}->emit_java($level) . ')';
+                return $v->emit_java($level, $wantarray, 'array') . '.adelete(' . $arg->{index_exp}->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.delete(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
+                    return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.hdelete(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
-                    return $arg->invocant->emit_java($level, $wantarray, 'array') . '.delete(' . $arg->{arguments}->emit_java($level) . ')';
+                    return $arg->invocant->emit_java($level, $wantarray, 'array') . '.adelete(' . $arg->{arguments}->emit_java($level) . ')';
                 }
             }
             if (  $arg->isa('Perlito5::AST::Var')

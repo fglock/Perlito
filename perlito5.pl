@@ -17841,24 +17841,24 @@ use feature 'say';
                         my $index = Perlito5::Java::escape_string($v->{"namespace"} . "::");
                         return "PerlOp.deleteSymbolTable(" . $index . ", " . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
                     }
-                    return $v->emit_java($level) . ".delete(" . Perlito5::Java::to_context($wantarray) . ", " . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
+                    return $v->emit_java($level) . ".hdelete(" . Perlito5::Java::to_context($wantarray) . ", " . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
                 }
-                return $v->emit_java($level, $wantarray, "hash") . ".delete(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
+                return $v->emit_java($level, $wantarray, "hash") . ".hdelete(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
             }
             if ($arg->isa("Perlito5::AST::Index")) {
                 my $v = $arg->obj();
                 if ($v->isa("Perlito5::AST::Var") && $v->{"_real_sigil"} eq "\@") {
                     $v = Perlito5::AST::Var::->new(%{$v}, "sigil", "\@");
-                    return $v->emit_java($level) . ".delete(" . Perlito5::Java::to_context($wantarray) . ", " . $arg->{"index_exp"}->emit_java($level) . ")"
+                    return $v->emit_java($level) . ".adelete(" . Perlito5::Java::to_context($wantarray) . ", " . $arg->{"index_exp"}->emit_java($level) . ")"
                 }
-                return $v->emit_java($level, $wantarray, "array") . ".delete(" . $arg->{"index_exp"}->emit_java($level) . ")"
+                return $v->emit_java($level, $wantarray, "array") . ".adelete(" . $arg->{"index_exp"}->emit_java($level) . ")"
             }
             if ($arg->isa("Perlito5::AST::Call")) {
                 if ($arg->method() eq "postcircumfix:<{ }>") {;
-                    return $arg->invocant()->emit_java($level, $wantarray, "hash") . ".delete(" . Perlito5::AST::Lookup::->autoquote($arg->{"arguments"})->emit_java($level) . ")"
+                    return $arg->invocant()->emit_java($level, $wantarray, "hash") . ".hdelete(" . Perlito5::AST::Lookup::->autoquote($arg->{"arguments"})->emit_java($level) . ")"
                 }
                 if ($arg->method() eq "postcircumfix:<[ ]>") {;
-                    return $arg->invocant()->emit_java($level, $wantarray, "array") . ".delete(" . $arg->{"arguments"}->emit_java($level) . ")"
+                    return $arg->invocant()->emit_java($level, $wantarray, "array") . ".adelete(" . $arg->{"arguments"}->emit_java($level) . ")"
                 }
             }
             if ($arg->isa("Perlito5::AST::Var") && $arg->sigil() eq "&") {;
@@ -23199,11 +23199,11 @@ class PerlOp {
     public static final PlObject deleteSymbolTable(String nameSpace, PlObject index) {
         // delete \$Foo::{foo}
         PlString name = new PlString(nameSpace + index.toString());
-        PlV.cvar.delete(name);
-        PlV.svar.delete(name);
-        PlV.avar.delete(name);
-        PlV.hvar.delete(name);
-        PlV.fvar.delete(name);
+        PlV.cvar.hdelete(name);
+        PlV.svar.hdelete(name);
+        PlV.avar.hdelete(name);
+        PlV.hvar.hdelete(name);
+        PlV.fvar.hdelete(name);
         return PlCx.UNDEF; 
     }
 
@@ -25338,7 +25338,11 @@ class PlObject {
         PlCORE.die(\"exists argument is not a HASH or ARRAY element or a subroutine\");
         return this;
     }
-    public PlObject delete(PlObject i) {
+    public PlObject adelete(PlObject i) {
+        PlCORE.die(\"delete argument is not a HASH or ARRAY element or slice\");
+        return this;
+    }
+    public PlObject hdelete(PlObject i) {
         PlCORE.die(\"delete argument is not a HASH or ARRAY element or slice\");
         return this;
     }
@@ -26159,8 +26163,8 @@ class PlArrayRef extends PlReference {
     public PlObject exists(PlObject i) {
         return this.ar.exists(i);
     }
-    public PlObject delete(int want, PlObject i) {
-        return this.ar.delete(want, i);
+    public PlObject adelete(int want, PlObject i) {
+        return this.ar.adelete(want, i);
     }
     public PlObject values() {
         return this.ar.values();
@@ -26269,17 +26273,17 @@ class PlHashRef extends PlReference {
     public PlObject exists(PlObject i) {
         return this.ha.exists(i);
     }
-    public PlObject delete(PlObject i) {
-        return this.ha.delete(i);
+    public PlObject hdelete(PlObject i) {
+        return this.ha.hdelete(i);
     }
-    public PlObject delete(int want, PlArray a) {
-        return this.ha.delete(want, a);
+    public PlObject hdelete(int want, PlArray a) {
+        return this.ha.hdelete(want, a);
     }
-    public PlObject delete(int want, PlString a) {
-        return this.ha.delete(want, a);
+    public PlObject hdelete(int want, PlString a) {
+        return this.ha.hdelete(want, a);
     }
-    public PlObject delete(int want, PlLvalue a) {
-        return this.ha.delete(want, a);
+    public PlObject hdelete(int want, PlLvalue a) {
+        return this.ha.hdelete(want, a);
     }
     public PlObject values() {
         return this.ha.values();
@@ -27202,9 +27206,13 @@ class PlLvalue extends PlObject {
         // exists \$v->{\$a}
         return this.get().exists(a);
     }
-    public PlObject delete(PlObject a) {
+    public PlObject hdelete(PlObject a) {
         // delete \$v->{\$a}
-        return this.get().delete(a);
+        return this.get().hdelete(a);
+    }
+    public PlObject adelete(PlObject a) {
+        // delete \$v->[\$a]
+        return this.get().adelete(a);
     }
     public boolean is_lvalue() {
         return true;
@@ -27405,7 +27413,7 @@ class PlTieArrayList extends PlArrayList {
     public PlObject exists(PlObject i) {
         return PerlOp.call(tied, \"EXISTS\", new PlArray(i), PlCx.SCALAR);
     }
-    public PlObject delete(int want, PlObject i) {
+    public PlObject adelete(int want, PlObject i) {
         return PerlOp.call(tied, \"DELETE\", new PlArray(i), want);
     }
 
@@ -27460,7 +27468,7 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
         }
         return PlCx.TRUE;
     }
-    public PlObject delete(int want, PlObject i) {
+    public PlObject adelete(int want, PlObject i) {
         int pos  = i.to_int();
         if (pos < 0) {
             pos = this.size() + pos;
@@ -28034,8 +28042,8 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     public PlObject exists(PlObject i) {
         return this.a.exists(i);
     }
-    public PlObject delete(int want, PlObject i) {
-        return this.a.delete(want, i);
+    public PlObject adelete(int want, PlObject i) {
+        return this.a.adelete(want, i);
     }
     public PlObject values() {
         // return a copy
@@ -28567,18 +28575,18 @@ class PlHash extends PlObject {
     public PlObject exists(PlObject i) {
         return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
     }
-    public PlObject delete(PlObject i) {
+    public PlObject hdelete(PlObject i) {
         PlObject r = this.h.remove(i.toString());
         if (r == null) {
             return PlCx.UNDEF;
         }
         return r;
     }
-    public PlObject delete(int want, PlArray a) {
+    public PlObject hdelete(int want, PlArray a) {
         PlArray aa = new PlArray();
 
         for (int i = 0; i < a.to_int(); i++) {
-            PlObject r = this.delete(a.aget(i));
+            PlObject r = this.hdelete(a.aget(i));
             aa.push(r);
         }
         if (want == PlCx.LIST) {
@@ -28586,15 +28594,15 @@ class PlHash extends PlObject {
         }
         return aa.pop();
     }
-    public PlObject delete(int want, PlString a) {
+    public PlObject hdelete(int want, PlString a) {
         PlArray aa = new PlArray();
         aa.push(a);
-        return delete(want, aa);
+        return this.hdelete(want, aa);
     }
-    public PlObject delete(int want, PlLvalue a) {
+    public PlObject hdelete(int want, PlLvalue a) {
         PlArray aa = new PlArray();
         aa.push(a);
-        return delete(want, aa);
+        return this.hdelete(want, aa);
     }
     public PlObject values() {
         PlArray aa = new PlArray();
