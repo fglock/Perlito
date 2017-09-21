@@ -6628,6 +6628,18 @@ class PlString extends PlObject {
         // TODO - concatenate current namespace if needed
         return PlV.hash_set(s, v);
     }
+    public PlObject hdelete(int want, PlObject a) {
+        // TODO - concatenate current namespace if needed
+        int pos = s.lastIndexOf("::");
+        // if (pos == -1) {
+        //     s = namespace + "::" + s;
+        // }
+        if (pos == s.length() - 2) {
+            // %{"Module::"}
+            return PerlOp.deleteSymbolTable(this.s, a);
+        }
+        return PlV.hash_get(s).hdelete(want, a);
+    }
 
     public PlObject parse() {
         if (numericValue == null) {
