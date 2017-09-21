@@ -968,6 +968,7 @@ class PerlOp {
                 // TODO - move this inner loop outside, this is very expensive
                 // TODO - this code doesn't account for inner-subs - it might match an outer sub instead
                 // TODO - this code doesn't account for package name changes inside a sub
+                // TODO - this code skips anonymous subroutines
                 // this loop does a symbol table scan - PlV.cvar
                 for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
                     fullName = perlSubName.toString();
