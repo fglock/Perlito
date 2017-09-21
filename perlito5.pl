@@ -20069,7 +20069,13 @@ use feature 'say';
             if (($self->{"_do_block"} || $self->{"_eval_block"}) && $outer_sub) {;
                 push(@closure_args, $outer_sub)
             }
-            my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", ["public String perlFileName() {", ["return null;"], "}", "public Integer perlLineNumber() {", ["return null;"], "}", "public StackTraceElement firstLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}", "public PlObject apply(int want, PlArray List__) {", [@js_block], "}", "public StackTraceElement lastLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}"], "}");
+            my $perlFileName = "null";
+            my $perlLineNumber = "null";
+            if ($self->{"pos"}) {
+                $perlFileName = Perlito5::Java::escape_string($self->{"pos"}->{"file"});
+                $perlLineNumber = 0 + $self->{"pos"}->{"line"}
+            }
+            my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", ["public String perlFileName() {", ["return " . $perlFileName . ";"], "}", "public Integer perlLineNumber() {", ["return " . $perlLineNumber . ";"], "}", "public StackTraceElement firstLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}", "public PlObject apply(int want, PlArray List__) {", [@js_block], "}", "public StackTraceElement lastLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}"], "}");
             if ($self->{"name"}) {;
                 return Perlito5::Java::emit_wrap_java($level, "PlV.cset(", [Perlito5::Java::escape_string($self->{"namespace"} . "::" . $self->{"name"}) . ",", @s], ");")
             }

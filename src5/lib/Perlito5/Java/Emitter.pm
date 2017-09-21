@@ -2809,15 +2809,22 @@ package Perlito5::AST::Sub;
             push @closure_args, $outer_sub;
         }
 
+        my $perlFileName = 'null';
+        my $perlLineNumber = 'null';
+        if ($self->{pos}) {
+            $perlFileName = Perlito5::Java::escape_string( $self->{pos}{file} );
+            $perlLineNumber = 0 + $self->{pos}{line};
+        }
+
         my @s = (
             "new PlClosure(" . join( ", ", @closure_args ) . ") {",
                 [
                   "public String perlFileName() {",
-                    [ "return null;",   # TODO
+                    [ "return $perlFileName;",
                     ],
                   "}",
                   "public Integer perlLineNumber() {",
-                    [ "return null;",   # TODO
+                    [ "return $perlLineNumber;",
                     ],
                   "}",
                   "public StackTraceElement firstLine() {",
