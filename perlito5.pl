@@ -18256,14 +18256,24 @@ use feature 'say';
                 if ($v->isa("Perlito5::AST::Var") && $v->sigil() eq "\$") {;
                     return $v->emit_java($level, $wantarray) . ".hexists(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
                 }
-                return $v->emit_java($level, $wantarray, "hash") . ".hexists(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
+                if ($v->isa("Perlito5::AST::Apply") && $v->{"code"} eq "prefix:<\$>") {;
+                    $arg = Perlito5::AST::Call::->new("method", "postcircumfix:<{ }>", "invocant", $v->{"arguments"}->[0], "arguments", $arg->{"index_exp"})
+                }
+                else {;
+                    return $v->emit_java($level, $wantarray, "hash") . ".hexists(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
+                }
             }
             if ($arg->isa("Perlito5::AST::Index")) {
                 my $v = $arg->obj();
                 if ($v->isa("Perlito5::AST::Var") && $v->sigil() eq "\$") {;
                     return $v->emit_java($level, "array") . ".aexists(" . $arg->{"index_exp"}->emit_java($level) . ")"
                 }
-                return $v->emit_java($level, $wantarray, "array") . ".aexists(" . $arg->{"index_exp"}->emit_java($level) . ")"
+                if ($v->isa("Perlito5::AST::Apply") && $v->{"code"} eq "prefix:<\$>") {;
+                    $arg = Perlito5::AST::Call::->new("method", "postcircumfix:<[ ]>", "invocant", $v->{"arguments"}->[0], "arguments", $arg->{"index_exp"})
+                }
+                else {;
+                    return $v->emit_java($level, $wantarray, "array") . ".aexists(" . $arg->{"index_exp"}->emit_java($level) . ")"
+                }
             }
             if ($arg->isa("Perlito5::AST::Call")) {
                 if ($arg->method() eq "postcircumfix:<{ }>") {;
