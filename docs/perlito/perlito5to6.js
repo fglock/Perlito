@@ -13007,7 +13007,7 @@ var List__ = [];
 (function () {
 	p5make_package('Perlito5::Grammar::Use');
 	var Hash_Perlito_internal_module_1038 = {};
-	Hash_Perlito_internal_module_1038 = {'strict' : 'Perlito5X::strict', 'warnings' : 'Perlito5X::warnings', 'warnings::register' : 'Perlito5X::warnings::register', 'feature' : 'Perlito5X::feature', 'utf8' : 'Perlito5X::utf8', 'bytes' : 'Perlito5X::bytes', 're' : 'Perlito5X::re', 'encoding' : 'Perlito5X::encoding', 'Carp' : 'Perlito5X::Carp', 'Config' : 'Perlito5X::Config', 'Exporter' : 'Perlito5X::Exporter', 'Data::Dumper' : 'Perlito5X::Dumper', 'UNIVERSAL' : 'Perlito5X::UNIVERSAL', 'JSON' : 'Perlito5X::JSON', 'Tie::Hash' : 'Perlito5X::Tie::Hash', 'Tie::Array' : 'Perlito5X::Tie::Array', 'Tie::Scalar' : 'Perlito5X::Tie::Scalar'};
+	Hash_Perlito_internal_module_1038 = {'strict' : 'Perlito5X::strict', 'warnings' : 'Perlito5X::warnings', 'warnings::register' : 'Perlito5X::warnings::register', 'feature' : 'Perlito5X::feature', 'utf8' : 'Perlito5X::utf8', 'bytes' : 'Perlito5X::bytes', 're' : 'Perlito5X::re', 'encoding' : 'Perlito5X::encoding', 'Carp' : 'Perlito5X::Carp', 'Config' : 'Perlito5X::Config', 'Exporter' : 'Perlito5X::Exporter', 'Data::Dumper' : 'Perlito5X::Dumper', 'UNIVERSAL' : 'Perlito5X::UNIVERSAL', 'JSON' : 'Perlito5X::JSON', 'Symbol' : 'Perlito5X::Symbol', 'Tie::Hash' : 'Perlito5X::Tie::Hash', 'Tie::Array' : 'Perlito5X::Tie::Array', 'Tie::Scalar' : 'Perlito5X::Tie::Scalar'};
 	p5typeglob_set('Perlito5::Grammar::Use', 'register_internal_module', (function () {
 		var tmp3111;
 		tmp3111 = function (List__, p5want) {

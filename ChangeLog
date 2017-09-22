@@ -35,6 +35,7 @@
 -- $\
 -- caller() now works "natively", decoding the Java stack trace
 -- symbol tables like %:: and typeglobs support
+-- add "Symbol.pm"
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:
