@@ -20530,6 +20530,16 @@ class PlCORE {
         return PlCx.UNDEF;
     }
     public static final PlObject select(int want, PlArray List__) {
+        int arg_count = List__.length_of_array_int();
+
+        if (arg_count == 4) {
+            if (List__.aget(0).is_undef() && List__.aget(1).is_undef() && List__.aget(2).is_undef()) {
+                // You can effect a sleep of 250 milliseconds this way: select(undef, undef, undef, 0.25);
+                PlCORE.sleep(want, new PlArray(List__.aget(3)));
+                return PlCx.INT0;
+            }
+        }
+
         return PlCORE.die(\"select() not implemented\");
     }
     public static final PlObject exit(int want, PlArray List__) {
