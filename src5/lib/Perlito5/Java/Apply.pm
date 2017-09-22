@@ -1219,6 +1219,14 @@ package Perlito5::AST::Apply;
             my $list = 'new PlArray(PlCORE.sprintf(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list(\@in, $level) . '))';
             'PlCORE.print(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
         },
+        'select' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @arguments  = @{$self->{arguments}};
+            if ( @arguments == 1 ) {
+                return 'PlCORE.select(' . Perlito5::Java::to_filehandle($arguments[0], $level+1) . ')';
+            }
+            'PlCORE.select(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}, $level) . ')';
+        },
         'mkdir' => sub {
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
@@ -1558,7 +1566,7 @@ package Perlito5::AST::Apply;
             . ')';
         };
     }
-    for my $op (qw/ sleep ref exit warn die system qx pack unpack sprintf crypt join reverse select /) {
+    for my $op (qw/ sleep ref exit warn die system qx pack unpack sprintf crypt join reverse /) {
         $emit_js{$op} = sub {
             my ($self, $level, $wantarray) = @_;
             'PlCORE.' . $op . '('

@@ -18136,6 +18136,13 @@ use feature 'say';
             }
             my $list = "new PlArray(PlCORE.sprintf(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list(\@in, $level) . "))";
             "PlCORE.print(" . Perlito5::Java::to_context($wantarray) . ", " . $fun . ", " . $list . ")"
+        }, "select", sub {
+            (my($self), my($level), my($wantarray)) = @_;
+            my @arguments = @{$self->{"arguments"}};
+            if (@arguments == 1) {;
+                return "PlCORE.select(" . Perlito5::Java::to_filehandle($arguments[0], $level + 1) . ")"
+            }
+            "PlCORE.select(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}, $level) . ")"
         }, "mkdir", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{"arguments"}};
@@ -18348,7 +18355,7 @@ use feature 'say';
                 "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
             }
         }
-        for my $op ("sleep", "ref", "exit", "warn", "die", "system", "qx", "pack", "unpack", "sprintf", "crypt", "join", "reverse", "select") {;
+        for my $op ("sleep", "ref", "exit", "warn", "die", "system", "qx", "pack", "unpack", "sprintf", "crypt", "join", "reverse") {;
             $emit_js{$op} = sub {
                 (my($self), my($level), my($wantarray)) = @_;
                 "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}, $level) . ")"
@@ -20529,22 +20536,18 @@ class PlCORE {
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject select(PlFileHandle fh) {
+        // select FILEHANDLE
+        PlFileHandle fOld = PlCx.STDOUT;
+        PlCx.STDOUT = fh;
+        return fOld;
+    }
     public static final PlObject select(int want, PlArray List__) {
         int arg_count = List__.length_of_array_int();
-        String namespace = \"main\";    // TODO
-
         if (arg_count == 0) {
             // Returns the currently selected filehandle
             return PlCx.STDOUT;
         }
-
-        if (arg_count == 1) {
-            // select FILEHANDLE
-            PlFileHandle fh = PlCx.STDOUT;
-            PlCx.STDOUT = PerlOp.get_filehandle(List__.aget(0), namespace);
-            return fh;
-        }
-
         if (arg_count == 4) {
             if (List__.aget(0).is_undef() && List__.aget(1).is_undef() && List__.aget(2).is_undef()) {
                 // You can effect a sleep of 250 milliseconds this way: select(undef, undef, undef, 0.25);
@@ -20552,7 +20555,6 @@ class PlCORE {
                 return PlCx.INT0;
             }
         }
-
         return PlCORE.die(\"select() not implemented\");
     }
     public static final PlObject exit(int want, PlArray List__) {
