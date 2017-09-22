@@ -18013,6 +18013,9 @@ use feature 'say';
                     my $namespace = $arg->{"namespace"} || $Perlito5::PKG_NAME;
                     return "PlV.cset(" . Perlito5::Java::escape_string($namespace . "::" . $name) . ", PlCx.UNDEF)"
                 }
+                if (ref($arg) eq "Perlito5::AST::Apply" && $arg->{"code"} eq "prefix:<*>") {;
+                    return $arg->emit_java($level, "scalar") . ".setUndef()"
+                }
                 $self->{"arguments"} = [];
                 return $arg->emit_java_set($self, $level, $wantarray)
             }
@@ -23272,7 +23275,12 @@ class PerlOp {
         return get_filehandle(fh.toString(), nameSpace);    // get \"GLOB\" by name
     }
     public static final PlFileHandle get_filehandle(String s, String nameSpace) {
-        if (s.indexOf(\"::\") == -1) {
+        int pos = s.indexOf(\"::\");
+        if (pos == 0) {
+            // ::x
+            s = \"main\" + s;
+        }
+        if (pos == -1) {
             if (s.equals(\"STDOUT\")) {
                 s = \"main::STDOUT\";
             }
@@ -23288,6 +23296,9 @@ class PerlOp {
             else {
                 s = nameSpace + \"::\" + s;
             }
+        }
+        while (s.startsWith(\"main::main::\")) {
+            s = s.substring(6);
         }
         PlObject fh = PlV.fget(s);    // get \"GLOB\" by name
         return (PlFileHandle)(fh.get());
@@ -25876,10 +25887,27 @@ class PlFileHandle extends PlObject {
         return true;
     }
     public String toString() {
-        if (this.typeglob_name.indexOf(\"main::\") == 0) {
+        if (this.typeglob_name.startsWith(\"main::\")) {
             return \"*\" + this.typeglob_name.substring(4);
         }
         return \"*\" + this.typeglob_name;
+    }
+    public PlObject setUndef() {
+        // undef *{\$foo}
+        PlCORE.say( \"PlFileHandle.setUndef \" + typeglob_name);
+
+        PlString name = new PlString(typeglob_name);
+        PlV.cvar.hdelete(PlCx.VOID, name);
+        PlV.svar.hdelete(PlCx.VOID, name);
+        PlV.avar.hdelete(PlCx.VOID, name);
+        PlV.fvar.hdelete(PlCx.VOID, name);
+        if (typeglob_name.endsWith(\"::\")) {
+            // TODO - undefine inner symbol table
+        }
+        else {
+            PlV.hvar.hdelete(PlCx.VOID, name);
+        }
+        return PlCx.UNDEF; 
     }
     public PlObject hget(String i) {
         // *{ \$name }{CODE}->()
@@ -25892,6 +25920,10 @@ class PlFileHandle extends PlObject {
             return PlV.aget(typeglob_name);
         }
         else if (i.equals(\"HASH\")) {
+            if (typeglob_name.endsWith(\"::\")) {
+                // %{\"Module::\"}
+                return new PlHashRef(PerlOp.getSymbolTable(typeglob_name));
+            }
             return PlV.hget(typeglob_name);
         }
         else if (i.equals(\"CODE\")) {

@@ -1059,6 +1059,12 @@ package Perlito5::AST::Apply;
                     my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
                     return 'PlV.cset(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ', PlCx.UNDEF)';
                 }
+                if (  ref( $arg ) eq 'Perlito5::AST::Apply' 
+                   && $arg->{code} eq 'prefix:<*>'
+                   )
+                {
+                    return $arg->emit_java($level, 'scalar') . '.setUndef()';
+                }
                 $self->{arguments} = [];
                 return $arg->emit_java_set($self, $level, $wantarray);
             }
