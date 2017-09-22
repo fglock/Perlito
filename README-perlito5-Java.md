@@ -1203,6 +1203,24 @@ Missing features, or partially implemented, or untested
         main -e 1 main::__ANON__ 1    256
 ~~~
 
+        namespaces need more work:
+
+~~~bash
+        $ perl -e ' package AAA; sub x { my $v = caller; print "caller: $v\n"; print "$_: @{[ caller($_) ]}\n" for 0..3; }; package BBB; sub yy {AAA::x(); }; package CCC; sub cc { BBB::yy() }; cc(); '
+        caller: BBB
+        0: BBB -e 1 AAA::x 1    0  
+        1: CCC -e 1 BBB::yy 1    0  
+        2: CCC -e 1 CCC::cc 1    256  
+        3: 
+
+        $ java -jar perlito5.jar -I src5/lib -I . -e ' package AAA; sub x { my $v = caller; print "caller: $v\n"; print "$_: @{[ caller($_) ]}\n" for 0..3; }; package BBB; sub yy {AAA::x(); }; package CCC; sub cc { BBB::yy() }; cc(); '
+        caller: BBB
+        0: BBB -e 2 AAA::x
+        1: CCC -e 2 BBB::yy
+        2: Perlito5 -e 2 CCC::cc
+        3:  src5/util/jperl.pl 9 Perlito5::eval_string
+~~~
+
     __DATA__ sections
 
         %Perlito5::DATA_SECTION contains the __DATA__ for each package

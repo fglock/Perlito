@@ -23585,7 +23585,7 @@ class PerlOp {
                 }
             }
         }
-\x{9}\x{9}PlObject plFullName = caller.aget(item);
+        PlObject plFullName = caller.aget(item + 1);    // \"package\" comes from the next level
         fullName = plFullName.toString();
 
         PlObject packageName = PlCx.UNDEF;
@@ -23599,6 +23599,7 @@ class PerlOp {
             return packageName;
         }
 
+        plFullName = caller.aget(item);    // \"subroutine\" comes from the current level
 \x{9}\x{9}PlObject plCoderef = coderef.aget(item);
         PlObject lineNumber = PlCx.UNDEF;
         String fileName = \"\";
