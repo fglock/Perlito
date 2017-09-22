@@ -20531,6 +20531,19 @@ class PlCORE {
     }
     public static final PlObject select(int want, PlArray List__) {
         int arg_count = List__.length_of_array_int();
+        String namespace = \"main\";    // TODO
+
+        if (arg_count == 0) {
+            // Returns the currently selected filehandle
+            return PlCx.STDOUT;
+        }
+
+        if (arg_count == 1) {
+            // select FILEHANDLE
+            PlFileHandle fh = PlCx.STDOUT;
+            PlCx.STDOUT = PerlOp.get_filehandle(List__.aget(0), namespace);
+            return fh;
+        }
 
         if (arg_count == 4) {
             if (List__.aget(0).is_undef() && List__.aget(1).is_undef() && List__.aget(2).is_undef()) {
@@ -22970,7 +22983,7 @@ class PlCx {
     public static final PlBool   TRUE   = new PlBool(true);
     public static final PlBool   FALSE  = new PlBool(false);
     public static final PlFileHandle STDIN  = new PlFileHandle();
-    public static final PlFileHandle STDOUT = new PlFileHandle();
+    public static       PlFileHandle STDOUT = new PlFileHandle();
     public static final PlFileHandle STDERR = new PlFileHandle();
     public static final Charset UTF8        = Charset.forName(\"UTF-8\");
     public static final PlString EMPTY  = new PlString(\"\");

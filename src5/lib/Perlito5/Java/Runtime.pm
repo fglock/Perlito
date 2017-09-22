@@ -386,7 +386,7 @@ class PlCx {
     public static final PlBool   TRUE   = new PlBool(true);
     public static final PlBool   FALSE  = new PlBool(false);
     public static final PlFileHandle STDIN  = new PlFileHandle();
-    public static final PlFileHandle STDOUT = new PlFileHandle();
+    public static       PlFileHandle STDOUT = new PlFileHandle();
     public static final PlFileHandle STDERR = new PlFileHandle();
     public static final Charset UTF8        = Charset.forName("UTF-8");
     public static final PlString EMPTY  = new PlString("");
