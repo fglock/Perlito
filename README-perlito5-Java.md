@@ -170,6 +170,8 @@ Perlito5-Java work-in-progress
 
   - incomplete implementations for sprintf(), pack(), unpack()
 
+  - vec() not implemented
+
   - Perl threads not implemented
       - Java threads can be used, with some limitations. See: misc/Java/TestConcurrent.pl and misc/Java/TestThread2.pl
 
