@@ -3339,6 +3339,11 @@ class PlFileHandle extends PlObject {
             return PlV.aget(typeglob_name);
         }
         else if (i.equals("HASH")) {
+            int pos = typeglob_name.lastIndexOf("::");
+            if (pos == typeglob_name.length() - 2) {
+                // %{"Module::"}
+                return new PlHashRef(PerlOp.getSymbolTable(typeglob_name));
+            }
             return PlV.hget(typeglob_name);
         }
         else if (i.equals("CODE")) {
