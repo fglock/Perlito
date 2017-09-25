@@ -12,5 +12,10 @@ sub register_categories {
     # TODO
 }
 
+sub warnif {
+    # TODO
+    warn( pop(@_) );
+}
+
 1;
 

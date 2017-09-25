@@ -53,6 +53,9 @@ use feature 'say';
         $Perlito5::WARNINGS = 0
     }
     sub warnings::register_categories {}
+    sub warnings::warnif {;
+        warn(pop(@_))
+    }
     1
 }
 {
