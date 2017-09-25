@@ -23801,7 +23801,17 @@ class PerlOp {
         }
     }
     public static final PlObject p5file_exists(PlObject s) {
-        return PlCORE.die(\"-e not implemented\");
+        try {
+            return new PlBool(new File(resolve_file(s).toString()).exists());
+        }
+        catch(IOException e) {
+            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+        catch(RuntimeException e) {
+            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
     }
     public static final PlObject p5is_file(PlObject s) {
         try {
