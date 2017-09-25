@@ -24,6 +24,7 @@ Perlito5-Java platform differences
       - weaken() is a no-op
       - Try::Tiny "finally" doesn't work
       - Object::InsideOut will not cleanup unused objects
+      - SelectSaver module doesn't work
 
   - no XS (because we use Java instead of C)
       - many CPAN modules which use C libraries don't work
