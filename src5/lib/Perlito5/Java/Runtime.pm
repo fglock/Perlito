@@ -385,9 +385,6 @@ class PlCx {
     public static final PlUndef  UNDEF  = new PlUndef();
     public static final PlBool   TRUE   = new PlBool(true);
     public static final PlBool   FALSE  = new PlBool(false);
-    public static final PlFileHandle STDIN  = new PlFileHandle();
-    public static       PlFileHandle STDOUT = new PlFileHandle();
-    public static final PlFileHandle STDERR = new PlFileHandle();
     public static final Charset UTF8        = Charset.forName("UTF-8");
     public static final PlString EMPTY  = new PlString("");
     public static final PlNextException NEXT = new PlNextException(0);
@@ -2145,6 +2142,9 @@ class PlV {
 
     public static PlRegexResult regex_result = new PlRegexResult();
     public static Path path;
+    public static PlFileHandle STDIN  = new PlFileHandle();
+    public static PlFileHandle STDOUT = new PlFileHandle();
+    public static PlFileHandle STDERR = new PlFileHandle();
 
     public static final void init(String[] args) {
         PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
@@ -2152,16 +2152,16 @@ class PlV {
         PlV.sset("main::" + (char)34, new PlString(" "));         // $" = " "
         PlV.sset("main::/", new PlString("\n"));                  // $/ = "\n"
 
-        PlCx.STDIN.inputStream   = System.in;
-        PlCx.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
-        PlCx.STDIN.eof           = false;
-        PlCx.STDIN.typeglob_name = "main::STDIN";
+        PlV.STDIN.inputStream   = System.in;
+        PlV.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
+        PlV.STDIN.eof           = false;
+        PlV.STDIN.typeglob_name = "main::STDIN";
 
-        PlCx.STDOUT.outputStream = System.out;
-        PlCx.STDOUT.typeglob_name = "main::STDOUT";
+        PlV.STDOUT.outputStream = System.out;
+        PlV.STDOUT.typeglob_name = "main::STDOUT";
 
-        PlCx.STDERR.outputStream = System.err;
-        PlCx.STDERR.typeglob_name = "main::STDERR";
+        PlV.STDERR.outputStream = System.err;
+        PlV.STDERR.typeglob_name = "main::STDERR";
 
         try {
             PlV.path = Paths.get(".").toRealPath();
@@ -2170,9 +2170,9 @@ class PlV {
             // don't know what to do
         }
 
-        PlV.fset("main::STDIN",  PlCx.STDIN);                             // "GLOB"
-        PlV.fset("main::STDOUT", PlCx.STDOUT);
-        PlV.fset("main::STDERR", PlCx.STDERR);
+        PlV.fset("main::STDIN",  PlV.STDIN);                             // "GLOB"
+        PlV.fset("main::STDOUT", PlV.STDOUT);
+        PlV.fset("main::STDERR", PlV.STDERR);
 
         PlV.cset("UNIVERSAL::can", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
             public PlObject apply(int want, PlArray List__) {

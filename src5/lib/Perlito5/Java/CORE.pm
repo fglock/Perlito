@@ -207,7 +207,7 @@ EOT
                 else {
                     // read from STDIN
                     fh.is_argv = false;     // clear the magic bit
-                    in  = PlCx.STDIN;
+                    in  = PlV.STDIN;
                 }
                 fh.readlineBuffer   = in.readlineBuffer;
                 fh.eof              = in.eof;
@@ -385,7 +385,7 @@ EOT
     ) . <<'EOT'
     public static final PlObject say(String s) {
         // say() shortcut for internal use
-        return PlCORE.say(PlCx.VOID, PlCx.STDOUT, new PlArray(new PlString(s)));
+        return PlCORE.say(PlCx.VOID, PlV.STDOUT, new PlArray(new PlString(s)));
     }
     public static final PlObject mkdir(int want, PlArray List__) {
         try {
@@ -464,15 +464,15 @@ EOT
     }
     public static final PlObject select(PlFileHandle fh) {
         // select FILEHANDLE
-        PlFileHandle fOld = PlCx.STDOUT;
-        PlCx.STDOUT = fh;
+        PlFileHandle fOld = PlV.STDOUT;
+        PlV.STDOUT = fh;
         return fOld;
     }
     public static final PlObject select(int want, PlArray List__) {
         int arg_count = List__.length_of_array_int();
         if (arg_count == 0) {
             // Returns the currently selected filehandle
-            return PlCx.STDOUT;
+            return PlV.STDOUT;
         }
         if (arg_count == 4) {
             if (List__.aget(0).is_undef() && List__.aget(1).is_undef() && List__.aget(2).is_undef()) {
@@ -516,7 +516,7 @@ EOT
         }
         else {
             String s = List__.toString();
-            PlCx.STDERR.outputStream.println(s);
+            PlV.STDERR.outputStream.println(s);
         }
         return PlCx.INT1;
     }

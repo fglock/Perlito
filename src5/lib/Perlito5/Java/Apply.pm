@@ -1194,7 +1194,7 @@ package Perlito5::AST::Apply;
                 $fun = Perlito5::Java::to_filehandle($self->{special_arg}, $level+1);
             }
             else {
-                $fun  = 'PlCx.STDOUT';
+                $fun  = 'PlV.STDOUT';
             }
             my $list = Perlito5::Java::to_list(\@in, $level);
             'PlCORE.print(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
@@ -1207,7 +1207,7 @@ package Perlito5::AST::Apply;
                 $fun = Perlito5::Java::to_filehandle($self->{special_arg}, $level+1);
             }
             else {
-                $fun  = 'PlCx.STDOUT';
+                $fun  = 'PlV.STDOUT';
             }
             my $list = Perlito5::Java::to_list(\@in, $level);
             'PlCORE.say(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
@@ -1220,7 +1220,7 @@ package Perlito5::AST::Apply;
                 $fun = Perlito5::Java::to_filehandle($self->{special_arg}, $level+1);
             }
             else {
-                $fun  = 'PlCx.STDOUT';
+                $fun  = 'PlV.STDOUT';
             }
             my $list = 'new PlArray(PlCORE.sprintf(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list(\@in, $level) . '))';
             'PlCORE.print(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
@@ -1280,7 +1280,7 @@ package Perlito5::AST::Apply;
                 $fun = Perlito5::Java::to_filehandle($fun, $level+1);
             }
             else {
-                $fun  = 'PlCx.STDIN';
+                $fun  = 'PlV.STDIN';
             }
             'PlCORE.getc('
              .      Perlito5::Java::to_context($wantarray) . ', '
