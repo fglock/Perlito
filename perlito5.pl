@@ -5594,13 +5594,23 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Scope::compile_time_glob_set {
         (my($glob), my($value), my($namespace)) = @_;
+        print STDERR:: "compile_time_glob_set: ", Data::Dumper::Dumper(\@_);
         if (!ref($glob)) {
             if ($glob !~ m/::/) {;
                 $glob = $namespace . "::" . $glob
             }
             my @parts = split("::", $glob);
             my $name = pop(@parts);
-            Perlito5::AST::Var::->new("name", $name, "namespace", join("::", @parts), "sigil", "*", "_decl", "global")
+            Perlito5::AST::Var::->new("name", $name, "namespace", join("::", @parts), "sigil", "*", "_decl", "global");
+            if (ref($value) eq "SCALAR") {;
+                $Perlito5::VARS{"\$" . $glob} = 1
+            }
+            if (ref($value) eq "HASH") {;
+                $Perlito5::VARS{"%" . $glob} = 1
+            }
+            if (ref($value) eq "ARRAY") {;
+                $Perlito5::VARS{"\@" . $glob} = 1
+            }
         }
         *{$glob} = $value
     }
@@ -5678,6 +5688,7 @@ use feature 'say';
                         my $sigil = $var->{"_real_sigil"} || $var->{"sigil"};
                         if ($sigil ne "*" && $sigil ne "&") {
                             if (length($var->{"name"}) >= 2 && substr($var->{"name"}, -2) eq "::") {}
+                            elsif ($Perlito5::VARS{$sigil . $Perlito5::PKG_NAME . "::" . $var->{"name"}}) {}
                             else {;
                                 Perlito5::Compiler::error("Global symbol \"" . $sigil . $var->{"name"} . "\"" . " requires explicit package name")
                             }
@@ -9068,6 +9079,7 @@ use feature 'say';
     our @UNITCHECK_BLOCK = ();
     our %BEGIN_SCRATCHPAD = ();
     our $PROTO = {};
+    our %VARS = ();
     our @ANNOTATION;
     sub Perlito5::set_global_phase {
         my $phase = shift;

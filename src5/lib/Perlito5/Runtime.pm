@@ -41,8 +41,9 @@ our @END_BLOCK       = ();    # END block LIFO - array of subs
 our @INIT_BLOCK      = ();    # INIT block FIFO - array of subs
 our @CHECK_BLOCK     = ();    # CHECK block LIFO - array of subs
 our @UNITCHECK_BLOCK = ();    # UNITCHECK block LIFO - array of subs
-our %BEGIN_SCRATCHPAD = (); # list of "my" variables captured in BEGIN blocks
+our %BEGIN_SCRATCHPAD = ();   # list of "my" variables captured in BEGIN blocks
 our $PROTO           = {};
+our %VARS            = ();    # implements "use vars"
 
 # $Perlito5::STRICT_* - See Perlito5X::strict.pm
 

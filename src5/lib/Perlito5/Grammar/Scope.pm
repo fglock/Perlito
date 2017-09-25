@@ -47,6 +47,16 @@ sub compile_time_glob_set {
         my @parts = split "::", $glob;
         my $name = pop @parts;
         Perlito5::AST::Var->new( name => $name, namespace => join("::", @parts), sigil => "*", _decl => "global" );
+
+        if (ref($value) eq 'SCALAR') {
+            $Perlito5::VARS{'$' . $glob} = 1;
+        }
+        if (ref($value) eq 'HASH') {
+            $Perlito5::VARS{'%' . $glob} = 1;
+        }
+        if (ref($value) eq 'ARRAY') {
+            $Perlito5::VARS{'@' . $glob} = 1;
+        }
     }
     *{$glob} = $value;
 }
@@ -159,6 +169,9 @@ sub check_variable_declarations {
                     if ($sigil ne '*' && $sigil ne '&') {
                         if (length($var->{name}) >= 2 && substr($var->{name}, -2) eq '::') {
                             # looks like a symbol table reference
+                        }
+                        elsif ($Perlito5::VARS{ $sigil . $Perlito5::PKG_NAME . '::' . $var->{name} }) {
+                            # "use vars"
                         }
                         else {
                             Perlito5::Compiler::error( 'Global symbol "' . $sigil . $var->{name} . '"'
