@@ -1158,8 +1158,15 @@ class PerlOp {
     //    'prefix:<-f>' => 'PerlOp.p5is_file',
     //    'prefix:<-s>' => 'PerlOp.p5size',
 
+    static String lastStat = null;
+
     public static final Path resolve_file(PlObject s) throws IOException {
-        return PlV.path.resolve(s.toString()).toRealPath();
+        String name = s.toString();
+        if (name.equals("_") && lastStat != null) {
+            return PlV.path.resolve(lastStat).toRealPath();
+        }
+        lastStat = name;
+        return PlV.path.resolve(name).toRealPath();
     }
 
     public static final PlObject p5atime(PlObject s) {
