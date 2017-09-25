@@ -119,11 +119,13 @@ token stmt_use {
             my $use_decl = Perlito5::Match::flat($MATCH->{use_decl});
 
             if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
-                my $code = 'our (' . join(', ', @$list) . ')';
-                my $m = Perlito5::Grammar::Statement::statement_parse( [ split "", $code ], 0);
-                Perlito5::Compiler::error "not a valid variable name: @$list"
-                    if !$m;
-                $MATCH->{capture} = $m->{capture};
+                for my $name (@$list) {
+                    #  $v --> $Pkg::v
+                    $Perlito5::VARS{ substr($name,0,1) . $Perlito5::PKG_NAME . '::' . substr($name,1) } = 1;
+                }
+                # Perlito5::Compiler::error "not a valid variable name: @$list"
+                #    if !$m;
+                $MATCH->{capture} = Perlito5::Grammar::Block::ast_nop();
             }
             elsif ($use_decl eq 'use' && $full_ident eq 'constant') {
                 my @ast;
