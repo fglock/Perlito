@@ -18873,6 +18873,12 @@ use feature 'say';
         }
         sub Perlito5::Java::to_filehandle {
             (my($item), my($level)) = @_;
+            if (ref($item) eq "Perlito5::AST::Block") {
+                my $stmts = $item->{"stmts"};
+                if (@{$stmts} == 1) {;
+                    $item = $stmts->[0]
+                }
+            }
             return "PerlOp.get_filehandle(" . $item->emit_java($level) . ", " . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")"
         }
         sub Perlito5::Java::to_param_list {

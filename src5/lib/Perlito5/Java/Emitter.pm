@@ -746,6 +746,15 @@ package Perlito5::Java;
 
     sub to_filehandle {
         my ($item, $level) = @_;
+
+        if (ref($item) eq 'Perlito5::AST::Block') {
+            # print { $f } @list
+            my $stmts = $item->{stmts};
+            if ( @$stmts == 1 ) {
+                $item = $stmts->[0];
+            }
+        }
+
         return      'PerlOp.get_filehandle('
              .        $item->emit_java( $level ) . ', '
              .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
