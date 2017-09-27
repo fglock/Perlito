@@ -6,7 +6,7 @@ Perlito5 Java backend
 Requirements
 ------------
 
-- Java 7 or Java 8
+- minimum Java version is Java 7
 
   - Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 7.
 
