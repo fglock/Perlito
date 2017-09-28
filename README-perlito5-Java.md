@@ -631,29 +631,29 @@ Document Perlito5-Java extensibility
 
 This documentation should be copied to file Perlito5::Java, in the CPAN distribution.
 
-    - Java import and typed variables
+- Java import and typed variables
 
-      ```perl
-      package The::Class {
-          import           => 'full.path.Class',  # mandatory
-          java_type        => 'Class',            # auto generated, can be overridden: 'Class<String>'
-          perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overridden
-          # perl_package   => 'The::Class',       # auto generated, Perl package name
-      }
-      ```
+  ```perl
+  package The::Class {
+      import           => 'full.path.Class',  # mandatory
+      java_type        => 'Class',            # auto generated, can be overridden: 'Class<String>'
+      perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overridden
+      # perl_package   => 'The::Class',       # auto generated, Perl package name
+  }
+  ```
 
 - Java import
 
-    ```perl
-    package Sample {
-        import => "misc.Java.Sample"
-    };
+  ```perl
+  package Sample {
+      import => "misc.Java.Sample"
+  };
 
-    package Array::Of::String {
-        import => "java.util.ArrayList",
-        java_type => "ArrayList<String>",
-    }
-    ```
+  package Array::Of::String {
+      import => "java.util.ArrayList",
+      java_type => "ArrayList<String>",
+  }
+  ```
 
   - generates:
     - import misc.java.Sample;              (DONE)
