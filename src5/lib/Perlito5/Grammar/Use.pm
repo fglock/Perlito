@@ -20,6 +20,7 @@ my %Perlito_internal_module = (
     'Data::Dumper' => 'Perlito5X::Dumper',
     UNIVERSAL      => 'Perlito5X::UNIVERSAL',
     IO             => 'Perlito5X::IO',
+    'IO::Handle'   => 'Perlito5X::IO::Handle',
     JSON           => 'Perlito5X::JSON',
     Symbol         => 'Perlito5X::Symbol',
     'Tie::Hash'    => 'Perlito5X::Tie::Hash',
