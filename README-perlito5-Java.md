@@ -10,11 +10,7 @@ Requirements
 
   - Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 7.
 
-  - Java 7 is also required for named groups in regex, like:
-
-```
-    (?<name>X).
-```
+  - Java 7 is also required for named groups in regex, like:  `(?<name>X).`
 
 Perlito5-Java platform differences
 -------------------------------------------
@@ -40,9 +36,9 @@ Build using make
 
   - type:
 
-```sh
+        ```sh
         $ make
-```
+        ```
 
   - alternately:
 
@@ -54,7 +50,7 @@ Build using make
 
       - Compile the compiler into a jar file
 
-```sh
+        ```sh
         $ make build-5java
 
         $ java -jar perlito5.jar -v
@@ -63,7 +59,7 @@ Build using make
         # run a test
         $ java -jar perlito5.jar -Isrc5/lib t5/unit/array.t
         ok 1 ...
-```
+        ```
 
 Perlito5-Java work-in-progress
 ------------------------------
@@ -76,11 +72,11 @@ Perlito5-Java work-in-progress
 
       - build stand-alone, precompiled "secure" script without eval-string / without "perlito5-lib"
 
-```sh
+        ```sh
         $ java -jar perlito5.jar -I src5/lib --nojava_eval -Cjava t5/unit/array.t > test.java
         $ javac test.java
         $ java Main
-```
+        ```
 
       - build android script
 
@@ -91,7 +87,7 @@ Perlito5-Java work-in-progress
 
       - bootstrapping is not possible with perlito5.jar, because it is built without the grammar modules.
 
-```sh
+        ```sh
         $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main.java
 
         $ javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 Main.java
@@ -103,15 +99,15 @@ Perlito5-Java work-in-progress
         $ java Main --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main2.java
         $ diff Main.java Main2.java
         [ no differences ]
-```
+        ```
 
       - Using the perlito5-lib.jar file
 
         - TODO - explain this
 
-```java
+          ```java
           import org.perlito.Perlito5.*;
-```
+          ```
 
 
   - "Java Scripting API"
@@ -136,11 +132,7 @@ Perlito5-Java work-in-progress
 
       - some data structures created by BEGIN need more work for proper serialization to AST:
 
-          - some types of aliased values, like:
-
-```perl
-            *name2 = *name1{IO}
-```
+          - some types of aliased values, like:  `*name2 = *name1{IO}`
 
           - lexical variables are not shared between closures created in BEGIN blocks
 
@@ -218,11 +210,11 @@ Regex differences
 
   - capturing in zero-length-match has problems. Failing tests:
 
-```
+        ```
         t5/unit/regex_zero_length_match_capture.t
         t5/unit/regex_zero_length_match_match.t
         t5/unit/regex_zero_length_replace.t
-```
+        ```
 
   - TODO - check this error message, this may need to be implemented for compatibility:
 
@@ -276,7 +268,7 @@ Java classes can be added to a Perl script using a special "package" declaration
 Calling a Perl subroutine from Java
 -----------------------------------
 
-```java
+    ```java
     class MyJava {
         public static void main(String[] args) throws Exception {
             Main.init();
@@ -286,12 +278,12 @@ Calling a Perl subroutine from Java
             }
         }
     }
-```
+    ```
 
 Importing a Java class into Perl
 --------------------------------
 
-```perl
+    ```perl
     package Sample {
         import => "misc.Java.Sample"
     };
@@ -302,14 +294,14 @@ Importing a Java class into Perl
     }
 
     my Array::Of::String $x = Array::Of::String->new();
-```
+    ```
 
 Importing Java value types (Typed variables)
 --------------------------------------------
 
 Java value types don't need to be imported, but there must exist a Perl package:
 
-```perl
+    ```perl
     package String    { }
     package Long      { }
     package Integer   { }
@@ -325,11 +317,11 @@ Java value types don't need to be imported, but there must exist a Perl package:
     # assigning a Java value to a Perl variable
     my $v = Boolean->TRUE;
     print "$v\n";   # 1
-```
+    ```
 
 All primitive data type declarations are supported:
 
-```perl
+    ```perl
     package long      { }
     package int       { }
     package short     { }
@@ -338,11 +330,11 @@ All primitive data type declarations are supported:
     package double    { }
     package boolean   { }
     package char      { }
-```
+    ```
 
 Other value types can be imported:
 
-```perl
+    ```perl
     package Java::Object { import => "java.lang.Object" };
     package Java::Date   { import => "java.util.Date" };
     package Java::Array::Of::String {
@@ -355,7 +347,7 @@ Other value types can be imported:
     my Java::Array::Of::String $arr = Java::Array::Of::String->new();
     $arr->add("123");
     $arr->add($p->toString());
-```
+    ```
 
 - native arrays
 
@@ -367,11 +359,11 @@ Perl arrays can be assigned a native array:
 Native array variables can not be created directly.
 As a workaround, see "Java::inline".
 
-```perl
+    ```perl
     package String { };
     my @arr2 = Java::inline ' new String[]{ "a", "b" } ';
     print "arr2[0] $arr2[0], arr2[1] $arr2[1]\n";
-```
+    ```
 
 - Constants
 
@@ -379,68 +371,68 @@ As a workaround, see "Java::inline".
 
     Perlito can't represent native "Character" values (only String)
 
-```perl
+    ```perl
     package Character { };
     my Character $b = "a";
     # error: incompatible types: String cannot be converted to Character
-```
+    ```
 
     workaround:
 
-```perl
+    ```perl
     package Character { };
     package String { };
     my Character $b = String->new("a")->charAt(0);
     my Character $b = $v->to_char();
-```
+    ```
 
   - Long
 
     Perlito can't represent native "Long" values (only Int):
 
-```perl
+    ```perl
     package Long {};
     my Long $b = 100;
     # error: incompatible types: int cannot be converted to Long
-```
+    ```
 
   - workaround:
 
-```perl
+    ```perl
     package Long {};
     my Long $b = Long->new(100.0);
     my Long $b = $v->to_long();
-```
+    ```
 
   - Float
 
     Perlito can't represent native "Float" values (only Double):
 
-```perl
+    ```perl
     package Float {};
     my Float $b = 100.0;
     # error: incompatible types: double cannot be converted to Float
-```
+    ```
 
     workaround:
 
-```perl
+    ```perl
     package Float {};
     my Float $b = Float->new(100.0);
     my Float $b = $v->to_float();
-```
+    ```
 
 
 Using typed variables
 ---------------------
 
-```perl
+    ```perl
     package long {}
     my long $j;             # Java variable
     my $var;                # Perl variable
     $var = $j;              # store Java value in Perl variable
     $j = $var->to_long();   # get Java value from Perl variable
-```
+    ```
 
 Typed variables generate efficient, native Java. The catch is that there are a few restrictions:
 
@@ -462,7 +454,7 @@ This is because Perl blocks return the last value, and "void" is not acceptable 
 Extending a Java class with Perl
 --------------------------------
 
-```perl
+    ```perl
     # create a Java package
     package header { java_path => 'org.perlito.udfs' };
 
@@ -499,7 +491,7 @@ Extending a Java class with Perl
     my $s2 = $date->toString();     # extended class
     
     print $s1, " ", $s2, "\n";   # prints date and "Hello"
-```
+    ```
 
 
 Using Java inside Perl code with Java::inline
@@ -507,7 +499,7 @@ Using Java inside Perl code with Java::inline
 
 Example: Java method override using Java::inline
 
-```perl
+    ```perl
     # See: https://github.com/bdevetak/perl2j/tree/master/examples/myapp
     package Date  { import => "java.util.Date" };
     my Date $dateJavaObject =
@@ -518,7 +510,7 @@ Example: Java method override using Java::inline
                 }    
             }';
     my $dateString_pObject = $dateJavaObject->toString();   # Hello
-```
+    ```
 
 Thread safety
 -------------
@@ -543,26 +535,26 @@ Perlito5 Java development tools
 
 - Execute a single-line quick test 
 
-```bash
-$ perl perlito5.pl -Isrc5/lib -Cjava -e ' sub x { return 123, 5 } my $x = x(); say "$x" ' > Main.java ; javac Main.java ; java Main
-5
-```
+    ```bash
+    $ perl perlito5.pl -Isrc5/lib -Cjava -e ' sub x { return 123, 5 } my $x = x(); say "$x" ' > Main.java ; javac Main.java ; java Main
+    5
+    ```
 
 - Rebuild the compiler
 
-```bash
-$ make build-5to5 
-```
+    ```bash
+    $ make build-5to5 
+    ```
 
 "make" rebuilds everything, including the java-eval-string and the nodejs-based compiler
 
 - Perl-Java test suite
 
-```bash
-$ make test-5java   # tests the Java-precompile backend
-$ make test-5jar    # tests the Java-eval-string backend (perlito5.jar)
-$ make test         # tests the nodejs backend
-```
+    ```bash
+    $ make test-5java   # tests the Java-precompile backend
+    $ make test-5jar    # tests the Java-eval-string backend (perlito5.jar)
+    $ make test         # tests the nodejs backend
+    ```
 
 "make test" should pass everything, except for the "sleep" function which requires a nodejs module
 
@@ -572,10 +564,10 @@ $ make test         # tests the nodejs backend
 
 You may find useful when debugging,
 
-```bash
-$ perl perlito5.pl -Isrc5/lib -Cast-json -e ' … '
-$ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' … '
-```
+    ```bash
+    $ perl perlito5.pl -Isrc5/lib -Cast-json -e ' … '
+    $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' … '
+    ```
 
 to see the internal representation
 
@@ -622,7 +614,7 @@ the bytecode of a method must not be bigger than 65536 bytes:
 
   - current workaround: insert a closure every 100s of lines in a block:
 
-```perl
+        ```perl
         code...
         return (sub {
                 code ...
@@ -630,7 +622,7 @@ the bytecode of a method must not be bigger than 65536 bytes:
                         code ...
                     }->() )
             }->() )
-```
+        ```
 
 Document Perlito5-Java extensibility
 ------------------------------------
@@ -639,18 +631,18 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     - Java import and typed variables
 
-```perl
+        ```perl
         package The::Class {
             import           => 'full.path.Class',  # mandatory
             java_type        => 'Class',            # auto generated, can be overridden: 'Class<String>'
             perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overridden
             # perl_package   => 'The::Class',       # auto generated, Perl package name
         }
-```
+        ```
 
 - Java import
 
-```perl
+    ```perl
     package Sample {
         import => "misc.Java.Sample"
     };
@@ -659,7 +651,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         import => "java.util.ArrayList",
         java_type => "ArrayList<String>",
     }
-```
+    ```
 
   - generates:
     - import misc.java.Sample;              (DONE)
@@ -689,9 +681,9 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         - untyped variables are passed by reference - that is, v_x instead of v_x.get()
         - wantarray() context is not passed to native calls
 
-```bash
+    ```bash
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Sample { import => "misc.Java.Sample" }; my $x = Sample->new(); $x->to_Sample() ' > Test.java ; javac Test.java
-```
+    ```
 
     my $p_put = Sample->new();
     my $p_put = new Sample();
@@ -745,14 +737,14 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
   - TODO: (wip) call Java methods with Perl parameters
 
-```perl
+        ```perl
         Sample->new(10);                # native int
         Sample->new("abc");             # native String
         Sample->new($v->to_Sample());   # cast back to Sample
         Sample->new(0 + $v);            # cast to int
         Sample->new(0.0 + $v);          # cast to double
         Sample->new("" . $v);           # cast to string
-```
+        ```
 
   - Method chaining:
 
@@ -842,27 +834,27 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
   - test case:
 
-```bash
+    ```bash
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package my::Sample { import => "misc.Java.Sample" }; my $x = my::Sample->new(); $x->to_mySample(); say "ref: ", ref($x), " x ", $x; my @arr = (1,2,5); say ref(\@arr); $x = \@arr; say ref($x); my my::Sample $z = my::Sample->new(); $x = $z; 
-```
+    ```
 
   - everything at the right side of ...->to_JavaThing()->... is native-call
 
 
 - native expressions TODO
 
-```perl
+    ```perl
     $x++         # autoincrement
 
     $x = $x + 1  # assignment
                  # TODO - cast arguments to "number", "string" or "boolean" depending on operator
 
     print $x     # print
-```
+    ```
 
   - test case:
 
-```perl
+    ```perl
     package Integer {}
     my Integer $count;
     my Integer $i = 0;
@@ -880,7 +872,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     }
     my $c = $count;
     print "done $c\n";
-```
+    ```
 
 
 Value types
@@ -890,34 +882,34 @@ Conversion from Perl scalar to native array is not implemented.
 
 Native array variables can not be created directly.
 
-```perl
+    ```perl
     # Possible implementation for creating native array variables
     #
     # my byte @bytes;
     # $#bytes = 9;      # indexes 0..9 (10 elements)
-```
+    ```
 
-```perl
+    ```perl
     # Not implemented: import a native array Class
     #
     #  package Java::Array::Of::String {
     #       import => "java.lang.String",
     #       java_type => "String[]",
     #   }
-```
+    ```
 
-```perl
+    ```perl
     # Not implemented: assign native array to Perl scalar
     #   (assign to Perl array works, see above)
     #
     # my $arr3 = Java::inline ' new String[]{ "a", "b" } ';
     # print "arr3[1] $arr3->[0]\n";
     # print "arr3[1] $arr3->[1]\n";
-```
+    ```
 
 Conversion from Perl scalar to native array is not implemented.
 
-```perl
+    ```perl
     # TODO - Not implemented: Perl scalar to native array
     # using auto-generated methods
     #
@@ -929,7 +921,7 @@ Conversion from Perl scalar to native array is not implemented.
     #
     # package Java::Date   { import => "java.util.Date" };
     # $arrayref->to_JavaDateArray()
-```
+    ```
 
   - See: toArray(T[] a) in https://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html
 
@@ -937,37 +929,37 @@ in Perl:
 
     char::Array, boolean::Array, float::Array, double::Array, long::Array, short::Array, int::Array, byte::Array
 
-```perl
+    ```perl
     # alternate implementation:
     #
     # package String { };
     # my String::Array = String::Array->new(@array)
-```
+    ```
  
-```bash
+    ```bash
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package byte::Array { type => 'byte[]' } my byte::Array $x = byte::Array->new("A","B","C");'
-```
+    ```
 
         - this should return:
 
-```java
+        ```java
         byte[] v_x = new byte[3]; // alocate 3 bytes - the native arrays in java are not dynamic
         byte[0] ='A';
         byte[1] = 'B';
         byte[2] = 'C';
-```
+        ```
 
         - or:
 
-```java
+        ```java
         byte[] v_x = new byte[] { "A", "B", "C" };
-```
+        ```
 
   - alternately:
 
-```perl
+        ```perl
         package my_chars { type => 'char[]' }
-```
+        ```
 
   - Investigate adding support for plain "Object" arguments.
         See http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html arguments
@@ -976,7 +968,7 @@ in Perl:
 - mixing Java containers, Perl, and Java::inline
     See: misc/Java/TypedIterator.pl
 
-```perl
+        ```perl
         package Iterator::Of::String {
             import => "java.util.Iterator",
             java_type => "Iterator<String>",
@@ -1005,18 +997,18 @@ in Perl:
           my $element = $iterator->next();
           say $element;
         }
-```
+        ```
 
 - coercing method naming rules
 
     - rule: remove '::', add 'to_'
         example:  my::Sample  =>  to_mySample()
 
-```perl
+    ```perl
     package my::Sample { import => "misc.Java.Sample" };
     my $x = my::Sample->new();
     $x->to_mySample()
-```
+    ```
 
 - autobox as-needed
 
@@ -1035,7 +1027,7 @@ Autovivification of aliased parameters
 
 (DONE)
 
-```bash
+    ```bash
     $ perl -e ' use Data::Dumper; my %z; my $s; my @w; sub x {$_[0] = 3} x($z{d}, $s, $w[3]); print Dumper [\%z, $s, \@w] '
     $VAR1 = [
           {
@@ -1061,7 +1053,7 @@ Autovivification of aliased parameters
             3
           ]
         ];
-```
+    ```
 
 Slices
 ------
@@ -1080,7 +1072,7 @@ Slices
 
   - TEST
 
-```perl
+    ```perl
     %hash = (foo => 11, bar => 22, baz => 33); $scalar = delete @hash{qw(foo bar)}; print "$scalar\n"
     %hash = (foo => 11, bar => 22, baz => 33); @array = delete @hash{qw(foo bar)}; print "@array\n"
 
@@ -1091,7 +1083,7 @@ Slices
 
     my $scalar = 11; @hash{qw(foo bar)} = $scalar; use feature "say"; say $hash{foo}
     my @array = (11, 22); @hash{qw(foo bar)} = @array; use feature "say"; say "@array"
-```
+    ```
 
 Variables
 ---------
@@ -1186,7 +1178,7 @@ Missing features, or partially implemented, or untested
 
       - TODO - add tests (See: Symbol.pm)
 
-```bash
+        ```bash
         $ java -jar perlito5.jar -I src5/lib  -e ' use Data::Dumper; %This::xyz = (); $This::X::y = 0; $This::vvv = 234; %x = %This::; print Dumper (\%x); print Dumper \%This::X::; print Dumper \%::; '
         $VAR1 = {
                 'X::' => *This::X::,
@@ -1196,7 +1188,7 @@ Missing features, or partially implemented, or untested
         $VAR1 = {
                 'y' => *This::X::y,
             };
-```
+        ```
 
       - TODO - < $This::X::y > is not creating a "namespace"; but < $This::X::y = 0 > does work.
 
@@ -1205,13 +1197,13 @@ Missing features, or partially implemented, or untested
 
       - TODO - add tests (See: perldoc -f caller)
 
-```bash
+        ```bash
         $ perl -e ' sub x { print "in " . __PACKAGE__ . "\n"; v() }  x(); { package X; *x = \&main::x; x() } sub v { $v = caller(); print "called from $v\n" } '
         in main
         called from main
         in main
         called from main
-```
+        ```
 
       - TODO - line number is off by 1
 
@@ -1219,7 +1211,7 @@ Missing features, or partially implemented, or untested
 
       - TODO - the compiler stack is "leaking" into the script stack. The "Perlito5" namespace belongs to the compiler.
 
-```bash
+        ```bash
         $ java -jar perlito5.jar -I src5/lib -e ' sub x { print "@{[ caller($_) ]}\n" for 0..3; } sub yy { eval "x()"; }; ( sub { yy() } )->(); '
         main -e 2 main::x
         main -e 2 main::yy
@@ -1230,11 +1222,11 @@ Missing features, or partially implemented, or untested
         main -e 1 (eval) 0  x()  256
         main -e 1 main::yy 1    0
         main -e 1 main::__ANON__ 1    256
-```
+        ```
 
       - namespaces need more work:
 
-```bash
+        ```bash
         $ perl -e ' package AAA; sub x { my $v = caller; print "caller: $v\n"; print "$_: @{[ caller($_) ]}\n" for 0..3; }; package BBB; sub yy {AAA::x(); }; package CCC; sub cc { BBB::yy() }; cc(); '
         caller: BBB
         0: BBB -e 1 AAA::x 1    0  
@@ -1248,7 +1240,7 @@ Missing features, or partially implemented, or untested
         1: CCC -e 2 BBB::yy
         2: Perlito5 -e 2 CCC::cc
         3:  src5/util/jperl.pl 9 Perlito5::eval_string
-```
+        ```
 
   - \__DATA__ sections
 
@@ -1277,20 +1269,20 @@ Regex
 
   - Modifiers are not serialized yet (DONE - add tests)
 
-```bash
-$ perl -e ' my $user_agent_regexp = "123";  my $regexp = qr/$user_agent_regexp/x; print $regexp; '
-(?^x:123)
-```
+    ```bash
+    $ perl -e ' my $user_agent_regexp = "123";  my $regexp = qr/$user_agent_regexp/x; print $regexp; '
+    (?^x:123)
+    ```
 
   - but a qr// on an existing qr// behaves differently:
 
-```bash
-$ perl -le ' my $x = qr/ (\w) /; my $z = qr/$x/x; print $z '
-(?^: (\w) )
-
-$ perl -le ' my $x = qr/ (\w) /; my $z = qr/before $x after/x; print $z '
-(?^x:before (?^: (\w) ) after)
-```
+    ```bash
+    $ perl -le ' my $x = qr/ (\w) /; my $z = qr/$x/x; print $z '
+    (?^: (\w) )
+    
+    $ perl -le ' my $x = qr/ (\w) /; my $z = qr/before $x after/x; print $z '
+    (?^x:before (?^: (\w) ) after)
+    ```
 
 See also:
 
