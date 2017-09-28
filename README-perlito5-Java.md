@@ -195,8 +195,8 @@ Regex differences
 
   - regex modifiers /ismxgec work the same as Perl; other modifiers are not yet implemented.
       - /xx works
+      - /ee works
       - /r not implemented
-      - /ee not implemented, it depends on runtime eval-string
 
   - regex variables $1, $2, ... and $&, $', $` work; other variables are not yet implemented.
 
