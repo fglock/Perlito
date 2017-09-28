@@ -784,36 +784,38 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
   - Array-deref in boolean context:
         
-        Automatic call to ->hasNext on iterator reference in
-        boolean context. The idea is that instead
-        
-            while ($iterator->hasNext()) { ... }
+    Automatic call to ->hasNext on iterator reference in
+    boolean context. The idea is that instead
+    
+        while ($iterator->hasNext()) { ... }
 
-         we can type:
+    we can type:
 
-            while (@$bar) { ... }
+       for (@$bar) { ... }
 
-         First, the @$bar dereferencing of native java list would obtain
-         an iterator reference and then due to having iterator reference in
-         boolean context, the call to hasNext() would autmatically happen.
-         That way we will be able to write idiomatic Perl loops on
-         native java Lists
+    First, the @$bar dereferencing of native java list would obtain
+    an iterator reference and then due to having iterator reference in
+    boolean context, the call to hasNext() would autmatically happen.
+    That way we will be able to write idiomatic Perl loops on
+    native java Lists
+
+    TODO - this is partially implemented; add tests.     
 
   - Native values in Perl expressions:
 
-        in this case, we can just assign the value to PlLvalue
-        because PlLvalue knows what to do with each type
-        this also takes care of "$x" and 0+$x
-        (TODO)
-        
-        PlLvalue.set() is super-overloaded # Array, Hash, int, string, boolean, ...
-        src5/lib/Perlito5/Java/Runtime.pm 1463
+    in this case, we can just assign the value to PlLvalue
+    because PlLvalue knows what to do with each type
+    this also takes care of "$x" and 0+$x
+    (TODO)
+    
+    PlLvalue.set() is super-overloaded # Array, Hash, int, string, boolean, ...
+    src5/lib/Perlito5/Java/Runtime.pm 1463
 
-        (TODO) comparison and logical operators with Java variables:
-        if ($typed == $typed) ...
-        if ($typed eq $typed) ...
-        if ($typed || $typed) ...
-        if ($typed && $typed) ...
+    (TODO) comparison and logical operators with Java variables:
+    if ($typed == $typed) ...
+    if ($typed eq $typed) ...
+    if ($typed || $typed) ...
+    if ($typed && $typed) ...
 
 - interoperation between native expressions and perl expressions
 
