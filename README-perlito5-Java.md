@@ -129,12 +129,25 @@ Perlito5-Java work-in-progress
 
 
   - BEGIN blocks
+
       - Loops containing: BEGIN blocks, "use" statements, or named subroutines.
-          - lexical variables inside loops don't behave properly if they are captured at compile-time
-      - lexical variables are not shared between closures created in BEGIN blocks
+
+          - lexical variables inside loops may not behave properly if they are captured at compile-time.
+
+      - some data structures created by BEGIN need more work for proper serialization to AST:
+
+          - some types of aliased values, like:
+
+~~~perl
+          *name2 = *name1{IO}
+~~~
+
+          - lexical variables are not shared between closures created in BEGIN blocks
 
   - runtime error messages do not include the line number in the Perl code
+
       - also caller() is only partially implemented
+
       - BEGIN line numbers show the line number at the time of eval - the line number is relative to the start of the BEGIN block
 
   - no "goto LABEL"
@@ -512,7 +525,7 @@ Thread safety
 
 Perl global variables are shared between threads.
 This includes for example: $_, $a, $b, $/, @INC, %SIG, $0, $1, $&, $".
-Perl variable @_ (the parameter list) is not shared.
+Perl variable @_ (the parameter list) is a special case, it behaves internally like a lexical and it may be captured by closures.
 
 "local" stack is shared.
 
@@ -528,14 +541,14 @@ Perl operators are not atomic.
 Perlito5 Java development tools
 ===============================
 
-* Execute a single-line quick test 
+- Execute a single-line quick test 
 
 ~~~bash
 $ perl perlito5.pl -Isrc5/lib -Cjava -e ' sub x { return 123, 5 } my $x = x(); say "$x" ' > Main.java ; javac Main.java ; java Main
 5
 ~~~
 
-* Rebuild the compiler
+- Rebuild the compiler
 
 ~~~bash
 $ make build-5to5 
@@ -543,7 +556,7 @@ $ make build-5to5
 
 "make" rebuilds everything, including the java-eval-string and the nodejs-based compiler
 
-* Perl-Java test suite
+- Perl-Java test suite
 
 ~~~bash
 $ make test-5java   # tests the Java-precompile backend
@@ -555,7 +568,7 @@ $ make test         # tests the nodejs backend
 
 "make test-5java" passes a few tests
 
-* Syntax tree
+- Syntax tree
 
 You may find useful when debugging,
 
@@ -566,7 +579,7 @@ $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' … '
 
 to see the internal representation
 
-* Other
+- Other
 
 use "make clean" to get rid of all those .class files
 
@@ -588,11 +601,11 @@ Java-specific command line options
   
   - have a way to port a simple .pm to a .java (without a main function)
   
-    specify input arguments
+      - specify input arguments
 
-    specify context (list, scalar, void)
+      - specify context (list, scalar, void)
 
-    specify what we want to return: PlObject vs. array of strings, etc
+      - specify what we want to return: PlObject vs. array of strings, etc
   
 
 Workaround JVM bytecode size limit
@@ -648,7 +661,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     }
 ~~~
 
-    generates:
+  - generates:
     - import misc.java.Sample;              (DONE)
     - adds a pObject coercion "to_Sample"   (DONE)
     - adds a pObject variant "pSample"      (DONE)
@@ -657,10 +670,10 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     - add a pScalar variant "set(Sample)"   (TODO)
     - add pArray and pHash setters          (TODO)
 
-    TODO: what happens when a class is imported again
+  - TODO: what happens when a class is imported again
         - for example, import "Int" or "Byte" again
 
-    TODO: test that Perl modules can import Java classes
+  - TODO: test that Perl modules can import Java classes
         - only tested in "main" program
 
 
@@ -671,7 +684,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     - no "global" typed variables (only "my" variables)
 
-    Note:
+  - Note:
         - parameters to native calls are evaluated in scalar context
         - untyped variables are passed by reference - that is, v_x instead of v_x.get()
         - wantarray() context is not passed to native calls
@@ -682,43 +695,43 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     my $p_put = Sample->new();
     my $p_put = new Sample();
-    creates a boxed Java variable           (DONE)
+  - creates a boxed Java variable           (DONE)
 
     $x->to_Sample()
     retrieves the native Sample object      (DONE)
     allow conversion of primitive types - to_Int(), to_String()
                                             (TODO: generate primitive types in emitter)
-    this only works if $x is a Perl variable that contains a value of type "Sample"
+  - this only works if $x is a Perl variable that contains a value of type "Sample"
 
     "$x"      # Sample<0x1234567>
     $x is a Perl variable that contains a native "Sample"; it behaves like a Perl object
 
     my $x = $p_put;
-    puts the boxed object into a Perl scalar  (DONE)
+  - puts the boxed object into a Perl scalar  (DONE)
 
     my Sample $put = Sample->new();
-    creates a native Java variable          (DONE)
+  - creates a native Java variable          (DONE)
                                             (TODO: allow Int, String types)
 
     my Int $val = Sample->VAL;
-    "method call without parenthesis"
+  - "method call without parenthesis"
     read a class or instance variable
 
     my $x = $put;
-    puts the unboxed object into a Perl scalar  (DONE)
+  - puts the unboxed object into a Perl scalar  (DONE)
 
     my $x = Sample->new()
-    stores the boxed pSample object in a Perl scalar (DONE)
+  - stores the boxed pSample object in a Perl scalar (DONE)
 
     package Int { import => 'java.lang.Integer' };
     my Int $x = 3;          # $x is a Java Int (not a pScalar)  (TODO: test)
 
-    maybe TODO: automatic casting (my Result $java_obj = $scan_result;)
+  - maybe TODO: automatic casting (my Result $java_obj = $scan_result;)
 
-    maybe TODO: make pJavaReference which will have this implementation
+  - maybe TODO: make pJavaReference which will have this implementation
         - Note: Boxed Java objects can be undef (null)
 
-    TODO: capture typed variables in closures
+  - TODO: capture typed variables in closures
 
     maybe TODO: allow typed variables in parameter list
         but they would probably lose the type information
@@ -727,10 +740,10 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
         my Int $x = $y;     # automatically insert a call to $y->toInt()
 
-    maybe TODO: call Perl subroutines with native parameters
+  - maybe TODO: call Perl subroutines with native parameters
         print $x->to_Sample();
 
-    TODO: (wip) call Java methods with Perl parameters
+  - TODO: (wip) call Java methods with Perl parameters
 
 ~~~perl
         Sample->new(10);                # native int
@@ -741,28 +754,28 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         Sample->new("" . $v);           # cast to string
 ~~~
 
-    Method chaining:
+  - Method chaining:
 
         my $global_queue = ConcurrentLinkedQueue::Of::String->new();
         my ConcurrentLinkedQueue::Of::String $queue = $global_queue->to_ConcurrentLinkedQueueOfString();
         my $x = $queue->poll();
 
-    but this doesn't work yet:
+  - but this doesn't work yet:
 
         my $x = $global_queue->to_ConcurrentLinkedQueueOfString()->poll();
         (TODO)
 
-    Automatic casting:
+  - Automatic casting:
 
         # cast perl object to java object
         my Result $java_obj_result = $scan_result->to_Result();
 
-    would be:
+  - would be:
 
         my Result $java_obj_result = $scan_result;
         (TODO)
 
-    Array-deref:
+  - Array-deref:
 
         @$native will retrieve an iterator and produce a Perl list
         (TODO)
@@ -773,7 +786,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         @{ $native->values() }
         (TODO)
 
-    Array-deref in boolean context:
+  - Array-deref in boolean context:
         
         Automatic call to ->hasNext on iterator reference in
         boolean context. The idea is that instead
@@ -790,7 +803,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
          That way we will be able to write idiomatic Perl loops on
          native java Lists
 
-    Native values in Perl expressions:
+  - Native values in Perl expressions:
 
         in this case, we can just assign the value to PlLvalue
         because PlLvalue knows what to do with each type
@@ -827,13 +840,13 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     storing a Java object into a typed variable keeps the Java object as-is.
 
-    test case:
+  - test case:
 
 ~~~bash
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package my::Sample { import => "misc.Java.Sample" }; my $x = my::Sample->new(); $x->to_mySample(); say "ref: ", ref($x), " x ", $x; my @arr = (1,2,5); say ref(\@arr); $x = \@arr; say ref($x); my my::Sample $z = my::Sample->new(); $x = $z; 
 ~~~
 
-    everything at the right side of ...->to_JavaThing()->... is native-call
+  - everything at the right side of ...->to_JavaThing()->... is native-call
 
 
 - native expressions TODO
@@ -847,7 +860,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     print $x     # print
 ~~~
 
-    test case:
+  - test case:
 
 ~~~perl
     package Integer {}
@@ -918,7 +931,7 @@ Conversion from Perl scalar to native array is not implemented.
     # $arrayref->to_JavaDateArray()
 ~~~
 
-    See: toArray(T[] a) in https://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html
+  - See: toArray(T[] a) in https://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html
 
 in Perl:
 
@@ -950,13 +963,13 @@ in Perl:
         byte[] v_x = new byte[] { "A", "B", "C" };
 ~~~
 
-    alternately:
+  - alternately:
 
 ~~~perl
         package my_chars { type => 'char[]' }
 ~~~
 
-    Investigate adding support for plain "Object" arguments.
+  - Investigate adding support for plain "Object" arguments.
         See http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html arguments
 
 
@@ -1007,10 +1020,10 @@ in Perl:
 
 - autobox as-needed
 
-    runtime methods should accept String, int, double, boolean types
+  - runtime methods should accept String, int, double, boolean types
     and maybe other types of number (byte, ...)
 
-    Array and Hash should accept other types of containers
+  - Array and Hash should accept other types of containers
 
     - String accepts char in constructor (DONE)
     - Hash accepts String for index (DONE)
@@ -1065,7 +1078,7 @@ Slices
     DONE @hash{qw(foo bar)} = $scalar; # %hash{foo} is $scalar && %hash{bar} is undef
     DONE @hash{qw(foo baz)} = @array; # %hash{foo} is @array[0] && %hash{bar} is @array[1]
 
-    -- TEST
+  - TEST
 
 ~~~perl
     %hash = (foo => 11, bar => 22, baz => 33); $scalar = delete @hash{qw(foo bar)}; print "$scalar\n"
@@ -1083,23 +1096,23 @@ Slices
 Variables
 ---------
 
-    delete local EXPR
+  - delete local EXPR
 
-    subroutine lookups could also be "our"-like (also method lookups)
+  - subroutine lookups could also be "our"-like (also method lookups)
 
 
 Overflow from int to double
 ---------------------------
 
-    partially implemented - needs more work, tests
+  - partially implemented - needs more work, tests
 
-    Note: integer operations may have problems with type erasure
+  - Note: integer operations may have problems with type erasure
 
-    example:
+  - example:
 
         $i + subr();  # subr() returns pObject instead of pInt
 
-    this needs more tests
+  - this needs more tests
 
 
 Tail-call
@@ -1237,9 +1250,9 @@ Missing features, or partially implemented, or untested
         3:  src5/util/jperl.pl 9 Perlito5::eval_string
 ~~~
 
-  - __DATA__ sections
+  - \__DATA__ sections
 
-        %Perlito5::DATA_SECTION contains the __DATA__ for each package
+        %Perlito5::DATA_SECTION contains the \__DATA__ for each package
 
   - add test:
 
