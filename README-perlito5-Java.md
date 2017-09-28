@@ -38,23 +38,31 @@ Perlito5-Java platform differences
 Build using make
 ----------------
 
-Update the Perl-based compiler "perlito5.pl"
+  - type:
 
 ~~~sh
-    $ make build-5to5
+        $ make
 ~~~
 
-Compiling the compiler into a jar file
+  - alternately:
+
+      -  Update the Perl-based compiler "perlito5.pl"
 
 ~~~sh
-    $ make build-5java
+        $ make build-5to5
+~~~
 
-    $ java -jar perlito5.jar -v
-    This is Perlito5 9.021, an implementation of the Perl language.
+      - Compile the compiler into a jar file
 
-    # run a test
-    $ java -jar perlito5.jar -Isrc5/lib t5/unit/array.t
-    ok 1 ...
+~~~sh
+        $ make build-5java
+
+        $ java -jar perlito5.jar -v
+        This is Perlito5 9.021, an implementation of the Perl language.
+
+        # run a test
+        $ java -jar perlito5.jar -Isrc5/lib t5/unit/array.t
+        ok 1 ...
 ~~~
 
 Perlito5-Java work-in-progress
@@ -70,6 +78,8 @@ Perlito5-Java work-in-progress
 
 ~~~sh
     $ java -jar perlito5.jar -I src5/lib --nojava_eval -Cjava t5/unit/array.t > test.java
+    $ javac test.java
+    $ java Main
 ~~~
 
       - build android script
@@ -86,6 +96,8 @@ Perlito5-Java work-in-progress
 
     $ javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 Main.java
     # errors - TODO - fixme
+    #   this is because the compiler uses eval-string
+    #   try: --nojava_eval
 
     # test the bootstrapping
     $ java Main --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main2.java
@@ -108,8 +120,9 @@ Perlito5-Java work-in-progress
       - http://download.java.net/java/jdk9/docs/api/javax/script/package-summary.html
 
   - Java 8 seems to trigger this problem:
-      http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
-      http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
+
+      - http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
+      - http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
 
       - "The workaround is to compile at Java 7-compatibility level: javac -source 7, or just to use simpler constructions.
       - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
@@ -199,6 +212,7 @@ Regex differences
 ~~~
 
   - TODO - check this error message, this may need to be implemented for compatibility:
+
       Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\G{ <-- HERE / at (eval 2) line 20.
 
 
@@ -213,8 +227,9 @@ Limitations
 
 See also:
 
-  - ASM:
-        TODO: prototype eval-string with ASM
+  - ASM
+
+      - TODO: prototype eval-string with ASM
 
 
 Perlito5-Java extensibility
@@ -1103,58 +1118,58 @@ Missing features, or partially implemented, or untested
 
 - Object-related
 
-    bless (DONE)
+  - bless (DONE)
 
-    UNIVERSAL::
+  - UNIVERSAL::
         can
         isa
         DOES
 
-    (DONE) Scalar::blessed
+  - (DONE) Scalar::blessed
 
-    TODO - unit tests (work in progress)
+  - TODO - unit tests (work in progress)
 
-    TODO - method cache
+  - TODO - method cache
 
-    TODO - invalidate method cache when subroutine changes or @INC changes
+  - TODO - invalidate method cache when subroutine changes or @INC changes
 
 - Perl features
 
-    overload
+  - overload
 
-    tie()
+  - tie()
 
-    exceptions
+  - exceptions
 
         "goto", "last", "redo"
 
         Note: remember to cleanup the stacks (boolean, local).
 
-    "continue" blocks
+  - "continue" blocks
 
-    "dualvars"
+  - "dualvars"
 
         for string-to-number optimization
 
-    unicode-strings vs. byte-strings
+  - unicode-strings vs. byte-strings
 
-    subroutine signatures
+  - subroutine signatures
 
-    return (list)
+  - return (list)
 
-    assignment to splice
+  - assignment to splice
 
-    (DONE) sprintf
+  - (DONE) sprintf
 
         http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String,%20java.lang.Object...)
 
         http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html
 
-    pack
+  - pack
 
-    unpack
+  - unpack
 
-    typeglob and symbol table operations
+  - typeglob and symbol table operations
 
         TODO - add tests (See: Symbol.pm)
 
@@ -1173,7 +1188,7 @@ Missing features, or partially implemented, or untested
         TODO - < $This::X::y > is not creating a "namespace"; but < $This::X::y = 0 > does work.
 
 
-    caller
+  - caller
 
         TODO - add tests (See: perldoc -f caller)
 
@@ -1222,19 +1237,19 @@ Missing features, or partially implemented, or untested
         3:  src5/util/jperl.pl 9 Perlito5::eval_string
 ~~~
 
-    __DATA__ sections
+  - __DATA__ sections
 
         %Perlito5::DATA_SECTION contains the __DATA__ for each package
 
-    add test:
+  - add test:
 
         ' print " ${\__PACKAGE__} \n" '
 
 - Add tests
 
-    NaN, Inf, -0
+  - NaN, Inf, -0
 
-    @perl_array = java_native[]
+  - @perl_array = java_native[]
 
         supported types: byte[], int[], and imported_class[]
 
@@ -1243,18 +1258,18 @@ Missing features, or partially implemented, or untested
 Regex
 -----
 
-Regex variables: named captures (TODO - add tests)
+  - Regex variables: named captures (TODO - add tests)
 
-Quotemeta: \Q
+  - Quotemeta: \Q
 
-Modifiers are not serialized yet (DONE - add tests)
+  - Modifiers are not serialized yet (DONE - add tests)
 
 ~~~bash
 $ perl -e ' my $user_agent_regexp = "123";  my $regexp = qr/$user_agent_regexp/x; print $regexp; '
 (?^x:123)
 ~~~
 
-but a qr// on an existing qr// behaves differently:
+  - but a qr// on an existing qr// behaves differently:
 
 ~~~bash
 $ perl -le ' my $x = qr/ (\w) /; my $z = qr/$x/x; print $z '
@@ -1266,43 +1281,44 @@ $ perl -le ' my $x = qr/ (\w) /; my $z = qr/before $x after/x; print $z '
 
 See also:
 
-    "Replace Rhino regexp implementation with java.util.regex"
+  - "Replace Rhino regexp implementation with java.util.regex"
     https://bugzilla.mozilla.org/show_bug.cgi?id=390659
 
-    DFA
+  - DFA
     http://www.brics.dk/automaton/index.html
 
-    Mini-language with fast regex, Artistic License
+  - Mini-language with fast regex, Artistic License
     http://jint.sourceforge.net
 
-    regex reference:
+  - regex reference:
     http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
 
-    http://www.regular-expressions.info/reference.html
+  - http://www.regular-expressions.info/reference.html
 
-    Discussion about alternative implementations:
+  - Discussion about alternative implementations:
     http://stackoverflow.com/questions/415580/regex-named-groups-in-java
 
 Threads
 -------
 
-    See: http://perldoc.perl.org/perlmod.html#Making-your-module-threadsafe
+  - See: http://perldoc.perl.org/perlmod.html#Making-your-module-threadsafe
         CLONE, CLONE_SKIP
 
-    global variables should be cloned in threads,
+  - global variables should be cloned in threads,
     use this to get the thread id: Thread.currentThread().getId()
 
-    Examples:
+  - Examples:
+
     misc/Java/TestConcurrent.pl
     misc/Java/TestThread.pl
     misc/Java/TestThread2.pl    # atomic
 
 
-- pass the threadid as a parameter to all closures;
+  - pass the threadid as a parameter to all closures;
 
     closure can use that thread id to get/set the value from globals hash.
 
-    TODO - per-thread: "local" stack, "boolean" stack, regex_result
+  - TODO - per-thread: "local" stack, "boolean" stack, regex_result
 
 Optimizations
 -------------
@@ -1327,6 +1343,9 @@ Optimizations
   - investigate performance of "proxy" lvalues;
     when taking an lvalue out of an array or hash, return a proxy
     with a reference to the container and index.
+
+  - investigate using Lambdas:
+    https://stackoverflow.com/questions/26257266/are-java-8-lambdas-compiled-as-inner-classes-methods-or-something-else
 
 Modules
 -------
