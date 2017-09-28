@@ -616,15 +616,15 @@ the bytecode of a method must not be bigger than 65536 bytes:
 
   - current workaround: insert a closure every 100s of lines in a block:
 
-        ```perl
-        code...
-        return (sub {
-                code ...
-                return (sub {
-                        code ...
-                    }->() )
-            }->() )
-        ```
+    ```perl
+    code...
+    return (sub {
+            code ...
+            return (sub {
+                    code ...
+                }->() )
+        }->() )
+    ```
 
 Document Perlito5-Java extensibility
 ------------------------------------
@@ -633,14 +633,14 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     - Java import and typed variables
 
-        ```perl
-        package The::Class {
-            import           => 'full.path.Class',  # mandatory
-            java_type        => 'Class',            # auto generated, can be overridden: 'Class<String>'
-            perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overridden
-            # perl_package   => 'The::Class',       # auto generated, Perl package name
-        }
-        ```
+      ```perl
+      package The::Class {
+          import           => 'full.path.Class',  # mandatory
+          java_type        => 'Class',            # auto generated, can be overridden: 'Class<String>'
+          perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overridden
+          # perl_package   => 'The::Class',       # auto generated, Perl package name
+      }
+      ```
 
 - Java import
 
@@ -739,14 +739,14 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
   - TODO: (wip) call Java methods with Perl parameters
 
-        ```perl
-        Sample->new(10);                # native int
-        Sample->new("abc");             # native String
-        Sample->new($v->to_Sample());   # cast back to Sample
-        Sample->new(0 + $v);            # cast to int
-        Sample->new(0.0 + $v);          # cast to double
-        Sample->new("" . $v);           # cast to string
-        ```
+    ```perl
+    Sample->new(10);                # native int
+    Sample->new("abc");             # native String
+    Sample->new($v->to_Sample());   # cast back to Sample
+    Sample->new(0 + $v);            # cast to int
+    Sample->new(0.0 + $v);          # cast to double
+    Sample->new("" . $v);           # cast to string
+    ```
 
   - Method chaining:
 
@@ -942,20 +942,20 @@ Value types
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package byte::Array { type => 'byte[]' } my byte::Array $x = byte::Array->new("A","B","C");'
     ```
 
-        - this should return:
+    this should return:
 
-          ```java
-          byte[] v_x = new byte[3]; // alocate 3 bytes - the native arrays in java are not dynamic
-          byte[0] ='A';
-          byte[1] = 'B';
-          byte[2] = 'C';
-          ```
+    ```java
+    byte[] v_x = new byte[3]; // alocate 3 bytes - the native arrays in java are not dynamic
+    byte[0] ='A';
+    byte[1] = 'B';
+    byte[2] = 'C';
+    ```
 
-        - or:
+    or:
 
-          ```java
-          byte[] v_x = new byte[] { "A", "B", "C" };
-          ```
+    ```java
+    byte[] v_x = new byte[] { "A", "B", "C" };
+    ```
 
   - alternately:
 
