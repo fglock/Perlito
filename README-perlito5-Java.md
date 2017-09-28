@@ -787,11 +787,15 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     Automatic call to ->hasNext on iterator reference in
     boolean context. The idea is that instead
     
-        while ($iterator->hasNext()) { ... }
+    ```perl
+    while ($iterator->hasNext()) { ... }
+    ```
 
     we can type:
 
-       for (@$bar) { ... }
+    ```perl
+    for (@$bar) { ... }
+    ```
 
     First, the @$bar dereferencing of native java list would obtain
     an iterator reference and then due to having iterator reference in
