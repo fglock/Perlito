@@ -48,9 +48,9 @@ Build using make
 
       - Update the Perl-based compiler "perlito5.pl"
 
-```sh
+        ```sh
         $ make build-5to5
-```
+        ```
 
       - Compile the compiler into a jar file
 
