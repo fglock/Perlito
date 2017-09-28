@@ -46,7 +46,7 @@ Build using make
 
   - alternately:
 
-      -  Update the Perl-based compiler "perlito5.pl"
+      - Update the Perl-based compiler "perlito5.pl"
 
 ```sh
         $ make build-5to5
@@ -77,9 +77,9 @@ Perlito5-Java work-in-progress
       - build stand-alone, precompiled "secure" script without eval-string / without "perlito5-lib"
 
 ```sh
-    $ java -jar perlito5.jar -I src5/lib --nojava_eval -Cjava t5/unit/array.t > test.java
-    $ javac test.java
-    $ java Main
+        $ java -jar perlito5.jar -I src5/lib --nojava_eval -Cjava t5/unit/array.t > test.java
+        $ javac test.java
+        $ java Main
 ```
 
       - build android script
@@ -92,17 +92,17 @@ Perlito5-Java work-in-progress
       - bootstrapping is not possible with perlito5.jar, because it is built without the grammar modules.
 
 ```sh
-    $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main.java
+        $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main.java
 
-    $ javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 Main.java
-    # errors - TODO - fixme
-    #   this is because the compiler uses eval-string
-    #   try: --nojava_eval
+        $ javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 Main.java
+        # errors - TODO - fixme
+        #   this is because the compiler uses eval-string
+        #   try: --nojava_eval
 
-    # test the bootstrapping
-    $ java Main --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main2.java
-    $ diff Main.java Main2.java
-    [ no differences ]
+        # test the bootstrapping
+        $ java Main --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main2.java
+        $ diff Main.java Main2.java
+        [ no differences ]
 ```
 
       - Using the perlito5-lib.jar file
@@ -110,7 +110,7 @@ Perlito5-Java work-in-progress
         - TODO - explain this
 
 ```java
-    import org.perlito.Perlito5.*;
+          import org.perlito.Perlito5.*;
 ```
 
 
@@ -139,7 +139,7 @@ Perlito5-Java work-in-progress
           - some types of aliased values, like:
 
 ```perl
-          *name2 = *name1{IO}
+            *name2 = *name1{IO}
 ```
 
           - lexical variables are not shared between closures created in BEGIN blocks
