@@ -7,3 +7,5 @@ perlito5.js
 *.class
 Test.*
 Main.*
+*.swp
+
