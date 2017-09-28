@@ -218,7 +218,7 @@ Regex differences
 
   - TODO - check this error message, this may need to be implemented for compatibility:
 
-      Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\G{ <-- HERE / at (eval 2) line 20.
+    `Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\G{ <-- HERE / at (eval 2) line 20.`
 
 
 Eval-string
@@ -228,7 +228,9 @@ Limitations
 
   - eval bytecode is cached - this will leak memory
 
-  - Java extensions are disabled (only plain-perl)
+  - Java extensions are disabled inside eval-string (only plain-perl)
+
+  - `Java::inline` works inside eval-string
 
 See also:
 
