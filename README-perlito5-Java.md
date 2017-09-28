@@ -1184,7 +1184,7 @@ Missing features, or partially implemented, or untested
 
   - typeglob and symbol table operations
 
-        TODO - add tests (See: Symbol.pm)
+      - TODO - add tests (See: Symbol.pm)
 
 ~~~bash
         $ java -jar perlito5.jar -I src5/lib  -e ' use Data::Dumper; %This::xyz = (); $This::X::y = 0; $This::vvv = 234; %x = %This::; print Dumper (\%x); print Dumper \%This::X::; print Dumper \%::; '
@@ -1198,12 +1198,12 @@ Missing features, or partially implemented, or untested
             };
 ~~~
 
-        TODO - < $This::X::y > is not creating a "namespace"; but < $This::X::y = 0 > does work.
+      - TODO - < $This::X::y > is not creating a "namespace"; but < $This::X::y = 0 > does work.
 
 
   - caller
 
-        TODO - add tests (See: perldoc -f caller)
+      - TODO - add tests (See: perldoc -f caller)
 
 ~~~bash
         $ perl -e ' sub x { print "in " . __PACKAGE__ . "\n"; v() }  x(); { package X; *x = \&main::x; x() } sub v { $v = caller(); print "called from $v\n" } '
@@ -1213,11 +1213,11 @@ Missing features, or partially implemented, or untested
         called from main
 ~~~
 
-        TODO - line number is off by 1
+      - TODO - line number is off by 1
 
-        TODO - anonymous subroutines and eval string are not shown in the call stack
+      - TODO - anonymous subroutines and eval string are not shown in the call stack
 
-        TODO - the compiler stack is "leaking" into the script stack. The "Perlito5" namespace belongs to the compiler.
+      - TODO - the compiler stack is "leaking" into the script stack. The "Perlito5" namespace belongs to the compiler.
 
 ~~~bash
         $ java -jar perlito5.jar -I src5/lib -e ' sub x { print "@{[ caller($_) ]}\n" for 0..3; } sub yy { eval "x()"; }; ( sub { yy() } )->(); '
@@ -1232,7 +1232,7 @@ Missing features, or partially implemented, or untested
         main -e 1 main::__ANON__ 1    256
 ~~~
 
-        namespaces need more work:
+      - namespaces need more work:
 
 ~~~bash
         $ perl -e ' package AAA; sub x { my $v = caller; print "caller: $v\n"; print "$_: @{[ caller($_) ]}\n" for 0..3; }; package BBB; sub yy {AAA::x(); }; package CCC; sub cc { BBB::yy() }; cc(); '
