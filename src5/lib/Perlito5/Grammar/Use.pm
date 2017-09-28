@@ -17,6 +17,7 @@ my %Perlito_internal_module = (
     Carp           => 'Perlito5X::Carp',
     Config         => 'Perlito5X::Config',
     Exporter       => 'Perlito5X::Exporter',
+    Fcntl          => 'Perlito5X::Fcntl',
     'Data::Dumper' => 'Perlito5X::Dumper',
     UNIVERSAL      => 'Perlito5X::UNIVERSAL',
     IO             => 'Perlito5X::IO',
