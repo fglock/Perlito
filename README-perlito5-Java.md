@@ -36,9 +36,9 @@ Build using make
 
   - type:
 
-        ```sh
-        $ make
-        ```
+    ```sh
+    $ make
+    ```
 
   - alternately:
 
@@ -210,11 +210,11 @@ Regex differences
 
   - capturing in zero-length-match has problems. Failing tests:
 
-        ```
-        t5/unit/regex_zero_length_match_capture.t
-        t5/unit/regex_zero_length_match_match.t
-        t5/unit/regex_zero_length_replace.t
-        ```
+    ```
+    t5/unit/regex_zero_length_match_capture.t
+    t5/unit/regex_zero_length_match_match.t
+    t5/unit/regex_zero_length_replace.t
+    ```
 
   - TODO - check this error message, this may need to be implemented for compatibility:
 
@@ -268,102 +268,104 @@ Java classes can be added to a Perl script using a special "package" declaration
 Calling a Perl subroutine from Java
 -----------------------------------
 
-    ```java
-    class MyJava {
-        public static void main(String[] args) throws Exception {
-            Main.init();
-            PlObject[] res = Main.apply("main::test", "123");
-            for (PlObject s: res) {
-                System.out.println("Java result: " + s.toString());
-            }
+```java
+class MyJava {
+    public static void main(String[] args) throws Exception {
+        Main.init();
+        PlObject[] res = Main.apply("main::test", "123");
+        for (PlObject s: res) {
+            System.out.println("Java result: " + s.toString());
         }
     }
-    ```
+}
+```
 
 Importing a Java class into Perl
 --------------------------------
 
-    ```perl
-    package Sample {
-        import => "misc.Java.Sample"
-    };
+```perl
+package Sample {
+    import => "misc.Java.Sample"
+};
 
-    package Array::Of::String {
-        import => "java.util.ArrayList",
-        java_type => "ArrayList<String>",
-    }
+package Array::Of::String {
+    import => "java.util.ArrayList",
+    java_type => "ArrayList<String>",
+}
 
-    my Array::Of::String $x = Array::Of::String->new();
-    ```
+my Array::Of::String $x = Array::Of::String->new();
+```
 
 Importing Java value types (Typed variables)
 --------------------------------------------
 
 Java value types don't need to be imported, but there must exist a Perl package:
 
-    ```perl
-    package String    { }
-    package Long      { }
-    package Integer   { }
-    package Boolean   { }
-    package Short     { }
-    package Byte      { }
-    package Double    { }
-    package Float     { }
-    package Character { }
+```perl
+package String    { }
+package Long      { }
+package Integer   { }
+package Boolean   { }
+package Short     { }
+package Byte      { }
+package Double    { }
+package Float     { }
+package Character { }
 
-    my String $x  = "abc";
-    my Integer $y = 123;
-    # assigning a Java value to a Perl variable
-    my $v = Boolean->TRUE;
-    print "$v\n";   # 1
-    ```
+my String $x  = "abc";
+my Integer $y = 123;
+# assigning a Java value to a Perl variable
+my $v = Boolean->TRUE;
+print "$v\n";   # 1
+```
 
 All primitive data type declarations are supported:
 
-    ```perl
-    package long      { }
-    package int       { }
-    package short     { }
-    package byte      { }
-    package float     { }
-    package double    { }
-    package boolean   { }
-    package char      { }
-    ```
+```perl
+package long      { }
+package int       { }
+package short     { }
+package byte      { }
+package float     { }
+package double    { }
+package boolean   { }
+package char      { }
+```
 
 Other value types can be imported:
 
-    ```perl
-    package Java::Object { import => "java.lang.Object" };
-    package Java::Date   { import => "java.util.Date" };
-    package Java::Array::Of::String {
-        import => "java.util.ArrayList",
-        java_type => "ArrayList<String>",
-    }
+```perl
+package Java::Object { import => "java.lang.Object" };
+package Java::Date   { import => "java.util.Date" };
+package Java::Array::Of::String {
+    import => "java.util.ArrayList",
+    java_type => "ArrayList<String>",
+}
 
-    my Java::Object $obj = Java::Object->new();
+my Java::Object $obj = Java::Object->new();
 
-    my Java::Array::Of::String $arr = Java::Array::Of::String->new();
-    $arr->add("123");
-    $arr->add($p->toString());
-    ```
+my Java::Array::Of::String $arr = Java::Array::Of::String->new();
+$arr->add("123");
+$arr->add($p->toString());
+```
 
 - native arrays
 
 Perl arrays can be assigned a native array:
 
-    package Byte { };
-    @perl_array = JavaCall->toBytes();
+```perl
+package Byte { };
+@perl_array = JavaCall->toBytes();
+```
 
 Native array variables can not be created directly.
 As a workaround, see "Java::inline".
 
-    ```perl
-    package String { };
-    my @arr2 = Java::inline ' new String[]{ "a", "b" } ';
-    print "arr2[0] $arr2[0], arr2[1] $arr2[1]\n";
-    ```
+```perl
+package String { };
+my @arr2 = Java::inline ' new String[]{ "a", "b" } ';
+print "arr2[0] $arr2[0], arr2[1] $arr2[1]\n";
+```
 
 - Constants
 
@@ -426,13 +428,13 @@ As a workaround, see "Java::inline".
 Using typed variables
 ---------------------
 
-    ```perl
-    package long {}
-    my long $j;             # Java variable
-    my $var;                # Perl variable
-    $var = $j;              # store Java value in Perl variable
-    $j = $var->to_long();   # get Java value from Perl variable
-    ```
+```perl
+package long {}
+my long $j;             # Java variable
+my $var;                # Perl variable
+$var = $j;              # store Java value in Perl variable
+$j = $var->to_long();   # get Java value from Perl variable
+```
 
 Typed variables generate efficient, native Java. The catch is that there are a few restrictions:
 
@@ -454,44 +456,44 @@ This is because Perl blocks return the last value, and "void" is not acceptable 
 Extending a Java class with Perl
 --------------------------------
 
-    ```perl
-    # create a Java package
-    package header { java_path => 'org.perlito.udfs' };
+```perl
+# create a Java package
+package header { java_path => 'org.perlito.udfs' };
 
-    # import the original Java class
-    package Java::Date   { import => "java.util.Date" };
-    
-    # create and import the extended class
-    package My::Date {
-        extends => 'Java::Date',
-        decl => [ "public", "final" ],              # public final class
-        'Java::inline' => " // ... Java code ... \n",
-        methods => [
-            toString => {
-                decl => [ "public" ],               # public method
-                args => [],                         # no arguments
-                return => "String",                 # returns String
-                code => "main::my_date_string",     # implemented in Perl, see below
-            },
-        ],
-    }
-    
-    package main;
-    
-    # Perl implementation for My::Date->toString()
-    sub my_date_string {
-        my $self = shift;
-        print "date_string: self is $self\n";       # prints date_string: self is My::Date(0x27ce2dd4)
-        return "Hello";
-    }
-    
-    my Java::Date $j_date = Java::Date->new();
-    my $s1 = $j_date->toString();   # original class
-    my My::Date $date = My::Date->new();
-    my $s2 = $date->toString();     # extended class
-    
-    print $s1, " ", $s2, "\n";   # prints date and "Hello"
-    ```
+# import the original Java class
+package Java::Date   { import => "java.util.Date" };
+
+# create and import the extended class
+package My::Date {
+    extends => 'Java::Date',
+    decl => [ "public", "final" ],              # public final class
+    'Java::inline' => " // ... Java code ... \n",
+    methods => [
+        toString => {
+            decl => [ "public" ],               # public method
+            args => [],                         # no arguments
+            return => "String",                 # returns String
+            code => "main::my_date_string",     # implemented in Perl, see below
+        },
+    ],
+}
+
+package main;
+
+# Perl implementation for My::Date->toString()
+sub my_date_string {
+    my $self = shift;
+    print "date_string: self is $self\n";       # prints date_string: self is My::Date(0x27ce2dd4)
+    return "Hello";
+}
+
+my Java::Date $j_date = Java::Date->new();
+my $s1 = $j_date->toString();   # original class
+my My::Date $date = My::Date->new();
+my $s2 = $date->toString();     # extended class
+
+print $s1, " ", $s2, "\n";   # prints date and "Hello"
+```
 
 
 Using Java inside Perl code with Java::inline
@@ -499,18 +501,18 @@ Using Java inside Perl code with Java::inline
 
 Example: Java method override using Java::inline
 
-    ```perl
-    # See: https://github.com/bdevetak/perl2j/tree/master/examples/myapp
-    package Date  { import => "java.util.Date" };
-    my Date $dateJavaObject =
-        Java::inline
-            'new Date() {
-                public String toString() {
-                    return "Hello";    
-                }    
-            }';
-    my $dateString_pObject = $dateJavaObject->toString();   # Hello
-    ```
+```perl
+# See: https://github.com/bdevetak/perl2j/tree/master/examples/myapp
+package Date  { import => "java.util.Date" };
+my Date $dateJavaObject =
+    Java::inline
+        'new Date() {
+            public String toString() {
+                return "Hello";    
+            }    
+        }';
+my $dateString_pObject = $dateJavaObject->toString();   # Hello
+```
 
 Thread safety
 -------------
@@ -535,26 +537,26 @@ Perlito5 Java development tools
 
 - Execute a single-line quick test 
 
-    ```bash
-    $ perl perlito5.pl -Isrc5/lib -Cjava -e ' sub x { return 123, 5 } my $x = x(); say "$x" ' > Main.java ; javac Main.java ; java Main
-    5
-    ```
+  ```bash
+  $ perl perlito5.pl -Isrc5/lib -Cjava -e ' sub x { return 123, 5 } my $x = x(); say "$x" ' > Main.java ; javac Main.java ; java Main
+  5
+  ```
 
 - Rebuild the compiler
 
-    ```bash
-    $ make build-5to5 
-    ```
+  ```bash
+  $ make build-5to5 
+  ```
 
 "make" rebuilds everything, including the java-eval-string and the nodejs-based compiler
 
 - Perl-Java test suite
 
-    ```bash
-    $ make test-5java   # tests the Java-precompile backend
-    $ make test-5jar    # tests the Java-eval-string backend (perlito5.jar)
-    $ make test         # tests the nodejs backend
-    ```
+  ```bash
+  $ make test-5java   # tests the Java-precompile backend
+  $ make test-5jar    # tests the Java-eval-string backend (perlito5.jar)
+  $ make test         # tests the nodejs backend
+  ```
 
 "make test" should pass everything, except for the "sleep" function which requires a nodejs module
 
@@ -562,12 +564,12 @@ Perlito5 Java development tools
 
 - Syntax tree
 
-You may find useful when debugging,
+  You may find useful when debugging,
 
-    ```bash
-    $ perl perlito5.pl -Isrc5/lib -Cast-json -e ' … '
-    $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' … '
-    ```
+  ```bash
+  $ perl perlito5.pl -Isrc5/lib -Cast-json -e ' … '
+  $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' … '
+  ```
 
 to see the internal representation
 
@@ -878,9 +880,9 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 Value types
 ---------------
 
-Conversion from Perl scalar to native array is not implemented.
+  - Conversion from Perl scalar to native array is not implemented.
 
-Native array variables can not be created directly.
+  - Native array variables can not be created directly.
 
     ```perl
     # Possible implementation for creating native array variables
@@ -907,7 +909,7 @@ Native array variables can not be created directly.
     # print "arr3[1] $arr3->[1]\n";
     ```
 
-Conversion from Perl scalar to native array is not implemented.
+  - Conversion from Perl scalar to native array is not implemented.
 
     ```perl
     # TODO - Not implemented: Perl scalar to native array
@@ -925,9 +927,9 @@ Conversion from Perl scalar to native array is not implemented.
 
   - See: toArray(T[] a) in https://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html
 
-in Perl:
+    in Perl:
 
-    char::Array, boolean::Array, float::Array, double::Array, long::Array, short::Array, int::Array, byte::Array
+        char::Array, boolean::Array, float::Array, double::Array, long::Array, short::Array, int::Array, byte::Array
 
     ```perl
     # alternate implementation:
@@ -942,24 +944,24 @@ in Perl:
 
         - this should return:
 
-        ```java
-        byte[] v_x = new byte[3]; // alocate 3 bytes - the native arrays in java are not dynamic
-        byte[0] ='A';
-        byte[1] = 'B';
-        byte[2] = 'C';
-        ```
+          ```java
+          byte[] v_x = new byte[3]; // alocate 3 bytes - the native arrays in java are not dynamic
+          byte[0] ='A';
+          byte[1] = 'B';
+          byte[2] = 'C';
+          ```
 
         - or:
 
-        ```java
-        byte[] v_x = new byte[] { "A", "B", "C" };
-        ```
+          ```java
+          byte[] v_x = new byte[] { "A", "B", "C" };
+          ```
 
   - alternately:
 
-        ```perl
-        package my_chars { type => 'char[]' }
-        ```
+    ```perl
+    package my_chars { type => 'char[]' }
+    ```
 
   - Investigate adding support for plain "Object" arguments.
         See http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html arguments
@@ -968,47 +970,47 @@ in Perl:
 - mixing Java containers, Perl, and Java::inline
     See: misc/Java/TypedIterator.pl
 
-        ```perl
-        package Iterator::Of::String {
-            import => "java.util.Iterator",
-            java_type => "Iterator<String>",
-        };
-        package ArrayList::Of::String {
-           import => "java.util.ArrayList",
-           java_type => "ArrayList<String>",
-        }
-        
-        sub foo {
-            my $x;
-            Java::inline '
-                ArrayList<String> listA = new ArrayList<String>();
-                listA.add("element 1");
-                listA.add("element 2");
-                listA.add("element 3");
-            ';
-            $x = Java::inline "listA";
-            return $x;
-        }
-        
-        my $bar = foo();
-        my ArrayList::Of::String $arr = $bar->to_ArrayListOfString();
-        my Iterator::Of::String $iterator = $arr->iterator();
-        while($iterator->hasNext()) {
-          my $element = $iterator->next();
-          say $element;
-        }
-        ```
+  ```perl
+  package Iterator::Of::String {
+      import => "java.util.Iterator",
+      java_type => "Iterator<String>",
+  };
+  package ArrayList::Of::String {
+     import => "java.util.ArrayList",
+     java_type => "ArrayList<String>",
+  }
+  
+  sub foo {
+      my $x;
+      Java::inline '
+          ArrayList<String> listA = new ArrayList<String>();
+          listA.add("element 1");
+          listA.add("element 2");
+          listA.add("element 3");
+      ';
+      $x = Java::inline "listA";
+      return $x;
+  }
+  
+  my $bar = foo();
+  my ArrayList::Of::String $arr = $bar->to_ArrayListOfString();
+  my Iterator::Of::String $iterator = $arr->iterator();
+  while($iterator->hasNext()) {
+    my $element = $iterator->next();
+    say $element;
+  }
+  ```
 
 - coercing method naming rules
 
     - rule: remove '::', add 'to_'
         example:  my::Sample  =>  to_mySample()
 
-    ```perl
-    package my::Sample { import => "misc.Java.Sample" };
-    my $x = my::Sample->new();
-    $x->to_mySample()
-    ```
+      ```perl
+      package my::Sample { import => "misc.Java.Sample" };
+      my $x = my::Sample->new();
+      $x->to_mySample()
+      ```
 
 - autobox as-needed
 
@@ -1025,7 +1027,7 @@ in Perl:
 Autovivification of aliased parameters
 --------------------------------------
 
-(DONE)
+  - (DONE)
 
     ```bash
     $ perl -e ' use Data::Dumper; my %z; my $s; my @w; sub x {$_[0] = 3} x($z{d}, $s, $w[3]); print Dumper [\%z, $s, \@w] '
