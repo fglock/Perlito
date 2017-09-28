@@ -154,7 +154,7 @@ Perlito5-Java work-in-progress
       - "goto &code" works, but it doesn't do a tail-call
 
   - signals are partially implemented
-      - $SIG{__WARN__} and $SIG{__DIE__} are implemented
+      - $SIG{\__WARN__} and $SIG{\__DIE__} are implemented
       - other signals are not yet implemented.
 
   - object system is partially implemented
@@ -191,7 +191,7 @@ Perlito5-Java work-in-progress
 
   - CORE::GLOBAL namespace
 
-  - "local @_" doesn't work yet, because @_ is special
+  - "local @\_" doesn't work yet, because @\_ is special
 
   - "~~" operator not implemented; also "when" and "given" not implemented.
 
@@ -524,8 +524,8 @@ Thread safety
 -------------
 
 Perl global variables are shared between threads.
-This includes for example: $_, $a, $b, $/, @INC, %SIG, $0, $1, $&, $".
-Perl variable @_ (the parameter list) is a special case, it behaves internally like a lexical and it may be captured by closures.
+This includes for example: $\_, $a, $b, $/, @INC, %SIG, $0, $1, $&, $".
+Perl variable @\_ (the parameter list) is a special case, it behaves internally like a lexical and it may be captured by closures.
 
 "local" stack is shared.
 
