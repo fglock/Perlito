@@ -181,20 +181,10 @@ sub export {
         # shortcut for the common case of no type character
         unless ( $sym =~ s/^(\W)// ) {
             *{"${callpkg}::$sym"} = \&{"${pkg}::$sym"};
-
-            # TODO - Perlito compiler hint should not be necessary
-            $Perlito5::PROTO->{"${callpkg}::$sym"} = prototype(\&{"${pkg}::$sym"});
-
             next;
         }
         $type = $1;
         no warnings 'once';
-
-        if ($type eq '&') {
-            # TODO - Perlito compiler hint should not be necessary
-            $Perlito5::PROTO->{"${callpkg}::$sym"} = prototype(\&{"${pkg}::$sym"});
-        }
-
         *{"${callpkg}::$sym"} =
             $type eq '&' ? \&{"${pkg}::$sym"}
           : $type eq '$' ? \${"${pkg}::$sym"}
