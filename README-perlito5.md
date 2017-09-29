@@ -330,6 +330,18 @@ Parser
     syntax error at -e line 1, at EOF
 ~~~
 
+- error messages depend on eval context
+
+  ```sh
+  $ perl  -e ' use strict;  eval { YY GG }; print $@; sub YY {} '
+  Can't locate object method "YY" via package "GG" (perhaps you forgot to load "GG"?) at -e line 1.
+  
+  $ perl  -e ' use strict;  eval " YY GG "; print $@; sub YY {} '
+  Bareword "GG" not allowed while "strict subs" in use at (eval 1) line 1.
+  
+  $ perl  -e ' use strict;  eval " eval { YY GG } "; print $@; sub YY {} '
+  Bareword "GG" not allowed while "strict subs" in use at (eval 1) line 1.
+  ```
 
 Add tests for fixed bugs
 ------------------------
