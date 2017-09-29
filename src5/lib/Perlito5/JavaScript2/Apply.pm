@@ -643,7 +643,7 @@ package Perlito5::AST::Apply;
                 'throw(new p5_error("break", ""))'
             );
         },
-        'prefix:<next>' => sub {
+        'next' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label = '';
@@ -654,7 +654,7 @@ package Perlito5::AST::Apply;
                 'throw(new p5_error("next", ' . Perlito5::JavaScript2::escape_string($label ) . '))'
             );
         },
-        'prefix:<last>' => sub {
+        'last' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label = '';
@@ -665,7 +665,7 @@ package Perlito5::AST::Apply;
                 'throw(new p5_error("last", ' . Perlito5::JavaScript2::escape_string($label ) . '))'
             );
         },
-        'prefix:<redo>' => sub {
+        'redo' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label = '';

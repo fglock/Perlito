@@ -261,14 +261,6 @@ my $reduce_to_ast = sub {
                 arguments => [ pop_term($num_stack) ],
               );
     }
-    elsif ($last_op->[0] eq 'prefix_or_unary') {
-        push @$num_stack,
-            Perlito5::AST::Apply->new(
-                namespace => '',
-                code      => 'prefix:<' . $last_op->[1] . '>',
-                arguments => [ @$num_stack ? pop_term($num_stack) : () ],
-              );
-    }
     elsif ($last_op->[0] eq 'postfix') {
         push @$num_stack,
             Perlito5::AST::Apply->new(
@@ -622,6 +614,27 @@ token term_return {
         }
 };
 
+token next_last_redo {
+     'next' | 'last' | 'redo' 
+};
+token term_next_last_redo {
+    #        Unlike most named operators, this is also exempt from the
+    #        looks-like-a-function rule, so "redo ("foo")."bar"" will cause
+    #        "bar" to be part of the argument to "redo". See: perldoc -f redo
+    <next_last_redo> <.Perlito5::Grammar::Space::opt_ws> <next_last_redo_parse>
+        {
+            my $args = Perlito5::Match::flat($MATCH->{next_last_redo_parse});
+            $MATCH->{capture} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code      => Perlito5::Match::flat($MATCH->{next_last_redo}),
+                    arguments => $args eq '*undef*' ? [] : [$args],
+                    namespace => '',
+                    bareword  => $args eq '*undef*' ? 1 : 0,
+                 )
+               ]
+        }
+};
+
 token term_eval {
     # Note: this is eval-block; eval-string is parsed as a normal subroutine
     'eval' <Perlito5::Grammar::block>
@@ -662,6 +675,14 @@ my $List_end_token = {
         'xor' => 1,
         %$Expr_end_token,
 };
+
+# "last" has the same precedence as assignment
+my $Next_Last_Redo_end_token = { 
+        ','   => 1,
+        '=>'  => 1,
+        %$List_end_token,
+};
+
 # end-tokens for named unary operators - used in "Grammar::Bareword" module
 my $Argument_end_token = {
         ',' => 1,
@@ -787,6 +808,10 @@ sub list_parser {
     };
 }
 
+sub next_last_redo_parse {
+    my ($str, $pos) = @_;
+    return list_parser( $str, $pos, $Next_Last_Redo_end_token );
+}
 sub argument_parse {
     my ($str, $pos) = @_;
     return list_parser( $str, $pos, $Argument_end_token );
@@ -915,6 +940,9 @@ Perlito5::Grammar::Precedence::add_term( 'not'   => \&term_not );
 Perlito5::Grammar::Precedence::add_term( 'pos'   => \&term_pos );
 Perlito5::Grammar::Precedence::add_term( 'chomp' => \&term_operator_with_paren );
 Perlito5::Grammar::Precedence::add_term( 'chop'  => \&term_operator_with_paren );
+Perlito5::Grammar::Precedence::add_term( 'next'  => \&term_next_last_redo );
+Perlito5::Grammar::Precedence::add_term( 'last'  => \&term_next_last_redo );
+Perlito5::Grammar::Precedence::add_term( 'redo'  => \&term_next_last_redo );
 
 
 1;

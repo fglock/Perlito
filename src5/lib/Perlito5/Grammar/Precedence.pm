@@ -172,7 +172,7 @@ sub add_op {
     for my $name ( @$names ) {
         $Operator->{$fixity}{$name} = 1;
         $Precedence->{$name}        = $precedence;
-        $PrefixPrecedence->{$name}  = $precedence if $fixity eq 'prefix' || $fixity eq 'prefix_or_unary';
+        $PrefixPrecedence->{$name}  = $precedence if $fixity eq 'prefix';
         $Assoc->{$assoc}{$name}     = 1;
         $Op{$name}                  = 1;
     }
@@ -228,7 +228,7 @@ add_op( 'infix', [ '<<', '>>' ], $prec );
 $prec = $prec - 1;
 # named unary operators - these are parsed by the "Grammar::Bareword" module
 # NOTE -  -f($file).".bak" is equivalent to -f "$file.bak" 
-add_op( 'prefix_or_unary', [qw( -r -w -x -o -R -W -X -O -e -z -s -f -d -l -p -S -b -c -t -u -g -k -T -B -M -A -C )], $prec );
+add_op( 'prefix', [qw( -r -w -x -o -R -W -X -O -e -z -s -f -d -l -p -S -b -c -t -u -g -k -T -B -M -A -C )], $prec );
 $prec = $prec - 1;
 add_op( 'infix', [ 'lt', 'le', 'gt', 'ge', '<=', '>=', '<', '>' ], $prec, { assoc => 'chain' } );
 $prec = $prec - 1;
@@ -253,8 +253,7 @@ add_op(
     [ '=', '**=', '+=', '-=', '*=', '/=', 'x=', '|=', '&=', '.=', '<<=', '>>=', '%=', '||=', '&&=', '^=', '//=' ],
     $prec,
     { assoc => 'right' } );
-# "last" has the same precedence as assignment
-add_op( 'prefix_or_unary',  [ 'last',  'next', 'redo' ], $prec );
+# Note: "last" has the same precedence as assignment, there is a separate rule
 $prec = $prec - 1;
 add_op( 'infix', [ '=>' ],  $prec, { assoc => 'right' } );
 $prec = $prec - 1;
@@ -271,7 +270,7 @@ add_op( 'infix', [ '*start*' ], $prec );
 
 sub get_token_precedence {
     my $token = $_[0];
-    if ( $token->[0] eq 'prefix' || $token->[0] eq 'prefix_or_unary' ) {
+    if ( $token->[0] eq 'prefix' ) {
         return $PrefixPrecedence->{ $token->[1] }
     }
     return $Precedence->{ $token->[1] }
@@ -313,11 +312,7 @@ sub precedence_parse {
             # allow (,,,)
             push( @$num_stack, ['term', undef] );
         }
-        if ($Operator->{prefix_or_unary}{$token->[1]} && ( ($last->[1] eq '*start*') || !$last_is_term )) {
-            $token->[0] = 'prefix_or_unary';
-            unshift( @$op_stack, $token);
-        }
-        elsif ($Operator->{prefix}{$token->[1]} && ( ($last->[1] eq '*start*') || !$last_is_term )) {
+        if ($Operator->{prefix}{$token->[1]} && ( ($last->[1] eq '*start*') || !$last_is_term )) {
             $token->[0] = 'prefix';
             unshift( @$op_stack, $token);
         }

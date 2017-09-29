@@ -832,7 +832,7 @@ package Perlito5::AST::Apply;
             $Perlito5::THROW = 1;
             die "TODO - break() not implemented";
         },
-        'prefix:<next>' => sub {
+        'next' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label = Perlito5::Java::get_java_loop_label( $self->{arguments}[0]{code} );
@@ -841,7 +841,7 @@ package Perlito5::AST::Apply;
             }
             'PerlOp.next(' . $label . ')';
         },
-        'prefix:<last>' => sub {
+        'last' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label = Perlito5::Java::get_java_loop_label( $self->{arguments}[0]{code} );
@@ -850,7 +850,7 @@ package Perlito5::AST::Apply;
             }
             'PerlOp.last(' . $label . ')';
         },
-        'prefix:<redo>' => sub {
+        'redo' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label = Perlito5::Java::get_java_loop_label( $self->{arguments}[0]{code} );
