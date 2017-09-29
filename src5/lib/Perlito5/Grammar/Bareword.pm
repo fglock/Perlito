@@ -622,10 +622,24 @@ sub term_bareword {
     my $m_list = Perlito5::Grammar::Expression::list_parse( $str, $p );
     my $list = $m_list->{capture};
     if ($list ne '*undef*') {
+        my $param_list = Perlito5::Grammar::Expression::expand_list($list);
+        # warn "Bareword ", Perlito5::Dumper::Dumper($param_list);
+
+        if ( $^H & $Perlito5::STRICT_SUBS ) {
+            for my $arg (@$param_list) {
+                if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{bareword} && $arg->{_not_a_subroutine} ) {
+                    # sub must be predeclared, unless proto is '*'
+                    my $name = $arg->{code};
+                    my $namespace = $arg->{namespace};
+                    Perlito5::Compiler::error( 'Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
+                }
+            }
+        }
+
         $m_name->{capture} = [ 'postfix_or_term', 'funcall',
                 $namespace,
                 $name,
-                $list
+                $param_list
             ];
         $m_name->{to} = $m_list->{to};
         return $m_name;
@@ -699,12 +713,24 @@ sub term_bareword {
             # Perlito5::Compiler::error( 'HERE2 Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
             # warn( 'HERE2 Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
 
+            $m_name->{capture} = [
+                'postfix_or_term',
+                'funcall_no_params',
+                Perlito5::AST::Apply->new(
+                    code      => $name,
+                    namespace => $namespace,
+                    arguments => [],
+                    bareword  => 1,
+                    _not_a_subroutine => 1,
+                )
+            ];
+            return $m_name;
+
         }
     }
 
     $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
-            $namespace,
-            $name
+            Perlito5::AST::Apply->new( code => $name, namespace => $namespace, arguments => [], bareword => 1 )
         ];
     return $m_name;
 }

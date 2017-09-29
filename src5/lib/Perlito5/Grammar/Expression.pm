@@ -84,7 +84,7 @@ sub pop_term {
             return $v;
         }
         if ($v->[1] eq 'funcall_no_params') {
-            $v = Perlito5::AST::Apply->new( code => $v->[3], namespace => $v->[2], arguments => [], bareword => 1 );
+            $v = $v->[2];
             return $v;
         }
         if ($v->[1] eq 'methcall') {
@@ -93,8 +93,7 @@ sub pop_term {
             return $v;
         }
         if ($v->[1] eq 'funcall') {
-            my $param_list = expand_list( ($v->[4]) );
-            $v = Perlito5::AST::Apply->new( code => $v->[3], arguments => $param_list, namespace => $v->[2] );
+            $v = Perlito5::AST::Apply->new( code => $v->[3], arguments => $v->[4], namespace => $v->[2] );
             return $v;
         }
         if ($v->[1] eq '( )') {

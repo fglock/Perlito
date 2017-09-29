@@ -15,6 +15,7 @@
 - Parser:
 -- fix chomp(), chop()
 -- fix fat-arrow in argument lists
+-- fix indirect object
 -- indented heredoc with <<~"tag"
 -- use $^H and %^H
 -- set Perl version to 5.026

@@ -537,6 +537,7 @@ Add tests for fixed bugs
     This seems to be because there is a rule that \w followed by '(' is a function call;
     this needs more testing: ' ... and(2) '
     Test: redefine 'and', 'not' and check what works.
+    TODO - "-f" without arguments
 
     '  $s111++ + $s222 '
     parses as  (+$s222)++
