@@ -8,9 +8,9 @@
 
 	BEGIN blocks (parser)
 
-    tie() and overload
+	tie() and overload
 
-    XS replacement modules
+	XS replacement modules
 
 - Parser:
 -- fix chomp(), chop()
@@ -18,7 +18,9 @@
 -- indented heredoc with <<~"tag"
 -- use $^H and %^H
 -- set Perl version to 5.026
--- add core modules: Tie::Hash, Tie::Scalar, Tie::Array, warnings::register, Fcntl
+-- add core modules:
+	Tie::Hash, Tie::Scalar, Tie::Array, warnings::register,
+	Fcntl, subs, Symbol
 -- syntax fixes for hash vs. block, and ${var->{index}}
 
 - Java:
@@ -35,14 +37,13 @@
 -- $\
 -- caller() now works "natively", decoding the Java stack trace
 -- symbol tables like %:: and typeglobs support
--- add "Symbol.pm"
 -- '-e' file test
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:
 -- Implemented compile-time scratchpad, used in BEGIN blocks.
 -- "Use" is no longer an AST node, because all "use" statements
-    are executed at compile-time
+	are executed at compile-time
 - JavaScript:
 -- fix "range" special cases
 -- regex /s /x modifiers

@@ -129,6 +129,15 @@ token stmt_use {
                 #    if !$m;
                 $MATCH->{capture} = Perlito5::Grammar::Block::ast_nop();
             }
+            elsif ($use_decl eq 'use' && $full_ident eq 'subs' && $list) {
+                for my $name (@$list) {
+                    #  v --> &Pkg::v
+                    $Perlito5::VARS{ '&' . $Perlito5::PKG_NAME . '::' . $name } = 1;
+                }
+                # Perlito5::Compiler::error "not a valid subroutine name: @$list"
+                #    if !$m;
+                $MATCH->{capture} = Perlito5::Grammar::Block::ast_nop();
+            }
             elsif ($use_decl eq 'use' && $full_ident eq 'constant') {
                 my @ast;
                 if ($list) {

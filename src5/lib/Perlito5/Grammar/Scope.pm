@@ -57,6 +57,9 @@ sub compile_time_glob_set {
         if (ref($value) eq 'ARRAY') {
             $Perlito5::VARS{'@' . $glob} = 1;
         }
+        if (ref($value) eq 'CODE') {
+            $Perlito5::VARS{'&' . $glob} = 1;
+        }
     }
     *{$glob} = $value;
 }
