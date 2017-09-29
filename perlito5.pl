@@ -124,7 +124,7 @@ use feature 'say';
     my $End_token;
     my $End_token_chars;
     my %Op;
-    my @Op_chars = (3, 2, 1);
+    my @Op_chars = (4, 3, 2, 1);
     sub Perlito5::Grammar::Precedence::op_parse {
         my $str = shift;
         my $pos = shift;
@@ -681,7 +681,17 @@ use feature 'say';
         my $m_list = Perlito5::Grammar::Expression::list_parse($str, $p);
         my $list = $m_list->{"capture"};
         if ($list ne "*undef*") {
-            $m_name->{"capture"} = ["postfix_or_term", "funcall", $namespace, $name, $list];
+            my $param_list = Perlito5::Grammar::Expression::expand_list($list);
+            if (${^H} & $Perlito5::STRICT_SUBS) {;
+                for my $arg (@{$param_list}) {;
+                    if (ref($arg) eq "Perlito5::AST::Apply" && $arg->{"bareword"} && $arg->{"_not_a_subroutine"}) {
+                        my $name = $arg->{"code"};
+                        my $namespace = $arg->{"namespace"};
+                        Perlito5::Compiler::error("Bareword \"" . ($namespace ? $namespace . "::" : '') . $name . "\" not allowed while \"strict subs\" in use")
+                    }
+                }
+            }
+            $m_name->{"capture"} = ["postfix_or_term", "funcall", $namespace, $name, $param_list];
             $m_name->{"to"} = $m_list->{"to"};
             return $m_name
         }
@@ -699,9 +709,12 @@ use feature 'say';
             my $m = Perlito5::Grammar::Space::opt_ws($str, $p);
             my $p = $m->{"to"};
             if ($str->[$p] eq ":") {}
-            elsif (!(exists($Perlito5::PROTO->{$effective_name}) || ((!$namespace || $namespace eq "CORE") && exists($Perlito5::CORE_PROTO->{"CORE::" . $name})))) {}
+            elsif (!(exists($Perlito5::PROTO->{$effective_name}) || ((!$namespace || $namespace eq "CORE") && exists($Perlito5::CORE_PROTO->{"CORE::" . $name})))) {
+                $m_name->{"capture"} = ["postfix_or_term", "funcall_no_params", Perlito5::AST::Apply::->new("code", $name, "namespace", $namespace, "arguments", [], "bareword", 1, "_not_a_subroutine", 1)];
+                return $m_name
+            }
         }
-        $m_name->{"capture"} = ["postfix_or_term", "funcall_no_params", $namespace, $name];
+        $m_name->{"capture"} = ["postfix_or_term", "funcall_no_params", Perlito5::AST::Apply::->new("code", $name, "namespace", $namespace, "arguments", [], "bareword", 1)];
         return $m_name
     }
     sub Perlito5::Grammar::Bareword::prototype_is_ampersand {
@@ -1650,7 +1663,7 @@ use feature 'say';
                 return $v
             }
             if ($v->[1] eq "funcall_no_params") {
-                $v = Perlito5::AST::Apply::->new("code", $v->[3], "namespace", $v->[2], "arguments", [], "bareword", 1);
+                $v = $v->[2];
                 return $v
             }
             if ($v->[1] eq "methcall") {
@@ -1659,8 +1672,7 @@ use feature 'say';
                 return $v
             }
             if ($v->[1] eq "funcall") {
-                my $param_list = expand_list(($v->[4]));
-                $v = Perlito5::AST::Apply::->new("code", $v->[3], "arguments", $param_list, "namespace", $v->[2]);
+                $v = Perlito5::AST::Apply::->new("code", $v->[3], "arguments", $v->[4], "namespace", $v->[2]);
                 return $v
             }
             if ($v->[1] eq "( )") {
@@ -2535,6 +2547,64 @@ use feature 'say';
         })));
         $tmp ? $MATCH : undef
     }
+    sub Perlito5::Grammar::Expression::next_last_redo {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $tmp = ((do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                (("n" eq $str->[$MATCH->{"to"} + 0]) && ("e" eq $str->[$MATCH->{"to"} + 1]) && ("x" eq $str->[$MATCH->{"to"} + 2]) && ("t" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                (("l" eq $str->[$MATCH->{"to"} + 0]) && ("a" eq $str->[$MATCH->{"to"} + 1]) && ("s" eq $str->[$MATCH->{"to"} + 2]) && ("t" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                (("r" eq $str->[$MATCH->{"to"} + 0]) && ("e" eq $str->[$MATCH->{"to"} + 1]) && ("d" eq $str->[$MATCH->{"to"} + 2]) && ("o" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))
+            })
+        }));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_next_last_redo {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $tmp = (((do {
+            my $m2 = next_last_redo($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"next_last_redo"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = next_last_redo_parse($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"next_last_redo_parse"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $args = Perlito5::Match::flat($MATCH->{"next_last_redo_parse"});
+            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", Perlito5::Match::flat($MATCH->{"next_last_redo"}), "arguments", $args eq "*undef*" ? [] : [$args], "namespace", '', "bareword", $args eq "*undef*" ? 1 : 0)];
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
     sub Perlito5::Grammar::Expression::term_eval {
         my $str = $_[0];
         my $pos = $_[1];
@@ -2558,7 +2628,8 @@ use feature 'say';
     my $Expr_end_token_chars = [7, 6, 5, 4, 3, 2, 1];
     my $Expr_end_token = {"]", 1, ")", 1, "}", 1, ";", 1, "if", 1, "for", 1, "else", 1, "when", 1, "while", 1, "until", 1, "elsif", 1, "unless", 1, "foreach", 1};
     my $List_end_token = {":", 1, "or", 1, "and", 1, "xor", 1, %{$Expr_end_token}};
-    my $Argument_end_token = {",", 1, "<", 1, ">", 1, "=", 1, "|", 1, "^", 1, "?", 1, "=>", 1, "lt", 1, "le", 1, "gt", 1, "ge", 1, "<=", 1, ">=", 1, "==", 1, "!=", 1, "ne", 1, "eq", 1, "..", 1, "~~", 1, "&&", 1, "||", 1, "+=", 1, "-=", 1, "*=", 1, "/=", 1, "x=", 1, "|=", 1, "&=", 1, ".=", 1, "^=", 1, "%=", 1, "//", 1, "...", 1, "<=>", 1, "cmp", 1, "<<=", 1, ">>=", 1, "||=", 1, "&&=", 1, "//=", 1, "**=", 1, %{$List_end_token}};
+    my $Next_Last_Redo_end_token = {",", 1, "=>", 1, %{$List_end_token}};
+    my $Argument_end_token = {",", 1, "<", 1, ">", 1, "=", 1, "|", 1, "^", 1, "?", 1, "=>", 1, "lt", 1, "le", 1, "gt", 1, "ge", 1, "<=", 1, ">=", 1, "==", 1, "!=", 1, "ne", 1, "eq", 1, "..", 1, "~~", 1, "&&", 1, "||", 1, "+=", 1, "-=", 1, "*=", 1, "/=", 1, "x=", 1, "|=", 1, "&=", 1, ".=", 1, "^=", 1, "%=", 1, "//", 1, "...", 1, "<=>", 1, "cmp", 1, "<<=", 1, ">>=", 1, "||=", 1, "&&=", 1, "//=", 1, "**=", 1, "last", 1, "next", 1, "redo", 1, %{$List_end_token}};
     sub Perlito5::Grammar::Expression::list_parser {
         (my($str), my($pos), my($end_token)) = @_;
         my $expr;
@@ -2605,6 +2676,10 @@ use feature 'say';
         }
         my $result = pop_term($res);
         return {"str", $str, "from", $pos, "to", $last_pos, "capture", $result}
+    }
+    sub Perlito5::Grammar::Expression::next_last_redo_parse {
+        (my($str), my($pos)) = @_;
+        return list_parser($str, $pos, $Next_Last_Redo_end_token)
     }
     sub Perlito5::Grammar::Expression::argument_parse {
         (my($str), my($pos)) = @_;
@@ -2707,6 +2782,9 @@ use feature 'say';
     Perlito5::Grammar::Precedence::add_term("pos", \&term_pos);
     Perlito5::Grammar::Precedence::add_term("chomp", \&term_operator_with_paren);
     Perlito5::Grammar::Precedence::add_term("chop", \&term_operator_with_paren);
+    Perlito5::Grammar::Precedence::add_term("next", \&term_next_last_redo);
+    Perlito5::Grammar::Precedence::add_term("last", \&term_next_last_redo);
+    Perlito5::Grammar::Precedence::add_term("redo", \&term_next_last_redo);
     1
 }
 {
@@ -16295,7 +16373,7 @@ CORE.sprintf = function(List__) {
         label(@_)
     });
     my %pair = ("(", ")", "[", "]", "{", "}", "<", ">");
-    our %op = ("prefix:<\$>", {"fix", "deref", "prec", 0, "str", "\$"}, "prefix:<\@>", {"fix", "deref", "prec", 0, "str", "\@"}, "prefix:<%>", {"fix", "deref", "prec", 0, "str", "%"}, "prefix:<&>", {"fix", "deref", "prec", 0, "str", "&"}, "prefix:<*>", {"fix", "deref", "prec", 0, "str", "*"}, "prefix:<\$#>", {"fix", "deref", "prec", 0, "str", "\$#"}, "circumfix:<[ ]>", {"fix", "circumfix", "prec", 0, "str", "["}, "circumfix:<{ }>", {"fix", "circumfix", "prec", 0, "str", "{"}, "circumfix:<( )>", {"fix", "circumfix", "prec", 0, "str", "("}, "infix:<->>", {"fix", "infix", "prec", -1, "str", "->"}, "prefix:<-->", {"fix", "prefix", "prec", 1, "str", "--"}, "prefix:<++>", {"fix", "prefix", "prec", 1, "str", "++"}, "postfix:<-->", {"fix", "postfix", "prec", 1, "str", "--"}, "postfix:<++>", {"fix", "postfix", "prec", 1, "str", "++"}, "infix:<**>", {"fix", "infix", "prec", 2, "str", "**"}, "prefix:<\\>", {"fix", "prefix", "prec", 3, "str", "\\"}, "prefix:<+>", {"fix", "prefix", "prec", 3, "str", "+"}, "prefix:<->", {"fix", "prefix", "prec", 3, "str", "-"}, "prefix:<~>", {"fix", "prefix", "prec", 3, "str", "~"}, "prefix:<!>", {"fix", "prefix", "prec", 3, "str", "!"}, "infix:<=~>", {"fix", "infix", "prec", 4, "str", " =~ "}, "infix:<!~>", {"fix", "infix", "prec", 4, "str", " !~ "}, "infix:<*>", {"fix", "infix", "prec", 5, "str", " * "}, "infix:</>", {"fix", "infix", "prec", 5, "str", " / "}, "infix:<%>", {"fix", "infix", "prec", 5, "str", " % "}, "infix:<x>", {"fix", "infix", "prec", 5, "str", " x "}, "infix:<+>", {"fix", "infix", "prec", 6, "str", " + "}, "infix:<->", {"fix", "infix", "prec", 6, "str", " - "}, "list:<.>", {"fix", "list", "prec", 6, "str", " . "}, "infix:<<<>", {"fix", "infix", "prec", 7, "str", " << "}, "infix:<>>>", {"fix", "infix", "prec", 7, "str", " >> "}, "infix:<lt>", {"fix", "infix", "prec", 9, "str", " lt "}, "infix:<le>", {"fix", "infix", "prec", 9, "str", " le "}, "infix:<gt>", {"fix", "infix", "prec", 9, "str", " gt "}, "infix:<ge>", {"fix", "infix", "prec", 9, "str", " ge "}, "infix:<<=>", {"fix", "infix", "prec", 9, "str", " <= "}, "infix:<>=>", {"fix", "infix", "prec", 9, "str", " >= "}, "infix:<<>", {"fix", "infix", "prec", 9, "str", " < "}, "infix:<>>", {"fix", "infix", "prec", 9, "str", " > "}, "infix:<<=>>", {"fix", "infix", "prec", 10, "str", " <=> "}, "infix:<cmp>", {"fix", "infix", "prec", 10, "str", " cmp "}, "infix:<==>", {"fix", "infix", "prec", 10, "str", " == "}, "infix:<!=>", {"fix", "infix", "prec", 10, "str", " != "}, "infix:<ne>", {"fix", "infix", "prec", 10, "str", " ne "}, "infix:<eq>", {"fix", "infix", "prec", 10, "str", " eq "}, "infix:<&>", {"fix", "infix", "prec", 11, "str", " & "}, "infix:<|>", {"fix", "infix", "prec", 12, "str", " | "}, "infix:<^>", {"fix", "infix", "prec", 12, "str", " ^ "}, "infix:<..>", {"fix", "infix", "prec", 13, "str", " .. "}, "infix:<...>", {"fix", "infix", "prec", 13, "str", " ... "}, "infix:<~~>", {"fix", "infix", "prec", 13, "str", " ~~ "}, "infix:<&&>", {"fix", "infix", "prec", 14, "str", " && "}, "infix:<||>", {"fix", "infix", "prec", 15, "str", " || "}, "infix:<//>", {"fix", "infix", "prec", 15, "str", " // "}, "ternary:<? :>", {"fix", "ternary", "prec", 16}, "infix:<=>", {"fix", "infix", "prec", 17, "str", " = "}, "infix:<**=>", {"fix", "infix", "prec", 17, "str", " **= "}, "infix:<+=>", {"fix", "infix", "prec", 17, "str", " += "}, "infix:<-=>", {"fix", "infix", "prec", 17, "str", " -= "}, "infix:<*=>", {"fix", "infix", "prec", 17, "str", " *= "}, "infix:</=>", {"fix", "infix", "prec", 17, "str", " /= "}, "infix:<x=>", {"fix", "infix", "prec", 17, "str", " x= "}, "infix:<|=>", {"fix", "infix", "prec", 17, "str", " |= "}, "infix:<&=>", {"fix", "infix", "prec", 17, "str", " &= "}, "infix:<.=>", {"fix", "infix", "prec", 17, "str", " .= "}, "infix:<<<=>", {"fix", "infix", "prec", 17, "str", " <<= "}, "infix:<>>=>", {"fix", "infix", "prec", 17, "str", " >>= "}, "infix:<%=>", {"fix", "infix", "prec", 17, "str", " %= "}, "infix:<||=>", {"fix", "infix", "prec", 17, "str", " ||= "}, "infix:<&&=>", {"fix", "infix", "prec", 17, "str", " &&= "}, "infix:<^=>", {"fix", "infix", "prec", 17, "str", " ^= "}, "infix:<//=>", {"fix", "infix", "prec", 17, "str", " //= "}, "infix:<=>>", {"fix", "infix", "prec", 18, "str", " => "}, "list:<,>", {"fix", "list", "prec", 19, "str", ", "}, "prefix:<not>", {"fix", "prefix", "prec", 20, "str", " not "}, "infix:<and>", {"fix", "infix", "prec", 21, "str", " and "}, "infix:<or>", {"fix", "infix", "prec", 22, "str", " or "}, "infix:<xor>", {"fix", "infix", "prec", 22, "str", " xor "});
+    our %op = ("prefix:<\$>", {"fix", "deref", "prec", 0, "str", "\$"}, "prefix:<\@>", {"fix", "deref", "prec", 0, "str", "\@"}, "prefix:<%>", {"fix", "deref", "prec", 0, "str", "%"}, "prefix:<&>", {"fix", "deref", "prec", 0, "str", "&"}, "prefix:<*>", {"fix", "deref", "prec", 0, "str", "*"}, "prefix:<\$#>", {"fix", "deref", "prec", 0, "str", "\$#"}, "circumfix:<[ ]>", {"fix", "circumfix", "prec", 0, "str", "["}, "circumfix:<{ }>", {"fix", "circumfix", "prec", 0, "str", "{"}, "circumfix:<( )>", {"fix", "circumfix", "prec", 0, "str", "("}, "infix:<->>", {"fix", "infix", "prec", -1, "str", "->"}, "prefix:<-->", {"fix", "prefix", "prec", 1, "str", "--"}, "prefix:<++>", {"fix", "prefix", "prec", 1, "str", "++"}, "postfix:<-->", {"fix", "postfix", "prec", 1, "str", "--"}, "postfix:<++>", {"fix", "postfix", "prec", 1, "str", "++"}, "infix:<**>", {"fix", "infix", "prec", 2, "str", "**"}, "prefix:<\\>", {"fix", "prefix", "prec", 3, "str", "\\"}, "prefix:<+>", {"fix", "prefix", "prec", 3, "str", "+"}, "prefix:<->", {"fix", "prefix", "prec", 3, "str", "-"}, "prefix:<~>", {"fix", "prefix", "prec", 3, "str", "~"}, "prefix:<!>", {"fix", "prefix", "prec", 3, "str", "!"}, "infix:<=~>", {"fix", "infix", "prec", 4, "str", " =~ "}, "infix:<!~>", {"fix", "infix", "prec", 4, "str", " !~ "}, "infix:<*>", {"fix", "infix", "prec", 5, "str", " * "}, "infix:</>", {"fix", "infix", "prec", 5, "str", " / "}, "infix:<%>", {"fix", "infix", "prec", 5, "str", " % "}, "infix:<x>", {"fix", "infix", "prec", 5, "str", " x "}, "infix:<+>", {"fix", "infix", "prec", 6, "str", " + "}, "infix:<->", {"fix", "infix", "prec", 6, "str", " - "}, "list:<.>", {"fix", "list", "prec", 6, "str", " . "}, "infix:<<<>", {"fix", "infix", "prec", 7, "str", " << "}, "infix:<>>>", {"fix", "infix", "prec", 7, "str", " >> "}, "infix:<lt>", {"fix", "infix", "prec", 9, "str", " lt "}, "infix:<le>", {"fix", "infix", "prec", 9, "str", " le "}, "infix:<gt>", {"fix", "infix", "prec", 9, "str", " gt "}, "infix:<ge>", {"fix", "infix", "prec", 9, "str", " ge "}, "infix:<<=>", {"fix", "infix", "prec", 9, "str", " <= "}, "infix:<>=>", {"fix", "infix", "prec", 9, "str", " >= "}, "infix:<<>", {"fix", "infix", "prec", 9, "str", " < "}, "infix:<>>", {"fix", "infix", "prec", 9, "str", " > "}, "infix:<<=>>", {"fix", "infix", "prec", 10, "str", " <=> "}, "infix:<cmp>", {"fix", "infix", "prec", 10, "str", " cmp "}, "infix:<==>", {"fix", "infix", "prec", 10, "str", " == "}, "infix:<!=>", {"fix", "infix", "prec", 10, "str", " != "}, "infix:<ne>", {"fix", "infix", "prec", 10, "str", " ne "}, "infix:<eq>", {"fix", "infix", "prec", 10, "str", " eq "}, "infix:<&>", {"fix", "infix", "prec", 11, "str", " & "}, "infix:<|>", {"fix", "infix", "prec", 12, "str", " | "}, "infix:<^>", {"fix", "infix", "prec", 12, "str", " ^ "}, "infix:<..>", {"fix", "infix", "prec", 13, "str", " .. "}, "infix:<...>", {"fix", "infix", "prec", 13, "str", " ... "}, "infix:<~~>", {"fix", "infix", "prec", 13, "str", " ~~ "}, "infix:<&&>", {"fix", "infix", "prec", 14, "str", " && "}, "infix:<||>", {"fix", "infix", "prec", 15, "str", " || "}, "infix:<//>", {"fix", "infix", "prec", 15, "str", " // "}, "ternary:<? :>", {"fix", "ternary", "prec", 16}, "infix:<=>", {"fix", "infix", "prec", 17, "str", " = "}, "infix:<**=>", {"fix", "infix", "prec", 17, "str", " **= "}, "infix:<+=>", {"fix", "infix", "prec", 17, "str", " += "}, "infix:<-=>", {"fix", "infix", "prec", 17, "str", " -= "}, "infix:<*=>", {"fix", "infix", "prec", 17, "str", " *= "}, "infix:</=>", {"fix", "infix", "prec", 17, "str", " /= "}, "infix:<x=>", {"fix", "infix", "prec", 17, "str", " x= "}, "infix:<|=>", {"fix", "infix", "prec", 17, "str", " |= "}, "infix:<&=>", {"fix", "infix", "prec", 17, "str", " &= "}, "infix:<.=>", {"fix", "infix", "prec", 17, "str", " .= "}, "infix:<<<=>", {"fix", "infix", "prec", 17, "str", " <<= "}, "infix:<>>=>", {"fix", "infix", "prec", 17, "str", " >>= "}, "infix:<%=>", {"fix", "infix", "prec", 17, "str", " %= "}, "infix:<||=>", {"fix", "infix", "prec", 17, "str", " ||= "}, "infix:<&&=>", {"fix", "infix", "prec", 17, "str", " &&= "}, "infix:<^=>", {"fix", "infix", "prec", 17, "str", " ^= "}, "infix:<//=>", {"fix", "infix", "prec", 17, "str", " //= "}, "infix:<=>>", {"fix", "infix", "prec", 18, "str", " => "}, "list:<,>", {"fix", "list", "prec", 19, "str", ", "}, "prefix:<not>", {"fix", "prefix", "prec", 20, "str", "not "}, "infix:<and>", {"fix", "infix", "prec", 21, "str", " and "}, "infix:<or>", {"fix", "infix", "prec", 22, "str", " or "}, "infix:<xor>", {"fix", "infix", "prec", 22, "str", " xor "});
     $op{"prefix:<" . $_ . ">"} = {"fix", "prefix", "prec", 8, "str", $_ . " "}
         for "-r", "-w", "-x", "-o", "-R", "-W", "-X", "-O", "-e", "-z", "-s", "-f", "-d", "-l", "-p", "-S", "-b", "-c", "-t", "-u", "-g", "-k", "-T", "-B", "-M", "-A", "-C";
     $op{"prefix:<" . $_ . ">"} = {"fix", "parsed", "prec", 15, "str", $_}
