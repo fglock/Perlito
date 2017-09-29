@@ -18,7 +18,7 @@
 -- indented heredoc with <<~"tag"
 -- use $^H and %^H
 -- set Perl version to 5.026
--- add core modules: Tie::Hash, Tie::Scalar, Tie::Array, warnings::register
+-- add core modules: Tie::Hash, Tie::Scalar, Tie::Array, warnings::register, Fcntl
 -- syntax fixes for hash vs. block, and ${var->{index}}
 
 - Java:
