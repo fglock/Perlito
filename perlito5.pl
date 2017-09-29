@@ -432,11 +432,11 @@ use feature 'say';
         my $invocant;
         my $is_subroutine_name;
         my $effective_name = ($namespace || $Perlito5::PKG_NAME) . "::" . $name;
-        {
+        if (exists(&{$effective_name})) {
             my $p = eval {;
                 prototype($effective_name)
             };
-            $p && ($Perlito5::PROTO->{$effective_name} = $p)
+            $Perlito5::PROTO->{$effective_name} = $p
         }
         if (exists($Perlito5::Grammar::Print::Print{$name})) {;
             $invocant = undef
@@ -4751,7 +4751,7 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Use;
-    my %Perlito_internal_module = ("strict", "Perlito5X::strict", "warnings", "Perlito5X::warnings", "warnings::register", "Perlito5X::warnings::register", "feature", "Perlito5X::feature", "utf8", "Perlito5X::utf8", "bytes", "Perlito5X::bytes", "re", "Perlito5X::re", "encoding", "Perlito5X::encoding", "Carp", "Perlito5X::Carp", "Config", "Perlito5X::Config", "Exporter", "Perlito5X::Exporter", "Data::Dumper", "Perlito5X::Dumper", "UNIVERSAL", "Perlito5X::UNIVERSAL", "IO", "Perlito5X::IO", "JSON", "Perlito5X::JSON", "Symbol", "Perlito5X::Symbol", "Tie::Hash", "Perlito5X::Tie::Hash", "Tie::Array", "Perlito5X::Tie::Array", "Tie::Scalar", "Perlito5X::Tie::Scalar");
+    my %Perlito_internal_module = ("Carp", "Perlito5X::Carp", "Config", "Perlito5X::Config", "Data::Dumper", "Perlito5X::Data::Dumper", "Exporter", "Perlito5X::Exporter", "Fcntl", "Perlito5X::Fcntl", "IO", "Perlito5X::IO", "IO::Handle", "Perlito5X::IO::Handle", "JSON", "Perlito5X::JSON", "Symbol", "Perlito5X::Symbol", "Tie::Array", "Perlito5X::Tie::Array", "Tie::Hash", "Perlito5X::Tie::Hash", "Tie::Scalar", "Perlito5X::Tie::Scalar", "UNIVERSAL", "Perlito5X::UNIVERSAL", "bytes", "Perlito5X::bytes", "encoding", "Perlito5X::encoding", "feature", "Perlito5X::feature", "re", "Perlito5X::re", "strict", "Perlito5X::strict", "utf8", "Perlito5X::utf8", "warnings", "Perlito5X::warnings", "warnings::register", "Perlito5X::warnings::register");
     sub Perlito5::Grammar::Use::register_internal_module {
         (my($module), my($real_name)) = @_;
         $Perlito_internal_module{$module} = $real_name
@@ -5032,10 +5032,19 @@ use feature 'say';
                     $Perlito5::PACKAGES->{$full_ident} = 1;
                     my $use_decl = Perlito5::Match::flat($MATCH->{"use_decl"});
                     if ($use_decl eq "use" && $full_ident eq "vars" && $list) {
-                        my $code = "our (" . join(", ", @{$list}) . ")";
-                        my $m = Perlito5::Grammar::Statement::statement_parse([split('', $code)], 0);
-                        !$m && Perlito5::Compiler::error("not a valid variable name: " . join(${"\""}, @{$list}));
-                        $MATCH->{"capture"} = $m->{"capture"}
+                        for my $name (@{$list}) {;
+                            $Perlito5::VARS{substr($name, 0, 1) . $Perlito5::PKG_NAME . "::" . substr($name, 1)} = 1
+                        }
+                        $MATCH->{"capture"} = Perlito5::Grammar::Block::ast_nop()
+                    }
+                    elsif ($use_decl eq "use" && $full_ident eq "subs" && $list) {
+                        for my $name (@{$list}) {
+                            my $glob = $Perlito5::PKG_NAME . "::" . $name;
+                            if (!exists($Perlito5::PROTO->{$glob})) {;
+                                $Perlito5::PROTO->{$glob} = undef
+                            }
+                        }
+                        $MATCH->{"capture"} = Perlito5::Grammar::Block::ast_nop()
                     }
                     elsif ($use_decl eq "use" && $full_ident eq "constant") {
                         my @ast;
@@ -5099,7 +5108,7 @@ use feature 'say';
                         eval {
                             $module_name->import(@{$arguments});
                             1
-                        } or ${"\@"}->Perlito5::Compiler::error();
+                        } or Perlito5::Compiler::error(${"\@"});
                         shift(@Perlito5::CALLER)
                     }
                 }
@@ -5110,7 +5119,7 @@ use feature 'say';
                         eval {
                             $module_name->unimport(@{$arguments});
                             1
-                        } or ${"\@"}->Perlito5::Compiler::error();
+                        } or Perlito5::Compiler::error(${"\@"});
                         shift(@Perlito5::CALLER)
                     }
                 }
@@ -5201,7 +5210,7 @@ use feature 'say';
         Perlito5::Grammar::Scope::end_compile_time_scope();
         if (${"\@"}) {
             $INC{$filename} = undef;
-            ${"\@"}->Perlito5::Compiler::error()
+            Perlito5::Compiler::error(${"\@"})
         }
         elsif (!$result) {
             delete($INC{$filename});
@@ -5594,7 +5603,6 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Scope::compile_time_glob_set {
         (my($glob), my($value), my($namespace)) = @_;
-        print STDERR:: "compile_time_glob_set: ", Data::Dumper::Dumper(\@_);
         if (!ref($glob)) {
             if ($glob !~ m/::/) {;
                 $glob = $namespace . "::" . $glob
@@ -17988,7 +17996,7 @@ use feature 'say';
             }
             my %vars;
             for my $var (@{$self->{"_scope"}->{"block"}}, @Perlito5::CAPTURES) {;
-                if ($var->{"_decl"} && $var->{"_decl"} ne "global") {;
+                if ($var->{"_decl"} && $var->{"_decl"} ne "global" && $var->{"_decl"} ne "our") {;
                     $vars{$var->{"_real_sigil"} || $var->{"sigil"}}->{$var->emit_java(0)} = $var
                 }
             }
@@ -23775,8 +23783,15 @@ class PerlOp {
     //    'prefix:<-f>' => 'PerlOp.p5is_file',
     //    'prefix:<-s>' => 'PerlOp.p5size',
 
+    static String lastStat = null;
+
     public static final Path resolve_file(PlObject s) throws IOException {
-        return PlV.path.resolve(s.toString()).toRealPath();
+        String name = s.toString();
+        if (name.equals(\"_\") && lastStat != null) {
+            return PlV.path.resolve(lastStat).toRealPath();
+        }
+        lastStat = name;
+        return PlV.path.resolve(name).toRealPath();
     }
 
     public static final PlObject p5atime(PlObject s) {
