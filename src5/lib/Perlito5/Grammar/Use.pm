@@ -132,7 +132,10 @@ token stmt_use {
             elsif ($use_decl eq 'use' && $full_ident eq 'subs' && $list) {
                 for my $name (@$list) {
                     #  v --> &Pkg::v
-                    $Perlito5::VARS{ '&' . $Perlito5::PKG_NAME . '::' . $name } = 1;
+                    my $glob = $Perlito5::PKG_NAME . '::' . $name;
+                    if (!exists( $Perlito5::PROTO->{$glob} )) {
+                        $Perlito5::PROTO->{$glob} = undef;
+                    }
                 }
                 # Perlito5::Compiler::error "not a valid subroutine name: @$list"
                 #    if !$m;

@@ -58,7 +58,9 @@ sub compile_time_glob_set {
             $Perlito5::VARS{'@' . $glob} = 1;
         }
         if (ref($value) eq 'CODE') {
-            $Perlito5::VARS{'&' . $glob} = 1;
+            if (!exists( $Perlito5::PROTO->{$glob} )) {
+                $Perlito5::PROTO->{$glob} = undef;
+            }
         }
     }
     *{$glob} = $value;
