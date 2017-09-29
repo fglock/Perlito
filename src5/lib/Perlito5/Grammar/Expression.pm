@@ -261,6 +261,14 @@ my $reduce_to_ast = sub {
                 arguments => [ pop_term($num_stack) ],
               );
     }
+    elsif ($last_op->[0] eq 'prefix_or_unary') {
+        push @$num_stack,
+            Perlito5::AST::Apply->new(
+                namespace => '',
+                code      => 'prefix:<' . $last_op->[1] . '>',
+                arguments => [ @$num_stack ? pop_term($num_stack) : () ],
+              );
+    }
     elsif ($last_op->[0] eq 'postfix') {
         push @$num_stack,
             Perlito5::AST::Apply->new(
@@ -701,6 +709,10 @@ my $Argument_end_token = {
         '&&=' => 1, 
         '//=' => 1, 
         '**=' => 1, 
+
+        'last' => 1,
+        'next' => 1,
+        'redo' => 1,
         %$List_end_token,
 };
 

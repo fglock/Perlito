@@ -136,11 +136,15 @@ our %op = (
     'infix:<^=>'  => { fix => 'infix', prec => 17, str => ' ^= ' },
     'infix:<//=>' => { fix => 'infix', prec => 17, str => ' //= ' },
 
+    'prefix:<next>' => { fix => 'prefix', prec => 17, str => 'next ' },
+    'prefix:<last>' => { fix => 'prefix', prec => 17, str => 'last ' },
+    'prefix:<redo>' => { fix => 'prefix', prec => 17, str => 'redo ' },
+
     'infix:<=>>' => { fix => 'infix', prec => 18, str => ' => ' },
 
     'list:<,>' => { fix => 'list', prec => 19, str => ', ' },
 
-    'prefix:<not>' => { fix => 'prefix', prec => 20, str => ' not ' },
+    'prefix:<not>' => { fix => 'prefix', prec => 20, str => 'not ' },
 
     'infix:<and>' => { fix => 'infix', prec => 21, str => ' and ' },
 
