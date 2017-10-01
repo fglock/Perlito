@@ -25,6 +25,8 @@ my %FileFunc = (
                 fh.reader.close();
             }
             if (argCount == 0) {
+                // As a shortcut a one-argument call takes the filename from the
+                // global scalar variable of the same name as the filehandle
                 PlCORE.die("TODO - not implemented: single argument open()");
             }
             else if (argCount == 1) {
