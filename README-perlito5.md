@@ -8,39 +8,45 @@ Perlito5 translates Perl to Java, and Perl to JavaScript.
 Build using make
 ----------------
 
-    make
-        - builds perlito5.js (which runs in node.js)
+`make`
 
-    make test
-        - tests perlito5.js using node.js
+  - builds perlito5.js (which runs in node.js)
+  - builds perlito5.jar (which runs in java)
+  - builds html/perlito5.js (which runs in the browser)
 
-    make build-5browser
-        - builds html/perlito5.js (which runs in the browser)
+`make test`
 
-- See [Makefile](Makefile) for more options
+  - tests perlito5.js using node.js
+
+`make build-5browser`
+
+  - builds html/perlito5.js (which runs in the browser)
+
+- See [Makefile](Makefile) for more `make` options
 
 
 Compiling and running using Java
 --------------------------------
 
-- please see:
-
-  - [README-perlito5-Java](README-perlito5-Java.md)
+- please see: [README-perlito5-Java](README-perlito5-Java.md)
 
 Running the tests using "node.js"
 ---------------------------------
 
-    # this command will compile "perlito5.js"
-    perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
+- this command will compile "perlito5.js" without using `make`
 
-    # this will run a single test script
-    node perlito5.js -Isrc5/lib t5/01-perlito/01-sanity.t
+  `perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js`
 
-    # this will run all tests
-    prove -r -e 'node perlito5.js -I./src5/lib' t5
+- this will run a single test script
+
+  `node perlito5.js -Isrc5/lib t5/01-perlito/01-sanity.t`
+
+- this will run all tests without using `make`
+
+  `prove -r -e 'node perlito5.js -I./src5/lib' t5`
 
 
-Compile the compiler to JavaScript into perlito5.js
+Compile the compiler to JavaScript (`perlito5.js`)
 ---------------------------------------------------
 
 - using perl and perlito5.pl:
