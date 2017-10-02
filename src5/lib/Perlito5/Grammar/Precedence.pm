@@ -381,6 +381,43 @@ sub precedence_parse {
     return $num_stack;
 }
 
+sub term_core {
+    my $str  = shift;
+    my $pos  = shift;
+
+    # CORE::print, CORE::tr
+
+    my $tok = join( "", @{$str}[ $pos .. $pos + 20 ] );
+
+    return if length($tok) < 7;
+    return if substr($tok, 0, 6) ne 'CORE::';
+    return if substr($tok, 6, 1) !~ /\w/;
+
+    $tok = substr($tok, 6);
+    $pos += 6;
+
+    for my $len ( @Term_chars ) {
+        my $term = substr($tok, 0, $len);
+        if (exists($Term{$term})) {
+            my $c1 = $str->[$pos + $len - 1];
+            my $c2 = $str->[$pos + $len];
+            if ( is_num($c1) || !is_ident_middle($c1) || !is_ident_middle($c2) ) {
+                my $m = $Term{$term}->($str, $pos);
+                if ($m) {
+                    my $node = $m->{capture}[1];
+                    $node->{namespace} = 'CORE';
+                    # warn "term_core: ", Perlito5::Dumper::Dumper( $m );
+                    return $m;
+                }
+            }
+        }
+    }
+
+    return;
+};
+
+Perlito5::Grammar::Precedence::add_term( 'CORE'  => \&term_core );
+
 1;
 
 =begin
