@@ -62,11 +62,6 @@ Compile the compiler to Perl5 using perl
 
   `perl perlito5.pl -I./src5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl`
 
-Compile perlito5-in-browser using perl
---------------------------------------
-
-  `make build-5browser`
-
 Running the tests using "perl"
 ------------------------------
 
@@ -128,10 +123,10 @@ Command-line options
 
 - shebang processing:
 
-~~~perl
+```perl
     #!/usr/bin/perl -pi.orig
     s/foo/bar/;
-~~~
+```
 
 Libraries
 ---------
@@ -173,11 +168,11 @@ Parser
 
     See BEGIN_SCRATCHPAD in src5/
 
-~~~sh
+```sh
     t5/unit/begin_global_special_var.t .......... Failed 1/2 subtests 
     t5/unit/begin_loop.t ........................ Failed 2/3 subtests 
     t5/unit/begin_recurse.t ..................... Failed 5/6 subtests 
-~~~
+```
 
   - dump-to-AST work in progress - src5/lib/Perlito5/DumpToAST.pm
 
@@ -187,9 +182,9 @@ Parser
 
     - shared captures (shared lexicals) are not shared
 
-~~~sh
+```sh
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cperl5  -e ' use strict; BEGIN { my $y = 123; my $z = 456;for my $x (1..3) { no strict "refs"; *{"x$x"} = sub { print "here\n"; eval q{ print "y $y\n" }; $y; return $x } } }  x1(); '
-~~~
+```
 
     - blessed array/scalar/code is not supported (also in Data::Dumper)
 
@@ -208,7 +203,7 @@ Parser
 
 - compiler hints with $^H
 
-~~~sh
+```sh
     $ perl -e ' $^H = 1; { $^H = 3; use strict; print "HERE $^H\n"; eval q{ print "EVAL $^H\n";  }; BEGIN {  print "BEGIN1 $^H\n";  } };  print $^H, "\n";  {  use strict; print "HERE2 $^H\n"; eval q{ print "EVAL2 $^H\n";  BEGIN {  eval q{ print "BEGIN-EVAL $^H\n" }  }    }; } '
     BEGIN1 2018
     HERE 3
@@ -217,11 +212,11 @@ Parser
     HERE2 3
     BEGIN-EVAL 2018
     EVAL2 3
-~~~
+```
 
 - parse example in http://www.perlmonks.org/?node_id=663393
 
-~~~sh
+```sh
     $ perl perlito5.pl -I src5/lib -Cperl5 -e ' whatever  / 25 ; # / ; die "this dies!"; '
         whatever(m! 25 ; # !);
         die('this dies!')
@@ -229,17 +224,17 @@ Parser
         'whatever' / 25;
     $ perl -e ' print whatever  / 25 ; # / ; die "this dies!"; '
         this dies! at -e line 1.
-~~~
+```
 
 - "'" meaning "::"
 
-~~~perl
+```perl
     $'m  # $::m
     $m'  # String found where operator expected
 
     package X'Y  # X::Y
     package X'   # Invalid version format (non-numeric data)
-~~~
+```
 
 - attributes
     http://perldoc.perl.org/attributes.html
@@ -251,14 +246,14 @@ Parser
     code that depends on prototypes being (re)defined later - this breaks when the program is pre-compiled,
     because prototypes become stubs
 
-~~~perl
+```perl
     # t/test.pm
 
     sub like   ($$@) { like_yn (0,@_) }; # 0 for -      # this breaks if like_yn() is predeclared
     sub unlike ($$@) { like_yn (1,@_) }; # 1 for un-
     
     sub like_yn ($$$@) {
-~~~
+```
 
     check that undeclared barewords give the right error
     *foo = sub () { ... }   # does prototype work here?
@@ -270,7 +265,7 @@ Parser
 - "namespace" parsing
     tests: t5/01-perlito/26-syntax-namespace.t
 
-~~~sh
+```sh
     $ perl -e ' { package X; sub print { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; print $x "xxx" '
     Not a GLOB reference at -e line 1.
 
@@ -301,11 +296,11 @@ Parser
     $ perl -e ' $::X::::X = 3; print $main::X::main::X '    # empty
     $ perl -e ' $::X::::X = 3; print $main::X::X '          # empty
     $ perl -e ' $::X::::X = 3; print $::::X::::X '          # empty
-~~~
+```
 
 - CORE:: namespace can be used with operators:
 
-~~~perl
+```perl
     $ perl -MO=Deparse -e ' $x CORE::and $v '
     $v if $x;
 
@@ -314,13 +309,13 @@ Parser
 
     $ perl -MO=Deparse -e ' $x CORE::+ $v '
     CORE:: is not a keyword
-~~~
+```
 
 - strict and warnings: create options like 'subs', 'refs'
 
 - things that work in perlito5, but which are errors in 'perl'
 
-~~~sh
+```sh
     string interpolation with nested quotes of the same type:
 
         $ perl -e ' " $x{"x"} " '
@@ -328,17 +323,17 @@ Parser
 
         In perl5.22.0:
         Missing right curly or square bracket at -e line 1, within string
-~~~
+```
 
 - __DATA__ and __END__ can be anywhere in the line
 
-~~~sh
+```sh
     $ perl -e 'print 123 __END__ x xx + '
     123
 
     $ perl -e 'print 123 + __END__ x xx + '
     syntax error at -e line 1, at EOF
-~~~
+```
 
 - error messages depend on eval context
 
@@ -374,17 +369,17 @@ Add tests for fixed bugs
 
 - things that work in perlito5, but which are errors in 'perl'
 
-~~~sh
+```sh
     $ perl -e ' $c (f) '
     syntax error at -e line 1, near "$c ("
-~~~
+```
 
     ---
     sigils in blocks
 
     Allowed:
 
-~~~sh
+```sh
     $ perl -e ' ${ for (1,2,3) {} } '
     $ perl -e ' @{ for (1,2,3) {} } '
     $ perl -e ' %{ for (1,2,3) {} } '
@@ -395,11 +390,11 @@ Add tests for fixed bugs
     3
     $ perl -e ' $} = 3; print ${ } } '
     3
-~~~
+```
 
     Not allowed:
 
-~~~sh
+```sh
     $ perl -e ' \{ for (1,2,3) {} } '
     syntax error at -e line 1, near "{ for "
     Execution of -e aborted due to compilation errors.
@@ -415,7 +410,7 @@ Add tests for fixed bugs
     syntax error in hashref subscript - parses 's' as s///:
     ${x->{s}}
     $x->{s}
-~~~
+```
 
     ---
     wrong precedence in keys()
@@ -578,7 +573,7 @@ Add tests for fixed bugs
 
 - 'our' variable is not seen:
 
-~~~sh
+```sh
     
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use Data::Dumper; @x = (2..4, ";)"); print Dumper \@x '  > Main.java ; javac Main.java ; java Main
     $VAR1 = [
@@ -589,11 +584,11 @@ Add tests for fixed bugs
     ];
 
     Subroutine "Perlito5::Dumper::escape_string" is not using the hash "%safe_char".
-~~~    
+```    
 
 - captured lexical is not initialized:
 
-~~~sh
+```sh
     
     $ cat > X.pm
     my %safe = (a=>1); sub dump { $safe{a} }
@@ -606,38 +601,47 @@ Add tests for fixed bugs
             $safe{'a'}
         }
     };
-~~~
+```
 
 - test BEGIN time serialization
 
-~~~sh
-    $ perl perlito5.pl -I src5/lib -Cperl5 -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
-~~~
+  ```sh
+  $ perl perlito5.pl -I src5/lib -Cperl5 -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
+  ```
 
 - fix regex delimiters, or escape the regexes
 
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cperl5 -e ' s/\$a$a/b$b/g; tr/\$c$c/d$d/; m/\$e$e/; ' 
 
 - compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
-    see README-perlito5-js near "Compile-time / Run-time interleaving"
 
-    my $v;
-    BEGIN { $v = "123" }
-    use Module $v;  # $v is not accessible at compile-time
+  see README-perlito5-js near "Compile-time / Run-time interleaving"
 
+  ```
+  my $v;
+  BEGIN { $v = "123" }
+  use Module $v;  # $v is not accessible at compile-time
+  ```
 
-    Test case:
+  Test case:
 
-    $ cat > X.pm
-    package X;
-    sub import { print "args [ @_ ]\n" }
-    1;
+  ```
+  $ cat > X.pm
+  package X;
+  sub import { print "args [ @_ ]\n" }
+  1;
+  ```
 
-    $ perl perlito5.pl -I src5/lib -I . -Cperl5 -e ' my $v; BEGIN { $v = "xxx" } use X $v; '
-    # args [ X  ]
+  ```
+  $ perl perlito5.pl -I src5/lib -I . -Cperl5 -e ' my $v; BEGIN { $v = "xxx" } use X $v; '
+  # args [ X  ]
+  ```
 
-    expected result:
-    # args [ X xxx ]
+  expected result:
+
+  ```
+  # args [ X xxx ]
+  ```
 
 -- test lvalue substr()
 
@@ -668,11 +672,11 @@ Perl6 backend
 
 - Running the tests using perl6:
 
-~~~sh
+```sh
     # TODO - this is not implemented yet
     . util-perl6/setup-perlito5-perl6.sh
     find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl perlito5.pl -I./src5/lib -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
-~~~
+```
 
 
 - keep comments
@@ -737,7 +741,7 @@ Perl5 backend
 Compile-time execution environment
 ----------------------------------
 
-TODO - identify aliases: [[[ `BEGIN { $ccc = 3; *ccc2 = \$ccc; }` ]]] dumps:
+- TODO - identify aliases: [[[ `BEGIN { $ccc = 3; *ccc2 = \$ccc; }` ]]] dumps:
 
       $main::ccc2 = $main::ccc;
 
@@ -747,29 +751,29 @@ TODO - identify aliases: [[[ `BEGIN { $ccc = 3; *ccc2 = \$ccc; }` ]]] dumps:
 
     Note: $ccc is not emitted if the value is "undef".
 
-TODO - lexicals are not shared
+- TODO - lexicals are not shared
 
 - special backend option `_comp` dumps the compile-time execution environment:
 
-~~~sh
-    $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
-    {
-        'block' => [
-            {
-                'block' => [],
-            },
-            {
-                'block' => [
-                    {
-                        'block' => [],
-                    },
-                ],
-                'name' => 'main::x',
-                'type' => 'sub',
-            },
-        ],
-    }
-~~~
+  ```sh
+  $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
+  {
+      'block' => [
+          {
+              'block' => [],
+          },
+          {
+              'block' => [
+                  {
+                      'block' => [],
+                  },
+              ],
+              'name' => 'main::x',
+              'type' => 'sub',
+          },
+      ],
+  }
+  ```
 
 
 Nice to Have
