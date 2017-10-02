@@ -831,6 +831,18 @@ package Perlito5::AST::Apply;
             return $parameters->emit_java_set($arguments, $level+1, $wantarray);
         },
 
+        'readpipe' => sub {
+            my ($self, $level, $wantarray) = @_;
+            die "TODO - readpipe() not implemented";
+        },
+        'waitpid' => sub {
+            my ($self, $level, $wantarray) = @_;
+            die "TODO - waitpid() not implemented";
+        },
+        'glob' => sub {
+            my ($self, $level, $wantarray) = @_;
+            die "TODO - glob() not implemented";
+        },
         'break' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
@@ -1595,6 +1607,8 @@ package Perlito5::AST::Apply;
             . ')';
         };
     }
+
+    sub emit_java_op_table { return \%emit_js }
 
     sub emit_java {
         my ($self, $level, $wantarray, $autovivification_type) = @_;
