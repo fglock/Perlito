@@ -23,9 +23,9 @@ Build using make
 Compiling and running using Java
 --------------------------------
 
-- plase see:
+- please see:
 
-      - [README-perlito5-Java](README-perlito5-Java.md)
+  - [README-perlito5-Java](README-perlito5-Java.md)
 
 Running the tests using "node.js"
 ---------------------------------
@@ -45,38 +45,42 @@ Compile the compiler to JavaScript into perlito5.js
 
 - using perl and perlito5.pl:
 
-    perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
+  ```
+  perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
+  ```
 
 - using node.js and perlito5.js:
 
-    node perlito5.js -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js
+  ```
+  node perlito5.js -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js
+  ```
 
 Compile the compiler to Perl5 using perl
 ----------------------------------------
 
-    perl perlito5.pl -I./src5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl
+  perl perlito5.pl -I./src5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl
 
 Compile perlito5-in-browser using perl
 --------------------------------------
 
-    make build-5browser
+  make build-5browser
 
 Running the tests using "perl"
 ------------------------------
 
-    # this will run all tests
-    prove -r -e 'perl perlito5.pl -I./src5/lib ' t5
+  # this will run all tests
+  prove -r -e 'perl perlito5.pl -I./src5/lib ' t5
 
 
 Bootstrap with perl
 -------------------
 
-    make boot-5to5
+  make boot-5to5
 
 Bootstrap with node.js
 ----------------------
 
-    make boot-5js
+  make boot-5js
 
 
 Minifying the javascript output
@@ -84,13 +88,13 @@ Minifying the javascript output
 
 The "jsmin" compressor gives 20% compression:
     
-    http://crockford.com/javascript/jsmin
-    
-    $ sudo port install jsmin   # osx
-    $ jsmin < perlito5.js > mini-perlito5.js
-    $ nice prove -r -e 'node mini-perlito5.js -I./src5/lib' t5
-    ...
-    All tests successful.
+  http://crockford.com/javascript/jsmin
+  
+  $ sudo port install jsmin   # osx
+  $ jsmin < perlito5.js > mini-perlito5.js
+  $ nice prove -r -e 'node mini-perlito5.js -I./src5/lib' t5
+  ...
+  All tests successful.
 
 
 
