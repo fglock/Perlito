@@ -195,6 +195,7 @@ our $CORE_GLOBAL_OVERRIDABLE = {
     'readline'    => 1,
     'readpipe'    => 1,
     'require'     => 1,
+    'time'        => 1,
 };
 
 # the CORE prototype list

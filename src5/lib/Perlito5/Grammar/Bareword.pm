@@ -255,8 +255,6 @@ sub term_bareword {
           && exists $Perlito5::CORE_PROTO->{"CORE::$name"} 
           )
     {
-        # TODO - CORE::GLOBAL
-
         # subroutine comes from CORE
 
         ## XXX - this breaks perl: "CORE::say is not a keyword"
@@ -264,6 +262,13 @@ sub term_bareword {
 
         $effective_name = "CORE::$name";
         $sig = $Perlito5::CORE_PROTO->{$effective_name};
+
+        if (  ! $namespace
+           && exists $Perlito5::CORE_GLOBAL_OVERRIDABLE->{$name}
+           && exists &{"CORE::GLOBAL::" . $name}
+        ) {
+            $namespace = "CORE::GLOBAL";
+        }
     }
     else {
         # TODO - add error messages if needed
