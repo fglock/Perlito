@@ -175,6 +175,10 @@ package Perlito5::AST::Apply;
                 . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
                 . ')';
         }
+        if ($code eq 'ternary:<? :>') {
+            return $self->emit_java( $level+1 ) . '.set(' . $arguments->emit_java( $level+1 ) . ')';
+        }
+
         my $open  = $wantarray eq 'void' ? '' : '(';
         my $close = $wantarray eq 'void' ? '' : ')';
         $open . $self->emit_java( $level+1 ) . ' = ' . $arguments->emit_java( $level+1 ) . $close;

@@ -39,6 +39,7 @@
 -- caller() now works "natively", decoding the Java stack trace
 -- symbol tables like %:: and typeglobs support
 -- '-e' file test
+-- lvalue ternary "?:"
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:

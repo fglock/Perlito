@@ -643,7 +643,16 @@ Add tests for fixed bugs
           '2345'
         ];
 
- 
+-- test lvalue ternary `?:`
+
+   ```sh
+   $ java -jar perlito5.jar -I src5/lib -I . -e ' my ($a,$b,$x,$y,$result) = 1..5; $a > $b ? $x : $y = $result; print "[$x] [$y]\n"; '
+   [3] [5]
+   
+   $ java -jar perlito5.jar -I src5/lib -I . -e ' my ($a,$b,$x,$y,$result) = 1..5; $a = 4; $a > $b ? $x : $y = $result; print "[$x] [$y]\n"; '
+   [5] [4]
+   ``` 
+
 Perl6 backend
 -------------
 
