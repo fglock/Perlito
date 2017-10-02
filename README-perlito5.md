@@ -82,9 +82,9 @@ Bootstrap with node.js
 Minifying the javascript output
 -------------------------------
 
-    The "jsmin" compressor gives 20% compression:
+The "jsmin" compressor gives 20% compression:
     
-      http://crockford.com/javascript/jsmin
+    http://crockford.com/javascript/jsmin
     
     $ sudo port install jsmin   # osx
     $ jsmin < perlito5.js > mini-perlito5.js
@@ -96,6 +96,8 @@ Minifying the javascript output
 
 Perlito5 TODO list
 ==================
+
+Some things in this TODO list are already implemented, but missing tests of documentation.
 
 CPAN distribution
 -----------------
@@ -126,7 +128,7 @@ Command-line options
 Libraries
 ---------
 
-- these should go into namespace Perlito5X::*
+- these should go into namespace `Perlito5X::*`
 
 - Test (implemented as Perlito5::Test)
 
@@ -358,7 +360,7 @@ Add tests for fixed bugs
 
     prototypes
 
-- postfix-dereferencing with @*
+- postfix-dereferencing with `@*`
 
     See: http://www.effectiveperlprogramming.com/2014/09/use-postfix-dereferencing/
 
@@ -680,7 +682,7 @@ Perl6 backend
 
 - 0..$#num to @num.keys
 
-- choose @*ARGS or @_ in shift() and pop()
+- choose `@*ARGS` or `@_` in `shift()` and `pop()`
 
 - typeglob assignment
 
@@ -696,7 +698,7 @@ Perl6 backend
     my ($a, $, $c) = 1..3;
     ($a, *, $c) = 1..3;
 
-- __PACKAGE__
+- `__PACKAGE__`
 
 - specialized refactoring for packages that introduce syntax
 
@@ -727,7 +729,7 @@ Perl5 backend
 Compile-time execution environment
 ----------------------------------
 
-TODO - identify aliases: [[[ BEGIN { $ccc = 3; *ccc2 = \$ccc; } ]]] dumps:
+TODO - identify aliases: [[[ `BEGIN { $ccc = 3; *ccc2 = \$ccc; }` ]]] dumps:
 
       $main::ccc2 = $main::ccc;
 
@@ -739,7 +741,7 @@ TODO - identify aliases: [[[ BEGIN { $ccc = 3; *ccc2 = \$ccc; } ]]] dumps:
 
 TODO - lexicals are not shared
 
-- special backend option "_comp" dumps the compile-time execution environment:
+- special backend option `_comp` dumps the compile-time execution environment:
 
 ~~~sh
     $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
@@ -785,7 +787,7 @@ Nice to Have
 
 - no warnings 'redefine';
 
-- __LINE__, __FILE__
+- `__LINE__`, `__FILE__`
 
 - INIT{}, END{}
    look at the implementation in perlito6-in-Go
@@ -793,14 +795,14 @@ Nice to Have
 - source code - remove Perl 6 code such as "token"
    (fixed: This is only loaded if the grammar compiler is needed)
 
-- *{ $name }{CODE}->();
+- `*{ $name }{CODE}->();`
     (DONE in java)
 
-- local(*{$caller."::a"}) = \my $a;
+- `local(*{$caller."::a"}) = \my $a;`
 
-- *{$pkg . "::foo"} = \&bar;
+- `*{$pkg . "::foo"} = \&bar;`
 
-- local $SIG{__WARN__};
+- `local $SIG{__WARN__};`
 
 - bug https://github.com/fglock/Perlito/issues/10
     "Perlito 5 JS has syntax errors"
