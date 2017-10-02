@@ -7,7 +7,7 @@ Perlito5-in-JavaScript - what works
 
 
 - Subroutines, anonymous subroutines, prototypes, namespaces.
-  "main", "CORE" and "CORE::GLOBAL".
+  `main`, `CORE` and `CORE::GLOBAL`.
 
 - Scalar, Hash, Array, Code should work the same as in perl.
 
@@ -16,13 +16,13 @@ Perlito5-in-JavaScript - what works
 - Scalar vs. List context, wantarray().
 
 - Variables.
-  "my", "our", "local", "state".
+  `my`, `our`, `local`, `state`.
   Most special variables.
   Most variable declarations.
 
 - Most control structures.
-  "next", "last", "redo", "continue" and labels.
-  "goto &subr".
+  `next`, `last`, `redo`, `continue` and labels.
+  `goto &subr`.
 
 - Most string, numeric, array, hash operators.
 
@@ -42,10 +42,10 @@ Perlito5-in-JavaScript differences from "perl"
 - reference to scalar doesn't work properly.
     The reference points to a copy of the value
 
-- "~~" smartmatch is not implemented
+- `~~` smartmatch is not implemented
 
-- "sleep" is not implemented in the browser.
-  Perlito5 in node.js implements "sleep" using an npm module.
+- `sleep` is not implemented in the browser.
+  Perlito5 in node.js implements `sleep` using an npm module.
 
 - Perlito5 in the browser doesn't implement many of the perl I/O operators;
   Perlito5 in node.js should implement most of the I/O operators.
@@ -57,7 +57,7 @@ Perlito5-in-JavaScript differences from "perl"
 - Overload is not implemented yet.
 
 - XS is not supported.
-  Use "JS::inline" instead.
+  Use `JS::inline` instead.
 
 - Variable aliasing is not implemented yet;
   modifying `$_` or `$_[0]` doesn't change the original variable.
@@ -65,12 +65,12 @@ Perlito5-in-JavaScript differences from "perl"
 - utf8 is not implemented yet.
 
 - Regex is missing some features;
-  "/x", "/s", "/e" modifiers are supported.
+  `/x`, `/s`, `/e` modifiers are supported.
 
 - Control structures are partially implemented;
-  "goto LABEL" is not supported.
-  "given" is not implemented.
-  "goto &sub" works, but tail call is not implemented yet.
+  `goto LABEL` is not supported.
+  `given` is not implemented.
+  `goto &sub` works, but tail call is not implemented yet.
 
 - String pos() is not implemented yet.
 
@@ -90,16 +90,16 @@ Perlito5-in-JavaScript differences from "perl"
 Calling Perl subroutines from JavaScript
 =========
 
-- var myfun = p5cget( "My::Module", "mysub" );
+- `var myfun = p5cget( "My::Module", "mysub" );`
 
     Export a Perl subroutine to a JavaScript variable
 
-- var myobj = p5cget( "My::Module", "mysub" )( [ arg1, arg2 ], null );
+- `var myobj = p5cget( "My::Module", "mysub" )( [ arg1, arg2 ], null );`
 
     Call a Perl subroutine.
     The "null" in the end means calling in scalar context.
 
-- var myobj = p5call( "Statistics::Distributions", "new", [ arg1, arg2 ], null );
+- `var myobj = p5call( "Statistics::Distributions", "new", [ arg1, arg2 ], null );`
 
     Method call.
 
@@ -158,14 +158,14 @@ method call
 - do a native call on the method.
 - the argument list is the named array `List__` (that is, `@_`).
 - additional arguments can be used to pass out-of-band data, such as: caller(), wantarray()
-- the invocant is the first argument. "this" is not used.
+- the invocant is the first argument. `this` is not used.
 
 subroutine call
 - lookup the subroutine in the current namespace; follow the hierarchy until the CORE base class.
 - do a native method call.
 - the argument list is the named array `List__` (that is, `@_`).
 - additional arguments can be used to pass out-of-band data, such as: caller(), wantarray()
-- "this" is not used.
+- `this` is not used.
 
 Hash
 - native {} with perl5-specific getters and setters
@@ -180,13 +180,13 @@ Tied containers
 - javascript object with perl5-specific getters and setters
 
 HashRef
-- native {} wrapped in a "HashRef" object
+- native {} wrapped in a `HashRef` object
 
 ArrayRef
-- native [] wrapped in a "ArrayRef" object
+- native [] wrapped in a `ArrayRef` object
 
 ScalarRef
-- native value wrapped in a "ScalarRef" object
+- native value wrapped in a `ScalarRef` object
 
 CodeRef
 - native value
@@ -206,7 +206,7 @@ Namespace
 - Namespace is a copy of the Class, but with a different inheritance
 - Namespace and Class are updated in parallel, both when a sub is declared or when using typeglob assignment
 
-Calling context ("wantarray", caller)
+Calling context (`wantarray`, caller)
 - TODO
 
 - these are the possible compile-time contexts:
@@ -219,7 +219,7 @@ Calling context ("wantarray", caller)
     'bool'
     'num'
 
-- at run-time the contexts are in wantarray ("p5want" variable):
+- at run-time the contexts are in wantarray (`p5want` variable):
     1
     0
     undef
@@ -286,7 +286,7 @@ Regex
     No named capturing groups. Use numbered capturing groups instead.
     No mode modifiers to set matching options within the regular expression.
     No conditionals.
-    No regular expression comments with "(?#text)"
+    No regular expression comments with `(?#text)`
 
 
 
@@ -389,10 +389,10 @@ Cell-based aliasing (TODO)
 
 - slow
 - allows aliasing (rw parameters to functions)
-- allows "tie", because collection access is done through methods
+- allows `tie`, because collection access is done through methods
 - simplifies autovivification
 - allows lvalue subroutines, such as chop(), chomp(), keys(), pos(), substr(), undef()
-- allows "our"
+- allows `our`
 
 - examples:
 
@@ -434,7 +434,7 @@ Tail call (TODO)
 
 
 - tailcalls
-    same-subroutine tailcalls could execute a "redo" in the current subroutine.
+    same-subroutine tailcalls could execute a `redo` in the current subroutine.
 
 
 "js3" virtual machine
@@ -612,7 +612,7 @@ from about 10s to 30s.
 Features
 --------
 
-- create __DATA__
+- create `__DATA__`
 
   `%Perlito5::DATA_SECTION` contains the `__DATA__` for each package
 
@@ -681,10 +681,10 @@ Features
     delete($quote_flags->{last_flag});
   ```
 
-- "~~" operator not implemented; See also "when" implementation
-- "given" statement not implemented
-- "when" should use a "break" exception inside "given", and a "next" exception inside "for".
-- "default" statement not implemented
+- `~~` operator not implemented; See also `when` implementation
+- `given` statement not implemented
+- `when` should use a `break` exception inside `given`, and a `next` exception inside `for`.
+- `default` statement not implemented
 
 - javascript errors don't show in the global error handler when running in node.js
 
@@ -754,9 +754,9 @@ Features
 
   autovivification is probably the most verbose part of the code.
 
-  Use less "throw" - it is not (yet?) optimized by V8
+  Use less `throw` - it is not (yet?) optimized by V8
 
-- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
+- in the browser: implement `use` with XMLHttpRequest (what are the security implications?)
 
 - aliasing between lexicals and globals
 
@@ -765,7 +765,7 @@ Features
     3
   ```
 
-- finish "overload" implementation
+- finish `overload` implementation
 
   See: p5str
 
@@ -780,7 +780,7 @@ Features
   See: https://github.com/stacktracejs
 
   ```
-    $ nodejs perlito5.js -Isrc5/lib -I. -e ' sub x { print JS::inline("new Error().stack") }; sub yy { x() }; my $f = sub { yy() }; $f->() '
+  $ nodejs perlito5.js -Isrc5/lib -I. -e ' sub x { print JS::inline("new Error().stack") }; sub yy { x() }; my $f = sub { yy() }; $f->() '
 
   "Error
     at tmp104 [as x] (eval at <anonymous> (/perlito5.js:31586:57), <anonymous>:10:63)
@@ -793,27 +793,27 @@ Features
 - die() details
 
   ```
-    If the output is empty and $@ already contains a value (typically
-    from a previous eval) that value is reused after appending
-    "\t...propagated". This is useful for propagating exceptions:
+  If the output is empty and $@ already contains a value (typically
+  from a previous eval) that value is reused after appending
+  "\t...propagated". This is useful for propagating exceptions:
 
-        eval { ... };
-        die unless $@ =~ /Expected exception/;
+      eval { ... };
+      die unless $@ =~ /Expected exception/;
 
-    If the output is empty and $@ contains an object reference that
-    has a "PROPAGATE" method, that method will be called with
-    additional file and line number parameters. The return value
-    replaces the value in $@; i.e., as if "$@ = eval {
-    $@->PROPAGATE(__FILE__, __LINE__) };" were called.
+  If the output is empty and $@ contains an object reference that
+  has a "PROPAGATE" method, that method will be called with
+  additional file and line number parameters. The return value
+  replaces the value in $@; i.e., as if "$@ = eval {
+  $@->PROPAGATE(__FILE__, __LINE__) };" were called.
   ```
 
-- "my sub x {...}"
+- `my sub x {...}`
 
 
 Implemented but missing more tests
 ----------------------------------
 
-- add tests: "my" variables - this doesn't work as expected: my $v = $v
+- add tests: `my` variables - this doesn't work as expected: `my $v = $v`
 
 - add tests using closures, to check that the redeclared variable is a different variable
 
@@ -828,7 +828,7 @@ Implemented but missing more tests
 
 - /e modifier
 
-- lvalue $#a
+- lvalue `$#a`
 
 - local
 
@@ -842,7 +842,7 @@ Implemented but missing more tests
     c
   ```
 
-- '&' prototype
+- `&` prototype
 
   add tests; see Try::Tiny
 
@@ -859,7 +859,7 @@ Implemented but missing more tests
 
   `*x = sub ($$) { 123 }; *y = *x;  print prototype(\&y)   # $$`
 
-- "or" has SCALAR context (Abigail++):
+- `or` has SCALAR context (Abigail++):
 
   See: t5/01-perlito/23-eval.t
 
