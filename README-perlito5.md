@@ -685,6 +685,9 @@ Add tests for fixed bugs
    [5] [4]
    ``` 
 
+- add tests for CORE::GLOBAL namespace
+
+
 Perl6 backend
 -------------
 

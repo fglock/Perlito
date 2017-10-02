@@ -169,7 +169,7 @@ if (typeof p5pkg !== "object") {
 function p5make_package(pkg_name) {
     if (!p5pkg.hasOwnProperty(pkg_name)) {
         var tmp = function () {};
-        tmp.prototype = p5pkg["CORE::GLOBAL"];
+        tmp.prototype = p5pkg.CORE;
         p5pkg[pkg_name] = new tmp();
         p5pkg[pkg_name]._ref_ = pkg_name;
         p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak

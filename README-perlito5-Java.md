@@ -181,8 +181,6 @@ Perlito5-Java work-in-progress
 
   - lvalue $#a and other expressions: substr, ternary, keys, pos
 
-  - CORE::GLOBAL namespace
-
   - "local @\_" doesn't work yet, because @\_ is special
 
   - "~~" operator not implemented; also "when" and "given" not implemented.

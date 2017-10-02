@@ -23,7 +23,8 @@
 	Tie::Hash, Tie::Scalar, Tie::Array, warnings::register,
 	Fcntl, subs, Symbol
 -- syntax fixes for hash vs. block, and ${var->{index}}
--- CORE::print, CORE::tr
+-- CORE:: prefix (CORE::print, CORE::tr)
+-- CORE::GLOBAL special namespace
 
 - Java:
 -- "require"
