@@ -168,11 +168,11 @@ Parser
 
     See BEGIN_SCRATCHPAD in src5/
 
-```sh
+    ```sh
     t5/unit/begin_global_special_var.t .......... Failed 1/2 subtests 
     t5/unit/begin_loop.t ........................ Failed 2/3 subtests 
     t5/unit/begin_recurse.t ..................... Failed 5/6 subtests 
-```
+    ```
 
   - dump-to-AST work in progress - src5/lib/Perlito5/DumpToAST.pm
 
@@ -182,9 +182,9 @@ Parser
 
     - shared captures (shared lexicals) are not shared
 
-```sh
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cperl5  -e ' use strict; BEGIN { my $y = 123; my $z = 456;for my $x (1..3) { no strict "refs"; *{"x$x"} = sub { print "here\n"; eval q{ print "y $y\n" }; $y; return $x } } }  x1(); '
-```
+      ```sh
+      $ perl perlito5.pl -Isrc5/lib -I. -It -Cperl5  -e ' use strict; BEGIN { my $y = 123; my $z = 456;for my $x (1..3) { no strict "refs"; *{"x$x"} = sub { print "here\n"; eval q{ print "y $y\n" }; $y; return $x } } }  x1(); '
+      ```
 
     - blessed array/scalar/code is not supported (also in Data::Dumper)
 
@@ -203,137 +203,143 @@ Parser
 
 - compiler hints with $^H
 
-```sh
-    $ perl -e ' $^H = 1; { $^H = 3; use strict; print "HERE $^H\n"; eval q{ print "EVAL $^H\n";  }; BEGIN {  print "BEGIN1 $^H\n";  } };  print $^H, "\n";  {  use strict; print "HERE2 $^H\n"; eval q{ print "EVAL2 $^H\n";  BEGIN {  eval q{ print "BEGIN-EVAL $^H\n" }  }    }; } '
-    BEGIN1 2018
-    HERE 3
-    EVAL 3
-    3
-    HERE2 3
-    BEGIN-EVAL 2018
-    EVAL2 3
-```
+  ```sh
+  $ perl -e ' $^H = 1; { $^H = 3; use strict; print "HERE $^H\n"; eval q{ print "EVAL $^H\n";  }; BEGIN {  print "BEGIN1 $^H\n";  } };  print $^H, "\n";  {  use strict; print "HERE2 $^H\n"; eval q{ print "EVAL2 $^H\n";  BEGIN {  eval q{ print "BEGIN-EVAL $^H\n" }  }    }; } '
+  BEGIN1 2018
+  HERE 3
+  EVAL 3
+  3
+  HERE2 3
+  BEGIN-EVAL 2018
+  EVAL2 3
+  ```
 
 - parse example in http://www.perlmonks.org/?node_id=663393
 
-```sh
-    $ perl perlito5.pl -I src5/lib -Cperl5 -e ' whatever  / 25 ; # / ; die "this dies!"; '
-        whatever(m! 25 ; # !);
-        die('this dies!')
-    $ perl -MO=Deparse -e ' whatever  / 25 ; # / ; die "this dies!"; '
-        'whatever' / 25;
-    $ perl -e ' print whatever  / 25 ; # / ; die "this dies!"; '
-        this dies! at -e line 1.
-```
+  ```sh
+  $ perl perlito5.pl -I src5/lib -Cperl5 -e ' whatever  / 25 ; # / ; die "this dies!"; '
+      whatever(m! 25 ; # !);
+      die('this dies!')
+  $ perl -MO=Deparse -e ' whatever  / 25 ; # / ; die "this dies!"; '
+      'whatever' / 25;
+  $ perl -e ' print whatever  / 25 ; # / ; die "this dies!"; '
+      this dies! at -e line 1.
+  ```
 
 - "'" meaning "::"
 
-```perl
-    $'m  # $::m
-    $m'  # String found where operator expected
+  ```perl
+  $'m  # $::m
+  $m'  # String found where operator expected
 
-    package X'Y  # X::Y
-    package X'   # Invalid version format (non-numeric data)
-```
+  package X'Y  # X::Y
+  package X'   # Invalid version format (non-numeric data)
+  ```
 
 - attributes
-    http://perldoc.perl.org/attributes.html
-    missing MODIFY_CODE_ATTRIBUTES handlers
+
+  http://perldoc.perl.org/attributes.html
+
+  missing MODIFY_CODE_ATTRIBUTES handlers
 
 - prototypes (signatures)
-    http://perldoc.perl.org/perlsub.html#Prototypes
 
-    code that depends on prototypes being (re)defined later - this breaks when the program is pre-compiled,
-    because prototypes become stubs
+  http://perldoc.perl.org/perlsub.html#Prototypes
 
-```perl
-    # t/test.pm
+  code that depends on prototypes being (re)defined later - this breaks when the program is pre-compiled,
+  because prototypes become stubs
 
-    sub like   ($$@) { like_yn (0,@_) }; # 0 for -      # this breaks if like_yn() is predeclared
-    sub unlike ($$@) { like_yn (1,@_) }; # 1 for un-
-    
-    sub like_yn ($$$@) {
-```
+  ```perl
+  # t/test.pm
 
-    check that undeclared barewords give the right error
-    *foo = sub () { ... }   # does prototype work here?
-    check signature in sort()
-    fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
+  sub like   ($$@) { like_yn (0,@_) }; # 0 for -      # this breaks if like_yn() is predeclared
+  sub unlike ($$@) { like_yn (1,@_) }; # 1 for un-
+  
+  sub like_yn ($$$@) {
+  ```
 
-    '&@' - See Try::Tiny
+  check that undeclared barewords give the right error
+
+  `*foo = sub () { ... }   # does prototype work here?`
+
+  check signature in sort()
+  fix the prototype for `stat(*)` (see t/test.pl in the perl test suite)
+
+  `&@` - See Try::Tiny
 
 - "namespace" parsing
-    tests: t5/01-perlito/26-syntax-namespace.t
 
-```sh
-    $ perl -e ' { package X; sub print { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; print $x "xxx" '
-    Not a GLOB reference at -e line 1.
+  tests: t5/01-perlito/26-syntax-namespace.t
 
-    $ perl -e ' { package X; sub printx { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; printx $x "xxx" '
-    >xxx<
+  ```sh
+  $ perl -e ' { package X; sub print { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; print $x "xxx" '
+  Not a GLOB reference at -e line 1.
 
-    $ perl -MO=Deparse -e ' print X:: "xxx" '
-    print X 'xxx';
+  $ perl -e ' { package X; sub printx { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; printx $x "xxx" '
+  >xxx<
 
-    $ perl -e ' use strict; my $x = X::; print $x '
-    X
+  $ perl -MO=Deparse -e ' print X:: "xxx" '
+  print X 'xxx';
 
-    $ perl -e ' use strict; my $x = X; print $x '
-    Bareword "X" not allowed while "strict subs" in use
+  $ perl -e ' use strict; my $x = X::; print $x '
+  X
 
-    $ perl perlito5.pl -MO=Deparse -e ' ::X::x::y '
-    join("", ::{'main::X::'} x main::y);
+  $ perl -e ' use strict; my $x = X; print $x '
+  Bareword "X" not allowed while "strict subs" in use
 
-    $ perl -MO=Deparse -e ' ::X '
-    '???';
+  $ perl perlito5.pl -MO=Deparse -e ' ::X::x::y '
+  join("", ::{'main::X::'} x main::y);
 
-    $ perl -MO=Deparse -e ' sub X {} ::X '
-    sub X { }
-    X;
+  $ perl -MO=Deparse -e ' ::X '
+  '???';
 
-    $ perl -e ' $::X::::X = 3; print $main::X::::X '        # 3
-    $ perl -e ' $::X::::X = 3; print $main::main::X::::X '  # 3
-    $ perl -e ' $::X::::X = 3; print $main::X::main::X '    # empty
-    $ perl -e ' $::X::::X = 3; print $main::X::X '          # empty
-    $ perl -e ' $::X::::X = 3; print $::::X::::X '          # empty
-```
+  $ perl -MO=Deparse -e ' sub X {} ::X '
+  sub X { }
+  X;
+
+  $ perl -e ' $::X::::X = 3; print $main::X::::X '        # 3
+  $ perl -e ' $::X::::X = 3; print $main::main::X::::X '  # 3
+  $ perl -e ' $::X::::X = 3; print $main::X::main::X '    # empty
+  $ perl -e ' $::X::::X = 3; print $main::X::X '          # empty
+  $ perl -e ' $::X::::X = 3; print $::::X::::X '          # empty
+  ```
 
 - CORE:: namespace can be used with operators:
 
-```perl
-    $ perl -MO=Deparse -e ' $x CORE::and $v '
-    $v if $x;
+  ```perl
+  $ perl -MO=Deparse -e ' $x CORE::and $v '
+  $v if $x;
 
-    $ perl -MO=Deparse -e ' @v = CORE::qw/ a b c / '
-    @v = ('a', 'b', 'c');
+  $ perl -MO=Deparse -e ' @v = CORE::qw/ a b c / '
+  @v = ('a', 'b', 'c');
 
-    $ perl -MO=Deparse -e ' $x CORE::+ $v '
-    CORE:: is not a keyword
-```
+  $ perl -MO=Deparse -e ' $x CORE::+ $v '
+  CORE:: is not a keyword
+  ```
 
 - strict and warnings: create options like 'subs', 'refs'
 
 - things that work in perlito5, but which are errors in 'perl'
 
-```sh
-    string interpolation with nested quotes of the same type:
+  string interpolation with nested quotes of the same type:
 
-        $ perl -e ' " $x{"x"} " '
-        String found where operator expected at -e line 1, near "x"} ""
+  ```sh
+  $ perl -e ' " $x{"x"} " '
+  String found where operator expected at -e line 1, near "x"} ""
 
-        In perl5.22.0:
-        Missing right curly or square bracket at -e line 1, within string
-```
+  In perl5.22.0:
+  Missing right curly or square bracket at -e line 1, within string
+  ```
 
-- __DATA__ and __END__ can be anywhere in the line
+- `__DATA__` and `__END__` can be anywhere in the line
 
-```sh
-    $ perl -e 'print 123 __END__ x xx + '
-    123
+  ```sh
+  $ perl -e 'print 123 __END__ x xx + '
+  123
 
-    $ perl -e 'print 123 + __END__ x xx + '
-    syntax error at -e line 1, at EOF
-```
+  $ perl -e 'print 123 + __END__ x xx + '
+  syntax error at -e line 1, at EOF
+  ```
 
 - error messages depend on eval context
 
@@ -351,7 +357,7 @@ Parser
 Add tests for fixed bugs
 ------------------------
 
-    unit tests:
+- unit tests:
 
     local() vs. next/redo/last
 
@@ -365,14 +371,14 @@ Add tests for fixed bugs
 
 - postfix-dereferencing with `@*`
 
-    See: http://www.effectiveperlprogramming.com/2014/09/use-postfix-dereferencing/
+  http://www.effectiveperlprogramming.com/2014/09/use-postfix-dereferencing/
 
 - things that work in perlito5, but which are errors in 'perl'
 
-```sh
+  ```sh
     $ perl -e ' $c (f) '
     syntax error at -e line 1, near "$c ("
-```
+  ```
 
     ---
     sigils in blocks
