@@ -637,12 +637,18 @@ sub term_bareword {
         # warn "Bareword ", Perlito5::Dumper::Dumper($param_list);
 
         if ( $^H & $Perlito5::STRICT_SUBS ) {
-            for my $arg (@$param_list) {
+            for my $i (0 .. $#$param_list) {
+                my $arg = $param_list->[$i];
                 if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{bareword} && $arg->{_not_a_subroutine} ) {
                     # sub must be predeclared, unless proto is '*'
                     my $name = $arg->{code};
                     my $namespace = $arg->{namespace};
-                    Perlito5::Compiler::error( 'Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
+                    if ($sig && substr($sig, $i, 1) eq '*') {
+                        # proto is '*'
+                    }
+                    else {
+                        Perlito5::Compiler::error( 'Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
+                    }
                 }
             }
         }
