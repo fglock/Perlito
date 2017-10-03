@@ -21,7 +21,7 @@
 -- set Perl version to 5.026
 -- add core modules:
 	Tie::Hash, Tie::Scalar, Tie::Array, warnings::register,
-	Fcntl, subs, Symbol
+	Fcntl, subs, Symbol, Term::ANSIColor
 -- syntax fixes for hash vs. block, and ${var->{index}}
 -- CORE:: prefix (CORE::print, CORE::tr)
 -- CORE::GLOBAL special namespace

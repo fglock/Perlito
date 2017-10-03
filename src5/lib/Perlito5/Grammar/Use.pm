@@ -15,6 +15,7 @@ my %Perlito_internal_module = (
     'IO::Handle'     => 'Perlito5X::IO::Handle',
     'JSON'           => 'Perlito5X::JSON',
     'Symbol'         => 'Perlito5X::Symbol',
+    'Term::ANSIColor' => 'Perlito5X::Term::ANSIColor',
     'Tie::Array'     => 'Perlito5X::Tie::Array',
     'Tie::Hash'      => 'Perlito5X::Tie::Hash',
     'Tie::Scalar'    => 'Perlito5X::Tie::Scalar',
