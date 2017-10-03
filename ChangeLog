@@ -25,6 +25,7 @@
 -- syntax fixes for hash vs. block, and ${var->{index}}
 -- CORE:: prefix (CORE::print, CORE::tr)
 -- CORE::GLOBAL special namespace
+-- CORE functions can be overridden
 
 - Java:
 -- "require"
