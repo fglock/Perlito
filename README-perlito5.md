@@ -202,19 +202,6 @@ Parser
 
         if ($code eq 'eval' && $Perlito5::PHASE eq 'BEGIN') {
 
-- compiler hints with $^H
-
-  ```sh
-  $ perl -e ' $^H = 1; { $^H = 3; use strict; print "HERE $^H\n"; eval q{ print "EVAL $^H\n";  }; BEGIN {  print "BEGIN1 $^H\n";  } };  print $^H, "\n";  {  use strict; print "HERE2 $^H\n"; eval q{ print "EVAL2 $^H\n";  BEGIN {  eval q{ print "BEGIN-EVAL $^H\n" }  }    }; } '
-  BEGIN1 2018
-  HERE 3
-  EVAL 3
-  3
-  HERE2 3
-  BEGIN-EVAL 2018
-  EVAL2 3
-  ```
-
 - parse example in http://www.perlmonks.org/?node_id=663393
 
   ```sh
@@ -369,6 +356,20 @@ Add tests for fixed bugs
   aliasing of subroutine parameters
 
   prototypes
+
+
+- compiler hints with $^H
+
+  ```sh
+  $ perl -e ' $^H = 1; { $^H = 3; use strict; print "HERE $^H\n"; eval q{ print "EVAL $^H\n";  }; BEGIN {  print "BEGIN1 $^H\n";  } };  print $^H, "\n";  {  use strict; print "HERE2 $^H\n"; eval q{ print "EVAL2 $^H\n";  BEGIN {  eval q{ print "BEGIN-EVAL $^H\n" }  }    }; } '
+  BEGIN1 2018
+  HERE 3
+  EVAL 3
+  3
+  HERE2 3
+  BEGIN-EVAL 2018
+  EVAL2 3
+  ```
 
 - postfix-dereferencing with `@*`
 
@@ -693,11 +694,11 @@ Perl6 backend
 
 - Running the tests using perl6:
 
-```sh
+  ```sh
     # TODO - this is not implemented yet
     . util-perl6/setup-perlito5-perl6.sh
     find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl perlito5.pl -I./src5/lib -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
-```
+  ```
 
 
 - keep comments
@@ -707,7 +708,8 @@ Perl6 backend
         sub x { return 7, 8 }
     vs. sub x { return (7, 8) }
 
-    use an "out-of-band" parameter to set the call context, like:
+  use an "out-of-band" parameter to set the call context, like:
+
     $v = x( :scalar )   # 8
     $v = x( :list   )   # 2
 
@@ -804,6 +806,7 @@ Nice to Have
 
 - debugging symbols
 - line numbers in error messages
+- `__LINE__` is off-by-one
 
 - caller()
 - "when"
@@ -819,8 +822,6 @@ Nice to Have
     Illegal modulus zero at -e line 1.
 
 - no warnings 'redefine';
-
-- `__LINE__`, `__FILE__`
 
 - INIT{}, END{}
    look at the implementation in perlito6-in-Go
@@ -840,14 +841,14 @@ Nice to Have
 - bug https://github.com/fglock/Perlito/issues/10
     "Perlito 5 JS has syntax errors"
 
-    Tried
+  Tried
 
     YUI Compressor online
     and
     Google Closure Compiler
     http://closure-compiler.appspot.com/home
 
-    Both failed with syntax errors.
+  Both failed with syntax errors.
 
 - parse the regexes
     Note: implemented in Perlito5::Grammar::Regex5
