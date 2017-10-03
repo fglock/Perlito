@@ -263,11 +263,17 @@ sub term_bareword {
         $effective_name = "CORE::$name";
         $sig = $Perlito5::CORE_PROTO->{$effective_name};
 
+        $core_global_name = "CORE::GLOBAL::$name";
+
         if (  ! $namespace
            && exists $Perlito5::CORE_GLOBAL_OVERRIDABLE->{$name}
-           && exists &{"CORE::GLOBAL::" . $name}
+           && exists &{$core_global_name}
         ) {
             $namespace = "CORE::GLOBAL";
+            $effective_name = $core_global_name;
+            if (!exists $Perlito5::PROTO->{$core_global_name}) {
+                $Perlito5::PROTO->{$core_global_name} = prototype(&{$core_global_name});
+            }
         }
     }
     else {
