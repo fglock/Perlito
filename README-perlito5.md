@@ -753,9 +753,9 @@ Perl5 backend
 - "given" statement not implemented
 - "default" statement not implemented
 
-- ${^NAME} needs curly-escaping
+- `${^NAME}` needs curly-escaping
 
-- ${^GLOBAL_PHASE} is not writeable
+- `${^GLOBAL_PHASE}` is not writeable
     workaround in set_global_phase()
 
 
@@ -766,11 +766,11 @@ Compile-time execution environment
 
       $main::ccc2 = $main::ccc;
 
-    instead of:
+  instead of:
 
       *main::ccc2 = \$main::ccc;
 
-    Note: $ccc is not emitted if the value is "undef".
+  Note: $ccc is not emitted if the value is "undef".
 
 - TODO - lexicals are not shared
 
