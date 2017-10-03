@@ -1,4 +1,4 @@
-# $ perl -I src5/lib misc/Perl5/core_redefine.pl
+# $ perl -I src5/lib misc/Perl5/core_global_override.pl
 
 use strict;
 use Perlito5::Runtime;
@@ -6,7 +6,7 @@ use Data::Dumper;
 
 my $ops = $Perlito5::CORE_PROTO;
 
-# print "[ @{[ sort keys %$ops ]} ]\n";
+print "[ @{[ sort keys %$ops ]} ]\n";
 
 for my $op ( sort keys %$ops ) {
     next unless $op;
@@ -18,7 +18,7 @@ for my $op ( sort keys %$ops ) {
     my $v = int(rand(10000));
     my $x = 123;
     {;
-    eval "use subs '$op'; sub $op { \$x = \$v } "
+    eval "BEGIN { *CORE::GLOBAL::$op = sub { \$x = \$v } } "
            . "$op()";
     }
 
@@ -26,16 +26,16 @@ for my $op ( sort keys %$ops ) {
     if ($err =~ /Not enough arguments/) {
         my $arg = "test";
         {;
-        eval "use subs '$op'; sub $op { \$x = \$v } "
+        eval "BEGIN { *CORE::GLOBAL::$op = sub { \$x = \$v } } "
                . "$op(\$arg)";
         }
-        $err = $@;
     }
-
-    # print $err if $err;
 
     if ($v eq $x) {
         printf "    %-18s => 1,\n", "'$op'";
+    }
+    else {
+        # print "# $op\n";
     }
 }
 
