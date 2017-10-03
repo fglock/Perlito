@@ -216,7 +216,7 @@ Parser
       this dies! at -e line 1.
   ```
 
-- "'" meaning "::"
+- `'` meaning `::`
 
   ```perl
   $'m  # $::m
@@ -664,7 +664,7 @@ Add tests for fixed bugs
   # args [ X xxx ]
   ```
 
--- test lvalue substr()
+- test lvalue substr()
 
     $ perl -e ' use Data::Dumper; sub x { $_[0] = "x"; print Dumper(\@_) }  $v = "abcdef"; x( substr($v,1,3), substr($v,1,4) ); '
     $VAR1 = [
@@ -678,7 +678,7 @@ Add tests for fixed bugs
           '2345'
         ];
 
--- test lvalue ternary `?:`
+- test lvalue ternary `?:`
 
    ```sh
    $ java -jar perlito5.jar -I src5/lib -I . -e ' my ($a,$b,$x,$y,$result) = 1..5; $a > $b ? $x : $y = $result; print "[$x] [$y]\n"; '
