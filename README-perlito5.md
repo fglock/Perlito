@@ -140,6 +140,7 @@ Libraries
 
 - create perlito5-specific libs for:
 
+    ```
     feature.pm
     Config.pm
     overload.pm
@@ -151,9 +152,10 @@ Libraries
     Tie::Hash
     Tie::Scalar
     Symbol
+    ```
 
-    alternately, check $^H for strictness - such that perl's own strict.pm just works
-    and ${^WARNING_BITS} for warnings
+    alternately, check `$^H` for strictness - such that perl's own strict.pm just works
+    and `${^WARNING_BITS}` for warnings
 
   - add tests for core modules
 
