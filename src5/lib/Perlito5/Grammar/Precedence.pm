@@ -228,7 +228,7 @@ add_op( 'infix', [ '<<', '>>' ], $prec );
 $prec = $prec - 1;
 # named unary operators - these are parsed by the "Grammar::Bareword" module
 # NOTE -  -f($file).".bak" is equivalent to -f "$file.bak" 
-add_op( 'prefix', [qw( -r -w -x -o -R -W -X -O -e -z -s -f -d -l -p -S -b -c -t -u -g -k -T -B -M -A -C )], $prec );
+# add_op( 'prefix', [qw( -r -w -x -o -R -W -X -O -e -z -s -f -d -l -p -S -b -c -t -u -g -k -T -B -M -A -C )], $prec );
 $prec = $prec - 1;
 add_op( 'infix', [ 'lt', 'le', 'gt', 'ge', '<=', '>=', '<', '>' ], $prec, { assoc => 'chain' } );
 $prec = $prec - 1;

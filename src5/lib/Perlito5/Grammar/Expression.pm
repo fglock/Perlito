@@ -613,6 +613,50 @@ token term_return {
         }
 };
 
+sub term_file_test {
+    #        Unlike most named operators, this is also exempt from the
+    #        looks-like-a-function rule, so "-X ("foo")."bar"" will cause
+    #        "bar" to be part of the argument to "-X". See: perldoc -f -X
+    my ($str, $pos) = @_;
+    my $code = $str->[$pos] . $str->[$pos + 1];
+    $pos += 2;
+    my $spc = Perlito5::Grammar::Space::ws($str, $pos);
+    if ($spc) {
+        $pos = $spc->{to};
+    }
+    my $arg = argument_parse($str, $pos);
+    if ($arg) {
+        my $argument = Perlito5::Match::flat($arg);
+
+        # TODO - stacked operators: "-f -w -x $file" is equivalent to "-x $file && -w _ && -f _"
+
+        if ($argument eq '*undef*') {
+            # If the argument is omitted, tests $_, except for "-t", which tests STDIN
+            if ($code eq '-t') {
+                $argument = Perlito5::AST::Var->new(
+                        '_decl' => "global",
+                        '_namespace' => "main",
+                        'name' => "STDIN",
+                        'namespace' => '',
+                        'sigil' => "*",
+                    );
+            }
+            else {
+                $argument = Perlito5::AST::Var::SCALAR_ARG();
+            }
+        }
+        $arg->{capture} = [ 'term',
+             Perlito5::AST::Apply->new(
+                code      => "prefix:<$code>",
+                arguments => $argument eq '*undef*' ? [] : [$argument],
+                namespace => '',
+                bareword  => $argument eq '*undef*' ? 1 : 0,
+             )
+           ]
+    }
+    return $arg;
+};
+
 token next_last_redo {
      'next' | 'last' | 'redo' 
 };
@@ -693,31 +737,35 @@ my $Argument_end_token = {
         '?' => 1,   
       
         '=>' => 1,
-        'lt' => 1,  
-        'le' => 1,  
-        'gt' => 1,  
-        'ge' => 1,  
-        '<=' => 1,  
-        '>=' => 1,  
-        '==' => 1,  
-        '!=' => 1,  
-        'ne' => 1,  
-        'eq' => 1,  
-        '..' => 1,  
-        '~~' => 1,  
-        '&&' => 1,  
-        '||' => 1,  
-        '+=' => 1,  
-        '-=' => 1,  
-        '*=' => 1,  
-        '/=' => 1,  
-        'x=' => 1,  
-        '|=' => 1,  
-        '&=' => 1,  
-        '.=' => 1,  
-        '^=' => 1,  
-        '%=' => 1,  
-        '//' => 1,  
+        'lt' => 1,
+        'le' => 1,
+        'gt' => 1,
+        '=>' => 1,
+        'lt' => 1,
+        'le' => 1,
+        'gt' => 1,
+        'ge' => 1,
+        '<=' => 1,
+        '>=' => 1,
+        '==' => 1,
+        '!=' => 1,
+        'ne' => 1,
+        'eq' => 1,
+        '..' => 1,
+        '~~' => 1,
+        '&&' => 1,
+        '||' => 1,
+        '+=' => 1,
+        '-=' => 1,
+        '*=' => 1,
+        '/=' => 1,
+        'x=' => 1,
+        '|=' => 1,
+        '&=' => 1,
+        '.=' => 1,
+        '^=' => 1,
+        '%=' => 1,
+        '//' => 1,
      
         '...' => 1, 
         '<=>' => 1, 
@@ -942,6 +990,8 @@ Perlito5::Grammar::Precedence::add_term( 'next'  => \&term_next_last_redo );
 Perlito5::Grammar::Precedence::add_term( 'last'  => \&term_next_last_redo );
 Perlito5::Grammar::Precedence::add_term( 'redo'  => \&term_next_last_redo );
 
+Perlito5::Grammar::Precedence::add_term( $_ => \&term_file_test )
+    for qw( -r -w -x -o -R -W -X -O -e -z -s -f -d -l -p -S -b -c -t -u -g -k -T -B -M -A -C );
 
 1;
 
