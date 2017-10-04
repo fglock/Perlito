@@ -44,6 +44,8 @@
 -- symbol tables like %:: and typeglobs support
 -- '-e' file test
 -- lvalue ternary "?:"
+-- add core modules:
+	Cwd
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:
