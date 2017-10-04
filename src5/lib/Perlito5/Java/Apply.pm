@@ -1648,7 +1648,7 @@ package Perlito5::AST::Apply;
         return ''
             if $code eq 'package';
         return $emit_js{$code}->($self, $level, $wantarray, $autovivification_type)
-            if exists $emit_js{$code} && ($self->{namespace} eq '' || $self->{namespace} eq 'GLOBAL');
+            if exists $emit_js{$code} && ($self->{namespace} eq '' || $self->{namespace} eq 'CORE');
 
         if (exists $Perlito5::Java::op_prefix_js_str{$code}) {
             return $Perlito5::Java::op_prefix_js_str{$code} . '(' 
