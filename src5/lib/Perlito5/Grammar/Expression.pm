@@ -627,32 +627,63 @@ sub term_file_test {
     my $arg = argument_parse($str, $pos);
     if ($arg) {
         my $argument = Perlito5::Match::flat($arg);
-
-        # TODO - stacked operators: "-f -w -x $file" is equivalent to "-x $file && -w _ && -f _"
-
-        if ($argument eq '*undef*') {
-            # If the argument is omitted, tests $_, except for "-t", which tests STDIN
-            if ($code eq '-t') {
-                $argument = Perlito5::AST::Var->new(
-                        '_decl' => "global",
-                        '_namespace' => "main",
-                        'name' => "STDIN",
-                        'namespace' => '',
-                        'sigil' => "*",
-                    );
-            }
-            else {
-                $argument = Perlito5::AST::Var::SCALAR_ARG();
-            }
+        if (  ref($argument) eq 'Perlito5::AST::Apply'
+           && (  $argument->{code} =~ /^prefix:<-\w>$/
+              || $argument->{code} eq 'infix:<&&>'
+              )
+        ) {
+            # stacked operators: "-f -w -x $file" is equivalent to "-x $file && -w _ && -f _"
+            my $op2  = $argument;
+            my $file = $op2->{arguments}[0];
+            $arg->{capture} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code      => "infix:<&&>",
+                    namespace => '',
+                    arguments => [
+                        $op2,
+                        Perlito5::AST::Apply->new(
+                            code      => "prefix:<$code>",
+                            arguments => [
+                                Perlito5::AST::Var->new(
+                                    '_decl' => "global",
+                                    '_namespace' => "main",
+                                    'name' => "_",
+                                    'namespace' => '',
+                                    'sigil' => "*",
+                                )
+                            ],
+                            namespace => '',
+                            bareword  => 0,
+                        ),
+                    ],
+                )
+            ];
         }
-        $arg->{capture} = [ 'term',
-             Perlito5::AST::Apply->new(
-                code      => "prefix:<$code>",
-                arguments => $argument eq '*undef*' ? [] : [$argument],
-                namespace => '',
-                bareword  => $argument eq '*undef*' ? 1 : 0,
-             )
-           ]
+        else {
+            if ($argument eq '*undef*') {
+                # If the argument is omitted, tests $_, except for "-t", which tests STDIN
+                if ($code eq '-t') {
+                    $argument = Perlito5::AST::Var->new(
+                            '_decl' => "global",
+                            '_namespace' => "main",
+                            'name' => "STDIN",
+                            'namespace' => '',
+                            'sigil' => "*",
+                        );
+                }
+                else {
+                    $argument = Perlito5::AST::Var::SCALAR_ARG();
+                }
+            }
+            $arg->{capture} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code      => "prefix:<$code>",
+                    arguments => $argument eq '*undef*' ? [] : [$argument],
+                    namespace => '',
+                    bareword  => 0,
+                 )
+            ];
+        }
     }
     return $arg;
 };

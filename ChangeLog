@@ -26,6 +26,7 @@
 -- CORE:: prefix (CORE::print, CORE::tr)
 -- CORE::GLOBAL special namespace
 -- CORE functions can be overridden
+-- stacked operators in "-X" file test
 
 - Java:
 -- "require"
