@@ -43,7 +43,7 @@ Provides runtime routines for the Perlito5-in-Perl6 compiled code
 
 =head1 AUTHORS
 
-The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
+The Pugs Team.
 
 =head1 COPYRIGHT
 

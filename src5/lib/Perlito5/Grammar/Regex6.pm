@@ -179,7 +179,7 @@ This is not useful during runtime, and this module should never be loaded in the
 =head1 AUTHORS
 
 Flavio Soibelmann Glock <fglock@gmail.com>.
-The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
+The Pugs Team.
 
 =head1 SEE ALSO
 

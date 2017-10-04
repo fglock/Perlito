@@ -747,7 +747,7 @@ This module generates Perl6 code for the Perlito compiler.
 =head1 AUTHORS
 
 Flavio Soibelmann Glock <fglock@gmail.com>.
-The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
+The Pugs Team.
 
 =head1 SEE ALSO
 

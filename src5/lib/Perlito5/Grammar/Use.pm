@@ -456,7 +456,7 @@ This module parses source code for Perl 5 statements and generates Perlito5 AST.
 =head1 AUTHORS
 
 Flavio Soibelmann Glock <fglock@gmail.com>.
-The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
+The Pugs Team.
 
 =head1 COPYRIGHT
 
