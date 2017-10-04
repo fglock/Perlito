@@ -29,7 +29,11 @@ sub fastgetcwd { getcwd }
 sub realpath { &abs_path }
 sub fast_realpath { &abs_path }
 sub fast_abs_path { &abs_path }
-sub chdir { CORE::chdir @_ }
+sub chdir {
+    CORE::chdir(@_);
+    $ENV{'PWD'} = getcwd();
+    1;
+}
 
 1;
 
