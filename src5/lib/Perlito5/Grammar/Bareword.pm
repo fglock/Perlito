@@ -250,6 +250,7 @@ sub term_bareword {
     if ( exists $Perlito5::PROTO->{$effective_name} ) {
         # subroutine was predeclared
         $sig = $Perlito5::PROTO->{$effective_name};
+        $namespace ||= $Perlito5::PKG_NAME;
     }
     elsif ( (!$namespace || $namespace eq 'CORE')
           && exists $Perlito5::CORE_PROTO->{"CORE::$name"} 
@@ -263,8 +264,7 @@ sub term_bareword {
         $effective_name = "CORE::$name";
         $sig = $Perlito5::CORE_PROTO->{$effective_name};
 
-        $core_global_name = "CORE::GLOBAL::$name";
-
+        my $core_global_name = "CORE::GLOBAL::$name";
         if (  ! $namespace
            && exists $Perlito5::CORE_GLOBAL_OVERRIDABLE->{$name}
            && exists &{$core_global_name}
