@@ -125,6 +125,18 @@ EOT
         }
         return PlCx.INT1;
 EOT
+    # binmode FILEHANDLE, LAYER
+    binmode => <<'EOT',
+        String layer;
+        int arg_count = List__.length_of_array_int();
+        if (arg_count == 0) {
+            layer = ":raw";
+        }
+        else {
+            layer = List__.aget(0).toString();
+        }
+        return PlCORE.die("binmode(FILEHANDLE, '" + layer + "') not implemented");
+EOT
     opendir => <<'EOT',
         try {
             String s = List__.aget(0).toString();
