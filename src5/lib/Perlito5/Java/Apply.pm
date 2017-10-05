@@ -219,7 +219,7 @@ package Perlito5::AST::Apply;
         },
         'wantarray' => sub {
             my ($self, $level, $wantarray) = @_;
-            '(want == PlCx.VOID ? PlCx.UNDEF : want == PlCx.SCALAR ? PlCx.EMPTY : PlCx.INT1)';
+            '(return_context == PlCx.VOID ? PlCx.UNDEF : return_context == PlCx.SCALAR ? PlCx.EMPTY : PlCx.INT1)';
         },
         'uc' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -875,10 +875,16 @@ package Perlito5::AST::Apply;
         'return' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW_RETURN = 1;
-            if ( ! @{ $self->{arguments} } ) {
-                return 'PerlOp.ret(PerlOp.context(want))';
+
+            $wantarray = '';
+            if (!$self->{_return_from_block}) {
+                $wantarray = 'return';
             }
-            'PerlOp.ret(' . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1 ) . ')';
+
+            if ( ! @{ $self->{arguments} } ) {
+                return 'PerlOp.ret(PerlOp.context(' . Perlito5::Java::to_context($wantarray) . '))';
+            }
+            'PerlOp.ret(' . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1, $wantarray ) . ')';
         },
         'goto' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -920,8 +926,9 @@ package Perlito5::AST::Apply;
                     _do_block => 1,
                 );
                 return $ast->emit_java( $level + 1, $wantarray )
-                    . '.apply('
+                    . '.apply_do_block('
                             . Perlito5::Java::to_context($wantarray) . ', '
+                            . 'return_context, '
                             . 'List__'
                     . ')';
             }

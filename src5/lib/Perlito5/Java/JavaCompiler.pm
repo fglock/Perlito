@@ -100,6 +100,7 @@ class PlJavaCompiler {
             source5.append("    public " + className + "() {\n");
             source5.append("    }\n");
             source5.append("    public static PlObject runEval(int want, PlArray List__) {\n");
+            source5.append("        int return_context = want;\n");
             source5.append("        try {\n");
             source5.append("        " + source + "\n");
             source5.append("        }\n");
@@ -237,6 +238,7 @@ class PlJavaCompiler {
             source5.append("    public " + className + "() {\n");
             source5.append("    }\n");
             source5.append("    public static PlObject runEval(int want, Object scalar_val, Object array_val, Object hash_val, PlArray List__) {\n");
+            source5.append("        int return_context = want;\n");
             for (int i = 0; i < scalar_name.length; i++) {
             source5.append("        PlLvalue " + scalar_name[i] + " = ((PlLvalue[])(scalar_val))[" + i + "];\n");
             }

@@ -864,22 +864,24 @@ package Perlito5::Java;
     sub to_runtime_context {
         my $items = to_scalar_preprocess( $_[0] );
         my $level = $_[1];
-        my $wantarray = 'runtime';
+        my $wantarray = $_[2];   # 'return';
 
         return $items->[0]->emit_java($level, $wantarray)
             if @$items == 1 && is_scalar($items->[0]);
 
-        'PerlOp.context(want, ' 
+        'PerlOp.context(' . to_context($wantarray) . ', ' 
             .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
             . ')'
     }
 
     sub to_context {
         my $wantarray = shift;
-         $wantarray eq 'list'   ? 'PlCx.LIST' 
-        :$wantarray eq 'scalar' ? 'PlCx.SCALAR' 
-        :$wantarray eq 'void'   ? 'PlCx.VOID'
-        :                         'want'
+          $wantarray eq 'list'    ? 'PlCx.LIST' 
+        : $wantarray eq 'scalar'  ? 'PlCx.SCALAR' 
+        : $wantarray eq 'void'    ? 'PlCx.VOID'
+        : $wantarray eq 'return'  ? 'return_context'
+        : $wantarray eq 'runtime' ? 'want'
+        :                           'want'    # default = 'runtime'
     }
 
     sub autoquote {
@@ -1102,23 +1104,28 @@ package Perlito5::Java::LexicalBlock;
                     }
                     else {
                         push @str, emit_return($has_local, $local_label,
-                                $wantarray eq 'runtime'
-                              ? Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
-                              : $wantarray eq 'scalar'
-                              ? Perlito5::Java::to_scalar([$last_statement->{arguments}[0]], $level+1)
-                              : $last_statement->{arguments}[0]->emit_java($level, $wantarray)
+                                Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1, 'runtime')
                             ) . ';';
+
+                        # push @str, emit_return($has_local, $local_label, $last_statement->{"arguments"}->[0]->emit_java($level, "runtime")) . ';';
+
+                            #     $wantarray eq 'runtime'
+                            #   ? Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
+                            #   : $wantarray eq 'scalar'
+                            #   ? Perlito5::Java::to_scalar([$last_statement->{arguments}[0]], $level+1)
+                            #   : $last_statement->{arguments}[0]->emit_java($level, $wantarray)
+                            # ) . ';';
                     }
                 }
                 else {
                     if (!@{$last_statement->{arguments}}) {
                         $Perlito5::THROW_RETURN = 1;
-                        push @str, 'return PerlOp.ret(PerlOp.context(want));'; 
+                        push @str, 'return PerlOp.ret(PerlOp.context(return_context));'; 
                     }
                     else {
                         $Perlito5::THROW_RETURN = 1;
                         push @str, 'return PerlOp.ret('
-                            . Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
+                            . Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1, 'return')
                             . ');';
                     }
                 }
@@ -1420,6 +1427,7 @@ package Perlito5::AST::CompUnit;
 
                      "PlV.init(args);",
                      "int want = PlCx.VOID;",
+                     "int return_context = PlCx.VOID;",
                      "PlArray List__ = new PlArray();",
                      "Exception ee = null;",
                      "try {",
@@ -1964,8 +1972,8 @@ package Perlito5::AST::Var;
             if ( $wantarray eq 'scalar' ) {
                 return $s . '.length_of_array()';
             }
-            if ( $wantarray eq 'runtime' ) {
-                return '(want == PlCx.LIST'
+            if ( $wantarray eq 'runtime' || $wantarray eq 'return' ) {
+                return '(' . Perlito5::Java::to_context($wantarray) . ' == PlCx.LIST'
                     . ' ? ' . $s
                     . ' : ' . $s . '.length_of_array()'
                     . ')';
@@ -2121,8 +2129,8 @@ package Perlito5::AST::Var;
             if ( $wantarray eq 'scalar' ) {
                 return $self->emit_java($level, 'list') . '.length_of_array()';
             }
-            if ( $wantarray eq 'runtime' ) {
-                return '(want == PlCx.LIST'
+            if ( $wantarray eq 'runtime' || $wantarray eq 'return' ) {
+                return '(' . Perlito5::Java::to_context($wantarray) . ' == PlCx.LIST'
                     . ' ? ' . $self->emit_java($level, 'list')
                     . ' : ' . $self->emit_java($level, 'list') . '.length_of_array()'
                     . ')';
@@ -2825,6 +2833,15 @@ package Perlito5::AST::Sub;
             $perlLineNumber = 0 + $self->{pos}{line};
         }
 
+        my $method_decl;
+        if ($self->{_do_block}) {
+            $method_decl = "public PlObject apply_do_block(int want, int return_context, PlArray List__)";
+        }
+        else {
+            $method_decl = "public PlObject apply(int want, PlArray List__)";
+            unshift @js_block, "int return_context = want;";
+        }
+
         my @s = (
             "new PlClosure(" . join( ", ", @closure_args ) . ") {",
                 [
@@ -2840,7 +2857,7 @@ package Perlito5::AST::Sub;
                     [ "return PlCx.mainThread.getStackTrace()[1];",
                     ],
                   "}",
-                  "public PlObject apply(int want, PlArray List__) {",
+                  $method_decl . " {",
                     [ @js_block ],
                   "}",
                   "public StackTraceElement lastLine() {",

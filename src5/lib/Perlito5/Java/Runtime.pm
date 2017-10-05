@@ -1774,7 +1774,7 @@ class PerlOp {
                 set_match(matcher, str);
                 int start = matcher.start();
                 int end   = matcher.end();
-                String replace = rep.apply(PlCx.SCALAR, new PlArray()).toString();
+                String replace = rep.apply_do_block(PlCx.SCALAR, want, new PlArray()).toString();
                 if (start > pos) {
                     buf.append( str.substring(pos, start) );
                 }
@@ -1796,7 +1796,7 @@ class PerlOp {
                 set_match(matcher, str);
                 int start = matcher.start();
                 int end   = matcher.end();
-                String replace = rep.apply(PlCx.SCALAR, new PlArray()).toString();
+                String replace = rep.apply_do_block(PlCx.SCALAR, want, new PlArray()).toString();
                 final StringBuilder buf = new StringBuilder(str.length() + replace.length());
                 if (start > 0) {
                     buf.append( str.substring(0, start) );
@@ -3560,6 +3560,10 @@ class PlClosure extends PlReference implements Runnable {
     // Note: apply() overrides PlObject.apply(), which throws an error
     public PlObject apply(int want, PlArray List__) {
         PlCORE.die("it looks like you have a closure without a block");
+        return this;
+    }
+    public PlObject apply_do_block(int want, int return_context, PlArray List__) {
+        PlCORE.die("it looks like you have a do-block without a block");
         return this;
     }
     public StackTraceElement lastLine() {
