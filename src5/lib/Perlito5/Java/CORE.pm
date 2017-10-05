@@ -24,6 +24,7 @@ my %FileFunc = (
             if (fh.reader != null) {
                 fh.reader.close();
             }
+            // PlCORE.say("open " + List__.toString());
             if (argCount == 0) {
                 // As a shortcut a one-argument call takes the filename from the
                 // global scalar variable of the same name as the filehandle
@@ -73,8 +74,9 @@ my %FileFunc = (
 
                 s = List__.aget(1).toString();
             }
-            path = PlV.path.resolve(s).toRealPath();
-            // PlCORE.say("path " + path.toString());
+            // PlCORE.say("mode " + mode);
+            path = PlV.path.resolve(s);
+            // PlCORE.say("path " + mode + " " + path.toString());
             if (mode.equals("<") || mode.equals("")) {
                 // TODO: charset
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
@@ -87,16 +89,18 @@ my %FileFunc = (
             else if (mode.equals(">")) {
                 // TODO: charset
                 fh.reader = null;
-                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE));
+                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE));
             }
             else if (mode.equals(">>")) {
                 // TODO: charset
                 fh.reader = null;
-                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND));
+                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE));
             }
             else {
                 PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
             }
+            path = path.toRealPath();
+            // PlCORE.say("path " + mode + " " + path.toString());
         }
         catch(IOException e) {
             PlV.sset("main::!", new PlString(e.getMessage()));
