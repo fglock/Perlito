@@ -13,6 +13,7 @@ my %Perlito_internal_module = (
     'Fcntl'          => 'Perlito5X::Fcntl',
     'IO'             => 'Perlito5X::IO',
     'IO::Handle'     => 'Perlito5X::IO::Handle',
+    'IO::Seekable'   => 'Perlito5X::IO::Seekable',
     'JSON'           => 'Perlito5X::JSON',
     'Symbol'         => 'Perlito5X::Symbol',
     'Term::ANSIColor' => 'Perlito5X::Term::ANSIColor',
