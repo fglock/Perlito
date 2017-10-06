@@ -74,18 +74,42 @@ my %FileFunc = (
 
                 s = List__.aget(1).toString();
             }
+
+            String charset = "ISO-8859-1";
+            int pos = mode.indexOf(":encoding(");
+            if (pos > 0) {
+                // extract the charset specification
+                int last = mode.indexOf(")", pos);
+                if (last > 0) {
+                    charset = mode.substring(pos + 10, last);
+                    if ((last + 1) > mode.length()) {
+                        mode = mode.substring(0, pos).trim();
+                    }
+                    else {
+                        mode = ( mode.substring(0, pos) + mode.substring(last + 1) ).trim();
+                    }
+                }
+            }
+            if (charset.equals("Latin1")) {
+                charset = "ISO-8859-1";
+            }
+            if (charset.equals("utf8")) {
+                charset = "UTF-8";
+            }
+            // PlCORE.say("charset [" + charset + "] mode [" + mode + "]");
+
             // PlCORE.say("mode " + mode);
             path = PlV.path.resolve(s);
             // PlCORE.say("path " + mode + " " + path.toString());
             if (mode.equals("<") || mode.equals("")) {
                 // TODO: charset
-                fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
+                fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
                 fh.outputStream = null;
             }
-            else if (mode.equals("<:encoding(UTF-8)")) {
-                fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
-                fh.outputStream = null;
-            }
+            // else if (mode.equals("<:encoding(UTF-8)")) {
+            //     fh.reader = Files.newBufferedReader(path, );
+            //     fh.outputStream = null;
+            // }
             else if (mode.equals(">")) {
                 // TODO: charset
                 fh.reader = null;
