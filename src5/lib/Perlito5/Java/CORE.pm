@@ -98,27 +98,23 @@ my %FileFunc = (
             }
             // PlCORE.say("charset [" + charset + "] mode [" + mode + "]");
 
-            // PlCORE.say("mode " + mode);
             path = PlV.path.resolve(s);
             // PlCORE.say("path " + mode + " " + path.toString());
             if (mode.equals("<") || mode.equals("")) {
-                // TODO: charset
                 fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
                 fh.outputStream = null;
             }
-            // else if (mode.equals("<:encoding(UTF-8)")) {
-            //     fh.reader = Files.newBufferedReader(path, );
-            //     fh.outputStream = null;
-            // }
             else if (mode.equals(">")) {
-                // TODO: charset
                 fh.reader = null;
-                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE));
+                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE),
+                    true,
+                    charset);
             }
             else if (mode.equals(">>")) {
-                // TODO: charset
                 fh.reader = null;
-                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE));
+                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE),
+                    true,
+                    charset);
             }
             else {
                 PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
@@ -126,10 +122,6 @@ my %FileFunc = (
             path = path.toRealPath();
             // PlCORE.say("path " + mode + " " + path.toString());
         }
-        // catch(IOException e) {
-        //     PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
-        //     return PlCx.UNDEF;
-        // }
         catch(Exception e) {
             PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
