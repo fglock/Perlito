@@ -90,6 +90,16 @@ my %FileFunc = (
                     }
                 }
             }
+            pos = mode.indexOf(":raw");
+            if (pos > 0) {
+                charset = "ISO-8859-1";
+                if ((pos + 4) > mode.length()) {
+                    mode = mode.substring(0, pos).trim();
+                }
+                else {
+                    mode = ( mode.substring(0, pos) + mode.substring(pos + 4) ).trim();
+                }
+            }
             if (charset.equals("Latin1")) {
                 charset = "ISO-8859-1";
             }
@@ -99,6 +109,11 @@ my %FileFunc = (
             // PlCORE.say("charset [" + charset + "] mode [" + mode + "]");
 
             path = PlV.path.resolve(s);
+
+            // save the info for binmode()
+            fh.path = path;     // filename
+            fh.mode = mode;     // ">", "+<"
+
             // PlCORE.say("path " + mode + " " + path.toString());
             if (mode.equals("<") || mode.equals("")) {
                 fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
@@ -198,7 +213,10 @@ EOT
         else {
             layer = List__.aget(0).toString();
         }
-        return PlCORE.die("binmode(FILEHANDLE, '" + layer + "') not implemented");
+        return PlCORE.open(want, fh, new PlArray(
+            new PlString(fh.mode + layer),
+            new PlString(fh.path.toString()) 
+        ));
 EOT
     opendir => <<'EOT',
         try {

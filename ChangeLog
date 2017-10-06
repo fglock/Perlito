@@ -31,15 +31,14 @@
 -- remove "." from @INC
 
 - Java:
--- "require"
--- "opendir", "readdir", "closedir", "select"
+-- "require", "require VERSION"
+-- "opendir", "readdir", "closedir", "select", "binmode"
 -- tied hash
 -- tied array
 -- overload implemented for about half of the operators
 -- /xx regex modifier
 -- strict refs
 -- srand() returns true, warns on overflow
--- require VERSION
 -- fix read-only values
 -- $\
 -- caller() now works "natively", decoding the Java stack trace

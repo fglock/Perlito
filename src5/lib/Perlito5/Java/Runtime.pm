@@ -3329,15 +3329,17 @@ class PlStringReader extends Reader{
 
 class PlFileHandle extends PlObject {
     // public static final PlString REF = new PlString("GLOB");
-    public String typeglob_name;
+    public String  typeglob_name;
     public PrintStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
     public Iterator<Path> directoryIterator;
     public DirectoryStream<Path> directoryStream;
-    public Reader reader;       // Console.reader
+    public Reader  reader;       // Console.reader
     public StringBuilder readlineBuffer;
     public boolean eof;
     public boolean is_argv;
+    public Path    path;     // filename
+    public String  mode;     // ">", "+<"
 
     public PlFileHandle() {
         this.readlineBuffer = new StringBuilder();
