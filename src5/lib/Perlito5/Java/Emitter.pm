@@ -946,12 +946,12 @@ package Perlito5::Java;
     }
 
     sub emit_wrap_last_exception_java {
-        my ($self, $stmts) = @_;
+        my ($self, $stmts, $wantarray) = @_;
         my $block_label = Perlito5::Java::get_java_loop_label( $self->{label} );
         my $test_label = 'e.label_id != 0';
         $test_label = "e.label_id != $block_label && e.label_id != 0"
             if $block_label;
-        return (
+        my @str = (
              "try {",
                 [ @$stmts ],
              '}',
@@ -961,6 +961,10 @@ package Perlito5::Java;
                   "}"
                 ],
              '}' );
+        if ($wantarray ne 'void') {
+            push @str, "return PlCx.UNDEF;";
+        }
+        return @str;
     }
 
 }
@@ -1605,7 +1609,7 @@ package Perlito5::AST::Block;
 
         my @str = $body->emit_java($level + 1, $wantarray);
         if ($Perlito5::THROW) {
-            @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
+            @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str, $wantarray );
         }
         return Perlito5::Java::emit_wrap_java($level, @str);
     }
@@ -2597,7 +2601,7 @@ package Perlito5::AST::While;
                           ],
                         '}';
             if ($Perlito5::THROW) {
-                @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
+                @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str, $wantarray );
             }
         }
 
@@ -2712,7 +2716,7 @@ package Perlito5::AST::For;
             }
         }
         if ($Perlito5::THROW) {
-            @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
+            @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str, $wantarray );
         }
         return Perlito5::Java::emit_wrap_java($level, @str);
     }
