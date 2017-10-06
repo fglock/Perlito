@@ -140,7 +140,7 @@ EOT
             }
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
@@ -166,7 +166,7 @@ EOT
             fh.directoryIterator = fh.directoryStream.iterator();
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
@@ -196,7 +196,7 @@ EOT
             }
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
@@ -274,7 +274,7 @@ EOT
                 }
             }
             catch(IOException e) {
-                PlV.sset("main::!", new PlString(e.getMessage()));
+                PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
                 return PlCx.UNDEF;
             }
             if (num_chars > 0) {
@@ -342,7 +342,7 @@ EOT
                 }
             }
             catch(IOException e) {
-                PlV.sset("main::!", new PlString(e.getMessage()));
+                PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
                 return PlCx.UNDEF;
             }
             if (num_chars > 0) {
@@ -400,7 +400,7 @@ EOT
 
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
@@ -435,7 +435,7 @@ EOT
             return PlCx.INT1;
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
         }
         return PlCx.UNDEF;
     }
@@ -459,7 +459,7 @@ EOT
             PlV.sset("main::!", new PlString("Directory not empty"));
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
         }
         return PlCx.UNDEF;
     }
@@ -477,7 +477,7 @@ EOT
             PlV.sset("main::!", new PlString("Directory not empty"));
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
         }
         return PlCx.UNDEF;
     }
@@ -496,7 +496,7 @@ EOT
             PlV.sset("main::!", new PlString("Directory not empty"));
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
         }
         return PlCx.UNDEF;
     }
@@ -1685,7 +1685,7 @@ EOT
         catch (IOException e) {
             // System.out.println("IOexception: ");
             // e.printStackTrace();
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.MIN1;
         }
     }
