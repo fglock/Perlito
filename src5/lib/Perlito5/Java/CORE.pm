@@ -126,8 +126,12 @@ my %FileFunc = (
             path = path.toRealPath();
             // PlCORE.say("path " + mode + " " + path.toString());
         }
-        catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+        // catch(IOException e) {
+        //     PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
+        //     return PlCx.UNDEF;
+        // }
+        catch(Exception e) {
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
