@@ -307,7 +307,7 @@ sub filename_lookup {
         Perlito5::Compiler::error "Compilation failed in require";
     }
 
-    for my $prefix (@INC, '.') {
+    for my $prefix (@INC) {
         my $realfilename = "$prefix/$filename";
         if (-f $realfilename) {
             $INC{$filename} = $realfilename;

@@ -27,6 +27,7 @@
 -- CORE::GLOBAL special namespace
 -- CORE functions can be overridden
 -- stacked operators in "-X" file test
+-- remove "." from @INC
 
 - Java:
 -- "require"
