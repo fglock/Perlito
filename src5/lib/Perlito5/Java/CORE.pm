@@ -116,6 +116,46 @@ my %FileFunc = (
                     true,
                     charset);
             }
+            else if (mode.equals("+<")) {
+                // read/write
+                // TODO - share the IO buffer for reads and writes
+                fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals("+>")) {
+                // read/write, truncate first
+                // TODO - share the IO buffer for reads and writes
+                fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals("<-")) {
+                //   In the two-argument (and one-argument) form, opening "<-" or
+                //   "-" opens STDIN and opening ">-" opens STDOUT.
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals(">-")) {
+                //   In the two-argument (and one-argument) form, opening "<-" or
+                //   "-" opens STDIN and opening ">-" opens STDOUT.
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals("|-")) {
+                //   For three or more arguments if MODE is "|-", the filename is
+                //   interpreted as a command to which output is to be piped, and if
+                //   MODE is "-|", the filename is interpreted as a command that
+                //   pipes output to us.  In the two-argument (and one-argument)
+                //   form, one should replace dash ("-") with the command.  See
+                //   "Using open() for IPC" in perlipc for more examples of this.
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals("-|")) {
+                //   For three or more arguments if MODE is "|-", the filename is
+                //   interpreted as a command to which output is to be piped, and if
+                //   MODE is "-|", the filename is interpreted as a command that
+                //   pipes output to us.  In the two-argument (and one-argument)
+                //   form, one should replace dash ("-") with the command.  See
+                //   "Using open() for IPC" in perlipc for more examples of this.
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
             else {
                 PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
             }
