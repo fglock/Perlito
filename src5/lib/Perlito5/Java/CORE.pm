@@ -162,6 +162,9 @@ my %FileFunc = (
             path = path.toRealPath();
             // PlCORE.say("path " + mode + " " + path.toString());
         }
+        catch(NoSuchFileException e) {
+            PlV.sset("main::!", new PlString("No such file or directory"));
+        }
         catch(Exception e) {
             PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
