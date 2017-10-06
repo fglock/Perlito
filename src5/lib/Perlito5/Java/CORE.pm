@@ -76,7 +76,18 @@ my %FileFunc = (
             }
 
             String charset = "ISO-8859-1";
-            int pos = mode.indexOf(":encoding(");
+            int pos;
+            pos = mode.indexOf(":raw");
+            if (pos > 0) {
+                charset = "ISO-8859-1";
+                if ((pos + 4) > mode.length()) {
+                    mode = mode.substring(0, pos).trim();
+                }
+                else {
+                    mode = ( mode.substring(0, pos) + mode.substring(pos + 4) ).trim();
+                }
+            }
+            pos = mode.indexOf(":encoding(");
             if (pos > 0) {
                 // extract the charset specification
                 int last = mode.indexOf(")", pos);
@@ -88,23 +99,27 @@ my %FileFunc = (
                     else {
                         mode = ( mode.substring(0, pos) + mode.substring(last + 1) ).trim();
                     }
+
+                    if (charset.equals("Latin1")) {
+                        charset = "ISO-8859-1";
+                    }
+                    if (charset.equals("utf8")) {
+                        charset = "UTF-8";
+                    }
+                    if (charset.equals("utf16")) {
+                        charset = "UTF-16";
+                    }
                 }
             }
-            pos = mode.indexOf(":raw");
+            pos = mode.indexOf(":utf8");
             if (pos > 0) {
-                charset = "ISO-8859-1";
-                if ((pos + 4) > mode.length()) {
+                charset = "UTF-8";
+                if ((pos + 5) > mode.length()) {
                     mode = mode.substring(0, pos).trim();
                 }
                 else {
-                    mode = ( mode.substring(0, pos) + mode.substring(pos + 4) ).trim();
+                    mode = ( mode.substring(0, pos) + mode.substring(pos + 5) ).trim();
                 }
-            }
-            if (charset.equals("Latin1")) {
-                charset = "ISO-8859-1";
-            }
-            if (charset.equals("utf8")) {
-                charset = "UTF-8";
             }
             // PlCORE.say("charset [" + charset + "] mode [" + mode + "]");
 
