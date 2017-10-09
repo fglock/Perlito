@@ -191,15 +191,17 @@ my %FileFunc = (
             }
             path = path.toRealPath();
             // PlCORE.say("path " + mode + " " + path.toString());
+
+            // success
+            return PlCx.INT1;
         }
         catch(NoSuchFileException e) {
             PlV.sset("main::!", new PlString("No such file or directory"));
         }
         catch(Exception e) {
             PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
-            return PlCx.UNDEF;
         }
-        return PlCx.INT1;
+        return PlCx.UNDEF;
 EOT
     close => <<'EOT',
         try {
@@ -211,12 +213,14 @@ EOT
             if (fh.reader != null) {
                 fh.reader.close();
             }
+
+            // success
+            return PlCx.INT1;
         }
         catch(IOException e) {
             PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
-            return PlCx.UNDEF;
         }
-        return PlCx.INT1;
+        return PlCx.UNDEF;
 EOT
     # binmode FILEHANDLE, LAYER
     binmode => <<'EOT',
@@ -240,12 +244,14 @@ EOT
 
             fh.directoryStream = Files.newDirectoryStream(path);
             fh.directoryIterator = fh.directoryStream.iterator();
+
+            // success
+            return PlCx.INT1;
         }
         catch(IOException e) {
             PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
-            return PlCx.UNDEF;
         }
-        return PlCx.INT1;
+        return PlCx.UNDEF;
 EOT
     readdir => <<'EOT',
         Iterator<Path> iter = fh.directoryIterator;
