@@ -222,6 +222,14 @@ Regex differences
 
     `Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\G{ <-- HERE / at (eval 2) line 20.`
 
+  - TODO - possible bug in character class:
+
+    ```
+    $ java -jar perlito5.jar -I src5/lib -I. -I ../perl/perl-5.26.0/lib -e ' require "dumpvar.pl"; print dumpValue( [ 123, [ 45 ] ] ); '
+    0  << value could not be dumped: Illegal/unsupported escape sequence near index 12
+    ([\000-\037\177])
+                ^ >>
+    ```
 
 Eval-string
 -----------
