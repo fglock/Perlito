@@ -9204,6 +9204,11 @@ use feature 'say';
 }
 {
     package main;
+    package Perlito5::Grammar::Expression;
+    1
+}
+{
+    package main;
     package Perlito5;
     defined(${^O}) || (${^O} = "perlito5");
     defined($/) || ($/ = chr(10));

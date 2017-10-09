@@ -8,6 +8,7 @@ use Perlito5::Grammar::Statement;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar::Expression;
+use Perlito5::Grammar::CORE;
 use Perlito5::Macro;
 use Perlito5::Runtime;
 use Perlito5::AST::CompileTime;
