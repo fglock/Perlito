@@ -1464,18 +1464,37 @@ EOT
                             offset++;
                             offset = _regex_character_class_escape(offset, s, sb, length, flag_xx);
                             break;
-                case '(':   // comment (?# ... )
-                            if (offset < length - 2) {
+                case '(':   
+                            boolean append = true;
+                            if (offset < length - 3) {
                                 int c2 = s.codePointAt(offset+1);
                                 int c3 = s.codePointAt(offset+2);
+                                int c4 = s.codePointAt(offset+3);
                                 if (c2 == '?' && c3 == '#') {
+                                    // comment (?# ... )
                                     offset = _regex_skip_comment(offset, s, length);
+                                    append = false;
                                 }
-                                else {
-                                    sb.append(Character.toChars(c));
+                                else if (c2 == '?' && c3 == '<' &&
+                                        ((c4 >= 'A' && c4 <= 'F') || (c4 >= 'a' && c4 <= 'f') || (c4 == '_'))
+                                        )
+                                {
+                                    // named capture (?<one> ... )
+                                    // TODO - replace underscore in name
+                                    int endName = s.indexOf(">", offset+3);
+                                    if (endName > offset) {
+                                        String name = s.substring(offset+3, endName);
+                                        // PlCORE.say("name [" + name + "]");
+                                        name = name.replace("_", "UnderScore"); // See: regex_named_capture()
+                                        sb.append("(?<");
+                                        sb.append(name);
+                                        sb.append(">");
+                                        offset = endName;
+                                        append = false;
+                                    }
                                 }
                             }
-                            else {
+                            if (append) {
                                 sb.append(Character.toChars(c));
                             }
                             break;
@@ -1679,6 +1698,7 @@ EOT
             return PlCx.UNDEF;
         }
         try {
+            var_name = var_name.replace("_", "UnderScore"); // See: regex_escape()
             String cap = matcher.group(var_name);
             if (cap == null) {
                 return PlCx.UNDEF;

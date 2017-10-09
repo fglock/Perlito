@@ -207,8 +207,7 @@ Regex differences
 
   - regex variables $1, $2, ... and $&, $', $` work; other variables are not yet implemented.
 
-  - named captures in Java cannot contain an underline in the name.
-      Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
+  - Perlito5 allows underscores in named captures. This is not allowed in Java regex.
 
   - capturing in zero-length-match has problems. Failing tests:
 

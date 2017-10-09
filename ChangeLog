@@ -36,8 +36,6 @@
 -- tied hash
 -- tied array
 -- overload implemented for about half of the operators
--- /xx regex modifier
--- %+ regex named captures
 -- strict refs
 -- srand() returns true, warns on overflow
 -- fix read-only values
@@ -46,6 +44,9 @@
 -- symbol tables like %:: and typeglobs support
 -- '-e' file test
 -- lvalue ternary "?:"
+-- regex modifier /xx
+-- regex %+ named captures
+-- regex named captures can have underscore in the name
 -- add core modules:
 	Cwd
 
