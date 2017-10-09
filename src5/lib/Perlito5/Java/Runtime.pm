@@ -1349,31 +1349,49 @@ class PerlOp {
     }
 
     private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length, boolean flag_xx) {
-        // [ ... ]
+        // inside [ ... ]
+        //      space    becomes: "\ " unless the /xx flag is used (flag_xx)
+        //      \120     becomes: \0120 - Java requires octal sequences to start with zero
+        //      \0       becomes: \00 - Java requires the extra zero
         for ( ; offset < length; ) {
-            final int c3 = s.codePointAt(offset);
-            switch (c3) {
+            final int c = s.codePointAt(offset);
+            switch (c) {
                 case ']':
-                    sb.append(Character.toChars(c3));
+                    sb.append(Character.toChars(c));
                     return offset;
-                case '\\':
-                    sb.append(Character.toChars(c3));
+                case '\\':  // escape - \[ \120
+                    sb.append(Character.toChars(c));
                     if (offset < length) {
                         offset++;
                         int c2 = s.codePointAt(offset);
+                        if (c2 >= '1' && c2 <= '3') {
+                            if (offset < length+1) {
+                                int off = offset;
+                                int c3 = s.codePointAt(off++);
+                                int c4 = s.codePointAt(off++);
+                                if ((c3 >= '0' && c3 <= '7') && (c4 >= '0' && c4 <= '7')) {
+                                    // a \000 octal sequence
+                                    sb.append('0');
+                                }
+                            }
+                        }
+                        else if (c2 == '0') {
+                            // rewrite \0 to \00
+                            sb.append('0');
+                        }
                         sb.append(Character.toChars(c2));
                     }
                     break;
                 case ' ':
                     if (flag_xx) {
-                        sb.append(Character.toChars(c3));
+                        sb.append(Character.toChars(c));
                     }
                     else {
                         sb.append("\\ ");   // make this space a "token", even inside /x
                     }
                     break;
                 default:
-                    sb.append(Character.toChars(c3));
+                    sb.append(Character.toChars(c));
                     break;
             }
             offset++;
