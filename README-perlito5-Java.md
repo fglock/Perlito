@@ -1299,21 +1299,26 @@ Regex
 See also:
 
   - "Replace Rhino regexp implementation with java.util.regex"
-    https://bugzilla.mozilla.org/show_bug.cgi?id=390659
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=390659
 
   - DFA
-    http://www.brics.dk/automaton/index.html
+    - http://www.brics.dk/automaton/index.html
 
   - Mini-language with fast regex, Artistic License
-    http://jint.sourceforge.net
+    - http://jint.sourceforge.net
 
   - regex reference:
-    http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
+    - http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
 
   - http://www.regular-expressions.info/reference.html
 
   - Discussion about alternative implementations:
-    http://stackoverflow.com/questions/415580/regex-named-groups-in-java
+    - http://stackoverflow.com/questions/415580/regex-named-groups-in-java
+
+  - Extended Java java.util.regex, GPL
+    - supports Recursive and Conditional Regular Expressions, Capture Trees and Plugins.
+    - https://github.com/florianingerl/com.florianingerl.util.regex
+
 
 Threads
 -------
