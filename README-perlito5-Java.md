@@ -1319,6 +1319,8 @@ See also:
     - supports Recursive and Conditional Regular Expressions, Capture Trees and Plugins.
     - https://github.com/florianingerl/com.florianingerl.util.regex
 
+  - extensive comments about problems in Java regex
+    - https://stackoverflow.com/questions/5767627/how-to-add-features-missing-from-the-java-regex-implementation/5771326#5771326
 
 Threads
 -------
