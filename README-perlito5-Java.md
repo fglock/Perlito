@@ -189,6 +189,10 @@ Perlito5-Java work-in-progress
 
   - vec() not implemented
 
+  - clone() is work-in-progress
+      - deep clone of references is not implemented
+      - clone tied values is not implemented
+
   - Perl threads not implemented
       - Java threads can be used, with some limitations. See: misc/Java/TestConcurrent.pl and misc/Java/TestThread2.pl
 
