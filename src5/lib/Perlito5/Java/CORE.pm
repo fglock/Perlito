@@ -87,6 +87,16 @@ my %FileFunc = (
                     mode = ( mode.substring(0, pos) + mode.substring(pos + 4) ).trim();
                 }
             }
+            pos = mode.indexOf(":bytes");
+            if (pos > 0) {
+                charset = "ISO-8859-1";
+                if ((pos + 6) > mode.length()) {
+                    mode = mode.substring(0, pos).trim();
+                }
+                else {
+                    mode = ( mode.substring(0, pos) + mode.substring(pos + 6) ).trim();
+                }
+            }
             pos = mode.indexOf(":encoding(");
             if (pos > 0) {
                 // extract the charset specification
