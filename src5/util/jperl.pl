@@ -18,6 +18,7 @@ use warnings;
 use Data::Dumper ();
 use Exporter ();
 # use Symbol ();
+use utf8 ();
 %INC = (
     'Perlito5X/Dumper.pm'   => 'src5/lib/Perlito5X/Dumper.pm',
     'Perlito5X/Exporter.pm' => 'src5/lib/Perlito5X/Exporter.pm',
@@ -25,6 +26,7 @@ use Exporter ();
     'Perlito5X/strict.pm'   => 'src5/lib/Perlito5X/strict.pm',
     'Perlito5X/warnings.pm' => 'src5/lib/Perlito5X/warnings.pm',
     'Perlito5X/feature.pm'  => 'src5/lib/Perlito5X/feature.pm',
+    'Perlito5X/utf8.pm'     => 'src5/lib/Perlito5X/utf8.pm',
 );
 
 my $_V5_COMPILER_NAME    = Perlito5::Compiler::compiler_name();

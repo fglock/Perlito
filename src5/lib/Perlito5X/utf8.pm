@@ -8,5 +8,13 @@ sub unimport {
     $Perlito5::UTF8 = 0;
 }
 
+sub native_to_unicode {
+	return $_[0];
+}
+
+sub unicode_to_native {
+	return $_[0];
+}
+
 1;
 
