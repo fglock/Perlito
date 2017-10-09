@@ -2558,7 +2558,7 @@ class PlV {
     }
 
 }
-class PlObject {
+class PlObject implements Cloneable {
     public static final PlString REF = new PlString("");
 
     public PlObject() {
@@ -3103,6 +3103,9 @@ EOT
         return null;
     }
     public PlObject scalar() {
+        return this;
+    }
+    public PlObject clone() throws CloneNotSupportedException {
         return this;
     }
     public PlObject str_cmp(PlObject b) {
@@ -4872,6 +4875,9 @@ EOT
 
     public PlObject scalar() {
         return this.get();
+    }
+    public PlObject clone() throws CloneNotSupportedException {
+        return this.get().clone();
     }
 EOT
     , ((map {
@@ -7056,6 +7062,10 @@ EOT
     }
     public boolean is_undef() {
         return stuff == null;
+    }
+    public PlObject clone() throws CloneNotSupportedException {
+        // TODO - test if implements 'Cloneable' and call stuff.clone() if possible
+        return this;
     }
 }
 " : ()
