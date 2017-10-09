@@ -1034,6 +1034,10 @@ class PerlOp {
         return new PlArray( packageName, new PlString(fileName), lineNumber, plFullName );
     }
 
+EOT
+    ,   # list break
+<<'EOT'
+
     public static final PlObject mod(PlInt aa, PlObject bb) {
         long a = aa.to_long();
         long b = bb.to_long();
@@ -1663,6 +1667,24 @@ class PerlOp {
         }
         if (var_name.equals("'")) {    // $'
             return new PlString( str.substring(matcher.end()) );
+        }
+        return PlCx.UNDEF;
+    }
+    public static final PlObject regex_named_capture(String var_name) {
+        if (var_name == null) {
+            return PlCx.UNDEF;
+        }
+        Matcher matcher = PlV.regex_result.matcher;
+        if (matcher == null) {
+            return PlCx.UNDEF;
+        }
+        try {
+            String cap = matcher.group(var_name);
+            if (cap == null) {
+                return PlCx.UNDEF;
+            }
+            return new PlString(cap);
+        } catch (Exception e) {
         }
         return PlCx.UNDEF;
     }

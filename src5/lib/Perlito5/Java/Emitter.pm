@@ -1859,6 +1859,19 @@ package Perlito5::AST::Lookup;
             )->emit_java($level, $wantarray, $autovivification_type);
         }
         my $index = Perlito5::AST::Lookup->autoquote($self->{index_exp});
+
+        if (  $self->{obj}->isa('Perlito5::AST::Var')
+           && $self->{obj}->{name} eq '+'
+           && $self->{obj}->{_namespace} eq 'main'
+           && $self->{obj}->{sigil} eq '$'
+           )
+        {
+            # $+{aa}  => named capture from regex
+            return 'PerlOp.regex_named_capture('
+                . Perlito5::Java::to_native_str($index, $level)
+            . ')';
+        }
+
         return $self->emit_java_container($level) . '.' . $method . '('
                 . Perlito5::Java::to_native_str($index, $level)
             . ')';

@@ -207,7 +207,7 @@ Regex differences
 
   - regex variables $1, $2, ... and $&, $', $` work; other variables are not yet implemented.
 
-  - named captures cannot contain an underline in the name.
+  - named captures in Java cannot contain an underline in the name.
       Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
 
   - capturing in zero-length-match has problems. Failing tests:
@@ -1274,8 +1274,6 @@ Missing features, or partially implemented, or untested
 
 Regex
 -----
-
-  - Regex variables: named captures (TODO - add tests)
 
   - Quotemeta: \Q
 
