@@ -2167,7 +2167,7 @@ class PlV {
         PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
         PlV.hash_set("main::ENV",   new PlArray(System.getenv()));    // env  is Map<String, String>
         PlV.sset("main::" + (char)34, new PlString(" "));         // $" = " "
-        PlV.sset("main::/", new PlString("\n"));                  // $/ = "\n"
+        PlV.sset("main::/", new PlString( System.getProperty("line.separator") ));                  // $/ = "\n"
 
         PlV.STDIN.inputStream   = System.in;
         PlV.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
