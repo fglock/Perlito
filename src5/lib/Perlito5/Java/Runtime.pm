@@ -1185,11 +1185,11 @@ EOT
             return new PlDouble(new File(resolve_file(s).toString()).lastModified() / 86400.0);
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
     }
@@ -1198,11 +1198,11 @@ EOT
             return new PlBool(new File(resolve_file(s).toString()).isDirectory());
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
     }
@@ -1211,11 +1211,11 @@ EOT
             return new PlBool(new File(resolve_file(s).toString()).exists());
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
     }
@@ -1224,11 +1224,11 @@ EOT
             return new PlBool(new File(resolve_file(s).toString()).isFile());
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
     }
@@ -1237,11 +1237,11 @@ EOT
             return new PlInt(new File(resolve_file(s).toString()).length());
         }
         catch(IOException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
             return PlCx.UNDEF;
         }
     }
