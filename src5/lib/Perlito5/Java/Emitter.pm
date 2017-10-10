@@ -1173,7 +1173,8 @@ package Perlito5::Java::LexicalBlock;
                     ],
                 "}",
                 "catch(Exception e) {",
-                    [ 'PlV.sset("main::@", new PlString(e.getMessage()));',
+                    [ 'PlV.sset("main::@", '
+                              . 'new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));',
                       "return PlCx.UNDEF;",
                     ],
                 "}",
