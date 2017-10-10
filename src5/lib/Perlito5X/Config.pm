@@ -75,6 +75,7 @@ sub import {
     exe_ext => '',
     inc_version_list => '5.20.0',
     intsize => '4',
+    ivsize  => '4',
     ldlibpthname => 'DYLD_LIBRARY_PATH',
     libpth => '/usr/local/lib /usr/bin/../lib/clang/4.2/lib /usr/lib /opt/local/lib',
     osname => 'darwin',
