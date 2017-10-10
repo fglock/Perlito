@@ -1265,13 +1265,18 @@ EOT
             return PerlOp.string_replicate(o.aget(-1), c);
         }
         int count = c.to_int();
-        PlArray a = new PlArray();
+        PlArray arr = new PlArray();
+        int olength = o.to_int();
         if (count > 0) {
-            for (int i = 0; i < count; i++) {
-                a.push( o );
+            for (int ci = 0; ci < count; ci++) {
+                for (int oi = 0; oi < olength; oi++) {
+                    // this pushes an alias to the original value, as discussed in
+                    // https://beta.nntp.perl.org/group/perl.perl5.porters/2013/06/msg203177.html
+                    arr.a.add( o.aget_lvalue(oi) );
+                }
             }
         }
-        return a;
+        return arr;
     }
     public static final PlObject grep(PlClosure c, PlArray a, PlArray list__, int wantarray) {
         PlArray ret = new PlArray();
