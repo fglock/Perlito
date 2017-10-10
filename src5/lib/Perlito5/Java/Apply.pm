@@ -307,30 +307,37 @@ package Perlito5::AST::Apply;
             qw/ int /
         ),
         ( map {
-                my ($op, $java_op) = @$_;
+                my ($op, $java_op, $native_op) = @$_;
                 ( $op => sub {
                         my ($self, $level, $wantarray) = @_;
-                          $self->{arguments}->[0]->emit_java($level, 'scalar') . '.' . $java_op . '('
-                        . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+
+                        my $op1 = $self->{arguments}->[0]->emit_java($level, 'scalar');
+                        my $op2 = $self->{arguments}->[1]->emit_java($level, 'scalar');
+
+                        if ($self->{_integer} && $native_op) {
+                            return 'new PlInt(' . $op1 . '.to_int() ' . $native_op . ' ' . $op2 . '.to_int())'
+                        }
+
+                        $op1 . '.' . $java_op . '(' . $op2 . ')'
                       }
                 )
             } (
-              [ 'infix:<%>',   'mod' ],
+              [ 'infix:<%>',   'mod',    '%'  ],
               [ 'infix:<>>>',  'int_shr' ],
               [ 'infix:<<<>',  'int_shl' ],
               [ 'infix:<^>',   'int_xor' ],
               [ 'infix:<&>',   'int_and' ],
               [ 'infix:<|>',   'int_or' ],
-              [ 'infix:<+>',   'add' ],
-              [ 'infix:<->',   'sub' ],
-              [ 'infix:<*>',   'mul' ],
-              [ 'infix:</>',   'div' ],
-              [ 'infix:<==>',  'num_eq' ],
-              [ 'infix:<!=>',  'num_ne' ],
-              [ 'infix:<>>',   'num_gt' ],
-              [ 'infix:<>=>',  'num_ge' ],
-              [ 'infix:<<>',   'num_lt' ],
-              [ 'infix:<<=>',  'num_le' ],
+              [ 'infix:<+>',   'add',    '+'  ],
+              [ 'infix:<->',   'sub',    '-'  ],
+              [ 'infix:<*>',   'mul',    '*'  ],
+              [ 'infix:</>',   'div',    '/'  ],
+              [ 'infix:<==>',  'num_eq', '==' ],
+              [ 'infix:<!=>',  'num_ne', '!=' ],
+              [ 'infix:<>>',   'num_gt', '>'  ],
+              [ 'infix:<>=>',  'num_ge', '>=' ],
+              [ 'infix:<<>',   'num_lt', '<'  ],
+              [ 'infix:<<=>',  'num_le', '<=' ],
               [ 'infix:<eq>',  'str_eq' ],
               [ 'infix:<ne>',  'str_ne' ],
               [ 'infix:<gt>',  'str_gt' ],
