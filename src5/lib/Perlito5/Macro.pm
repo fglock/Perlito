@@ -34,6 +34,7 @@ sub op_assign {
                 Perlito5::AST::Apply->new(
                     code      => $op{$code},
                     arguments => $self->{arguments},
+                    ( $self->{_integer} ? ( _integer => 1 ) : () ),
                 ),
             ]
         );
