@@ -24,6 +24,7 @@ my %Perlito_internal_module = (
     'bytes'          => 'Perlito5X::bytes',
     'encoding'       => 'Perlito5X::encoding',
     'feature'        => 'Perlito5X::feature',
+    'integer'        => 'Perlito5X::integer',
     're'             => 'Perlito5X::re',
     'strict'         => 'Perlito5X::strict',
     'utf8'           => 'Perlito5X::utf8',

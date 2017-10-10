@@ -47,6 +47,9 @@ our %VARS            = ();    # implements "use vars"
 
 # $Perlito5::STRICT_* - See Perlito5X::strict.pm
 
+# magic numbers - See lib/integer.pm in perl distribution
+$Perlito5::INTEGER = 0x01;
+
 # the Perl-to-Java compiler uses this syntax for "annotations":
 #   package Put { import => 'java.Put' };
 # annotations are stored as namespace + AST
