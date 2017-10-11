@@ -1190,8 +1190,10 @@ EOT
                     // C0
                     characterMode = true;
                 }
-                result.append(pack_C(List__.aget(index).toString()));
-                ++index;
+                for (int j = 0; j < size; j++) {
+                    result.append(pack_C(List__.aget(index).toString()));
+                    ++index;
+                }
                 break;        
             }
             case 'W':

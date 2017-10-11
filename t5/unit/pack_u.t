@@ -37,8 +37,3 @@ $s = pack("C0U4",0x24b6,0x24b7,0x24b8,0x24b9);
 print "not " if $s ne "\xe2\x92\xb6\xe2\x92\xb7\xe2\x92\xb8\xe2\x92\xb9";
 say "ok 7";
 
-use Data::Dumper;
-print Dumper($s);
-
-# $VAR1 = "\x{b6}\x{e2}\x{92}\x{b7}\x{e2}\x{92}\x{b8}\x{e2}\x{92}\x{b9}\x{0}";
-
