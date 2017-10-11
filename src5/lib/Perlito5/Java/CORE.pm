@@ -1442,19 +1442,49 @@ EOT
                 if (size == 0) {
                     // U0
                     characterMode = false;
+                    break;
                 }
-                else if (characterMode) {
-                    // TODO
-                    // // character mode C0
-                    // StringBuilder sb = new StringBuilder();
-                    // for (int j = 0; j < size; j++) {
-                    //     sb.appendCodePoint( List__.shift().to_int() );
-                    // }
-                    // byte[] bytes = sb.toString().getBytes(PlCx.UTF8);
-                    // for (byte b : bytes) {
-                    //     int ub = b < 0 ? 256 + b : b;
-                    //     result.pushCodePoint(ub);
-                    // }
+                if (characterMode) {
+                    // character mode C0
+
+                    if (inputIndex >= input.length()) {
+                        break;
+                    }
+
+                    // decode from UTF-8 ("bytes") to internal representation
+                    String s = input.substring(inputIndex);
+                    char[] chars = s.toCharArray();
+                    byte[] bytes = new byte[chars.length];
+                    for (int j = 0; j < bytes.length; j++){
+                        bytes[j] = (byte)(chars[j]);
+                    }
+                    String internal = new String(bytes, PlCx.UTF8);
+                    int internalIndex = 0;
+ 
+                    // unpack
+                    StringBuilder sb = new StringBuilder();
+                    if (size < 0) {
+                            while (internalIndex < internal.length()) {
+                                int ichar = internal.charAt(internalIndex++);
+                                sb.appendCodePoint(ichar);
+                                result.push( new PlInt(ichar) );
+                            }
+                    }
+                    else {
+                        for (int j = 0; j < size; j++) {
+                            if (internalIndex < internal.length()) {
+                                int ichar = internal.charAt(internalIndex++);
+                                sb.appendCodePoint(ichar);
+                                result.push( new PlInt(ichar) );
+                            }
+                        }
+                    }
+
+                    // move the input pointer by the number of "bytes" consumed (not chars)
+                    byte[] bytesUsed = sb.toString().getBytes(PlCx.UTF8);
+                    inputIndex += bytesUsed.length;
+
+                    break;        
                 }
                 else {
                     // U0 mode
@@ -1470,8 +1500,8 @@ EOT
                             }
                         }
                     }
+                    break;        
                 }
-                break;        
             }
 
             default:
