@@ -1449,7 +1449,7 @@ package Perlito5::AST::Apply;
             # defined_or1(x) ? defined_or2() : y
             '(PerlOp.defined_or1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.defined_or2() : '
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
         },
         'exists' => sub {
             my ($self, $level, $wantarray) = @_;
