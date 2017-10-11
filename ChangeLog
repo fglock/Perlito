@@ -29,6 +29,7 @@
 -- CORE functions can be overridden
 -- stacked operators in "-X" file test
 -- remove "." from @INC
+-- decode source code "magic number" for UTF-8, UTF-16LE, UTF-16BE
 
 - Java:
 -- "require", "require VERSION"
