@@ -1133,7 +1133,14 @@ EOT
         }
 
         for(int i = 0; i < template.length(); ++i) {
-            int size = pack_size(template, i);
+            int size;
+            if (template.length() > (i+1) && template.charAt(i+1) == '*') {
+                size = List__.to_int();
+            }
+            else {
+                size = pack_size(template, i);
+            }
+
             switch(template.charAt(i)) {
             case 'a':
             {
@@ -1261,7 +1268,9 @@ EOT
             }
             case 'n':
             {
-                result.append(pack_n(List__.shift().toString()));
+                for (int j = 0; j < size; j++) {
+                    result.append(pack_n(List__.shift().toString()));
+                }
                 break;        
             }
             case 'N':
@@ -1271,7 +1280,9 @@ EOT
             }
             case 'v':   
             {
-                result.append(pack_v(List__.shift().toString()));
+                for (int j = 0; j < size; j++) {
+                    result.append(pack_v(List__.shift().toString()));
+                }
                 break;        
             }
             case 'V':   
