@@ -2238,12 +2238,15 @@ class PlV {
         PlV.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
         PlV.STDIN.eof           = false;
         PlV.STDIN.typeglob_name = "main::STDIN";
+        PlV.STDIN.charset       = "UTF-8";
 
         PlV.STDOUT.outputStream = System.out;
         PlV.STDOUT.typeglob_name = "main::STDOUT";
+        PlV.STDOUT.charset       = "UTF-8";
 
         PlV.STDERR.outputStream = System.err;
         PlV.STDERR.typeglob_name = "main::STDERR";
+        PlV.STDERR.charset       = "UTF-8";
 
         try {
             PlV.path = Paths.get(".").toRealPath();
@@ -3398,7 +3401,7 @@ class PlStringReader extends Reader{
 class PlFileHandle extends PlObject {
     // public static final PlString REF = new PlString("GLOB");
     public String  typeglob_name;
-    public PrintStream outputStream;    // System.out, System.err
+    public OutputStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
     public Iterator<Path> directoryIterator;
     public DirectoryStream<Path> directoryStream;
@@ -3408,11 +3411,14 @@ class PlFileHandle extends PlObject {
     public boolean is_argv;
     public Path    path;     // filename
     public String  mode;     // ">", "+<"
+    public String  charset;  // "UTF-8"
+    public boolean binmode;
 
     public PlFileHandle() {
         this.readlineBuffer = new StringBuilder();
         this.eof = true;
         this.is_argv = false;
+        this.binmode = false;
     }
     public boolean is_filehandle() {
         return true;

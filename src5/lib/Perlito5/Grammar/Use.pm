@@ -434,9 +434,35 @@ sub slurp_file {
     my $realfilename = $INC{$filename};
     open FILE, '<', $realfilename
       or Perlito5::Compiler::error "Cannot read $realfilename: $!\n";
+    binmode FILE;
     local $/ = undef;
     my $source = <FILE>;
     close FILE;
+
+    my $charset = "";
+    eval {
+        # figure out the encoding based on file magic numbers
+        my $c0 = substr($source,0,2);
+        if ($c0 eq "\x{EF}\x{BB}" and substr($source, 2, 1) eq "\x{BF}") {
+            #  EF BB BF
+            $charset = 'UTF-8';
+            $source = substr($source, 3);
+        }
+        elsif ($c0 eq "\x{FE}\x{FF}") {
+            #  FE FF
+            $charset = 'UTF-16BE';
+            $source = substr($source, 2);
+        }
+        elsif ($c0 eq "\x{FF}\x{FE}") {
+            #  FF FE
+            $charset = 'UTF-16LE';
+            $source = substr($source, 2);
+        }
+        $source = Encode::decode($charset, $source) if $charset;
+        1;
+    }
+    or warn "Source code charset '$charset' decoding failed: $@";
+
     return $source;
 }
 

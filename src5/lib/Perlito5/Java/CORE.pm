@@ -138,6 +138,7 @@ my %FileFunc = (
             // save the info for binmode()
             fh.path = path;     // filename
             fh.mode = mode;     // ">", "+<"
+            fh.charset = charset;   // "UTF-8"
 
             // PlCORE.say("path " + mode + " " + path.toString());
             if (mode.equals("<") || mode.equals("")) {
@@ -146,15 +147,11 @@ my %FileFunc = (
             }
             else if (mode.equals(">")) {
                 fh.reader = null;
-                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE),
-                    true,
-                    charset);
+                fh.outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
             }
             else if (mode.equals(">>")) {
                 fh.reader = null;
-                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE),
-                    true,
-                    charset);
+                fh.outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
             }
             else if (mode.equals("+<")) {
                 // read/write
@@ -237,7 +234,9 @@ EOT
         String layer;
         int arg_count = List__.length_of_array_int();
         if (arg_count == 0) {
-            layer = ":raw";
+            // layer = ":raw";
+            fh.binmode = true;
+            return PlCx.INT1;
         }
         else {
             layer = List__.aget(0).toString();
@@ -294,21 +293,33 @@ EOT
         return PlCx.INT1;
 EOT
     print => <<'EOT',
-        for (int i = 0; i < List__.to_int(); i++) {
-            fh.outputStream.print(List__.aget(i).toString());
+        try {
+            String s = List__.toString();
+            PlObject plsep = PlV.sget("main::\\");
+            if (!plsep.is_undef()) {
+                s = s + plsep.toString();
+            }
+
+            if (fh.binmode) {
+                for (int i = 0; i < s.length(); i++) {
+                    fh.outputStream.write(s.charAt(i));
+                }
+            }
+            else {
+                byte[] bytes = s.getBytes(fh.charset);
+                fh.outputStream.write(bytes);
+            }
+            fh.outputStream.flush();
+            return PlCx.INT1;
         }
-        PlObject plsep = PlV.sget("main::\\");
-        if (!plsep.is_undef()) {
-            fh.outputStream.print(plsep.toString());
+        catch(Exception e) {
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
+            return PlCx.UNDEF;
         }
-        return PlCx.INT1;
 EOT
     say => <<'EOT',
-        for (int i = 0; i < List__.to_int(); i++) {
-            fh.outputStream.print(List__.aget(i).toString());
-        }
-        fh.outputStream.println("");
-        return PlCx.INT1;
+        List__.push( new PlString("\n") );
+        return PlCORE.print(want, fh, List__);
 EOT
     readline => <<'EOT',
         if (want == PlCx.LIST) {
@@ -619,36 +630,44 @@ EOT
         return PlCx.UNDEF;
     }
     public static final PlObject warn(int want, PlArray List__) {
-        int arg_count = List__.length_of_array_int();
-        if (arg_count == 0) {
-            List__.push("Warning: something's wrong");
-        }
-        if (arg_count != 1 || !List__.aget(0).is_ref()) {
-            String s = List__.toString();
-            int s_length = s.length();
-            if (s_length > 0 && (s.charAt(s_length-1) == '\n' || s.charAt(s_length-1) == '\r')) {
-                // don't add file+line
+        try {
+            int arg_count = List__.length_of_array_int();
+            if (arg_count == 0) {
+                List__.push("Warning: something's wrong");
+            }
+            if (arg_count != 1 || !List__.aget(0).is_ref()) {
+                String s = List__.toString();
+                int s_length = s.length();
+                if (s_length > 0 && (s.charAt(s_length-1) == '\n' || s.charAt(s_length-1) == '\r')) {
+                    // don't add file+line
+                }
+                else {
+                    // TODO - add module name, line number
+                    s = s + " at " + PlV.sget("main::0") + "\n";
+                }
+                List__.set(new PlArray(new PlString(s)));
+            }
+            if (PlV.hash_get("main::SIG").hget("__WARN__").is_coderef()) {
+                // execute $SIG{__WARN__}
+                // localize $SIG{__WARN__} during the call
+                int tmp = PerlOp.local_length();
+                PlObject c = PlV.hash_get("main::SIG").hget("__WARN__");
+                PlV.hash_get("main::SIG").hget_lvalue_local("__WARN__");
+                c.apply(want, List__);
+                PerlOp.cleanup_local(tmp, PlCx.UNDEF);
             }
             else {
-                // TODO - add module name, line number
-                s = s + " at " + PlV.sget("main::0") + "\n";
+                String s = List__.toString() + "\n";
+                byte[] bytes = s.getBytes(PlV.STDERR.charset);
+                PlV.STDERR.outputStream.write(bytes);
+                PlV.STDERR.outputStream.flush();
             }
-            List__.set(new PlArray(new PlString(s)));
+            return PlCx.INT1;
         }
-        if (PlV.hash_get("main::SIG").hget("__WARN__").is_coderef()) {
-            // execute $SIG{__WARN__}
-            // localize $SIG{__WARN__} during the call
-            int tmp = PerlOp.local_length();
-            PlObject c = PlV.hash_get("main::SIG").hget("__WARN__");
-            PlV.hash_get("main::SIG").hget_lvalue_local("__WARN__");
-            c.apply(want, List__);
-            PerlOp.cleanup_local(tmp, PlCx.UNDEF);
+        catch(Exception e) {
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
+            return PlCx.UNDEF;
         }
-        else {
-            String s = List__.toString();
-            PlV.STDERR.outputStream.println(s);
-        }
-        return PlCx.INT1;
     }
     public static final PlObject die(int want, PlArray List__) {
         int arg_count = List__.length_of_array_int();

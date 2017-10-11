@@ -21,6 +21,7 @@ use Exporter ();
 use utf8 ();
 %INC = (
     'Perlito5X/Dumper.pm'   => 'src5/lib/Perlito5X/Dumper.pm',
+    'Perlito5X/Encode.pm'   => 'src5/lib/Perlito5X/Encode.pm',
     'Perlito5X/Exporter.pm' => 'src5/lib/Perlito5X/Exporter.pm',
     # 'Perlito5X/Symbol.pm'   => 'src5/lib/Perlito5X/Symbol.pm',
     'Perlito5X/strict.pm'   => 'src5/lib/Perlito5X/strict.pm',

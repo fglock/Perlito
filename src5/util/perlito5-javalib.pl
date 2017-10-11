@@ -13,6 +13,7 @@ use Perlito5::Perl5::Emitter;
 use Perlito5::Perl5::PrettyPrinter;
 use Perlito5::Perl5::Runtime;
 
+use Encode;
 
 $Perlito5::JAVA_EVAL = 1;
 $Perlito5::CODE_TOO_LARGE = 1;  # work around java code size limitation
