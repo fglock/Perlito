@@ -1123,9 +1123,8 @@ EOT
         return new PlString(Object__.toString().toLowerCase());
     }
     public static final PlObject pack(int want, PlArray List__) {
-        String template = List__.aget(0).toString();
+        String template = List__.shift().toString();
         StringBuilder result = new StringBuilder();
-        int index = 1;
 
         // Character mode is the default unless the format string starts with "U"
         boolean characterMode = true;
@@ -1138,50 +1137,42 @@ EOT
             switch(template.charAt(i)) {
             case 'a':
             {
-                result.append(pack_a(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_a(List__.shift().toString(), size));
                 break;
             }
             case 'A':
             {    
-                result.append(pack_A(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_A(List__.shift().toString(), size));
                 break;
             }
             case 'Z':
             {
-                result.append(pack_Z(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_Z(List__.shift().toString(), size));
                 break;
             }
             case 'b':
             {
-                result.append(pack_b(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_b(List__.shift().toString(), size));
                 break;
             }
             case 'B':
             {
-                result.append(pack_B(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_B(List__.shift().toString(), size));
                 break;
             }
             case 'h':
             {
-                result.append(pack_h(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_h(List__.shift().toString(), size));
                 break;
             }
             case 'H':
             {
-                result.append(pack_H(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_H(List__.shift().toString(), size));
                 break;        
             }
             case 'c':
             {
-                result.append(pack_c(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_c(List__.shift().toString()));
                 break;        
             }
             case 'C':
@@ -1191,16 +1182,14 @@ EOT
                     characterMode = true;
                 }
                 for (int j = 0; j < size; j++) {
-                    result.append(pack_C(List__.aget(index).toString()));
-                    ++index;
+                    result.append(pack_C(List__.shift().toString()));
                 }
                 break;        
             }
             case 'W':
             {
                 for (int j = 0; j < size; j++) {
-                    result.appendCodePoint( List__.aget(index).to_int() );
-                    ++index;
+                    result.appendCodePoint( List__.shift().to_int() );
                 }
                 break;        
             }
@@ -1214,8 +1203,7 @@ EOT
                     // character mode C0
                     StringBuilder sb = new StringBuilder();
                     for (int j = 0; j < size; j++) {
-                        sb.appendCodePoint( List__.aget(index).to_int() );
-                        ++index;
+                        sb.appendCodePoint( List__.shift().to_int() );
                     }
                     byte[] bytes = sb.toString().getBytes(PlCx.UTF8);
                     for (byte b : bytes) {
@@ -1226,148 +1214,127 @@ EOT
                 else {
                     // U0 mode
                     for (int j = 0; j < size; j++) {
-                        result.appendCodePoint( List__.aget(index).to_int() );
-                        ++index;
+                        result.appendCodePoint( List__.shift().to_int() );
                     }
                 }
                 break;        
             }
             case 's':
             {
-                result.append(pack_s(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_s(List__.shift().toString()));
                 break;        
             }
             case 'S':
             {
-                result.append(pack_S(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_S(List__.shift().toString()));
                 break;        
             }
             case 'l':
             {
-                result.append(pack_l(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_l(List__.shift().toString()));
                 break;        
             }
             case 'L':
             {
-                result.append(pack_L(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_L(List__.shift().toString()));
                 break;        
             }
             case 'q':
             {
-                result.append(pack_q(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_q(List__.shift().toString()));
                 break;        
             }
             case 'Q':
             {
-                result.append(pack_Q(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_Q(List__.shift().toString()));
                 break;        
             }
             case 'i':
             {
-                result.append(pack_i(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_i(List__.shift().toString()));
                 break;        
             }
             case 'I':
             {
-                result.append(pack_I(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_I(List__.shift().toString()));
                 break;        
             }
             case 'n':
             {
-                result.append(pack_n(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_n(List__.shift().toString()));
                 break;        
             }
             case 'N':
             {
-                result.append(pack_N(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_N(List__.shift().toString()));
                 break;        
             }
             case 'v':   
             {
-                result.append(pack_v(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_v(List__.shift().toString()));
                 break;        
             }
             case 'V':   
             {
-                result.append(pack_V(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_V(List__.shift().toString()));
                 break;        
             }
             case 'j':   
             {
-                result.append(pack_j(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_j(List__.shift().toString()));
                 break;        
             }
             case 'J':   
             {
-                result.append(pack_J(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_J(List__.shift().toString()));
                 break;        
             }
             case 'f':
             {
-                result.append(pack_f(List__.aget(index).to_double()));
-                ++index;
+                result.append(pack_f(List__.shift().to_double()));
                 break;        
             }
             case 'd':
             case 'F':
             {
-                result.append(pack_d(List__.aget(index).to_double()));
-                ++index;
+                result.append(pack_d(List__.shift().to_double()));
                 break;        
             }
             case 'p':
             {
                 for(int k = 0; k < size; ++k) {
-                    if(List__.aget(index + k).is_undef()) {
+                    PlObject o = List__.shift();
+                    if(o.is_undef()) {
                         result.append(pack_q("0"));
                     
                     } else {
-                        result.append(pack_p(List__.aget(index + k).toString()));
+                        result.append(pack_p(o.toString()));
                     }
                 }
-                index += i;
             }
             case 'u':
             {
-                result.append(pack_u(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_u(List__.shift().toString()));
                 break;
             }
             case 'w':
             {
                 String[] input = new String[size];
                 for(int j = 0; j < size; ++j) {
-                    input[j] = List__.aget(index + j).toString();
+                    input[j] = List__.shift().toString();
                 }
                 result.append(pack_w(input, size));
-                index += size;
                 break;        
             }
             case 'x':
             {
                 result.append(pack_x(size));
-                ++index;                
                 break;        
             }
             case 'X':
             {
                 int length = result.length();
                 result.delete(Math.max(0,length - size), length);
-                ++index;                
                 break;        
             }
             case '@':
@@ -1376,7 +1343,6 @@ EOT
                 if(size > length) {
                     result.append(new char[size - length]);
                 }
-                ++index;                
                 break;        
             }
             case '.':
@@ -1385,7 +1351,6 @@ EOT
                 if(size > length) {
                     result.append(new char[size - length]);
                 }
-                ++index;                
                 break;        
             }
             default:
