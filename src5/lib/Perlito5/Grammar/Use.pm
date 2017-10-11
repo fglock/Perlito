@@ -432,6 +432,11 @@ sub slurp_file {
         return 'undef';
     };
     my $realfilename = $INC{$filename};
+    slurp_source_file($realfilename);
+}
+
+sub slurp_source_file {
+    my $realfilename = shift;
     open FILE, '<', $realfilename
       or Perlito5::Compiler::error "Cannot read $realfilename: $!\n";
     binmode FILE;

@@ -317,11 +317,8 @@ if ($backend) {
             $source = <STDIN>;
         }
         else {
-            open FILE, '<:encoding(UTF-8)', $source_filename
+            $source = Perlito5::Grammar::Use::slurp_source_file($source_filename)
               or die "Cannot read $source_filename: $!\n";
-            local $/ = undef;
-            $source = <FILE>;
-            close FILE;
         }
     }
     $0 = $Perlito5::FILE_NAME;
