@@ -1191,8 +1191,11 @@ EOT
             }
             case 'W':
             {
-                result.append(pack_W(List__.aget(index).toString()));
-                ++index;
+                int size = pack_size(template, i);
+                for (int j = 0; j < size; j++) {
+                    result.appendCodePoint( List__.aget(index).to_int() );
+                    ++index;
+                }
                 break;        
             }
             case 's':
@@ -1555,18 +1558,6 @@ EOT
         } catch(Exception e) {
             return "";
         }
-    }
-    private static String pack_W(String s) {
-        for(int i = 0; i < s.length(); ++i) {
-            if(!java.lang.Character.isDigit(s.charAt(i))) {
-                s = s.substring(0, i);
-                break;
-            }
-        }
-        int value = java.lang.Integer.parseInt(s);
-        StringBuilder sb = new StringBuilder();
-        sb.appendCodePoint(value);
-        return sb.toString();
     }
     private static String pack_number_2_string(String s, int size, boolean signed) {
         for(int i = 0; i < s.length(); ++i) {
