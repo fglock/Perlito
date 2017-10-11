@@ -1126,6 +1126,13 @@ EOT
         String template = List__.aget(0).toString();
         StringBuilder result = new StringBuilder();
         int index = 1;
+
+        // Character mode is the default unless the format string starts with "U"
+        boolean characterMode = true;
+        if (template.length() > 0 && template.charAt(0) == 'U') {
+            characterMode = false;
+        }
+
         for(int i = 0; i < template.length(); ++i) {
             int size = pack_size(template, i);
             switch(template.charAt(i)) {
@@ -1179,6 +1186,10 @@ EOT
             }
             case 'C':
             {
+                if (size == 0) {
+                    // C0
+                    characterMode = true;
+                }
                 result.append(pack_C(List__.aget(index).toString()));
                 ++index;
                 break;        
@@ -1188,6 +1199,34 @@ EOT
                 for (int j = 0; j < size; j++) {
                     result.appendCodePoint( List__.aget(index).to_int() );
                     ++index;
+                }
+                break;        
+            }
+            case 'U':
+            {
+                if (size == 0) {
+                    // U0
+                    characterMode = false;
+                }
+                if (characterMode) {
+                    // character mode C0
+                    StringBuilder sb = new StringBuilder();
+                    for (int j = 0; j < size; j++) {
+                        sb.appendCodePoint( List__.aget(index).to_int() );
+                        ++index;
+                    }
+                    byte[] bytes = sb.toString().getBytes(PlCx.UTF8);
+                    for (byte b : bytes) {
+                        int ub = b < 0 ? 256 + b : b;
+                        result.appendCodePoint(ub);
+                    }
+                }
+                else {
+                    // U0 mode
+                    for (int j = 0; j < size; j++) {
+                        result.appendCodePoint( List__.aget(index).to_int() );
+                        ++index;
+                    }
                 }
                 break;        
             }
