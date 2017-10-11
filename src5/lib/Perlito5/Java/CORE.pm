@@ -1372,35 +1372,94 @@ EOT
     }
     public static final PlObject unpack(int want, PlArray List__) {
         String template = List__.aget(0).toString();
-        StringBuilder result = new StringBuilder();
-        int index = 1;
+        PlArray result = new PlArray();
+
+        // Character mode is the default unless the format string starts with "U"
+        boolean characterMode = true;
+        if (template.length() > 0 && template.charAt(0) == 'U') {
+            characterMode = false;
+        }
+
         for(int i = 0; i < template.length(); ++i) {
-            int size = pack_size(template, i);
+            int size;
+            if (template.length() > (i+1) && template.charAt(i+1) == '*') {
+                size = List__.to_int();
+            }
+            else {
+                size = pack_size(template, i);
+            }
+
             switch(template.charAt(i)) {
             case 'a':
             {
-                result.append(unpack_a(List__.aget(index).toString(), size));
-                ++index;
+                result.push(unpack_a(List__.shift().toString(), size));
                 break;
             }
             case 'A':
             {
-                result.append(unpack_A(List__.aget(index).toString(), size));
-                ++index;
+                result.push(unpack_A(List__.shift().toString(), size));
                 break;
             }
             case 'Z':
             {
-                result.append(unpack_Z(List__.aget(index).toString(), size));
-                ++index;
+                result.push(unpack_Z(List__.shift().toString(), size));
                 break;
             }
             case 'b':
             {
-                result.append(unpack_b(List__.aget(index).toString(), size));
-                ++index;
+                result.push(unpack_b(List__.shift().toString(), size));
                 break;
             }
+
+            case 'C':
+            {
+                if (size == 0) {
+                    // C0
+                    characterMode = true;
+                }
+                // TODO
+                // for (int j = 0; j < size; j++) {
+                //     result.push(pack_C(List__.shift().toString()));
+                // }
+                break;        
+            }
+            case 'W':
+            {
+                // TODO
+                // for (int j = 0; j < size; j++) {
+                //     result.pushCodePoint( List__.shift().to_int() );
+                // }
+                break;        
+            }
+            case 'U':
+            {
+                if (size == 0) {
+                    // U0
+                    characterMode = false;
+                }
+                if (characterMode) {
+                    // TODO
+                    // // character mode C0
+                    // StringBuilder sb = new StringBuilder();
+                    // for (int j = 0; j < size; j++) {
+                    //     sb.appendCodePoint( List__.shift().to_int() );
+                    // }
+                    // byte[] bytes = sb.toString().getBytes(PlCx.UTF8);
+                    // for (byte b : bytes) {
+                    //     int ub = b < 0 ? 256 + b : b;
+                    //     result.pushCodePoint(ub);
+                    // }
+                }
+                else {
+                    // TODO
+                    // // U0 mode
+                    // for (int j = 0; j < size; j++) {
+                    //     result.pushCodePoint( List__.shift().to_int() );
+                    // }
+                }
+                break;        
+            }
+
             default:
             }
         }
