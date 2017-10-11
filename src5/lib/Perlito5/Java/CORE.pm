@@ -1127,52 +1127,46 @@ EOT
         StringBuilder result = new StringBuilder();
         int index = 1;
         for(int i = 0; i < template.length(); ++i) {
+            int size = pack_size(template, i);
             switch(template.charAt(i)) {
             case 'a':
             {
-                int size = pack_size(template, i);
                 result.append(pack_a(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
             case 'A':
             {    
-                int size = pack_size(template, i);
                 result.append(pack_A(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
             case 'Z':
             {
-                int size = pack_size(template, i);
                 result.append(pack_Z(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
             case 'b':
             {
-                int size = pack_size(template, i);
                 result.append(pack_b(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
             case 'B':
             {
-                int size = pack_size(template, i);
                 result.append(pack_B(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
             case 'h':
             {
-                int size = pack_size(template, i);
                 result.append(pack_h(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
             case 'H':
             {
-                int size = pack_size(template, i);
                 result.append(pack_H(List__.aget(index).toString(), size));
                 ++index;
                 break;        
@@ -1191,7 +1185,6 @@ EOT
             }
             case 'W':
             {
-                int size = pack_size(template, i);
                 for (int j = 0; j < size; j++) {
                     result.appendCodePoint( List__.aget(index).to_int() );
                     ++index;
@@ -1297,7 +1290,6 @@ EOT
             }
             case 'p':
             {
-                int size = pack_size(template, i);
                 for(int k = 0; k < size; ++k) {
                     if(List__.aget(index + k).is_undef()) {
                         result.append(pack_q("0"));
@@ -1316,7 +1308,6 @@ EOT
             }
             case 'w':
             {
-                int size = pack_size(template, i);
                 String[] input = new String[size];
                 for(int j = 0; j < size; ++j) {
                     input[j] = List__.aget(index + j).toString();
@@ -1327,14 +1318,12 @@ EOT
             }
             case 'x':
             {
-                int size = pack_size(template, i);
                 result.append(pack_x(size));
                 ++index;                
                 break;        
             }
             case 'X':
             {
-                int size = pack_size(template, i);
                 int length = result.length();
                 result.delete(Math.max(0,length - size), length);
                 ++index;                
@@ -1342,7 +1331,6 @@ EOT
             }
             case '@':
             {
-                int size = pack_size(template, i);
                 int length = result.length();
                 if(size > length) {
                     result.append(new char[size - length]);
@@ -1352,7 +1340,6 @@ EOT
             }
             case '.':
             {
-               int size = List__.aget(index).to_int();
                 int length = result.length();
                 if(size > length) {
                     result.append(new char[size - length]);
@@ -1371,31 +1358,28 @@ EOT
         StringBuilder result = new StringBuilder();
         int index = 1;
         for(int i = 0; i < template.length(); ++i) {
+            int size = pack_size(template, i);
             switch(template.charAt(i)) {
             case 'a':
             {
-                int size = pack_size(template, i);
                 result.append(unpack_a(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
             case 'A':
             {
-                int size = pack_size(template, i);
                 result.append(unpack_A(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
             case 'Z':
             {
-                int size = pack_size(template, i);
                 result.append(unpack_Z(List__.aget(index).toString(), size));
                 ++index;
                 break;
             }
             case 'b':
             {
-                int size = pack_size(template, i);
                 result.append(unpack_b(List__.aget(index).toString(), size));
                 ++index;
                 break;
