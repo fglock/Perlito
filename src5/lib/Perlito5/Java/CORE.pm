@@ -1228,76 +1228,76 @@ EOT
             }
             case 's':
             {
-                result.append(pack_s(List__.shift().toString()));
+                result.append(pack_s(List__.shift().to_int()));
                 break;        
             }
             case 'S':
             {
-                result.append(pack_S(List__.shift().toString()));
+                result.append(pack_S(List__.shift().to_int()));
                 break;        
             }
             case 'l':
             {
-                result.append(pack_l(List__.shift().toString()));
+                result.append(pack_l(List__.shift().to_int()));
                 break;        
             }
             case 'L':
             {
-                result.append(pack_L(List__.shift().toString()));
+                result.append(pack_L(List__.shift().to_int()));
                 break;        
             }
             case 'q':
             {
-                result.append(pack_q(List__.shift().toString()));
+                result.append(pack_q(List__.shift().to_int()));
                 break;        
             }
             case 'Q':
             {
-                result.append(pack_Q(List__.shift().toString()));
+                result.append(pack_Q(List__.shift().to_int()));
                 break;        
             }
             case 'i':
             {
-                result.append(pack_i(List__.shift().toString()));
+                result.append(pack_i(List__.shift().to_int()));
                 break;        
             }
             case 'I':
             {
-                result.append(pack_I(List__.shift().toString()));
+                result.append(pack_I(List__.shift().to_int()));
                 break;        
             }
             case 'n':
             {
                 for (int j = 0; j < size; j++) {
-                    result.append(pack_n(List__.shift().toString()));
+                    result.append(pack_n(List__.shift().to_int()));
                 }
                 break;        
             }
             case 'N':
             {
-                result.append(pack_N(List__.shift().toString()));
+                result.append(pack_N(List__.shift().to_int()));
                 break;        
             }
             case 'v':   
             {
                 for (int j = 0; j < size; j++) {
-                    result.append(pack_v(List__.shift().toString()));
+                    result.append(pack_v(List__.shift().to_int()));
                 }
                 break;        
             }
             case 'V':   
             {
-                result.append(pack_V(List__.shift().toString()));
+                result.append(pack_V(List__.shift().to_int()));
                 break;        
             }
             case 'j':   
             {
-                result.append(pack_j(List__.shift().toString()));
+                result.append(pack_j(List__.shift().to_int()));
                 break;        
             }
             case 'J':   
             {
-                result.append(pack_J(List__.shift().toString()));
+                result.append(pack_J(List__.shift().to_int()));
                 break;        
             }
             case 'f':
@@ -1316,7 +1316,7 @@ EOT
                 for(int k = 0; k < size; ++k) {
                     PlObject o = List__.shift();
                     if(o.is_undef()) {
-                        result.append(pack_q("0"));
+                        result.append(pack_q(0));
                     
                     } else {
                         result.append(pack_p(o.toString()));
@@ -1560,60 +1560,53 @@ EOT
             return "";
         }
     }
-    private static String pack_number_2_string(String s, int size, boolean signed) {
-        for(int i = 0; i < s.length(); ++i) {
-            if(!java.lang.Character.isDigit(s.charAt(i)) && !(s.charAt(i) == '-')) {
-                s = s.substring(0, i);
-                break;
-            }
-        }
-        long value = java.lang.Long.parseLong(s);
+    private static String pack_number_2_string(long value, int size, boolean signed) {
         StringBuilder result = new StringBuilder();
         for(int i = 0; i < size; ++i) {
             result.append((char)((value / (int)Math.pow(2,8*i)) % 256));
         }
         return result.toString();        
     }
-    private static String pack_s(String s) {
+    private static String pack_s(long s) {
         return pack_number_2_string(s, 2, true);
     }
-    private static String pack_S(String s) {
+    private static String pack_S(long s) {
         return pack_number_2_string(s, 2, false);
     }
-    public static final String pack_l(String s) {
+    public static final String pack_l(long s) {
         return pack_number_2_string(s, 4, true);
     }
-    public static final String pack_L(String s) {
+    public static final String pack_L(long s) {
         return pack_number_2_string(s, 4, false);
     }
-    public static final String pack_q(String s) {
+    public static final String pack_q(long s) {
         return pack_number_2_string(s, 8, true);
     }
-    public static final String pack_Q(String s) {
+    public static final String pack_Q(long s) {
         return pack_number_2_string(s, 8, false);
     }
-    public static final String pack_i(String s) {
+    public static final String pack_i(long s) {
         return pack_number_2_string(s, 4, true);
     }
-    public static final String pack_I(String s) {
+    public static final String pack_I(long s) {
         return pack_number_2_string(s, 4, false);
     }
-    public static final String pack_n(String s) {
+    public static final String pack_n(long s) {
         return new StringBuilder(pack_number_2_string(s, 2, false)).reverse().toString();
     }
-    public static final String pack_N(String s) {
+    public static final String pack_N(long s) {
         return new StringBuilder(pack_number_2_string(s, 4, false)).reverse().toString();
     }
-    public static final String pack_v(String s) {
+    public static final String pack_v(long s) {
         return pack_number_2_string(s, 2, false);
     }
-    public static final String pack_V(String s) {
+    public static final String pack_V(long s) {
         return pack_number_2_string(s, 4, false);
     }
-    public static final String pack_j(String s) {
+    public static final String pack_j(long s) {
         return pack_number_2_string(s, 8, true);
     }
-    public static final String pack_J(String s) {
+    public static final String pack_J(long s) {
         return pack_number_2_string(s, 8, false);
     }
     public static final String pack_f(double d) {
@@ -1659,7 +1652,7 @@ EOT
         pack_pointers.append(s);
 
         pack_pointers_size.put(pointer, s.length());
-        return pack_q(((Long)(pointer)).toString());
+        return pack_q((long)(pointer));
     }
     public static final String pack_u(String s) {
         int index = 0;
