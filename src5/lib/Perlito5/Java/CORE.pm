@@ -1372,7 +1372,9 @@ EOT
     }
     public static final PlObject unpack(int want, PlArray List__) {
         String template = List__.aget(0).toString();
+        String input = List__.aget(1).toString();
         PlArray result = new PlArray();
+        int inputIndex = 0;
 
         // Character mode is the default unless the format string starts with "U"
         boolean characterMode = true;
@@ -1383,7 +1385,7 @@ EOT
         for(int i = 0; i < template.length(); ++i) {
             int size;
             if (template.length() > (i+1) && template.charAt(i+1) == '*') {
-                size = List__.to_int();
+                size = -1;
             }
             else {
                 size = pack_size(template, i);
@@ -1392,22 +1394,26 @@ EOT
             switch(template.charAt(i)) {
             case 'a':
             {
-                result.push(unpack_a(List__.shift().toString(), size));
+                // TODO
+                // result.push(unpack_a(List__.shift().toString(), size));
                 break;
             }
             case 'A':
             {
-                result.push(unpack_A(List__.shift().toString(), size));
+                // TODO
+                // result.push(unpack_A(List__.shift().toString(), size));
                 break;
             }
             case 'Z':
             {
-                result.push(unpack_Z(List__.shift().toString(), size));
+                // TODO
+                // result.push(unpack_Z(List__.shift().toString(), size));
                 break;
             }
             case 'b':
             {
-                result.push(unpack_b(List__.shift().toString(), size));
+                // TODO
+                // result.push(unpack_b(List__.shift().toString(), size));
                 break;
             }
 
@@ -1437,7 +1443,7 @@ EOT
                     // U0
                     characterMode = false;
                 }
-                if (characterMode) {
+                else if (characterMode) {
                     // TODO
                     // // character mode C0
                     // StringBuilder sb = new StringBuilder();
@@ -1451,11 +1457,19 @@ EOT
                     // }
                 }
                 else {
-                    // TODO
-                    // // U0 mode
-                    // for (int j = 0; j < size; j++) {
-                    //     result.pushCodePoint( List__.shift().to_int() );
-                    // }
+                    // U0 mode
+                    if (size < 0) {
+                            while (inputIndex < input.length()) {
+                                result.push( new PlInt( input.charAt(inputIndex++) ) );
+                            }
+                    }
+                    else {
+                        for (int j = 0; j < size; j++) {
+                            if (inputIndex < input.length()) {
+                                result.push( new PlInt( input.charAt(inputIndex++) ) );
+                            }
+                        }
+                    }
                 }
                 break;        
             }
@@ -1463,7 +1477,7 @@ EOT
             default:
             }
         }
-        return new PlString(result.toString());
+        return result;
     }
     private static final int pack_size(String s, int pos) {
         int howMany = 0;
