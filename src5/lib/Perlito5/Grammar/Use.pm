@@ -442,22 +442,34 @@ sub slurp_file {
     my $charset = "";
     eval {
         # figure out the encoding based on file magic numbers
-        my $c0 = substr($source,0,2);
-        if ($c0 eq "\x{EF}\x{BB}" and substr($source, 2, 1) eq "\x{BF}") {
+        my $c0 = substr($source,0,1);
+        my $c1 = substr($source,1,1);
+        my $c2 = substr($source,2,1);
+        my $c3 = substr($source,3,1);
+        if ($c0 eq "\x{EF}" && $c1 eq "\x{BB}" && $c2 eq "\x{BF}") {
             #  EF BB BF
             $charset = 'UTF-8';
             $source = substr($source, 3);
         }
-        elsif ($c0 eq "\x{FE}\x{FF}") {
+        elsif ($c0 eq "\x{FE}" && $c1 eq "\x{FF}") {
             #  FE FF
             $charset = 'UTF-16BE';
             $source = substr($source, 2);
         }
-        elsif ($c0 eq "\x{FF}\x{FE}") {
+        elsif ($c0 eq "\x{FF}" && $c1 eq "\x{FE}") {
             #  FF FE
             $charset = 'UTF-16LE';
             $source = substr($source, 2);
         }
+        elsif ($c0 eq "\x{00}" && $c1 ne "\x{00}" && $c2 eq "\x{00}" && $c3 ne "\x{00}") {
+            #  00 XX 00 XX
+            $charset = 'UTF-16BE';
+        }
+        elsif ($c0 ne "\x{00}" && $c1 eq "\x{00}" && $c2 ne "\x{00}" && $c3 eq "\x{00}") {
+            #  XX 00 XX 00
+            $charset = 'UTF-16LE';
+        }
+
         $source = Encode::decode($charset, $source) if $charset;
         1;
     }
