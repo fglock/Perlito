@@ -297,6 +297,7 @@ sub term_core {
     $tok = substr($tok, 6);
     $pos += 6;
 
+    package Perlito5::Grammar::Precedence;
     for my $len ( @Term_chars ) {
         my $term = substr($tok, 0, $len);
         if (exists($Term{$term})) {
