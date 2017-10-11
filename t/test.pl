@@ -63,18 +63,18 @@ sub plan {
     _print "1..$n\n" unless $noplan;
     $planned = $n;
 }
-####  
-####  
-####  # Set the plan at the end.  See Test::More::done_testing.
-####  sub done_testing {
-####      my $n = $test - 1;
-####      $n = shift if @_;
-####  
-####      _print "1..$n\n";
-####      $planned = $n;
-####  }
-####  
-####  
+
+
+# Set the plan at the end.  See Test::More::done_testing.
+sub done_testing {
+    my $n = $test - 1;
+    $n = shift if @_;
+
+    _print "1..$n\n";
+    $planned = $n;
+}
+
+
 ####  #END {
 ####  #    my $ran = $test - 1;
 ####  #    if (!$NO_ENDING) {
