@@ -68,7 +68,7 @@ token digits_underscore {
 };
 
 token hex_digits_underscore {
-    <.Perlito5::Grammar::Number::hex_digit> [ '_' | <.Perlito5::Grammar::Number::hex_digit> ]*
+    [ '_' | <.Perlito5::Grammar::Number::hex_digit> ]+
 };
 token hex_digits_underscore2 {
     <.Perlito5::Grammar::Number::hex_digit> [ '_' | <.Perlito5::Grammar::Number::hex_digit> ]*

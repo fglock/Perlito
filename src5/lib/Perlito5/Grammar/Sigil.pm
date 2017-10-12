@@ -363,7 +363,7 @@ sub term_sigil {
         my $m2 = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
         my $p2 = $m2->{to};
         my $c2 = $str->[$p2];
-        if ( $c2 eq '_' || !exists $special_var{ '$' . $c2 } ) {
+        if ( $c2 eq '_' || $c2 eq '$' || !exists $special_var{ '$' . $c2 } ) {
             # not '$$;' not '$$,' not '$$+1'
             $m = term_sigil( $str, $p );
             if ($m) {
