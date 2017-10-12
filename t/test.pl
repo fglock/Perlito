@@ -328,6 +328,12 @@ sub cmp_ok ($$$@) {
         elsif ($type eq 'eq') {
             $pass = ($got eq $expected);
         }
+        elsif ($type eq '>=') {
+            $pass = ($got >= $expected);
+        }
+        elsif ($type eq '<') {
+            $pass = ($got < $expected);
+        }
         else {
             die "cmp_ok - don't know what to do with type '$type'\n";
         }
