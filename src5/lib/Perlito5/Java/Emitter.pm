@@ -1003,10 +1003,12 @@ package Perlito5::Java::LexicalBlock;
         $Perlito5::THROW = 1 if $block_label;
 
         my @block;
-        for my $stmt (@{$self->{block}}) {
+        my $block_last = $#{$self->{block}};
+        for my $i ( 0 .. $block_last ) {
+            my $stmt = $self->{block}[$i];
             if (defined($stmt)) {
-                if ( ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->code eq 'undef' && !@{$stmt->{arguments}} ) {
-                    # don't emit code
+                if ( $i < $block_last && ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->code eq 'undef' && !@{$stmt->{arguments}} ) {
+                    # don't emit code for undef() in the middle of the block
                 }
                 else {
                     push @block, $stmt;
