@@ -3,7 +3,7 @@
 BEGIN {
     chdir 't' if -d 't';
     require './test.pl';
-    set_up_inc('../lib');
+    set_up_inc('../lib', '../src5/lib');
 }
 
 use strict;
