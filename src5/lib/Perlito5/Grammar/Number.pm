@@ -59,10 +59,6 @@ token hex_digit {
     'a' | 'b' | 'c' | 'd' | 'e' | 'f'
 };
 
-token hex_exponent {
-    [ 'p' | 'P' ]  [ '+' | '-' | '' ]  [ '_' | <.Perlito5::Grammar::Number::hex_digit> ]+
-};
-
 token digits {
     \d+
 };
@@ -71,21 +67,67 @@ token digits_underscore {
     \d [ '_' | \d]*
 };
 
+token hex_digits_underscore {
+    <.Perlito5::Grammar::Number::hex_digit> [ '_' | <.Perlito5::Grammar::Number::hex_digit> ]*
+};
+token hex_digits_underscore2 {
+    <.Perlito5::Grammar::Number::hex_digit> [ '_' | <.Perlito5::Grammar::Number::hex_digit> ]*
+};
+token hex_exponent {
+    [ '+' | '-' | '' ]  <.Perlito5::Grammar::Number::hex_digits_underscore>
+};
+
 token val_octal {
-    '0' [  ['x'|'X'] <.Perlito5::Grammar::Number::hex_digit>+
+    '0' [  ['x'|'X'] 
 
             [   # hexfloat
-                [   \. <.Perlito5::Grammar::Number::hex_digit> [ '_' | <.Perlito5::Grammar::Number::hex_digit> ]*
-                                        <.hex_exponent>
-                |                       <.hex_exponent>
+                [   \. <Perlito5::Grammar::Number::hex_digits_underscore2>+
+                |   <Perlito5::Grammar::Number::hex_digits_underscore>+
+                    [ \. <Perlito5::Grammar::Number::hex_digits_underscore2>?
+                    | ''
+                    ]
                 ]
+                [ 'p' | 'P' ]  <hex_exponent>
                 {
-                    my $s = Perlito5::Match::flat($MATCH);
-                    $s =~ s/_//g;
-                    $MATCH->{capture} = Perlito5::AST::Buf->new( buf => $s );
+                    my $h1 = $MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore"};
+                    my $h2 = $MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore2"};
+                    my $h3 = Perlito5::Match::flat($MATCH->{"hex_exponent"});
+
+                    if ($h1 && @$h1) {
+                        $h1 = Perlito5::Match::flat($h1->[0]);
+                    }
+                    else {
+                        $h1 = 0;
+                    }
+
+                    if ($h2 && @$h2) {
+                        $h2 = Perlito5::Match::flat($h2->[0]);
+                    }
+                    else {
+                        $h2 = 0;
+                    }
+
+                    $h1 =~ s/_//g;
+                    $h2 =~ s/_//g;
+                    $h3 =~ s/_//g;
+                    my $mul = 1;
+                    my $sig = substr($h3, 0, 1);
+                    if ( $sig eq '+' || $sig eq '-' ) {
+                        $mul = $sig . '1';
+                        $h3 = substr($h3, 1);
+                    }
+                    $h1 = hex($h1);
+                    if (length($h2)) {
+                        $h2 = hex($h2) / ( 16 ** length($h2) );
+                    }
+                    else {
+                        $h2 = 0;
+                    }
+                    $h3 = hex($h3);
+                    $MATCH->{capture} = Perlito5::AST::Num->new( num => ( $h1 + $h2 ) * (2 ** ( $mul * $h3)) );
                     return $MATCH;
                 }
-            |   ''
+            |   <Perlito5::Grammar::Number::hex_digits_underscore>+
             ]
 
         |  ['b'|'B'] [ '_' | '0' | '1' ]+
