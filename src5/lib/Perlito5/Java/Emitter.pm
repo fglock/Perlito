@@ -566,6 +566,9 @@ package Perlito5::Java;
                 return '(' . $cond->{int} . ' != 0)';
             }
             elsif ($cond->isa( 'Perlito5::AST::Num' )) {
+                if ($cond->{num} == 0.0) {
+                    return 'false';
+                }
                 return '(' . $cond->{num} . ' != 0.0)';
             }
             else {
