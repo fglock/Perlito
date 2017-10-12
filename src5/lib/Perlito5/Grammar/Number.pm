@@ -49,6 +49,20 @@ token val_num {
     }
 };
 
+token octal_digit {
+    '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7'
+};
+
+token hex_digit {
+    '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' |
+    'A' | 'B' | 'C' | 'D' | 'E' | 'F' |
+    'a' | 'b' | 'c' | 'd' | 'e' | 'f'
+};
+
+token hex_exponent {
+    [ 'p' | 'P' ]  [ '+' | '-' | '' ]  [ '_' | <.Perlito5::Grammar::Number::hex_digit> ]+
+};
+
 token digits {
     \d+
 };
@@ -58,9 +72,24 @@ token digits_underscore {
 };
 
 token val_octal {
-    '0' [  ['x'|'X'] <.Perlito5::Grammar::word>+   # XXX test for hex digits
+    '0' [  ['x'|'X'] <.Perlito5::Grammar::Number::hex_digit>+
+
+            [   # hexfloat
+                [   \. <.Perlito5::Grammar::Number::hex_digit> [ '_' | <.Perlito5::Grammar::Number::hex_digit> ]*
+                                        <.hex_exponent>
+                |                       <.hex_exponent>
+                ]
+                {
+                    my $s = Perlito5::Match::flat($MATCH);
+                    $s =~ s/_//g;
+                    $MATCH->{capture} = Perlito5::AST::Buf->new( buf => $s );
+                    return $MATCH;
+                }
+            |   ''
+            ]
+
         |  ['b'|'B'] [ '_' | '0' | '1' ]+
-        |  [ '_' | \d]+        # XXX test for octal digits
+        |  [ '_' | <.Perlito5::Grammar::Number::octal_digit> ]+
         ]
         { $MATCH->{capture} = Perlito5::AST::Int->new( int => oct(lc(Perlito5::Match::flat($MATCH))) ) }
 };
