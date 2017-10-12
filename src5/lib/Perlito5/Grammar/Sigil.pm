@@ -202,7 +202,14 @@ sub term_sigil {
                 $name = Perlito5::Match::flat($n);
                 $pos  = $n->{to};
             }
-            if ($namespace || $name) {
+            if (
+                ( $namespace || $name )
+                && !(
+                       ( $namespace eq 'CORE' || $namespace eq '' )
+                    && ( $name eq 'sub' )
+                )
+              )
+            {
                 my $spc = Perlito5::Grammar::Space::opt_ws($str, $pos);
                 my $pos = $spc->{to};
                 if ($str->[$pos] eq '{' || $str->[$pos] eq '[' || $str->[$pos] eq '}') {
