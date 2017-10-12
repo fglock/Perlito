@@ -1123,7 +1123,7 @@ EOT
     }
     public static final PlObject reverse(int want, PlArray List__) {
         if (want == PlCx.LIST) {
-            PlArray ret = new PlArray(List__);
+            PlArray ret = PlArray.construct_list_of_aliases(List__);
             Collections.reverse(ret.a);
             return ret;
         }
