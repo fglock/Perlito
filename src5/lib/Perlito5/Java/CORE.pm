@@ -270,6 +270,8 @@ EOT
             while (iter.hasNext()) {
                 res.push(new PlString(iter.next().getFileName().toString()));
             }
+            res.push(new PlString("."));
+            res.push(new PlString(".."));
             return res;
         }
         if (!iter.hasNext()) {
