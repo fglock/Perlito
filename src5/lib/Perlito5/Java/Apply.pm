@@ -315,7 +315,7 @@ package Perlito5::AST::Apply;
                         my $op2 = $self->{arguments}->[1]->emit_java($level, 'scalar');
 
                         if ($self->{_integer} && $native_op) {
-                            return 'new PlInt(' . $op1 . '.to_int() ' . $native_op . ' ' . $op2 . '.to_int())'
+                            return 'new PlInt(' . $op1 . '.to_long() ' . $native_op . ' ' . $op2 . '.to_long())'
                         }
 
                         $op1 . '.' . $java_op . '(' . $op2 . ')'
