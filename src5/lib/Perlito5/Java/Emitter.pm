@@ -2757,6 +2757,13 @@ package Perlito5::AST::Sub;
                         ? 'new PlString(' . Perlito5::Java::escape_string($self->{sig}) . ')'
                         : 'PlCx.UNDEF';
 
+        my $attributes = $self->{attributes} || [];
+        my $is_lvalue;
+        for (@$attributes) {
+            $is_lvalue = 1 if $_->[0] eq 'lvalue';
+        }
+        # warn "is_lvalue" if $is_lvalue;
+
         my $outer_sub;
         $outer_sub = 'this.getCurrentSub()' if $Perlito5::Java::is_inside_subroutine;
 
