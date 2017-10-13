@@ -99,6 +99,13 @@ package Perlito5::AST::Apply;
                   . ")";
         }
         elsif ($code eq 'p5:tr') {
+            my $search  = $regex_args->[0];
+            my $replace = $regex_args->[1];
+            for my $node ($search, $replace) {
+                if (ref($node) eq 'Perlito5::AST::Buf') {
+                    $node->{buf} = Perlito5::Regex::expand_character_range($node->{buf});
+                }
+            }
             $str = "PerlOp.tr("
                     . $var->emit_java($level) . ', '
                     . $regex_args->[0]->emit_java($level) . ', '
