@@ -149,7 +149,7 @@ Perlito5-Java work-in-progress
       - `goto &code` works, but it doesn't do a tail-call
 
   - signals are partially implemented
-      - `$SIG{\__WARN__}` and `$SIG{\__DIE__}` are implemented
+      - `$SIG{__WARN__}` and `$SIG{__DIE__}` are implemented
       - other signals are not yet implemented.
 
   - no Unix pipes
@@ -187,7 +187,7 @@ Perlito5-Java work-in-progress
 
   - lvalue $#a and other expressions: substr, ternary, keys, pos
 
-  - `local @\_` doesn't work yet, because `@\_` is special
+  - `local @_` doesn't work yet, because `@_` is special
 
   - `~~` operator not implemented; also `when` and `given` not implemented.
 
@@ -542,8 +542,8 @@ Thread safety
 -------------
 
 Perl global variables are shared between threads.
-This includes for example: $\_, $a, $b, $/, @INC, %SIG, $0, $1, $&, $".
-Perl variable @\_ (the parameter list) is a special case, it behaves internally like a lexical and it may be captured by closures.
+This includes for example: `$_`, `$a`, `$b`, `$/`, `@INC`, `%SIG`, `$0`, `$1`, `$&`, `$"`.
+Perl variable `@_` (the parameter list) is a special case, it behaves internally like a lexical and it may be captured by closures.
 
 "local" stack is shared.
 
@@ -1291,19 +1291,19 @@ Missing features, or partially implemented, or untested
         3:  src5/util/jperl.pl 9 Perlito5::eval_string
         ```
 
-  - \__DATA__ sections
+  - `__DATA__` sections
 
-        %Perlito5::DATA_SECTION contains the \__DATA__ for each package
+        `%Perlito5::DATA_SECTION` contains the `__DATA__` for each package
 
   - add test:
 
-        ' print " ${\__PACKAGE__} \n" '
+        `print " ${__PACKAGE__} \n"`
 
 - Add tests
 
-  - NaN, Inf, -0
+  - `NaN`, `Inf`, `-0`
 
-  - @perl_array = java_native[]
+  - `@perl_array = java_native[]`
 
         supported types: byte[], int[], and imported_class[]
 
