@@ -6620,7 +6620,7 @@ class PlDouble extends PlObject {
             // use scientific notation
             s = String.format("%20.20e", v);
             s = s.replaceAll("\\.?0*e", "e");
-            if (s.equals("0e+00")) {
+            if (s.equals("0e+00") || s.equals("-0e+00")) {
                 s = "0";
             }
         }
