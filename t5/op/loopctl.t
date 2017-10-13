@@ -1062,7 +1062,7 @@ cmp_ok($ok,'==',1,'dynamically scoped');
        "constant optimization doesn't change return value");
     is(scalar(foo_73618_0string()), scalar(bar_73618_0string()),
        "constant optimization doesn't change return value");
-    { local $TODO = "until is still wrongly optimized";
+    { ## local $TODO = "until is still wrongly optimized";
     is(scalar(foo_73618_until()), scalar(bar_73618_until()),
        "constant optimization doesn't change return value");
     }
