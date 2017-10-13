@@ -1127,78 +1127,78 @@ WHOA
 
     _ok( !$diag, _where(), $name );
 }
-####  
-####  # Purposefully avoiding a closure.
-####  sub __capture {
-####      push @::__capture, join "", @_;
-####  }
-####      
-####  sub capture_warnings {
-####      my $code = shift;
-####  
-####      local @::__capture;
-####      local $SIG {__WARN__} = \&__capture;
-####      &$code;
-####      return @::__capture;
-####  }
-####  
-####  # This will generate a variable number of tests.
-####  # Use done_testing() instead of a fixed plan.
-####  sub warnings_like {
-####      my ($code, $expect, $name) = @_;
-####      local $Level = $Level + 1;
-####  
-####      my @w = capture_warnings($code);
-####  
-####      cmp_ok(scalar @w, '==', scalar @$expect, $name);
-####      foreach my $e (@$expect) {
-####  	if (ref $e) {
-####  	    like(shift @w, $e, $name);
-####  	} else {
-####  	    is(shift @w, $e, $name);
-####  	}
-####      }
-####      if (@w) {
-####  	diag("Saw these additional warnings:");
-####  	diag($_) foreach @w;
-####      }
-####  }
-####  
-####  sub _fail_excess_warnings {
-####      my($expect, $got, $name) = @_;
-####      local $Level = $Level + 1;
-####      # This will fail, and produce diagnostics
-####      is($expect, scalar @$got, $name);
-####      diag("Saw these warnings:");
-####      diag($_) foreach @$got;
-####  }
-####  
-####  sub warning_is {
-####      my ($code, $expect, $name) = @_;
-####      die sprintf "Expect must be a string or undef, not a %s reference", ref $expect
-####  	if ref $expect;
-####      local $Level = $Level + 1;
-####      my @w = capture_warnings($code);
-####      if (@w > 1) {
-####  	_fail_excess_warnings(0 + defined $expect, \@w, $name);
-####      } else {
-####  	is($w[0], $expect, $name);
-####      }
-####  }
-####  
-####  sub warning_like {
-####      my ($code, $expect, $name) = @_;
-####      die sprintf "Expect must be a regexp object"
-####  	unless ref $expect eq 'Regexp';
-####      local $Level = $Level + 1;
-####      my @w = capture_warnings($code);
-####      if (@w > 1) {
-####  	_fail_excess_warnings(0 + defined $expect, \@w, $name);
-####      } else {
-####  	like($w[0], $expect, $name);
-####      }
-####  }
-####  
+
+# Purposefully avoiding a closure.
+sub __capture {
+    push @::__capture, join "", @_;
+}
+    
+sub capture_warnings {
+    my $code = shift;
+
+    local @::__capture;
+    local $SIG {__WARN__} = \&__capture;
+    &$code;
+    return @::__capture;
+}
+
+# This will generate a variable number of tests.
+# Use done_testing() instead of a fixed plan.
+sub warnings_like {
+    my ($code, $expect, $name) = @_;
+    local $Level = $Level + 1;
+
+    my @w = capture_warnings($code);
+
+    cmp_ok(scalar @w, '==', scalar @$expect, $name);
+    foreach my $e (@$expect) {
+	if (ref $e) {
+	    like(shift @w, $e, $name);
+	} else {
+	    is(shift @w, $e, $name);
+	}
+    }
+    if (@w) {
+	diag("Saw these additional warnings:");
+	diag($_) foreach @w;
+    }
+}
+
+sub _fail_excess_warnings {
+    my($expect, $got, $name) = @_;
+    local $Level = $Level + 1;
+    # This will fail, and produce diagnostics
+    is($expect, scalar @$got, $name);
+    diag("Saw these warnings:");
+    diag($_) foreach @$got;
+}
+
+sub warning_is {
+    my ($code, $expect, $name) = @_;
+    die sprintf "Expect must be a string or undef, not a %s reference", ref $expect
+	if ref $expect;
+    local $Level = $Level + 1;
+    my @w = capture_warnings($code);
+    if (@w > 1) {
+	_fail_excess_warnings(0 + defined $expect, \@w, $name);
+    } else {
+	is($w[0], $expect, $name);
+    }
+}
+
+sub warning_like {
+    my ($code, $expect, $name) = @_;
+    die sprintf "Expect must be a regexp object"
+	unless ref $expect eq 'Regexp';
+    local $Level = $Level + 1;
+    my @w = capture_warnings($code);
+    if (@w > 1) {
+	_fail_excess_warnings(0 + defined $expect, \@w, $name);
+    } else {
+	like($w[0], $expect, $name);
+    }
+}
+
 ####  # Set a watchdog to timeout the entire test file
 ####  # NOTE:  If the test file uses 'threads', then call the watchdog() function
 ####  #        _AFTER_ the 'threads' module is loaded.

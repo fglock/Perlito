@@ -232,7 +232,7 @@ token term_next_last_redo {
 };
 
 token unary_op {
-     'shift' | 'pop'
+     'shift' | 'pop' | 'scalar'
 };
 token term_unary {
     <unary_op> <.Perlito5::Grammar::Space::opt_ws> 
@@ -240,10 +240,15 @@ token term_unary {
         '('  <paren_parse>   ')'
         {
             my $args = Perlito5::Match::flat($MATCH->{paren_parse});
+            my $op = Perlito5::Match::flat($MATCH->{unary_op});
+
+            Perlito5::Compiler::error "Not enough arguments for $op"
+                if $op eq 'scalar' && $args eq '*undef*';
+
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
-                    code      => Perlito5::Match::flat($MATCH->{unary_op}),
-                    arguments => $args eq '*undef*' ? [] : [$args],
+                    code      => $op,
+                    arguments => expand_list($args),
                     namespace => '',
                     bareword  => 0,
                  )
@@ -253,9 +258,14 @@ token term_unary {
         <argument_parse>
         {
             my $args = Perlito5::Match::flat($MATCH->{argument_parse});
+            my $op = Perlito5::Match::flat($MATCH->{unary_op});
+
+            Perlito5::Compiler::error "Not enough arguments for $op"
+                if $op eq 'scalar' && $args eq '*undef*';
+
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
-                    code      => Perlito5::Match::flat($MATCH->{unary_op}),
+                    code      => $op,
                     arguments => $args eq '*undef*' ? [] : [$args],
                     namespace => '',
                     bareword  => $args eq '*undef*' ? 1 : 0,
@@ -318,20 +328,21 @@ sub term_core {
     return;
 };
 
-Perlito5::Grammar::Precedence::add_term( 'my'    => \&term_declarator );
-Perlito5::Grammar::Precedence::add_term( 'our'   => \&term_declarator );
-Perlito5::Grammar::Precedence::add_term( 'eval'  => \&term_eval );
-Perlito5::Grammar::Precedence::add_term( 'state' => \&term_declarator );
-Perlito5::Grammar::Precedence::add_term( 'local' => \&term_local );
+Perlito5::Grammar::Precedence::add_term( 'my'     => \&term_declarator );
+Perlito5::Grammar::Precedence::add_term( 'our'    => \&term_declarator );
+Perlito5::Grammar::Precedence::add_term( 'eval'   => \&term_eval );
+Perlito5::Grammar::Precedence::add_term( 'state'  => \&term_declarator );
+Perlito5::Grammar::Precedence::add_term( 'local'  => \&term_local );
 Perlito5::Grammar::Precedence::add_term( 'return' => \&term_return );
-Perlito5::Grammar::Precedence::add_term( 'pos'   => \&term_pos );
-Perlito5::Grammar::Precedence::add_term( 'chomp' => \&term_operator_with_paren );
-Perlito5::Grammar::Precedence::add_term( 'chop'  => \&term_operator_with_paren );
-Perlito5::Grammar::Precedence::add_term( 'next'  => \&term_next_last_redo );
-Perlito5::Grammar::Precedence::add_term( 'last'  => \&term_next_last_redo );
-Perlito5::Grammar::Precedence::add_term( 'redo'  => \&term_next_last_redo );
-Perlito5::Grammar::Precedence::add_term( 'shift' => \&term_unary );
-Perlito5::Grammar::Precedence::add_term( 'pop'   => \&term_unary );
+Perlito5::Grammar::Precedence::add_term( 'pos'    => \&term_pos );
+Perlito5::Grammar::Precedence::add_term( 'chomp'  => \&term_operator_with_paren );
+Perlito5::Grammar::Precedence::add_term( 'chop'   => \&term_operator_with_paren );
+Perlito5::Grammar::Precedence::add_term( 'next'   => \&term_next_last_redo );
+Perlito5::Grammar::Precedence::add_term( 'last'   => \&term_next_last_redo );
+Perlito5::Grammar::Precedence::add_term( 'redo'   => \&term_next_last_redo );
+Perlito5::Grammar::Precedence::add_term( 'shift'  => \&term_unary );
+Perlito5::Grammar::Precedence::add_term( 'pop'    => \&term_unary );
+Perlito5::Grammar::Precedence::add_term( 'scalar' => \&term_unary );
 
 Perlito5::Grammar::Precedence::add_term( $_ => \&term_file_test )
     for qw( -r -w -x -o -R -W -X -O -e -z -s -f -d -l -p -S -b -c -t -u -g -k -T -B -M -A -C );
