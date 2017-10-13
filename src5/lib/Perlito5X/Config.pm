@@ -89,5 +89,7 @@ sub import {
     useithreads => undef,
     usevendorprefix => undef,
     version => '5.22.0',
+    d_double_has_inf => '1',
+    d_double_has_nan => '1',
 );
 
