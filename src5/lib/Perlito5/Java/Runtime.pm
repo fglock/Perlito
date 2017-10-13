@@ -2324,6 +2324,16 @@ class PlV {
                 return PlCx.UNDEF;
             }
         });
+        // &main::import doesn't do anything
+        PlV.cset(
+            "main::import",
+            new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "main") {
+                public PlObject apply(int want, PlArray List__) {
+                    return PerlOp.context(want);
+                }
+            }
+        );
+
         PerlOp.reset_match();
     }
 
@@ -2513,6 +2523,11 @@ class PlV {
     // code
     public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {
         if (name.is_coderef()) {
+            return name;
+        }
+        if (name.is_bool() && name.to_boolean()) {
+            // RT #63790:  calling PL_sv_yes as a sub is special-cased to silently
+            // return (so Foo->import() silently fails if import() doesn't exist),
             return name;
         }
         String s = name.toString();
@@ -2725,8 +2740,7 @@ EOT
     public PlObject apply(int want, PlArray List__) {
         // $ perl -e ' $a = 5; $a->() '
         // Undefined subroutine &main::5 called
-        PlCORE.die("subroutine call error");
-        return this;
+        return PlCORE.die("subroutine call error");
     }
 
     public PlObject length() {
@@ -6555,6 +6569,16 @@ class PlBool extends PlObject {
         }
         else {
             return PlCx.INT0;
+        }
+    }
+    public PlObject apply(int want, PlArray List__) {
+        if (i) {
+            // RT #63790:  calling PL_sv_yes as a sub is special-cased to silently
+            // return (so Foo->import() silently fails if import() doesn't exist),
+            return PerlOp.context(want);
+        }
+        else {
+            return PlCORE.die("Undefined subroutine");
         }
     }
 }
