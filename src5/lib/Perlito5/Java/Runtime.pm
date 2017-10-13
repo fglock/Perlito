@@ -3775,6 +3775,11 @@ class PlArrayRef extends PlReference {
     public PlArrayRef(PlObject o) {
         this.ar = (PlArray)o;
     }
+    public PlInt refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.ar);
+        return new PlInt(id);
+    }
     public PlObject set(PlArray o) {
         this.ar = o;
         return o;
@@ -3865,6 +3870,11 @@ class PlHashRef extends PlReference {
     public PlHashRef(PlObject o) {
         this.ha = (PlHash)o;
     }
+    public PlInt refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.ha);
+        return new PlInt(id);
+    }
     public boolean is_hashref() {
         return true;
     }
@@ -3891,7 +3901,7 @@ class PlHashRef extends PlReference {
         return this.ha;
     }
     public PlObject hash_deref_set(PlObject v) {
-        this.ha.set(v);
+        this.ha.set(PlCx.VOID, v);
         return v;
     }
 
@@ -5469,7 +5479,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         for (PlObject s : args) {
             if (s.is_hash()) {
                 // ( %x );
-                s.set(src);
+                ((PlHash)s).set(PlCx.VOID, src);
                 src = new PlArray();
             }
             else if (s.is_slice()) {
@@ -6101,7 +6111,7 @@ class PlHash extends PlObject {
         return (PlLvalue)PlCORE.die("Not a SCALAR reference");
     }
 
-    public PlObject set(PlObject s) {
+    public PlObject set(int want, PlObject s) {
         this.h.clear();
         if (s.is_hash()) {
             // @x = %x;
@@ -6129,7 +6139,10 @@ class PlHash extends PlObject {
             this.hset(s, PlCx.UNDEF);
         }
         this.each_iterator.reset();
-        return this;
+        if (want == PlCx.LIST) {
+            return this.to_list_of_aliases();
+        }
+        return s.scalar();
     }
 
     public PlObject to_array() {

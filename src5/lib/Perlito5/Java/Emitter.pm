@@ -2195,7 +2195,10 @@ package Perlito5::AST::Var;
             return $self->emit_java($level) . '.set(' . Perlito5::Java::to_list([$arguments], $level+1) . ')'
         }
         if ( $sigil eq '%' ) {
-            return $self->emit_java($level) . '.set(' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')'
+            return $self->emit_java($level) . '.set('
+            .   Perlito5::Java::to_context($wantarray) . ', '
+            .   Perlito5::Java::to_list([$arguments], $level+1, 'hash')
+            . ')';
         }
         if ( $sigil eq '*' ) {
             my $namespace = $self->{namespace} || $self->{_namespace};
