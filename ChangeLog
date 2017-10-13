@@ -33,6 +33,7 @@
 -- "hexfloat" literals
 
 - Java:
+-- fix $^O, returns the the operating system name
 -- "require", "require VERSION"
 -- "opendir", "readdir", "closedir", "select", "binmode"
 -- tied hash
