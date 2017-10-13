@@ -463,34 +463,34 @@ sub eq_array {
     return 1;
 }
 
-####  sub eq_hash {
-####    my ($orig, $suspect) = @_;
-####    my $fail;
-####    while (my ($key, $value) = each %$suspect) {
-####      # Force a hash recompute if this perl's internals can cache the hash key.
-####      $key = "" . $key;
-####      if (exists $orig->{$key}) {
-####        if ($orig->{$key} ne $value) {
-####          _print "# key ", _qq($key), " was ", _qq($orig->{$key}),
-####                       " now ", _qq($value), "\n";
-####          $fail = 1;
-####        }
-####      } else {
-####        _print "# key ", _qq($key), " is ", _qq($value),
-####                     ", not in original.\n";
-####        $fail = 1;
-####      }
-####    }
-####    foreach (keys %$orig) {
-####      # Force a hash recompute if this perl's internals can cache the hash key.
-####      $_ = "" . $_;
-####      next if (exists $suspect->{$_});
-####      _print "# key ", _qq($_), " was ", _qq($orig->{$_}), " now missing.\n";
-####      $fail = 1;
-####    }
-####    !$fail;
-####  }
-####  
+sub eq_hash {
+  my ($orig, $suspect) = @_;
+  my $fail;
+  while (my ($key, $value) = each %$suspect) {
+    # Force a hash recompute if this perl's internals can cache the hash key.
+    $key = "" . $key;
+    if (exists $orig->{$key}) {
+      if ($orig->{$key} ne $value) {
+        _print "# key ", _qq($key), " was ", _qq($orig->{$key}),
+                     " now ", _qq($value), "\n";
+        $fail = 1;
+      }
+    } else {
+      _print "# key ", _qq($key), " is ", _qq($value),
+                   ", not in original.\n";
+      $fail = 1;
+    }
+  }
+  foreach (keys %$orig) {
+    # Force a hash recompute if this perl's internals can cache the hash key.
+    $_ = "" . $_;
+    next if (exists $suspect->{$_});
+    _print "# key ", _qq($_), " was ", _qq($orig->{$_}), " now missing.\n";
+    $fail = 1;
+  }
+  !$fail;
+}
+
 ####  # We only provide a subset of the Test::More functionality.
 ####  sub require_ok ($) {
 ####      my ($require) = @_;
