@@ -9,6 +9,15 @@ sub expand_character_range {
 
     while (@range) {
 
+        if ( @range >= 2 && $range[0] eq '\\' ) {
+
+            # TODO - \x68 \N{U+20} \200 \n
+
+            push @out, $range[1];
+            shift @range for 1..2;
+            next;
+        }
+
         if ( @range >= 3 && $range[1] eq '-' ) {
             if (  $range[0] ge 'A' && $range[0] le 'Z'
                && $range[1] eq '-'
