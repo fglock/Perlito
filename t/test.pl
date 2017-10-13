@@ -108,11 +108,6 @@ sub note {
 sub is_miniperl {
     0
 }
-####  
-####  sub is_miniperl {
-####      return !defined &DynaLoader::boot_DynaLoader;
-####  }
-####  
 
 sub set_up_inc {
     # Don’t clobber @INC under miniperl
@@ -125,16 +120,15 @@ sub _comment {
            map { split /\n/ } @_;
 }
 
-####  
-####  sub skip_all {
-####      if (@_) {
-####          _print "1..0 # Skip @_\n";
-####      } else {
-####  	_print "1..0\n";
-####      }
-####      exit(0);
-####  }
-####  
+sub skip_all {
+    if (@_) {
+        _print "1..0 # Skip @_\n";
+    } else {
+	_print "1..0\n";
+    }
+    exit(0);
+}
+
 ####  sub skip_all_if_miniperl {
 ####      skip_all(@_) if is_miniperl();
 ####  }
