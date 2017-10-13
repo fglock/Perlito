@@ -8,7 +8,7 @@ Requirements
 
 - minimum Java version is Java 7
 
-  - Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 7.
+  - Perlito5 runtime uses `java.nio.file.Files`, which was introduced in Java 7.
 
   - Java 7 is also required for named groups in regex, like:  `(?<name>X).`
 
@@ -18,7 +18,7 @@ Perlito5-Java platform differences
   - no timely destruction (DESTROY) (because we use Java memory management)
       - files don't "auto-close" at the end of a block
       - weaken() is a no-op
-      - Try::Tiny "finally" doesn't work
+      - Try::Tiny `finally` doesn't work
       - Object::InsideOut will not cleanup unused objects
       - SelectSaver module doesn't work
 
@@ -42,24 +42,27 @@ Build using make
 
   - alternately:
 
-      - Update the Perl-based compiler "perlito5.pl"
+      - Update the Perl-based compiler `perlito5.pl`
 
         ```sh
         $ make build-5to5
         ```
 
-      - Compile the compiler into a jar file
+      - Compile the compiler into a jar file `perlito5.jar`
 
         ```sh
         $ make build-5java
-
-        $ java -jar perlito5.jar -v
-        This is Perlito5 9.021, an implementation of the Perl language.
-
-        # run a test
-        $ java -jar perlito5.jar -Isrc5/lib t5/unit/array.t
-        ok 1 ...
         ```
+
+  - run a test or two:
+
+    ```
+    $ java -jar perlito5.jar -v
+    This is Perlito5 9.021, an implementation of the Perl language.
+
+    $ java -jar perlito5.jar -Isrc5/lib t5/unit/array.t
+    ok 1 ...
+    ```
 
 Perlito5-Java work-in-progress
 ------------------------------
@@ -126,7 +129,7 @@ Perlito5-Java work-in-progress
 
   - BEGIN blocks
 
-      - Loops containing: BEGIN blocks, "use" statements, or named subroutines.
+      - Loops containing: BEGIN blocks, `use` statements, or named subroutines.
 
           - lexical variables inside loops may not behave properly if they are captured at compile-time.
 
@@ -142,12 +145,15 @@ Perlito5-Java work-in-progress
 
       - BEGIN line numbers show the line number at the time of eval - the line number is relative to the start of the BEGIN block
 
-  - no "goto LABEL"
-      - "goto &code" works, but it doesn't do a tail-call
+  - no `goto LABEL`
+      - `goto &code` works, but it doesn't do a tail-call
 
   - signals are partially implemented
-      - $SIG{\__WARN__} and $SIG{\__DIE__} are implemented
+      - `$SIG{\__WARN__}` and `$SIG{\__DIE__}` are implemented
       - other signals are not yet implemented.
+
+  - no Unix pipes
+      - named pipes are possible using C and JNI
 
   - object system is partially implemented
       - method resolution order is not selectable
@@ -164,30 +170,36 @@ Perlito5-Java work-in-progress
       - binary operators work
       - mutators and assignment not implemented
       - dereferencing, iterators, filetest not implemented
-      - "nomethod" not implemented
-      - "fallback" not implemented; fallback mode behaves as "TRUE"
+      - `nomethod` not implemented
+      - `fallback` not implemented; fallback mode behaves as `TRUE`
 
   - file handles are partially implemented
       - open scalarref works
-      - <DATA> works
+      - `<DATA>` works
       - open binary mode vs. open utf8 needs more work
-      - files don't "auto-close"
+      - files don't `auto-close`
 
-  - tr() needs to be interpolated at compile-time
+  - `tr()` needs to be interpolated at compile-time
       - pre-expand escape sequences
 
   - subroutines
-      - "my sub x {...}" not implemented
+      - `my sub x {...}` not implemented
 
   - lvalue $#a and other expressions: substr, ternary, keys, pos
 
-  - "local @\_" doesn't work yet, because @\_ is special
+  - `local @\_` doesn't work yet, because `@\_` is special
 
-  - "~~" operator not implemented; also "when" and "given" not implemented.
+  - `~~` operator not implemented; also `when` and `given` not implemented.
 
-  - incomplete implementations for sprintf(), pack(), unpack()
+  - incomplete CORE function implementations
+      - open()
+      - sprintf()
+      - pack()
+      - unpack()
 
-  - vec() not implemented
+  - not implemented CORE functions
+      - vec()
+      - format()
 
   - clone() is work-in-progress
       - deep clone of references is not implemented
@@ -228,32 +240,32 @@ Eval-string
 Limitations
 
   - eval bytecode is cached - this will leak memory
+      - review the ClassLoader for leaks
 
   - Java extensions are disabled inside eval-string (only plain-perl)
-
-  - `Java::inline` works inside eval-string
+      - `Java::inline` works inside eval-string
+      - extensions can be precompiled in `perlito5.jar`
 
 See also:
 
-  - ASM
-
+  - `ASM`
       - TODO: prototype eval-string with ASM
 
+  - write a tiny interpreter for simple expressions
 
 Perlito5-Java extensibility
 ===========================
-
-Note: Java extensions are disabled in the Java eval-string backend.
-
-  - Java::inline is enabled in the eval-string backend.
-
-  - extensions can be precompiled in perlito5.jar
-
 
 The Perlito5 Java backend doesn't support Perl XS extensions.
 Instead of XS, it has an extension mechanism that connects Perl with Java.
 
 Java classes can be added to a Perl script using a special "package" declaration:
+
+```perl
+package Sample {
+    import => "misc.Java.Sample"
+};
+```
 
   - an empty package works for importing builtin types or primitives ("String", "Long", "long")
 
@@ -265,7 +277,16 @@ Java classes can be added to a Perl script using a special "package" declaration
 
   - a "header" specification works for creating a Java package
 
-"Java::inline" can be used to add Java expressions to a Perl script
+`Java::inline` can be used to add simple Java expressions to a Perl script
+
+```perl
+my @arr = Java::inline ' new String[]{ "a", "b" } ';
+```
+
+Note: Java extensions are disabled in the Java eval-string backend.
+
+  - Java::inline is enabled in the eval-string backend.
+  - extensions can be precompiled in perlito5.jar
 
 
 Calling a Perl subroutine from Java
@@ -374,7 +395,7 @@ print "arr2[0] $arr2[0], arr2[1] $arr2[1]\n";
 
   - Character
 
-    Perlito can't represent native "Character" values (only String)
+    Perlito can't represent native `Character` values (only String)
 
     ```perl
     package Character { };
@@ -611,11 +632,11 @@ Workaround JVM bytecode size limit
 According to the Java Virtual Machine specification,
 the bytecode of a method must not be bigger than 65536 bytes:
 
-  - See: $Perlito5::CODE_TOO_LARGE in the /src5
+  - See: `$Perlito5::CODE_TOO_LARGE` in `/src5`
 
   - Test.java:2309: error: code too large
 
-  - when compiling misc/Java/code_too_large.pl
+  - when compiling `misc/Java/code_too_large.pl`
 
   - current workaround: insert a closure every 100s of lines in a block:
 
@@ -660,26 +681,26 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
   - generates:
     - import misc.java.Sample;              (DONE)
-    - adds a pObject coercion "to_Sample"   (DONE)
-    - adds a pObject variant "pSample"      (DONE)
+    - adds a pObject coercion `to_Sample`   (DONE)
+    - adds a pObject variant `pSample`      (DONE)
                                             (TODO: add argument list - test)
                                             (TODO: maybe unbox the arguments automatically)
-    - add a pScalar variant "set(Sample)"   (TODO)
+    - add a pScalar variant `set(Sample)`   (TODO)
     - add pArray and pHash setters          (TODO)
 
   - TODO: what happens when a class is imported again
-        - for example, import "Int" or "Byte" again
+        - for example, import `Int` or `Byte` again
 
   - TODO: test that Perl modules can import Java classes
-        - only tested in "main" program
+        - only tested in `main` program
 
 
 - Typed variables
 
-    my TYPE VARLIST
+    `my TYPE VARLIST`
         - See also: http://perldoc.perl.org/functions/my.html
 
-    - no "global" typed variables (only "my" variables)
+    - no `global` typed variables (only `my` variables)
 
   - Note:
         - parameters to native calls are evaluated in scalar context
@@ -692,38 +713,49 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     my $p_put = Sample->new();
     my $p_put = new Sample();
+
   - creates a boxed Java variable           (DONE)
 
     $x->to_Sample()
+
     retrieves the native Sample object      (DONE)
     allow conversion of primitive types - to_Int(), to_String()
                                             (TODO: generate primitive types in emitter)
   - this only works if $x is a Perl variable that contains a value of type "Sample"
 
     "$x"      # Sample<0x1234567>
+
     $x is a Perl variable that contains a native "Sample"; it behaves like a Perl object
 
     my $x = $p_put;
+
   - puts the boxed object into a Perl scalar  (DONE)
 
     my Sample $put = Sample->new();
+
   - creates a native Java variable          (DONE)
                                             (TODO: allow Int, String types)
 
     my Int $val = Sample->VAL;
+
   - "method call without parenthesis"
+
     read a class or instance variable
 
     my $x = $put;
+
   - puts the unboxed object into a Perl scalar  (DONE)
 
     my $x = Sample->new()
+
   - stores the boxed pSample object in a Perl scalar (DONE)
 
+    ```
     package Int { import => 'java.lang.Integer' };
     my Int $x = 3;          # $x is a Java Int (not a pScalar)  (TODO: test)
+    ```
 
-  - maybe TODO: automatic casting (my Result $java_obj = $scan_result;)
+  - maybe TODO: automatic casting `my Result $java_obj = $scan_result;`
 
   - maybe TODO: make pJavaReference which will have this implementation
         - Note: Boxed Java objects can be undef (null)
@@ -738,6 +770,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         my Int $x = $y;     # automatically insert a call to $y->toInt()
 
   - maybe TODO: call Perl subroutines with native parameters
+
         print $x->to_Sample();
 
   - TODO: (wip) call Java methods with Perl parameters
@@ -810,32 +843,36 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     in this case, we can just assign the value to PlLvalue
     because PlLvalue knows what to do with each type
-    this also takes care of "$x" and 0+$x
+    this also takes care of `$x` and `0+$x`
     (TODO)
     
     PlLvalue.set() is super-overloaded # Array, Hash, int, string, boolean, ...
+
     src5/lib/Perlito5/Java/Runtime.pm 1463
 
     (TODO) comparison and logical operators with Java variables:
+
+    ```
     if ($typed == $typed) ...
     if ($typed eq $typed) ...
     if ($typed || $typed) ...
     if ($typed && $typed) ...
+    ```
 
 - interoperation between native expressions and perl expressions
 
     method calls on typed variables call Java methods,
     method calls on untyped variables call Perl methods
 
-    subroutines are always "Perl"
+    subroutines are always `Perl`
 
-    Class method calls on imported classes are "Java",
-    all other Class method calls are "Perl".
+    Class method calls on imported classes are `Java`,
+    all other Class method calls are `Perl`.
 
     Parameters to Java method calls should be converted to Java automatically.  (TODO: test, examples)
 
-    storing a Java object into a Perl scalar converts the value to a "Perl" object (blessed reference);
-    Java "int", "String", "double" are converted to Perl values.
+    storing a Java object into a Perl scalar converts the value to a `Perl` object (blessed reference);
+    Java `int`, `String`, `double` are converted to Perl values.
 
     using Java objects in other types of expressions than scalar assignment is not well defined. (TODO: test, examples)
 
@@ -1127,7 +1164,7 @@ Tail-call
 
 - tailcalls
 
-    same-subroutine tailcalls could execute a "redo" in the current subroutine.
+    same-subroutine tailcalls could execute a `redo` in the current subroutine.
 
 Missing features, or partially implemented, or untested
 -------------------------------------------------------
@@ -1136,7 +1173,8 @@ Missing features, or partially implemented, or untested
 
   - bless (DONE)
 
-  - UNIVERSAL::
+  - `UNIVERSAL::`
+
         can
         isa
         DOES
@@ -1157,13 +1195,13 @@ Missing features, or partially implemented, or untested
 
   - exceptions
 
-        "goto", "last", "redo"
+        `goto`, `last`, `redo`
 
         Note: remember to cleanup the stacks (boolean, local).
 
-  - "continue" blocks
+  - `continue` blocks
 
-  - "dualvars"
+  - `dualvars`
 
         for string-to-number optimization
 
@@ -1344,8 +1382,8 @@ Threads
 Optimizations
 -------------
 
-  - use "our"-ish variables to avoid global variable lookups
-        Note: remember the special-cases for "local" keyword
+  - use `our`-ish variables to avoid global variable lookups
+        Note: remember the special-cases for `local` keyword
 
   - memoize method-name lookups
 
@@ -1357,8 +1395,8 @@ Optimizations
 
   - use 'continue' and 'break' when possible (in place of Perl 'next', 'last')
 
-  - identify variables that don't need a true "lvalue" container;
-    store in a "PerlObject" instead of "PerlLvalue",
+  - identify variables that don't need a true `lvalue` container;
+    store in a `PerlObject` instead of `PerlLvalue`,
     this is one less level of indirection.
 
   - investigate performance of "proxy" lvalues;
