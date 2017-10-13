@@ -1961,22 +1961,42 @@ EOT
         String str          = pstr.toString();
         String searchChars  = tr_escape(psearchChars.toString());
         String replaceChars = tr_escape(preplaceChars.toString());
+        boolean complement = modifier.indexOf("c") < 0 ? false : true;  // c = complement
         int modified = 0;
         final int replaceCharsLength = replaceChars.length();
         final int strLength = str.length();
         final StringBuilder buf = new StringBuilder(strLength);
-        for (int i = 0; i < strLength; i++) {
-            final char ch = str.charAt(i);
-            final int index = searchChars.indexOf(ch);
-            if (index >= 0) {
-                modified++;
-                if (index < replaceCharsLength) {
-                    buf.append(replaceChars.charAt(index));
+
+        if (complement) {
+            for (int i = 0; i < strLength; i++) {
+                final char ch = str.charAt(i);
+                final int index = searchChars.indexOf(ch);
+                if (index < 0) {
+                    // not found
+                    modified++;
+                    if (replaceCharsLength > 0) {
+                        buf.append(replaceChars.charAt(replaceCharsLength - 1));
+                    }
+                } else {
+                    buf.append(ch);
                 }
-            } else {
-                buf.append(ch);
             }
         }
+        else {
+            for (int i = 0; i < strLength; i++) {
+                final char ch = str.charAt(i);
+                final int index = searchChars.indexOf(ch);
+                if (index >= 0) {
+                    modified++;
+                    if (index < replaceCharsLength) {
+                        buf.append(replaceChars.charAt(index));
+                    }
+                } else {
+                    buf.append(ch);
+                }
+            }
+        }
+
         if (modified > 0) {
             pstr.set(new PlString(buf.toString()));
         }
