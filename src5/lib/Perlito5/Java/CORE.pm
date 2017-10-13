@@ -1038,12 +1038,15 @@ EOT
         int args_max = List__.to_int();
         int args_index = 0;
         Object args[] = new Object[args_max];
+        String detail = "";
+        int start_detail = -1;
         for ( ; offset < length; ) {
             int c = format.codePointAt(offset);
             switch (c) {
                 case '%':
                     offset++;
                     boolean scanning = true;
+                    start_detail = offset;
                     for ( ; offset < length && scanning ; ) {
                         c = format.codePointAt(offset);
                         switch (c) {
@@ -1085,6 +1088,14 @@ EOT
                                         break;
                                     case 'f': case 'e': case 'g':
                                     case 'E': case 'G':
+                                        detail = format.substring(start_detail, offset);
+                                        if (detail.equals(".") || detail.equals("+.")) {
+                                            StringBuilder sb = new StringBuilder();
+                                            sb.append(format.substring(0, offset));
+                                            sb.append("0");
+                                            sb.append(format.substring(offset));
+                                            format = sb.toString();
+                                        }
                                         args[args_index] = List__.aget(args_index+1).to_double();
                                         break;
                                     default:
