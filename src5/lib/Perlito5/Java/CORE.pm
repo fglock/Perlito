@@ -1076,7 +1076,7 @@ EOT
                                                 sb.append(format.substring(offset + 1));
                                             }
                                             format = sb.toString();
-                                            # PlCORE.say("format [" + format + "]");
+                                            //PlCORE.say("format [" + format + "]");
                                         }
 
                                         break;
