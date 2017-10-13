@@ -1064,7 +1064,21 @@ EOT
                                     case 'd': case 'o': case 'x': case 'X':
                                     case 'u': case 'b': case 'B': case 'p':
                                     case 'c':
-                                        args[args_index] = List__.aget(args_index+1).to_int();
+                                        args[args_index] = List__.aget(args_index+1).to_long();
+
+                                        if (c == 'u') {
+                                            StringBuilder sb = new StringBuilder();
+                                            if (offset > 0) {
+                                                sb.append(format.substring(0, offset));
+                                            }
+                                            sb.append("d");
+                                            if (offset + 1 < format.length()) {
+                                                sb.append(format.substring(offset + 1));
+                                            }
+                                            format = sb.toString();
+                                            # PlCORE.say("format [" + format + "]");
+                                        }
+
                                         break;
                                     case 'f': case 'e': case 'g':
                                     case 'E': case 'G':
