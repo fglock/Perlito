@@ -3546,6 +3546,17 @@ class PlRegex extends PlReference {
             this.p = Pattern.compile(PerlOp.regex_escape(p.toString(), flag_xx), flags);
         }
     }
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.plClassName();
+        }
+    }
+    public PlObject reftype() {
+        return REF;
+    }
     public String toString() {
         if (original_string == null) {
 
