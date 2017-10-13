@@ -1067,6 +1067,9 @@ EOT
                                         args[args_index] = List__.aget(args_index+1).to_long();
 
                                         if (c == 'u') {
+                                            long arg = (long)(args[args_index]);
+                                            arg = arg & 4294967295L; // 0xFFFFFFFF;
+                                            args[args_index] = arg;
                                             StringBuilder sb = new StringBuilder();
                                             if (offset > 0) {
                                                 sb.append(format.substring(0, offset));
