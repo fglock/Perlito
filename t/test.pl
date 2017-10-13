@@ -101,7 +101,6 @@ sub diag {
 
 # Use this instead of "print" when outputting informational messages
 sub note {
-    print "in note\n";
     return unless @_;
     _print( _comment(@_) );
 }
@@ -122,11 +121,10 @@ sub set_up_inc {
 }
 
 sub _comment {
-    # WORKAROUND
-    @_
-    #return map { /^#/ ? "$_\n" : "# $_\n" }
-    #       map { split /\n/ } @_;
+    return map { /^#/ ? "$_\n" : "# $_\n" }
+           map { split /\n/ } @_;
 }
+
 ####  
 ####  sub skip_all {
 ####      if (@_) {
