@@ -10,6 +10,7 @@ use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar::Expression;
 use Perlito5::Grammar::CORE;
 use Perlito5::Macro;
+use Perlito5::Regex;
 use Perlito5::Runtime;
 use Perlito5::AST::CompileTime;
 use Perlito5::Dumper;
