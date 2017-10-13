@@ -31,7 +31,7 @@ my $reps = 100_000;	# How many times to try rand each time.
 my $bits = 8;  # how many significant bits we check on each random number
 my $nslots = (1<< $bits); # how many different numbers
 
-plan(tests => 7 + $nslots);
+plan(tests => 5 + $nslots);
 
 # First, let's see whether randbits is set right and that rand() returns
 # an even distribution of values
@@ -133,8 +133,8 @@ EOM
     cmp_ok($r, '<', 1,   'rand() without args is under 1');
 }
 
-{ # [perl #115928] use a standard rand() implementation
-    srand(1);
-    is(int rand(1000), 41, "our own implementation behaves consistently");
-    is(int rand(1000), 454, "and still consistently");
-}
+# { # [perl #115928] use a standard rand() implementation
+#     srand(1);
+#     is(int rand(1000), 41, "our own implementation behaves consistently");
+#     is(int rand(1000), 454, "and still consistently");
+# }
