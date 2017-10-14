@@ -1,7 +1,7 @@
-"Perlito5" Perl 5 compiler
+"Perlito5" Perl to Java compiler and Perl to JavaScript compiler
 ==========================
 
-This is Perlito5, a compiler that implements a subset of Perl 5.
+This is Perlito5, a compiler that implements the Perl 5 programming language.
 
 Perlito5 translates Perl to Java, and Perl to JavaScript.
 

@@ -1,4 +1,4 @@
-"Perlito" Perl programming language compiler
+"Perlito5" Perl to Java compiler and Perl to JavaScript compiler
 =======================
 
 This is Perlito, a compiler collection that implements Perl 5 and Perl 6 programming languages.
