@@ -360,6 +360,42 @@ package Perlito5::AST::Apply;
               [ 'atan2',       'atan2'   ],
             )
         ),
+        ( map {
+                my ($op, $java_op, $native_op) = @$_;
+                ( $op => sub {
+                        my ($self, $level, $wantarray) = @_;
+
+                        my $op  = $self->{arguments}->[0]->emit_java($level, 'scalar', 'lvalue');
+                        my $op1 = $self->{arguments}->[0]->emit_java($level, 'scalar');
+                        my $op2 = $self->{arguments}->[1]->emit_java($level, 'scalar');
+
+                        if ($self->{_integer} && $native_op) {
+                            return 
+                              $op . '.set('
+                            .   'new PlInt('
+                            .       '(' . $op1 . '.to_long() ' . $native_op . ' ' . $op2 . '.to_long()' . ')'
+                            .       ' & 4294967295L'
+                            .   ')'
+                            . ')'
+                        }
+
+                        $op . '.' . $java_op . '(' . $op2 . ')'
+                      }
+                )
+            } (
+              [ 'infix:<%=>',   'self_assign_mod',    '%'  ],
+              [ 'infix:<>>=>',  'self_assign_int_shr' ],
+              [ 'infix:<<<=>',  'self_assign_int_shl' ],
+              [ 'infix:<^=>',   'self_assign_int_xor' ],
+              [ 'infix:<&=>',   'self_assign_int_and' ],
+              [ 'infix:<|=>',   'self_assign_int_or' ],
+              [ 'infix:<+=>',   'self_assign_add',    '+'  ],
+              [ 'infix:<-=>',   'self_assign_sub',    '-'  ],
+              [ 'infix:<*=>',   'self_assign_mul',    '*'  ],
+              [ 'infix:</=>',   'self_assign_div',    '/'  ],
+              [ 'infix:<**=>',  'self_assign_pow'     ],
+            )
+        ),
         'infix:<~~>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg0 = $self->{arguments}->[0];
@@ -1637,15 +1673,6 @@ package Perlito5::AST::Apply;
     sub emit_java {
         my ($self, $level, $wantarray, $autovivification_type) = @_;
 
-        my $apply = $self->op_assign();
-        if ($apply) {
-            return $apply->emit_java( $level );
-        }
-        my $apply = $self->op_auto();
-        if ($apply) {
-            return $apply->emit_java( $level );
-        }
-
         my $code = $self->{code};
 
         if (ref $code ne '') {
@@ -1667,6 +1694,17 @@ package Perlito5::AST::Apply;
                     . Perlito5::Java::to_context($wantarray) . ', '
                     . Perlito5::Java::to_param_list($items, $level+1)
                   . ')';
+        }
+
+        if (!exists($emit_js{$code})) {
+            my $apply = $self->op_assign();
+            if ($apply) {
+                return $apply->emit_java( $level );
+            }
+            my $apply = $self->op_auto();
+            if ($apply) {
+                return $apply->emit_java( $level );
+            }
         }
 
         return ''

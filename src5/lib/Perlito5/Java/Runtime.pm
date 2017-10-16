@@ -5094,6 +5094,15 @@ EOT
             )
       ))
 
+    , ((map {
+            my $perl = $_;
+"    public PlObject self_assign_${perl}(PlObject s) {
+        return this.set(this.${perl}(s));
+    }
+"
+            }
+            sort keys %self_assign_number_binop ))
+
         # unary operators
         #
     , ((map {
