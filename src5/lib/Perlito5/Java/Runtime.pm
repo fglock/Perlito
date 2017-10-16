@@ -290,6 +290,21 @@ EOT
         }
     }
 
+    my @self_assign_op = qw/
+        add sub mul div mod
+        int_or int_and int_xor int_shr int_shl
+        pow
+    /;
+    # TODO self_assign_op:
+    #   or                  ||
+    #   and                 &&
+    #   defined_or          //
+    #   str_concat          .
+    #   string_replicate    x.
+    #   str_or              |.
+    #   str_and             &.
+    #   str_xor             ^.
+
     return (
         <<'EOT'
 // start Perl-Java runtime
@@ -3258,6 +3273,15 @@ EOT
 "
             }
             sort keys %string_binop ))
+
+    , ((map {
+            my $perl = $_;
+"    public PlObject self_assign_${perl}(PlObject s) {
+        return this.set(this.${perl}(s));
+    }
+"
+            }
+            sort @self_assign_op ))
 
     , <<'EOT'
 }
