@@ -266,11 +266,21 @@ my $reduce_to_ast = sub {
     # say "# reduce_to_ast ";
     # say "#   num_stack: ", $num_stack;
     if ($last_op->[0] eq 'prefix') {
+        my $v = Perlito5::Grammar::Expression::pop_term($num_stack);
+        if (  ref($v) eq 'Perlito5::AST::Apply' && $v->{code} eq 'circumfix:<( )>'
+           && @{$v->{arguments}} == 1
+           )
+        {
+            $v = $v->{arguments};
+        }
+        else {
+            $v = [$v];
+        }
         push @$num_stack,
             Perlito5::AST::Apply->new(
                 namespace => '',
                 code      => 'prefix:<' . $last_op->[1] . '>',
-                arguments => [ pop_term($num_stack) ],
+                arguments => $v,
               );
     }
     elsif ($last_op->[0] eq 'postfix') {

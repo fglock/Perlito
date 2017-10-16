@@ -2372,7 +2372,7 @@ class PlV {
         return (PlLvalue)svar.hget_lvalue_local(name);
     }
     public static final PlObject sset(String name, PlObject v) {
-        return svar.hset(name, v);
+        return (PlLvalue)svar.hget_lvalue(name).set(v);
     }
     public static final PlObject sset_local(String name, PlObject v) {
         return svar.hget_lvalue_local(name).set(v);
