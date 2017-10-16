@@ -290,12 +290,20 @@ EOT
         }
     }
 
-    my @self_assign_op = qw/
-        add sub mul div mod
-        int_or int_and int_xor int_shr int_shl
-        pow
-    /;
-    # TODO self_assign_op:
+    my %self_assign_number_binop = (
+        add     => { op => '+=', }, 
+        sub     => { op => '-=', }, 
+        mul     => { op => '*=', }, 
+        div     => { op => '/=', }, 
+        mod     => { op => '%=', }, 
+        int_or  => { op => '|=', }, 
+        int_and => { op => '&=', }, 
+        int_xor => { op => '^=', }, 
+        int_shr => { op => '>>=', }, 
+        int_shl => { op => '<<=', }, 
+        pow     => { op => '**=' },
+    );
+    # TODO self_assign:
     #   or                  ||
     #   and                 &&
     #   defined_or          //
@@ -3281,7 +3289,7 @@ EOT
     }
 "
             }
-            sort @self_assign_op ))
+            sort keys %self_assign_number_binop ))
 
     , <<'EOT'
 }
@@ -3378,6 +3386,7 @@ EOT
                 'num_cmp',
                 keys(%string_binop),
                 keys(%number_binop),
+                ( map { "self_assign_$_" } keys %self_assign_number_binop ),
             )
       ))
 
@@ -4301,6 +4310,40 @@ EOT
             sort (
                 'str_cmp',
                 keys %string_binop,
+            )
+      ))
+
+    , ((map {
+            my $perl = $_;
+            my $native;
+            $native = $self_assign_number_binop{$perl}{op} if exists $self_assign_number_binop{$perl};
+"    public static PlObject overload_self_assign_${perl}(PlObject o, PlObject other, PlObject swap) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null && bless.is_overloaded() ) {
+            PlObject methodCode = bless.method_lookup(\"(${native}\", 0);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            }
+            // TODO - overload_self_assign_${perl}
+            if (bless.is_overload_fallback()) {
+                o = PlClass.overload_to_string(o);
+            }
+            else {
+                o = o.refstring();
+            }
+        }
+        else {
+            o = o.refstring();
+        }
+        if (swap.to_boolean()) {
+            return other.${perl}(o);
+        }
+        return o.${perl}(other);
+    }
+"
+            }
+            sort (
+                keys %self_assign_number_binop,
             )
       ))
 
