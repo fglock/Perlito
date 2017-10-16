@@ -3369,7 +3369,14 @@ EOT
     }
 "
             }
-            sort @number_unary ))
+            sort (
+                'pre_decr',
+                'pre_incr',
+                'post_decr',
+                'post_incr',
+                @number_unary,
+            )
+      ))
 
     , ((map {
             my $perl = $_;
@@ -4255,6 +4262,8 @@ EOT
             $native = $perl;
             $native = "int"     if $perl eq "op_int";
             $native = "~"       if $perl eq "complement";
+            $native = "++"      if $perl eq "post_incr" || $perl eq "pre_incr";
+            $native = "--"      if $perl eq "post_decr" || $perl eq "pre_decr";
 "    public static PlObject overload_${perl}(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
@@ -4276,7 +4285,14 @@ EOT
     }
 "
             }
-            sort @number_unary ))
+            sort (
+                'pre_decr',
+                'pre_incr',
+                'post_decr',
+                'post_incr',
+                @number_unary,
+            )
+      ))
 
     , ((map {
             my $perl = $_;
