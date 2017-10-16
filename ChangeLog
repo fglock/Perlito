@@ -31,6 +31,7 @@
 -- remove "." from @INC
 -- decode source code "magic number" for UTF-8, UTF-16LE, UTF-16BE
 -- "hexfloat" literals
+-- new operators '|.', '|.=', '&.', '&.=', '^.', '^.=', '~.', '~.='
 
 - Java:
 -- fix $^O, returns the the operating system name

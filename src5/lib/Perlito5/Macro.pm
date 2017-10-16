@@ -11,13 +11,21 @@ my %op = (
     'infix:<-=>'  => 'infix:<->',
     'infix:<*=>'  => 'infix:<*>',
     'infix:</=>'  => 'infix:</>',
+    'infix:<%=>'  => 'infix:<%>',
     'infix:<||=>' => 'infix:<||>',
     'infix:<&&=>' => 'infix:<&&>',
     'infix:<|=>'  => 'infix:<|>',
     'infix:<&=>'  => 'infix:<&>',
+    'infix:<^=>'  => 'infix:<^>',
     'infix:<//=>' => 'infix:<//>',
+    'infix:<**=>' => 'infix:<**>',
     'infix:<.=>'  => 'list:<.>',
     'infix:<x=>'  => 'infix:<x>',
+    'infix:<<<=>' => 'infix:<<<>',
+    'infix:<>>=>' => 'infix:<>>>',
+    'infix:<&.=>' => 'infix:<&.>',
+    'infix:<|.=>' => 'infix:<|.>',
+    'infix:<^.=>' => 'infix:<^.>',
 );
 
 sub op_assign {

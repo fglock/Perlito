@@ -215,7 +215,7 @@ add_op( 'postfix', [ '++',, '--' ], $prec, );
 $prec = $prec - 1;
 add_op( 'infix', [ '**' ],  $prec, { assoc => 'right' } );
 $prec = $prec - 1;
-add_op( 'prefix', [ '\\', '+', '-', '~', '!' ], $prec );
+add_op( 'prefix', [ '\\', '+', '-', '~', '~.', '!' ], $prec );
 $prec = $prec - 1;
 add_op( 'infix', [ '=~', '!~' ], $prec );
 $prec = $prec - 1;
@@ -234,9 +234,9 @@ add_op( 'infix', [ 'lt', 'le', 'gt', 'ge', '<=', '>=', '<', '>' ], $prec, { asso
 $prec = $prec - 1;
 add_op( 'infix', [ '<=>', 'cmp', '==', '!=', 'ne', 'eq' ], $prec, { assoc => 'chain' } );
 $prec = $prec - 1;
-add_op( 'infix', [ '&' ],   $prec );
+add_op( 'infix', [ '&', '&.' ],   $prec );
 $prec = $prec - 1;
-add_op( 'infix', [ '|', '^' ], $prec );
+add_op( 'infix', [ '|', '|.', '^', '^.' ], $prec );
 $prec = $prec - 1;
 add_op( 'infix', [ '..', '...' ], $prec );
 add_op( 'infix', [ '~~' ],  $prec, { assoc => 'chain' } );
@@ -250,7 +250,9 @@ add_op( 'ternary', [ '? :' ],  $prec, { assoc => 'right' } );
 $prec = $prec - 1;
 add_op(
     'infix',
-    [ '=', '**=', '+=', '-=', '*=', '/=', 'x=', '|=', '&=', '.=', '<<=', '>>=', '%=', '||=', '&&=', '^=', '//=' ],
+    [ '=', '**=', '+=', '-=', '*=', '/=', 'x=', '|=', '&=', '.=', '<<=', '>>=', '%=', '||=', '&&=', '^=', '//=',
+      '|.=', '&.=', '^.='
+    ],
     $prec,
     { assoc => 'right' } );
 # Note: "last" has the same precedence as assignment, there is a separate rule
