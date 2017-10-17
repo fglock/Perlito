@@ -5068,6 +5068,7 @@ EOT
             // fallback to 8bit
             value = v;
             offset = ofs;
+            bits = 8;
         }
         if (bits == 8) {
             if ((offset + 1) > sb.length()) {
