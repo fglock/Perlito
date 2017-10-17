@@ -5046,70 +5046,74 @@ EOT
         // vec($i,  0, 32) = 0x5065726C
         String vv  = this.toString();
         int offset = pOffset.to_int();
+        if (offset < 0) {
+            return PlCORE.die("Negative offset to vec in lvalue context: " + offset);
+        }
         int bits   = pBits.to_int();
         long value = pValue.to_long();
         StringBuilder sb = new StringBuilder(vv);
         if (bits == 1) {
             int byteOfs = offset / 8;
             int bitOfs  = offset - 8 * byteOfs;
-            long v;
             value = (value & 0b0001) << bitOfs;
             long mask = 0b0001 << bitOfs;
-            if ((byteOfs + 1) > sb.length()) {
-                v = value;
-            }
-            else {
-                v = (sb.charAt(byteOfs) & ~mask) | value;
+            if (byteOfs < sb.length()) {
+                value = (sb.charAt(byteOfs) & ~mask) | value;
             }
             // fallback to 8bit
-            value = v;
             offset = byteOfs;
             bits = 8;
         }
         if (bits == 2) {
             int byteOfs = offset / 4;
             int bitOfs  = 2 * (offset - 4 * byteOfs);
-            long v;
             value = (value & 0b0011) << bitOfs;
             long mask = 0b0011 << bitOfs;
-            if ((byteOfs + 1) > sb.length()) {
-                v = value;
-            }
-            else {
-                v = (sb.charAt(byteOfs) & ~mask) | value;
+            if (byteOfs < sb.length()) {
+                value = (sb.charAt(byteOfs) & ~mask) | value;
             }
             // fallback to 8bit
-            value = v;
             offset = byteOfs;
             bits = 8;
         }
         if (bits == 4) {
             int byteOfs = offset / 2;
             int bitOfs  = 4 * (offset - 2 * byteOfs);
-            long v;
             value = (value & 0b1111) << bitOfs;
             long mask = 0b1111 << bitOfs;
-            if ((byteOfs + 1) > sb.length()) {
-                v = value;
-            }
-            else {
-                v = (sb.charAt(byteOfs) & ~mask) | value;
+            if (byteOfs < sb.length()) {
+                value = (sb.charAt(byteOfs) & ~mask) | value;
             }
             // fallback to 8bit
-            value = v;
             offset = byteOfs;
             bits = 8;
         }
         if (bits == 8) {
-            if ((offset + 1) > sb.length()) {
+            if (offset >= sb.length()) {
                 sb.setLength(offset + 1);
             }
             sb.setCharAt(offset, (char)(value & 0xFF));
             return this.set(new PlString(sb.toString()));
         }
-        // TODO - bits = 16, 32
-        PlCORE.die("Illegal number of bits in vec: " + bits);
-        return this.set(new PlString(sb.toString()));
+        if (bits == 16) {
+            if ((offset + 1) >= sb.length()) {
+                sb.setLength(offset + 2);
+            }
+            sb.setCharAt(offset,     (char)((value >> 8) & 0xFF));
+            sb.setCharAt(offset + 1, (char)(value & 0xFF));
+            return this.set(new PlString(sb.toString()));
+        }
+        if (bits == 32) {
+            if ((offset + 3) >= sb.length()) {
+                sb.setLength(offset + 4);
+            }
+            sb.setCharAt(offset,     (char)((value >> 24) & 0xFF));
+            sb.setCharAt(offset + 1, (char)((value >> 16) & 0xFF));
+            sb.setCharAt(offset + 2, (char)((value >>  8) & 0xFF));
+            sb.setCharAt(offset + 3, (char)(value & 0xFF));
+            return this.set(new PlString(sb.toString()));
+        }
+        return PlCORE.die("Illegal number of bits in vec: " + bits);
     }
 
     public boolean is_lvalue() {
