@@ -285,6 +285,14 @@ package Perlito5::AST::Apply;
               'new PlString(new String(Character.toChars('
             . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())))'
         },
+        'vec' => sub {
+            my ($self, $level, $wantarray) = @_;
+            # vec($i,  0, 32)
+              $self->{arguments}[0]->emit_java($level, 'scalar') . '.vec('
+            .       $self->{arguments}[1]->emit_java($level, 'scalar') . ', '
+            .       $self->{arguments}[2]->emit_java($level, 'scalar')
+            . ')';
+        },
         'rand' => sub {
             my ($self, $level, $wantarray) = @_;
               'PerlOp.rand('

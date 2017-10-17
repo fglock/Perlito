@@ -2976,6 +2976,73 @@ EOT
         PlCORE.die("Can't modify constant item in scalar assignment");
         return this;
     }
+    public PlObject vec(PlObject pOffset, PlObject pBits) {
+        // vec($i,  0, 32)
+        String sb  = this.toString();
+        int offset = pOffset.to_int();
+        if (offset < 0) {
+            return PlCORE.die("Negative offset to vec in lvalue context: " + offset);
+        }
+        int bits   = pBits.to_int();
+        if (bits == 1) {
+            int byteOfs = offset / 8;
+            int bitOfs  = offset - 8 * byteOfs;
+            long mask = 0b0001;
+            if (byteOfs < sb.length()) {
+                return new PlInt((sb.charAt(byteOfs) >> bitOfs) & mask);
+            }
+            else {
+                return PlCx.INT0;
+            }
+        }
+        if (bits == 2) {
+            int byteOfs = offset / 4;
+            int bitOfs  = 2 * (offset - 4 * byteOfs);
+            long mask = 0b0011;
+            if (byteOfs < sb.length()) {
+                return new PlInt((sb.charAt(byteOfs) >> bitOfs) & mask);
+            }
+            else {
+                return PlCx.INT0;
+            }
+        }
+        if (bits == 4) {
+            int byteOfs = offset / 2;
+            int bitOfs  = 4 * (offset - 2 * byteOfs);
+            long mask = 0b1111;
+            if (byteOfs < sb.length()) {
+                return new PlInt((sb.charAt(byteOfs) >> bitOfs) & mask);
+            }
+            else {
+                return PlCx.INT0;
+            }
+        }
+        if (bits == 8) {
+            if (offset < sb.length()) {
+                return new PlInt(sb.charAt(offset) & 0xFF);
+            }
+            else {
+                return PlCx.INT0;
+            }
+        }
+        if (bits == 16) {
+            long b0 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 8 : 0;
+            offset++;
+            long b1 = offset < sb.length() ? sb.charAt(offset) & 0xFF : 0;
+            return new PlInt( b0 + b1 );
+        }
+        if (bits == 32) {
+            long b0 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 24 : 0;
+            offset++;
+            long b1 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 16 : 0;
+            offset++;
+            long b2 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 8  : 0;
+            offset++;
+            long b3 = offset < sb.length() ? sb.charAt(offset) & 0xFF : 0;
+            return new PlInt( b0 + b1 + b2 + b3 );
+        }
+        return PlCORE.die("Illegal number of bits in vec: " + bits);
+    }
     public PlObject get() {
         return PlCORE.die("error .get!");
     }

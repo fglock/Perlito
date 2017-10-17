@@ -37,6 +37,7 @@
 -- fix $^O, returns the the operating system name
 -- "require", "require VERSION"
 -- "opendir", "readdir", "closedir", "select", "binmode"
+-- "vec"
 -- tied hash
 -- tied array
 -- overload implemented for about half of the operators
@@ -47,7 +48,7 @@
 -- caller() now works "natively", decoding the Java stack trace
 -- symbol tables like %:: and typeglobs support
 -- '-e' file test
--- lvalue ternary "?:"
+-- lvalue ternary "?:" and "vec"
 -- regex modifier /xx
 -- regex %+ named captures
 -- regex named captures can have underscore in the name
