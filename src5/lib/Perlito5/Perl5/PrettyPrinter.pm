@@ -208,9 +208,12 @@ sub op_render {
     my ( $data, $level, $out, $current_op ) = @_;
     if ( ref($data) ) {
         my $this_prec = op_precedence($data);
-        push @$out, '(' if $this_prec && $current_op->{prec} && $current_op->{prec} < $this_prec;
+        my $use_paren = $this_prec && $current_op->{prec}
+            && ($current_op->{prec} < $this_prec
+               || $current_op->{prec} == 6);
+        push @$out, '(' if $use_paren;
         render( $data, $level, $out );
-        push @$out, ')' if $this_prec && $current_op->{prec} && $current_op->{prec} < $this_prec;
+        push @$out, ')' if $use_paren;
     }
     else {
         push @$out, $data;

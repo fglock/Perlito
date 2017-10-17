@@ -649,10 +649,12 @@ sub string_interpolation_parse {
     if (!@args) {
         $ast = Perlito5::AST::Buf->new( buf => '' )
     }
-    elsif (@args == 1) {
+    elsif (@args == 1 && ref($args[0]) eq 'Perlito5::AST::Buf') {
         $ast = $args[0];
     }
     else {
+        unshift @args, Perlito5::AST::Buf->new( buf => '' )
+            if @args == 1;
         $ast = Perlito5::AST::Apply->new(
             namespace => '',
             code => 'list:<.>',
