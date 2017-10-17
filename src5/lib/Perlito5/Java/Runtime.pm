@@ -5050,24 +5050,54 @@ EOT
         long value = pValue.to_long();
         StringBuilder sb = new StringBuilder(vv);
         if (bits == 1) {
-            int ofs = offset / 8;
+            int byteOfs = offset / 8;
+            int bitOfs  = offset - 8 * byteOfs;
             long v;
-            value = (value & 0x01) << (offset - 8 * ofs);
-            if ((offset + 1) > sb.length()) {
+            value = (value & 0b0001) << bitOfs;
+            long mask = 0b0001 << bitOfs;
+            if ((byteOfs + 1) > sb.length()) {
                 v = value;
             }
             else {
-                v = sb.charAt(ofs);
-                if ( value == 0 ) {
-                    v = v & ~value;
-                }
-                else {
-                    v = v | value;
-                }
+                v = (sb.charAt(byteOfs) & ~mask) | value;
             }
             // fallback to 8bit
             value = v;
-            offset = ofs;
+            offset = byteOfs;
+            bits = 8;
+        }
+        if (bits == 2) {
+            int byteOfs = offset / 4;
+            int bitOfs  = 2 * (offset - 4 * byteOfs);
+            long v;
+            value = (value & 0b0011) << bitOfs;
+            long mask = 0b0011 << bitOfs;
+            if ((byteOfs + 1) > sb.length()) {
+                v = value;
+            }
+            else {
+                v = (sb.charAt(byteOfs) & ~mask) | value;
+            }
+            // fallback to 8bit
+            value = v;
+            offset = byteOfs;
+            bits = 8;
+        }
+        if (bits == 4) {
+            int byteOfs = offset / 2;
+            int bitOfs  = 4 * (offset - 2 * byteOfs);
+            long v;
+            value = (value & 0b1111) << bitOfs;
+            long mask = 0b1111 << bitOfs;
+            if ((byteOfs + 1) > sb.length()) {
+                v = value;
+            }
+            else {
+                v = (sb.charAt(byteOfs) & ~mask) | value;
+            }
+            // fallback to 8bit
+            value = v;
+            offset = byteOfs;
             bits = 8;
         }
         if (bits == 8) {
@@ -5075,7 +5105,10 @@ EOT
                 sb.setLength(offset + 1);
             }
             sb.setCharAt(offset, (char)(value & 0xFF));
+            return this.set(new PlString(sb.toString()));
         }
+        // TODO - bits = 16, 32
+        PlCORE.die("Illegal number of bits in vec: " + bits);
         return this.set(new PlString(sb.toString()));
     }
 
