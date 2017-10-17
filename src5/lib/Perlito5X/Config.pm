@@ -73,6 +73,7 @@ sub import {
     dlsrc => 'dl_dlopen.xs',
     dont_use_nlink => undef,
     exe_ext => '',
+    extensions => 'List/Util',
     inc_version_list => '5.20.0',
     intsize => '4',
     ivsize  => '4',
