@@ -1472,10 +1472,18 @@ EOT
                     // C0
                     characterMode = true;
                 }
-                // TODO
-                // for (int j = 0; j < size; j++) {
-                //     result.push(pack_C(List__.shift().toString()));
-                // }
+                if (size < 0) {
+                        while (inputIndex < input.length()) {
+                            result.push( new PlInt( input.charAt(inputIndex++) & 0xFF ) );
+                        }
+                }
+                else {
+                    for (int j = 0; j < size; j++) {
+                        if (inputIndex < input.length()) {
+                            result.push( new PlInt( input.charAt(inputIndex++) & 0xFF ) );
+                        }
+                    }
+                }
                 break;        
             }
             case 'W':
