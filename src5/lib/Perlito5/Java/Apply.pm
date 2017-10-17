@@ -1129,9 +1129,7 @@ package Perlito5::AST::Apply;
         'length' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = shift @{$self->{arguments}};
-                return Perlito5::Java::to_str($arg) 
-                    . '.length('
-                    . ')'
+            $arg->emit_java($level, 'scalar') . '.length()'
         },
         'substr' => sub {
             my ($self, $level, $wantarray) = @_;
