@@ -3029,7 +3029,11 @@ EOT
             long b0 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 8 : 0;
             offset++;
             long b1 = offset < sb.length() ? sb.charAt(offset) & 0xFF : 0;
-            return new PlInt( b0 + b1 );
+            long res = b0 + b1;
+            if (res < 0) {
+                res = 4294967296L + res;
+            }
+            return new PlInt(res);
         }
         if (bits == 32) {
             long b0 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 24 : 0;
@@ -3039,7 +3043,11 @@ EOT
             long b2 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 8  : 0;
             offset++;
             long b3 = offset < sb.length() ? sb.charAt(offset) & 0xFF : 0;
-            return new PlInt( b0 + b1 + b2 + b3 );
+            long res = b0 + b1 + b2 + b3;
+            if (res < 0) {
+                res = 4294967296L + res;
+            }
+            return new PlInt(res);
         }
         return PlCORE.die("Illegal number of bits in vec: " + bits);
     }
