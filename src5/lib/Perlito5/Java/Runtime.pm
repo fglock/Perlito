@@ -4151,7 +4151,8 @@ class PlClass {
     public PlObject overload_lookup(String method, int level) {
         // method is like (*=
         PlObject methodCode;
-        methodCode = PlV.cget_no_autoload(className + "::" + method);
+        String methodName = className + "::" + method;
+        methodCode = PlV.cget_no_autoload(methodName);
         if (methodCode.is_undef()) {
             // method not found
             // "overload" methods have no AUTOLOAD
@@ -4164,7 +4165,7 @@ class PlClass {
                 }
                 methodCode = PlClass.getInstance(className).overload_lookup(method, level+1);
                 if (!methodCode.is_undef()) {
-                    break search;
+                    return methodCode;
                 }
             }
         }
@@ -4173,6 +4174,12 @@ class PlClass {
             methodCode = PlV.cget_no_autoload("UNIVERSAL::" + method);
         }
         // method found
+
+        // PlObject nameLookup = PlV.sget(methodName);
+        // if (!nameLookup.is_undef()) {
+        //     return nameLookup;
+        // }
+
         return methodCode;
     }
 
