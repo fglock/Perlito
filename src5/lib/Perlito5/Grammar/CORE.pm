@@ -231,8 +231,49 @@ token term_next_last_redo {
         }
 };
 
+token term_scalar {
+    'scalar' <.Perlito5::Grammar::Space::opt_ws> 
+    [
+        '('  <paren_parse>   ')'
+        {
+            my $args = Perlito5::Match::flat($MATCH->{paren_parse});
+
+            Perlito5::Compiler::error "Not enough arguments for scalar"
+                if $args eq '*undef*';
+
+            $MATCH->{capture} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code      => 'scalar',
+                    arguments => expand_list($args),
+                    namespace => '',
+                    bareword  => 0,
+                 )
+               ]
+        }
+    |
+        <argument_parse>
+        {
+            my $args = Perlito5::Match::flat($MATCH->{argument_parse});
+            my $op = Perlito5::Match::flat($MATCH->{unary_op});
+
+            Perlito5::Compiler::error "Not enough arguments for scalar"
+                if $args eq '*undef*';
+
+            $MATCH->{capture} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code      => 'scalar',
+                    arguments => $args eq '*undef*' ? [] : [$args],
+                    namespace => '',
+                    bareword  => $args eq '*undef*' ? 1 : 0,
+                 )
+               ]
+        }
+    ]
+};
+
+
 token unary_op {
-     'shift' | 'pop' | 'scalar'
+     'shift' | 'pop'
 };
 token term_unary {
     <unary_op> <.Perlito5::Grammar::Space::opt_ws> 
@@ -251,6 +292,19 @@ token term_unary {
                     arguments => expand_list($args),
                     namespace => '',
                     bareword  => 0,
+                 )
+               ]
+        }
+    |
+        <before '->' >
+        {
+            my $op = Perlito5::Match::flat($MATCH->{unary_op});
+            $MATCH->{capture} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code      => $op,
+                    arguments => [],
+                    namespace => '',
+                    bareword  => 1,
                  )
                ]
         }
@@ -342,7 +396,7 @@ Perlito5::Grammar::Precedence::add_term( 'last'   => \&term_next_last_redo );
 Perlito5::Grammar::Precedence::add_term( 'redo'   => \&term_next_last_redo );
 Perlito5::Grammar::Precedence::add_term( 'shift'  => \&term_unary );
 Perlito5::Grammar::Precedence::add_term( 'pop'    => \&term_unary );
-Perlito5::Grammar::Precedence::add_term( 'scalar' => \&term_unary );
+Perlito5::Grammar::Precedence::add_term( 'scalar' => \&term_scalar );
 
 Perlito5::Grammar::Precedence::add_term( $_ => \&term_file_test )
     for qw( -r -w -x -o -R -W -X -O -e -z -s -f -d -l -p -S -b -c -t -u -g -k -T -B -M -A -C );
