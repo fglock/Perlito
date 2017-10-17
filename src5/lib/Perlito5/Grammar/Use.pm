@@ -25,6 +25,7 @@ my %Perlito_internal_module = (
     'encoding'       => 'Perlito5X::encoding',
     'feature'        => 'Perlito5X::feature',
     'integer'        => 'Perlito5X::integer',
+    'overload'       => 'Perlito5X::overload',
     'overloading'    => 'Perlito5X::overloading',
     're'             => 'Perlito5X::re',
     'strict'         => 'Perlito5X::strict',
