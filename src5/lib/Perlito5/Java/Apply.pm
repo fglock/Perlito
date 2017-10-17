@@ -131,6 +131,16 @@ package Perlito5::AST::Apply;
         my ($self, $arguments, $level, $wantarray) = @_;
         my $code = $self->{code};
 
+        if ( $code eq 'vec' ) {
+            # vec($i,  0, 32) = 0x5065726C;
+            # public PlObject vecSet(PlObject pOffset, PlObject pBits, PlObject pValue) {
+            return $self->{arguments}[0]->emit_java($level, 'scalar', 'lvalue') . '.vecSet('
+            .       $self->{arguments}[1]->emit_java($level, 'scalar') . ', '
+            .       $self->{arguments}[2]->emit_java($level, 'scalar') . ', '
+            .       $arguments->emit_java($level, 'scalar')
+            . ')';
+        }
+
         if ( $code eq 'my' || $code eq 'state' || $code eq 'local' || $code eq 'circumfix:<( )>' ) {
             # my ($x, $y) = ...
             # local ($x, $y) = ...

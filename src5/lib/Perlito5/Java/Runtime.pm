@@ -2972,6 +2972,10 @@ EOT
         PlCORE.die("Modification of a read-only value attempted");
         return this;
     }
+    public PlObject vecSet(PlObject pOffset, PlObject pBits, PlObject pValue) {
+        PlCORE.die("Can't modify constant item in scalar assignment");
+        return this;
+    }
     public PlObject get() {
         return PlCORE.die("error .get!");
     }
@@ -5037,6 +5041,43 @@ EOT
         // delete $v->[$a]
         return this.get().adelete(want, a);
     }
+
+    public PlObject vecSet(PlObject pOffset, PlObject pBits, PlObject pValue) {
+        // vec($i,  0, 32) = 0x5065726C
+        String vv  = this.toString();
+        int offset = pOffset.to_int();
+        int bits   = pBits.to_int();
+        long value = pValue.to_long();
+        StringBuilder sb = new StringBuilder(vv);
+        if (bits == 1) {
+            int ofs = offset / 8;
+            long v;
+            value = (value & 0x01) << (offset - 8 * ofs);
+            if ((offset + 1) > sb.length()) {
+                v = value;
+            }
+            else {
+                v = sb.charAt(ofs);
+                if ( value == 0 ) {
+                    v = v & ~value;
+                }
+                else {
+                    v = v | value;
+                }
+            }
+            // fallback to 8bit
+            value = v;
+            offset = ofs;
+        }
+        if (bits == 8) {
+            if ((offset + 1) > sb.length()) {
+                sb.setLength(offset + 1);
+            }
+            sb.setCharAt(offset, (char)(value & 0xFF));
+        }
+        return this.set(new PlString(sb.toString()));
+    }
+
     public boolean is_lvalue() {
         return true;
     }
