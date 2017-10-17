@@ -5089,6 +5089,9 @@ EOT
             sort keys %native_to_perl ))
 
     , <<'EOT'
+    public PlObject length() {
+        return this.get().length();
+    }
     public PlObject apply(int want, PlArray List__) {
         return this.get().apply(want, List__);
     }
