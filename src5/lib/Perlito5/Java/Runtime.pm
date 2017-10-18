@@ -4493,6 +4493,7 @@ EOT
             my $native;
             $native = $string_binop{$perl}{str_op} if exists $string_binop{$perl};
             $native = "cmp" if $perl eq "str_cmp";
+            $native = "x"   if $perl eq "string_replicate";
 "    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
