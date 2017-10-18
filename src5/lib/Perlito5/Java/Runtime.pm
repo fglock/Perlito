@@ -5239,7 +5239,8 @@ EOT
         // --$x
         PlObject res = this.get();
         if (res.is_ref()) {
-            // TODO - check if overload "--"
+            // overload "--"
+            return this.set( PlClass.overload_pre_decr(this) );
         }
         return this.set(res._decr());
     }
@@ -5247,7 +5248,9 @@ EOT
         // $x--
         PlObject res = this.get();
         if (res.is_ref()) {
-            // TODO - check if overload "--"
+            // overload "--"
+            this.set( PlClass.overload_post_decr(this) );
+            return res;
         }
         this.set(res._decr());
         return res;
@@ -5256,7 +5259,8 @@ EOT
         // ++$x
         PlObject res = this.get();
         if (res.is_ref()) {
-            // TODO - check if overload "++"
+            // overload "++"
+            return this.set( PlClass.overload_pre_incr(this) );
         }
         return this.set(res._incr());
     }
@@ -5264,7 +5268,9 @@ EOT
         // $x++
         PlObject res = this.get();
         if (res.is_ref()) {
-            // TODO - check if overload "++"
+            // overload "++"
+            this.set( PlClass.overload_post_incr(this) );
+            return res;
         }
         if (res.is_undef()) {
             res = PlCx.INT0;
