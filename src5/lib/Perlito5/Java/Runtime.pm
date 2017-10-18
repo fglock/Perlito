@@ -3302,7 +3302,7 @@ EOT
     public PlObject clone() throws CloneNotSupportedException {
         return this;
     }
-    public PlString string_replicate(PlObject c) {
+    public PlObject string_replicate(PlObject c) {
         int count = c.to_int();
         if ( count < 1 ) {
             return new PlString("");
@@ -3471,6 +3471,7 @@ EOT
                 'atan2',
                 'mod',
                 'num_cmp',
+                'string_replicate',
                 keys(%string_binop),
                 keys(%number_binop),
                 ( map { "_self_$_" } keys %self_assign_number_binop ),
@@ -4518,6 +4519,7 @@ EOT
             }
             sort (
                 'str_cmp',
+                'string_replicate',
                 keys %string_binop,
             )
       ))
