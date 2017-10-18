@@ -4487,12 +4487,38 @@ EOT
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
+            PlObject copyConstructorCode = bless.overload_lookup(\"(=\", 0);
             if (!methodCode.is_undef()) {
+
+                if (!copyConstructorCode.is_undef()) {
+                    o = PerlOp.call(o, copyConstructorCode, new PlArray(), PlCx.SCALAR);
+                }
+                else if (o.is_scalarref()) {
+                    // mutator: copy the reference
+                    PlObject v = o.scalar_deref(\"main\");
+                    if (v.is_lvalue()) {
+                        v = new PlLvalue(v.get());
+                    }
+                    o = new PlLvalueRef(v);
+                    o.bless( bless.className() );
+                }
+
                 return PerlOp.call(o, methodCode, new PlArray(other, swap), PlCx.SCALAR);
             }
             // TODO - overload_self_assign_${perl}
             if (bless.is_overload_fallback()) {
-                o = PlClass.overload_to_string(o);
+
+                // TODO - test 'swap'
+                PlObject v = PlClass.overload_to_number(o).${perl}(other);
+                if (o.is_scalarref()) {
+                    // auto generated mutator: copy the reference
+                    PlLvalueRef ret = new PlLvalueRef(v);
+                    ret.bless( bless.className() );
+                    return ret;
+                }
+                // TODO - call the 'Copy constructor'
+                return v;
+
             }
             else {
                 o = o.refstring();
