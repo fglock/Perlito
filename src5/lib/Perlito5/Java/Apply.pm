@@ -733,9 +733,9 @@ package Perlito5::AST::Apply;
                            . Perlito5::Java::to_context($wantarray)
                         . ')'
             }
-            'PerlOp.string_replicate('
-                           . Perlito5::Java::to_str($self->{arguments}->[0], $level) . ','
-                           . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+              Perlito5::Java::to_str($self->{arguments}->[0], $level) . '.string_replicate('
+            .       $self->{arguments}->[1]->emit_java($level, 'scalar')
+            . ')'
         },
 
         'list:<.>' => sub {

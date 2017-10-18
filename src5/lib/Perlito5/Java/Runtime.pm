@@ -1269,23 +1269,9 @@ EOT
         }
     }
 
-    public static final PlString string_replicate(PlObject s, PlObject c) {
-        int count = c.to_int();
-        if ( count < 1 ) {
-            return new PlString("");
-        }
-        else {
-            String raw_s = s.toString();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < count; i++) {
-                sb.append(raw_s);
-            }
-            return new PlString(sb.toString());
-        }
-    }
     public static final PlObject list_replicate(PlArray o, PlObject c, int wantarray) {
         if (wantarray == PlCx.SCALAR) {
-            return PerlOp.string_replicate(o.aget(-1), c);
+            return o.aget(-1).string_replicate(c);
         }
         int count = c.to_int();
         PlArray arr = new PlArray();
@@ -3315,6 +3301,20 @@ EOT
     }
     public PlObject clone() throws CloneNotSupportedException {
         return this;
+    }
+    public PlString string_replicate(PlObject c) {
+        int count = c.to_int();
+        if ( count < 1 ) {
+            return new PlString("");
+        }
+        else {
+            String raw_s = this.toString();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < count; i++) {
+                sb.append(raw_s);
+            }
+            return new PlString(sb.toString());
+        }
     }
     public PlObject str_cmp(PlObject b) {
         int c = this.toString().compareTo(b.toString());
