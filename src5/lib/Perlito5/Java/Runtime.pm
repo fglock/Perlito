@@ -3364,7 +3364,10 @@ EOT
     , ((map {
             my $perl = $_;
 "    public PlObject self_assign_${perl}(PlObject s) {
-        return this.set(this.${perl}(s));
+        return PlCORE.die(\"Can't modify constant item\");
+    }
+    public PlObject _self_${perl}(PlObject s) {
+        return this.${perl}(s);
     }
 "
             }
@@ -3470,7 +3473,7 @@ EOT
                 'num_cmp',
                 keys(%string_binop),
                 keys(%number_binop),
-                ( map { "self_assign_$_" } keys %self_assign_number_binop ),
+                ( map { "_self_$_" } keys %self_assign_number_binop ),
             )
       ))
 
@@ -3586,7 +3589,7 @@ class PlFileHandle extends PlObject {
     }
     public PlObject setUndef() {
         // undef *{$foo}
-        PlCORE.say( "PlFileHandle.setUndef " + typeglob_name);
+        // PlCORE.say( "PlFileHandle.setUndef " + typeglob_name);
 
         PlString name = new PlString(typeglob_name);
         PlV.cvar.hdelete(PlCx.VOID, name);
@@ -4483,12 +4486,13 @@ EOT
             my $perl = $_;
             my $native;
             $native = $self_assign_number_binop{$perl}{op} if exists $self_assign_number_binop{$perl};
-"    public static PlObject overload_self_assign_${perl}(PlObject o, PlObject other, PlObject swap) {
+"    public static PlObject overload__self_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
             PlObject copyConstructorCode = bless.overload_lookup(\"(=\", 0);
             if (!methodCode.is_undef()) {
+                // PlCORE.say(\"self_assign (${native} \" + other.toString());
 
                 if (!copyConstructorCode.is_undef()) {
                     o = PerlOp.call(o, copyConstructorCode, new PlArray(), PlCx.SCALAR);
@@ -4507,9 +4511,15 @@ EOT
             }
             // TODO - overload_self_assign_${perl}
             if (bless.is_overload_fallback()) {
+                // PlCORE.say(\"self_assign generated (${native} \" + other.toString());
 
-                // TODO - test 'swap'
-                PlObject v = PlClass.overload_to_number(o).${perl}(other);
+                PlObject v;
+                if (swap.to_boolean()) {
+                    v = other.${perl}(PlClass.overload_to_number(o));
+                }
+                else {
+                    v = PlClass.overload_to_number(o).${perl}(other);
+                }
                 if (o.is_scalarref()) {
                     // auto generated mutator: copy the reference
                     PlLvalueRef ret = new PlLvalueRef(v);
@@ -5355,7 +5365,7 @@ EOT
     , ((map {
             my $perl = $_;
 "    public PlObject self_assign_${perl}(PlObject s) {
-        return this.set(this.${perl}(s));
+        return this.set(this.get()._self_${perl}(s));
     }
 "
             }
