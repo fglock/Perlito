@@ -4383,26 +4383,19 @@ EOT
             if (!methodCode.is_undef()) {
                 return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
             }
-            PlObject v;
-            if (bless.is_overload_fallback()) {
-                v = PlClass.overload_to_number(o).${perl}();
-            }
-            else {
-                v = o.refaddr().${perl}();
-            }
-            if (o.is_scalarref()) {
-                // auto generated mutator: copy the reference
-                PlLvalueRef ret = new PlLvalueRef(v);
-                ret.bless = bless;
-                return ret;
-            }
-            // TODO - call the 'Copy constructor'
-            return v;
+            // if (bless.is_overload_fallback()) {
+                PlObject v = PlClass.overload_to_number(o).${perl}();
+                if (o.is_scalarref()) {
+                    // auto generated mutator: copy the reference
+                    PlLvalueRef ret = new PlLvalueRef(v);
+                    ret.bless = bless;
+                    return ret;
+                }
+                // TODO - call the 'Copy constructor'
+                return v;
+            // }
         }
-        else {
-            o = o.refaddr();
-        }
-        return o.${perl}();
+        return o.refaddr().${perl}();
     }
 "
             }
@@ -4425,16 +4418,10 @@ EOT
                 return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
             }
             if (bless.is_overload_fallback()) {
-                o = PlClass.overload_to_number(o);
-            }
-            else {
-                o = o.refaddr();
+                return PlClass.overload_to_number(o).${perl}();
             }
         }
-        else {
-            o = o.refaddr();
-        }
-        return o.${perl}();
+        return o.refaddr().${perl}();
     }
 "
             }
