@@ -4429,14 +4429,41 @@ EOT
             $native = "~"       if $perl eq "complement";
 "    public static PlObject overload_${perl}(PlObject o) {
         PlClass bless = o.blessed_class();
+        // PlCORE.say(\"overload_${perl}\");
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
             if (!methodCode.is_undef()) {
+                // PlCORE.say(\"overload_${perl} hit \");
                 return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
             }
+"
+. ( $perl eq "neg" ?
+"
+            // neg falls back to (0-v)
+            methodCode = bless.overload_lookup(\"(-\", 0);
+            if (!methodCode.is_undef()) {
+                // PlCORE.say(\"overload_${perl} fallback (- \");
+                return PerlOp.call(o, methodCode, new PlArray(PlCx.INT0, PlCx.TRUE), PlCx.SCALAR);
+            }
+"
+  : ())
+. ( $perl eq "abs" ?
+"
+            // abs falls back to (v < 0 ? 0-v : v)
+            // TODO
+            methodCode = bless.overload_lookup(\"(-\", 0);
+            if (!methodCode.is_undef()) {
+                // PlCORE.say(\"overload_${perl} fallback (- \");
+                return PerlOp.call(o, methodCode, new PlArray(PlCx.INT0, PlCx.TRUE), PlCx.SCALAR);
+            }
+"
+  : ())
+. "
             if (bless.is_overload_fallback()) {
+                // PlCORE.say(\"overload_${perl} plain fallback \");
                 return PlClass.overload_to_number(o).${perl}();
             }
+            // PlCORE.say(\"overload_${perl} fall through \");
         }
         return o.refaddr().${perl}();
     }
