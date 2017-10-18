@@ -4450,11 +4450,24 @@ EOT
 . ( $perl eq "abs" ?
 "
             // abs falls back to (v < 0 ? 0-v : v)
-            // TODO
-            methodCode = bless.overload_lookup(\"(-\", 0);
+            methodCode = bless.overload_lookup(\"(<\", 0);
             if (!methodCode.is_undef()) {
-                // PlCORE.say(\"overload_${perl} fallback (- \");
-                return PerlOp.call(o, methodCode, new PlArray(PlCx.INT0, PlCx.TRUE), PlCx.SCALAR);
+                // PlCORE.say(\"overload_${perl} fallback (< \");
+                int cmp = PerlOp.call(o, methodCode, new PlArray(PlCx.INT0, PlCx.FALSE), PlCx.SCALAR).to_int();
+                if (cmp > 0) {
+                    return o.neg();
+                }
+                return o;
+            }
+
+            methodCode = bless.overload_lookup(\"(<=>\", 0);
+            if (!methodCode.is_undef()) {
+                // PlCORE.say(\"overload_${perl} fallback (<=> \");
+                int cmp = PerlOp.call(o, methodCode, new PlArray(PlCx.INT0, PlCx.FALSE), PlCx.SCALAR).to_int();
+                if (cmp >= 0) {
+                    return o;
+                }
+                return o.neg();
             }
 "
   : ())
