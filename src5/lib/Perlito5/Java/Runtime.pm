@@ -3449,10 +3449,8 @@ EOT
 "
             }
             sort (
-                'pre_decr',
-                'pre_incr',
-                'post_decr',
-                'post_incr',
+                '_decr',
+                '_incr',
                 @number_unary,
             )
       ))
@@ -4378,8 +4376,8 @@ EOT
             $native = $perl;
             $native = "int"     if $perl eq "op_int";
             $native = "~"       if $perl eq "complement";
-            $native = "++"      if $perl eq "post_incr" || $perl eq "pre_incr";
-            $native = "--"      if $perl eq "post_decr" || $perl eq "pre_decr";
+            $native = "++"      if $perl eq "_incr";
+            $native = "--"      if $perl eq "_decr";
 "    public static PlObject overload_${perl}(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
@@ -4402,10 +4400,8 @@ EOT
 "
             }
             sort (
-                'pre_decr',
-                'pre_incr',
-                'post_decr',
-                'post_incr',
+                '_decr',
+                '_incr',
                 @number_unary,
             )
       ))
@@ -5238,40 +5234,22 @@ EOT
     public PlObject pre_decr() {
         // --$x
         PlObject res = this.get();
-        if (res.is_ref()) {
-            // overload "--"
-            return this.set( PlClass.overload_pre_decr(this) );
-        }
         return this.set(res._decr());
     }
     public PlObject post_decr() {
         // $x--
         PlObject res = this.get();
-        if (res.is_ref()) {
-            // overload "--"
-            this.set( PlClass.overload_post_decr(this) );
-            return res;
-        }
         this.set(res._decr());
         return res;
     }
     public PlObject pre_incr() {
         // ++$x
         PlObject res = this.get();
-        if (res.is_ref()) {
-            // overload "++"
-            return this.set( PlClass.overload_pre_incr(this) );
-        }
         return this.set(res._incr());
     }
     public PlObject post_incr() {
         // $x++
         PlObject res = this.get();
-        if (res.is_ref()) {
-            // overload "++"
-            this.set( PlClass.overload_post_incr(this) );
-            return res;
-        }
         if (res.is_undef()) {
             res = PlCx.INT0;
         }
