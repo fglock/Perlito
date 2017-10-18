@@ -4344,8 +4344,8 @@ EOT
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(o, methodCode, new PlArray(other, swap), PlCx.SCALAR);
             }
             if (bless.is_overload_fallback()) {
                 o = PlClass.overload_to_number(o);
@@ -4384,8 +4384,8 @@ EOT
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
             }
             if (bless.is_overload_fallback()) {
                 o = PlClass.overload_to_number(o);
@@ -4419,8 +4419,8 @@ EOT
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(o, methodCode, new PlArray(other, swap), PlCx.SCALAR);
             }
             if (bless.is_overload_fallback()) {
                 o = PlClass.overload_to_string(o);
@@ -4453,8 +4453,8 @@ EOT
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(o, methodCode, new PlArray(other, swap), PlCx.SCALAR);
             }
             // TODO - overload_self_assign_${perl}
             if (bless.is_overload_fallback()) {
