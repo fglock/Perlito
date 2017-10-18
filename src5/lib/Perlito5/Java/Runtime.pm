@@ -47,7 +47,7 @@ sub perl5_to_java {
     # use lexicals from BEGIN scratchpad
     $ast = $ast->emit_begin_scratchpad();
 
-    # say "ast: [" . ast . "]";
+    # warn "in perl_to_java: ", Perlito5::Dumper::Dumper( $ast );
     my $java_code = $ast->emit_java(0, $want);
 
     # say "java-source: [" . $java_code . "]";

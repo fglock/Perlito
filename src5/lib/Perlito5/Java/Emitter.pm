@@ -869,11 +869,16 @@ package Perlito5::Java;
         my $level = $_[1];
         my $wantarray = $_[2];   # 'return';
 
-        return $items->[0]->emit_java($level, $wantarray)
-            if @$items == 1 && is_scalar($items->[0]);
+        my @s = grep {$_ ne ''} map( $_->emit_java($level, $wantarray), @$items );
+
+        return 'PerlOp.context(want)'
+            if @s == 0;
+
+        return $s[0]
+            if @s == 1 && is_scalar($items->[0]);
 
         'PerlOp.context(' . to_context($wantarray) . ', ' 
-            .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
+            .   join(', ', @s)
             . ')'
     }
 
