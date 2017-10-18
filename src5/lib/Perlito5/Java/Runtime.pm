@@ -4374,10 +4374,49 @@ EOT
     , ((map {
             my $perl = $_;
             $native = $perl;
-            $native = "int"     if $perl eq "op_int";
-            $native = "~"       if $perl eq "complement";
             $native = "++"      if $perl eq "_incr";
             $native = "--"      if $perl eq "_decr";
+"    public static PlObject overload_${perl}(PlObject o) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null && bless.is_overloaded() ) {
+            PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
+            }
+            PlObject v;
+            if (bless.is_overload_fallback()) {
+                v = PlClass.overload_to_number(o).${perl}();
+            }
+            else {
+                v = o.refaddr().${perl}();
+            }
+            if (o.is_scalarref()) {
+                // auto generated mutator: copy the reference
+                PlLvalueRef ret = new PlLvalueRef(v);
+                ret.bless = bless;
+                return ret;
+            }
+            // TODO - call the 'Copy constructor'
+            return v;
+        }
+        else {
+            o = o.refaddr();
+        }
+        return o.${perl}();
+    }
+"
+            }
+            sort (
+                '_decr',
+                '_incr',
+            )
+      ))
+
+    , ((map {
+            my $perl = $_;
+            $native = $perl;
+            $native = "int"     if $perl eq "op_int";
+            $native = "~"       if $perl eq "complement";
 "    public static PlObject overload_${perl}(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
@@ -4400,8 +4439,6 @@ EOT
 "
             }
             sort (
-                '_decr',
-                '_incr',
                 @number_unary,
             )
       ))
