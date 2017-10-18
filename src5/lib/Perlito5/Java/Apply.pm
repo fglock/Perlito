@@ -164,8 +164,9 @@ package Perlito5::AST::Apply;
              . ')';
         }
         if ($code eq 'prefix:<$#>') {
-            return Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'array' ) . '.array_deref().set_end_of_array_index('
-                # . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', '
+            return Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'array' ) . '.array_deref('
+                . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+                . ').set_end_of_array_index('
                 . Perlito5::Java::to_scalar([$arguments], $level+1)  
                 . ')';
         }

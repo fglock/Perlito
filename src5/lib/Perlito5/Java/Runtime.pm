@@ -4134,15 +4134,15 @@ class PlClass {
     }
     public Boolean is_overloaded() {
         if (this.overload_flag == null) {
-            PlObject methodCode1 = this.overload_lookup("((", 0);
-            PlObject methodCode2 = this.overload_lookup("()", 0);
+            PlObject methodCode1 = this.method_lookup("((", 0);
+            PlObject methodCode2 = this.method_lookup("()", 0);
             this.overload_flag = methodCode1.is_coderef() || methodCode2.is_coderef();
         }
         return this.overload_flag;
     }
     public Boolean is_overload_fallback() {
         if (this.overload_fallback_flag == null) {
-            PlObject methodCode = this.overload_lookup("()", 0);
+            PlObject methodCode = this.method_lookup("()", 0);
             this.overload_fallback_flag = methodCode.is_coderef();
         }
         return this.overload_fallback_flag;
@@ -4175,10 +4175,11 @@ class PlClass {
         }
         // method found
 
-        // PlObject nameLookup = PlV.sget(methodName);
-        // if (!nameLookup.is_undef()) {
-        //     return nameLookup;
-        // }
+        PlObject nameLookup = PlV.sget(methodName);
+        if (!nameLookup.is_undef()) {
+            // PlCORE.say("overload_lookup " + methodName + " scalar [" + nameLookup.toString() + "]");
+            return nameLookup;
+        }
 
         return methodCode;
     }
@@ -4289,9 +4290,8 @@ EOT
             // PlCORE.say("PlReference toString() " + bless.className);
             for (String ovl : new String[] { PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_BOOL }) {
                 PlObject methodCode = bless.overload_lookup(ovl, 0);
-                if (methodCode.is_coderef()) {
-                    // PlCORE.say("has method "+ovl);
-                    return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                if (!methodCode.is_undef()) {
+                    return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
                 }
                 if (!bless.is_overload_fallback()) {
                     break;
@@ -4305,8 +4305,8 @@ EOT
         if ( bless != null && bless.is_overloaded() ) {
             for (String ovl : new String[] { PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_BOOL }) {
                 PlObject methodCode = bless.overload_lookup(ovl, 0);
-                if (methodCode.is_coderef()) {
-                    return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                if (!methodCode.is_undef()) {
+                    return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
                 }
                 if (!bless.is_overload_fallback()) {
                     break;
@@ -4320,8 +4320,8 @@ EOT
         if ( bless != null && bless.is_overloaded() ) {
             for (String ovl : new String[] { PlCx.OVERLOAD_BOOL, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING }) {
                 PlObject methodCode = bless.overload_lookup(ovl, 0);
-                if (methodCode.is_coderef()) {
-                    return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                if (!methodCode.is_undef()) {
+                    return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
                 }
                 if (!bless.is_overload_fallback()) {
                     break;
