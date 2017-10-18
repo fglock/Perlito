@@ -3371,7 +3371,10 @@ EOT
     }
 "
             }
-            sort keys %self_assign_number_binop ))
+            sort ( 'string_replicate',
+                   keys %self_assign_number_binop,
+            ),
+      ))
 
     , <<'EOT'
 }
@@ -4529,6 +4532,7 @@ EOT
             my $perl = $_;
             my $native;
             $native = $self_assign_number_binop{$perl}{op} if exists $self_assign_number_binop{$perl};
+            $native = "x="   if $perl eq "string_replicate";
 "    public static PlObject overload__self_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         // PlCORE.say(\"in self_assign ${native} \");
@@ -4589,6 +4593,7 @@ EOT
 "
             }
             sort (
+                'string_replicate',
                 keys %self_assign_number_binop,
             )
       ))
@@ -5413,7 +5418,10 @@ EOT
     }
 "
             }
-            sort keys %self_assign_number_binop ))
+            sort ( 'string_replicate',
+                   keys %self_assign_number_binop,
+            ),
+      ))
 
         # unary operators
         #
