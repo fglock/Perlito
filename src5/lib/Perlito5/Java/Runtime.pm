@@ -4488,6 +4488,7 @@ EOT
             $native = $self_assign_number_binop{$perl}{op} if exists $self_assign_number_binop{$perl};
 "    public static PlObject overload__self_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
+        // PlCORE.say(\"in self_assign ${native} \");
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
             PlObject copyConstructorCode = bless.overload_lookup(\"(=\", 0);
@@ -4510,7 +4511,7 @@ EOT
                 return PerlOp.call(o, methodCode, new PlArray(other, swap), PlCx.SCALAR);
             }
             // TODO - overload_self_assign_${perl}
-            if (bless.is_overload_fallback()) {
+            //if (bless.is_overload_fallback()) {
                 // PlCORE.say(\"self_assign generated (${native} \" + other.toString());
 
                 PlObject v;
@@ -4529,10 +4530,10 @@ EOT
                 // TODO - call the 'Copy constructor'
                 return v;
 
-            }
-            else {
-                o = o.refstring();
-            }
+            //}
+            //else {
+            //    o = o.refstring();
+            //}
         }
         else {
             o = o.refstring();
