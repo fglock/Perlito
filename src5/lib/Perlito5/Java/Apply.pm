@@ -414,6 +414,8 @@ package Perlito5::AST::Apply;
               [ 'infix:</=>',   'self_assign_div',    '/'  ],
               [ 'infix:<**=>',  'self_assign_pow'     ],
               [ 'infix:<x=>',   'self_assign_string_replicate' ],
+              [ 'infix:<||=>',  'self_assign_or' ],
+              [ 'infix:<&&=>',  'self_assign_and' ],
             )
         ),
         'infix:<~~>' => sub {

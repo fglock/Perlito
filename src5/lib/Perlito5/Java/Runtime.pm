@@ -3366,7 +3366,18 @@ EOT
 "    public PlObject self_assign_${perl}(PlObject s) {
         return PlCORE.die(\"Can't modify constant item\");
     }
-    public PlObject _self_${perl}(PlObject s) {
+"
+            }
+            sort ( 'string_replicate',
+                   'and',
+                   'or',
+                   keys %self_assign_number_binop,
+            ),
+      ))
+
+    , ((map {
+            my $perl = $_;
+"    public PlObject _self_${perl}(PlObject s) {
         return this.${perl}(s);
     }
 "
@@ -5390,7 +5401,6 @@ EOT
         return this.get().bless(className);
     }
 
-    // accessors
     public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
     public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
 
@@ -5399,6 +5409,13 @@ EOT
     }
     public PlObject clone() throws CloneNotSupportedException {
         return this.get().clone();
+    }
+
+    public PlObject self_assign_or(PlObject s) {
+        return (this.to_boolean() ? this : this.set(s));
+    }
+    public PlObject self_assign_and(PlObject s) {
+        return (this.to_boolean() ? this.set(s) : this);
     }
 EOT
     , ((map {
