@@ -37,12 +37,16 @@ sub perl5_to_java {
         die "Syntax error in eval near pos ", $match->{to};
     }
 
-    my $ast = Perlito5::AST::Apply->new(
-                code => 'do',
-                arguments => [ Perlito5::AST::Block->new(
+    my $ast = 
+        Perlito5::AST::Call->new(
+            method => "postcircumfix:<( )>",
+            arguments => [],
+            invocant => Perlito5::AST::Sub->new(
+                block => Perlito5::AST::Block->new(
                             stmts => $match->{capture},
-                         ) ],
-              );
+                         ),
+            ),
+        );
 
     # use lexicals from BEGIN scratchpad
     $ast = $ast->emit_begin_scratchpad();
