@@ -964,11 +964,10 @@ package Perlito5::AST::Apply;
             $Perlito5::THROW_RETURN = 1;
 
             my $arg = $self->{arguments}->[0];
-            if (  ref($arg) eq 'Perlito5::AST::Var'
-               && $arg->{sigil} eq '&'
-               )
+            if (   ( ref($arg) eq 'Perlito5::AST::Var'   && $arg->{sigil} eq '&' )
+                || ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'prefix:<&>' ) )
             {
-                # &subr is a subroutine call
+                # &subr &{"subr"} is a subroutine call
                 return 'PerlOp.ret(' . $arg->emit_java($level) . ')';
             }
 
