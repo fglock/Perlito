@@ -655,10 +655,12 @@ sub string_interpolation_parse {
     else {
         unshift @args, Perlito5::AST::Buf->new( buf => '' )
             if @args == 1;
+
         $ast = Perlito5::AST::Apply->new(
             namespace => '',
             code => 'list:<.>',
             arguments => \@args,
+            Perlito5::overloading_flag(),
         )
     }
     

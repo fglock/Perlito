@@ -372,17 +372,13 @@ my $reduce_to_ast = sub {
         my $v2 = pop_term($num_stack);
         my $op = $last_op->[1];
 
-        my $is_integer;
-        if ( ($^H & $Perlito5::INTEGER) && $Perlito5::Integer{$op} ) {
-            $is_integer = 1;
-        }
-
         push @$num_stack,
             Perlito5::AST::Apply->new(
                 namespace => '',
                 code      => 'infix:<' . $op . '>',
                 arguments => [ pop_term($num_stack), $v2 ],
-                ( $is_integer ? ( _integer => 1 ) : () ),
+                Perlito5::integer_flag(),
+                Perlito5::overloading_flag(),
               );
     }
 };

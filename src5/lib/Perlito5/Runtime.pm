@@ -842,5 +842,21 @@ sub get_label {
     'tmp' . $Perlito5::ID++
 }
 
+sub overloading_flag {
+    my $no_overloading;
+    if ($^H & $Perlito5::HINT_NO_AMAGIC) {
+        # TODO - check operator bit in $^H{overloading}
+        $no_overloading = 1;
+    }
+    return ( $no_overloading ? ( _no_overloading => 1 ) : () );
+}
+sub integer_flag {
+    my $is_integer;
+    if ( ($^H & $Perlito5::INTEGER) && $Perlito5::Integer{$op} ) {
+        $is_integer = 1;
+    }
+    return ( $is_integer ? ( _integer => 1 ) : () );
+}
+
 1;          
 
