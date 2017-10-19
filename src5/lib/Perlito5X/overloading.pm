@@ -3,9 +3,7 @@ use warnings;
 
 our $VERSION = '0.02';
 
-# magic numbers - See lib/overloading.pm in perl distribution
-$Perlito5::HINT_NO_AMAGIC = 0x01000000; # see perl.h
-my $HINT_NO_AMAGIC = $Perlito5::HINT_NO_AMAGIC;
+my $HINT_NO_AMAGIC = 0x01000000; # see perl.h
 
 require 5.010001;
 
