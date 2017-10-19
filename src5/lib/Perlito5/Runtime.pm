@@ -86,7 +86,7 @@ $Perlito5::INTEGER = 0x01;
 $Perlito5::HINT_NO_AMAGIC = 0x01000000;
 
 # these operators change when "use integer" - ( $^H & $Perlito5::INTEGER )
-our %Integer = (
+%Perlito5::Integer = (
     '%'   => 1,
     '>>'  => 1,
     '<<'  => 1,
@@ -851,6 +851,7 @@ sub overloading_flag {
     return ( $no_overloading ? ( _no_overloading => 1 ) : () );
 }
 sub integer_flag {
+    my $op = shift;
     my $is_integer;
     if ( ($^H & $Perlito5::INTEGER) && $Perlito5::Integer{$op} ) {
         $is_integer = 1;

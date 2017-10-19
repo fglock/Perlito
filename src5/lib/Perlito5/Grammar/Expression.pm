@@ -377,7 +377,7 @@ my $reduce_to_ast = sub {
                 namespace => '',
                 code      => 'infix:<' . $op . '>',
                 arguments => [ pop_term($num_stack), $v2 ],
-                Perlito5::integer_flag(),
+                Perlito5::integer_flag($op),
                 Perlito5::overloading_flag(),
               );
     }
