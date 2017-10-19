@@ -345,8 +345,9 @@ is($na, '_!_xx_!_');
 ## ok(! defined overload::Method($aI, '<<'));
 ## ok(! defined overload::Method($a, '<'));
 
-like (overload::StrVal($aI), qr/^OscalarI=SCALAR\(0x[\da-fA-F]+\)$/);
-is(overload::StrVal(\$aI), "@{[\$aI]}");
+## TODO - overload::StrVal requires "no overloading"
+## like (overload::StrVal($aI), qr/^OscalarI=SCALAR\(0x[\da-fA-F]+\)$/);
+## is(overload::StrVal(\$aI), "@{[\$aI]}");
 
 # Check overloading by methods (specified deep in the ISA tree).
 {
@@ -356,7 +357,6 @@ is(overload::StrVal(\$aI), "@{[\$aI]}");
   eval "package OscalarI; use overload '<<' => 'lshft', '|' => 'lshft'";
 }
 
-__END__
 $aaII = "087";
 $aII = \$aaII;
 bless $aII, 'OscalarII';
@@ -365,77 +365,79 @@ is(($aI | 3), '_<<_xx_<<_');
 # warn $aII << 3;
 is(($aII << 3), '_<<_087_<<_');
 
-{
-  BEGIN { $int = 7; overload::constant 'integer' => sub {$int++; shift}; }
-  $out = 2**10;
-}
-is($int, 9);
-is($out, 1024);
-is($int, 9);
-{
-  BEGIN { overload::constant 'integer' => sub {$int++; shift()+1}; }
-  eval q{$out = 42};
-}
-is($int, 10);
-is($out, 43);
+## TODO - overload::constant not implemented
+## {
+##   BEGIN { $int = 7; overload::constant 'integer' => sub {$int++; shift}; }
+##   $out = 2**10;
+## }
+## is($int, 9);
+## is($out, 1024);
+## is($int, 9);
+## {
+##   BEGIN { overload::constant 'integer' => sub {$int++; shift()+1}; }
+##   eval q{$out = 42};
+## }
+## is($int, 10);
+## is($out, 43);
+## 
+## $foo = 'foo';
+## $foo1 = 'f\'o\\o';
+## {
+##   BEGIN { $q = $qr = 7; 
+## 	  overload::constant 'q' => sub {$q++; push @q, shift, ($_[1] || 'none'); shift},
+## 			     'qr' => sub {$qr++; push @qr, shift, ($_[1] || 'none'); shift}; }
+##   $out = 'foo';
+##   $out1 = 'f\'o\\o';
+##   $out2 = "a\a$foo,\,";
+##   /b\b$foo.\./;
+## }
+## 
+## is($out, 'foo');
+## is($out, $foo);
+## is($out1, 'f\'o\\o');
+## is($out1, $foo1);
+## is($out2, "a\afoo,\,");
+## is("@q", "foo q f'o\\\\o q a\\a qq ,\\, qq");
+## is($q, 11);
+## is("@qr", "b\\b qq .\\. qq");
+## is($qr, 9);
+## 
+## {
+##   $_ = '!<b>!foo!<-.>!';
+##   BEGIN { overload::constant 'q' => sub {push @q1, shift, ($_[1] || 'none'); "_<" . (shift) . ">_"},
+## 			     'qr' => sub {push @qr1, shift, ($_[1] || 'none'); "!<" . (shift) . ">!"}; }
+##   $out = 'foo';
+##   $out1 = 'f\'o\\o';
+##   $out2 = "a\a$foo,\,";
+##   $res = /b\b$foo.\./;
+##   $a = <<EOF;
+## oups
+## EOF
+##   $b = <<'EOF';
+## oups1
+## EOF
+##   $c = bareword;
+##   m'try it';
+##   s'first part'second part';
+##   s/yet another/tail here/;
+##   tr/A-Z/a-z/;
+## }
+## 
+## is($out, '_<foo>_');
+## is($out1, '_<f\'o\\o>_');
+## is($out2, "_<a\a>_foo_<,\,>_");
+## is("@q1", "foo q f'o\\\\o q a\\a qq ,\\, qq oups
+##  qq oups1
+##  q second part q tail here s A-Z tr a-z tr");
+## is("@qr1", "b\\b qq .\\. qq try it q first part q yet another qq");
+## is($res, 1);
+## is($a, "_<oups
+## >_");
+## is($b, "_<oups1
+## >_");
+## is($c, "bareword");
 
-$foo = 'foo';
-$foo1 = 'f\'o\\o';
-{
-  BEGIN { $q = $qr = 7; 
-	  overload::constant 'q' => sub {$q++; push @q, shift, ($_[1] || 'none'); shift},
-			     'qr' => sub {$qr++; push @qr, shift, ($_[1] || 'none'); shift}; }
-  $out = 'foo';
-  $out1 = 'f\'o\\o';
-  $out2 = "a\a$foo,\,";
-  /b\b$foo.\./;
-}
-
-is($out, 'foo');
-is($out, $foo);
-is($out1, 'f\'o\\o');
-is($out1, $foo1);
-is($out2, "a\afoo,\,");
-is("@q", "foo q f'o\\\\o q a\\a qq ,\\, qq");
-is($q, 11);
-is("@qr", "b\\b qq .\\. qq");
-is($qr, 9);
-
-{
-  $_ = '!<b>!foo!<-.>!';
-  BEGIN { overload::constant 'q' => sub {push @q1, shift, ($_[1] || 'none'); "_<" . (shift) . ">_"},
-			     'qr' => sub {push @qr1, shift, ($_[1] || 'none'); "!<" . (shift) . ">!"}; }
-  $out = 'foo';
-  $out1 = 'f\'o\\o';
-  $out2 = "a\a$foo,\,";
-  $res = /b\b$foo.\./;
-  $a = <<EOF;
-oups
-EOF
-  $b = <<'EOF';
-oups1
-EOF
-  $c = bareword;
-  m'try it';
-  s'first part'second part';
-  s/yet another/tail here/;
-  tr/A-Z/a-z/;
-}
-
-is($out, '_<foo>_');
-is($out1, '_<f\'o\\o>_');
-is($out2, "_<a\a>_foo_<,\,>_");
-is("@q1", "foo q f'o\\\\o q a\\a qq ,\\, qq oups
- qq oups1
- q second part q tail here s A-Z tr a-z tr");
-is("@qr1", "b\\b qq .\\. qq try it q first part q yet another qq");
-is($res, 1);
-is($a, "_<oups
->_");
-is($b, "_<oups1
->_");
-is($c, "bareword");
-
+__END__
 {
   package symbolic;		# Primitive symbolic calculator
   use overload nomethod => \&wrap, '""' => \&str, '0+' => \&num,

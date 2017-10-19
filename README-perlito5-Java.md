@@ -173,6 +173,7 @@ Perlito5-Java work-in-progress
       - dereferencing, iterators, filetest not implemented
       - `.` operator not implemented
       - `no overloading` not implemented
+      - `overload::constant` not implemented
       - `nomethod` not implemented
 
   - file handles are partially implemented
