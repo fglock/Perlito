@@ -415,6 +415,7 @@ class PlCx {
     public static final String OVERLOAD_STRING   = "(\"\"";  // (""
     public static final String OVERLOAD_NUM      = "(0+";
     public static final String OVERLOAD_BOOL     = "(bool";
+    public static final String OVERLOAD_NOMETHOD = "(nomethod";
     public static final PlRegex SPLIT_SPACE      = new PlRegex("\\s+", Pattern.MULTILINE, false);
 EOT
     , "    " . join("\n    ",
@@ -4320,6 +4321,13 @@ EOT
                 }
             }
         }
+
+        // nomethod
+        PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
+        if (!methodCode.is_undef()) {
+            return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
+        }
+
         return o.refstring();
     }
     public static PlObject overload_to_number(PlObject o) {
@@ -4335,6 +4343,13 @@ EOT
                 }
             }
         }
+
+        // nomethod
+        PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
+        if (!methodCode.is_undef()) {
+            return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_NUM) ), PlCx.SCALAR);
+        }
+
         return o.refaddr();
     }
     public static PlObject overload_to_boolean(PlObject o) {
@@ -4350,6 +4365,13 @@ EOT
                 }
             }
         }
+
+        // nomethod
+        PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
+        if (!methodCode.is_undef()) {
+            return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_BOOL) ), PlCx.SCALAR);
+        }
+
         return PlCx.TRUE;
     }
 EOT
