@@ -3329,6 +3329,15 @@ EOT
         int c = blong.compareTo(this.to_long());
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
+    public PlObject str_xor(PlObject b) {
+        return PlCORE.die("^. not implemented");
+    }
+    public PlObject str_and(PlObject b) {
+        return PlCORE.die("&. not implemented");
+    }
+    public PlObject str_or(PlObject b) {
+        return PlCORE.die("|. not implemented");
+    }
 EOT
     , ((map {
             my $perl = $_;
@@ -3372,6 +3381,9 @@ EOT
             sort ( 'string_replicate',
                    'and',
                    'or',
+                   'str_and',
+                   'str_or',
+                   'str_xor',
                    keys %self_assign_number_binop,
             ),
       ))
@@ -5466,6 +5478,19 @@ EOT
             }
             sort ( 'string_replicate',
                    keys %self_assign_number_binop,
+            ),
+      ))
+
+    , ((map {
+            my $perl = $_;
+"    public PlObject self_assign_${perl}(PlObject s) {
+        return PlCORE.die(\"not implemented\");
+    }
+"
+            }
+            sort ( 'str_and',
+                   'str_or',
+                   'str_xor',
             ),
       ))
 
