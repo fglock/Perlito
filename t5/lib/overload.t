@@ -49,7 +49,7 @@ package main;
 $| = 1;
 BEGIN { require './test.pl'; #require './charset_tools.pl' 
 }
-plan tests => 5215;
+plan tests => 92; # 5215;
 
 # use Scalar::Util qw(tainted);
 
