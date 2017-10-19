@@ -4356,7 +4356,7 @@ EOT
                 o = PlClass.overload_to_number(o);
             }
             else {
-                o = o.refaddr();
+                PlCORE.die(\"Operation ${native}: no method found\");
             }
         }
         else {
@@ -4481,6 +4481,7 @@ EOT
                 return PlClass.overload_to_number(o).${perl}();
             }
             // PlCORE.say(\"overload_${perl} fall through \");
+            PlCORE.die(\"Operation ${native}: no method found\");
         }
         return o.refaddr().${perl}();
     }
