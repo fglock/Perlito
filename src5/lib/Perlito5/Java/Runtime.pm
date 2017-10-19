@@ -3137,6 +3137,9 @@ EOT
         long v = this.to_long();
         return new PlInt(v < 0 ? ~v : 4294967295L - v);
     }
+    public PlObject str_complement() {
+        return PlCORE.die("~. not implemented");
+    }
     public PlObject abs() {
         long c = this.to_long();
         return new PlInt(c < 0 ? -c : c);

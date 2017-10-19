@@ -517,6 +517,12 @@ package Perlito5::AST::Apply;
             my $arg = $self->{arguments}->[0];
             $arg->emit_java( $level, 'scalar' ) . '.complement()';
         },
+        'prefix:<~.>' => sub {
+            my $self  = shift;
+            my $level = shift;
+            my $arg = $self->{arguments}->[0];
+            $arg->emit_java( $level, 'scalar' ) . '.str_complement()';
+        },
         'prefix:<->' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = $self->{arguments}->[0];
