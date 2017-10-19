@@ -168,11 +168,12 @@ Perlito5-Java work-in-progress
   - overload is partially implemented
       - overload string, number, boolean work
       - binary operators work
-      - '.' operator not implemented
       - mutators and assignment work
+      - `fallback` needs more tests
       - dereferencing, iterators, filetest not implemented
+      - `.` operator not implemented
+      - `no overloading` not implemented
       - `nomethod` not implemented
-      - `fallback` not implemented; fallback mode behaves as `TRUE`
 
   - file handles are partially implemented
       - open scalarref works
@@ -180,13 +181,14 @@ Perlito5-Java work-in-progress
       - open binary mode vs. open utf8 needs more work
       - files don't `auto-close`
 
-  - `tr()` needs to be interpolated at compile-time
-      - pre-expand escape sequences
+  - `tr()` is partially implemented
+      - pre-expand escape sequences needs some work
 
   - subroutines
       - `my sub x {...}` not implemented
 
   - lvalue $#a and other expressions: substr, ternary, keys, pos
+      - needs more tests
 
   - `local @_` doesn't work yet, because `@_` is special
 
@@ -199,8 +201,8 @@ Perlito5-Java work-in-progress
       - unpack()
 
   - not implemented CORE functions
-      - vec()
       - format()
+      - UNIX-specific operators
 
   - clone() is work-in-progress
       - deep clone of references is not implemented
