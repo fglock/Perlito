@@ -168,7 +168,8 @@ Perlito5-Java work-in-progress
   - overload is partially implemented
       - overload string, number, boolean work
       - binary operators work
-      - mutators and assignment not implemented
+      - '.' operator not implemented
+      - mutators and assignment work
       - dereferencing, iterators, filetest not implemented
       - `nomethod` not implemented
       - `fallback` not implemented; fallback mode behaves as `TRUE`
