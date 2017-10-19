@@ -4322,11 +4322,11 @@ EOT
             }
         }
 
-        // nomethod
-        PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
-        if (!methodCode.is_undef()) {
-            return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
-        }
+        // // nomethod
+        // PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
+        // if (!methodCode.is_undef()) {
+        //     return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
+        // }
 
         return o.refstring();
     }
@@ -4344,11 +4344,11 @@ EOT
             }
         }
 
-        // nomethod
-        PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
-        if (!methodCode.is_undef()) {
-            return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_NUM) ), PlCx.SCALAR);
-        }
+        // // nomethod
+        // PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
+        // if (!methodCode.is_undef()) {
+        //     return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_NUM) ), PlCx.SCALAR);
+        // }
 
         return o.refaddr();
     }
@@ -4366,11 +4366,11 @@ EOT
             }
         }
 
-        // nomethod
-        PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
-        if (!methodCode.is_undef()) {
-            return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_BOOL) ), PlCx.SCALAR);
-        }
+        // // nomethod
+        // PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
+        // if (!methodCode.is_undef()) {
+        //     return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_BOOL) ), PlCx.SCALAR);
+        // }
 
         return PlCx.TRUE;
     }
