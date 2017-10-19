@@ -82,6 +82,8 @@ push @INC, $_
 
 # magic numbers - See lib/integer.pm in perl distribution
 $Perlito5::INTEGER = 0x01;
+# magic numbers - See lib/overloading.pm in perl distribution
+$Perlito5::HINT_NO_AMAGIC = 0x01000000;
 
 # these operators change when "use integer" - ( $^H & $Perlito5::INTEGER )
 our %Integer = (
