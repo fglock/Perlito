@@ -2292,7 +2292,7 @@ class PlV {
         PlV.fset("main::STDOUT", PlV.STDOUT);
         PlV.fset("main::STDERR", PlV.STDERR);
 
-        PlV.cset("UNIVERSAL::can", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
+        PlV.cset("UNIVERSAL::can", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL", true) {
             public PlObject apply(int want, PlArray List__) {
                 PlObject self = List__.shift();
                 String method_name = List__.shift().toString();
@@ -2314,7 +2314,7 @@ class PlV {
                 return PlCx.UNDEF;
             }
         });
-        PlV.cset("UNIVERSAL::isa", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
+        PlV.cset("UNIVERSAL::isa", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL", true) {
             public PlObject apply(int want, PlArray List__) {
                 PlObject self = List__.shift();
                 String class_name = List__.shift().toString();
@@ -2340,7 +2340,7 @@ class PlV {
         // &main::import doesn't do anything
         PlV.cset(
             "main::import",
-            new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "main") {
+            new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "main", true) {
                 public PlObject apply(int want, PlArray List__) {
                     return PerlOp.context(want);
                 }
@@ -3765,12 +3765,14 @@ class PlClosure extends PlReference implements Runnable {
     public String  javaClassName;
     public Integer firstLineNumber;
     public Integer lastLineNumber;
+    public boolean is_defined;
 
-    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name) {
+    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
         this.prototype = prototype;
         this.env = env;
         this.pkg_name = pkg_name;
         this.currentSub = this;
+        this.is_defined = is_defined;
 
         // initialize metadata for caller()
         StackTraceElement firstStack = this.firstLine();
@@ -3781,12 +3783,13 @@ class PlClosure extends PlReference implements Runnable {
              lastLineNumber = lastStack.getLineNumber();
         }
     }
-    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, PlClosure currentSub) {
+    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined, PlClosure currentSub) {
         // this is the constructor for do-BLOCK; currentSub points to the "sub" outside
         this.prototype = prototype;
         this.env = env;
         this.pkg_name = pkg_name;
         this.currentSub = currentSub;
+        this.is_defined = is_defined;
     }
 
     public PlClosure getCurrentSub() {
@@ -3835,6 +3838,9 @@ class PlClosure extends PlReference implements Runnable {
     }
     public boolean is_coderef() {
         return true;
+    }
+    public boolean is_undef() {
+        return !is_defined;
     }
     public PlObject prototype() {
         return this.prototype;

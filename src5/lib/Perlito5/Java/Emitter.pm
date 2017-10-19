@@ -2772,6 +2772,12 @@ package Perlito5::AST::Sub;
         }
         # warn "is_lvalue" if $is_lvalue;
 
+        my $is_defined = 'true';
+        if (!defined $self->{block}) {
+            # this is a predeclaration
+            $is_defined = 'false';
+        }
+
         my $outer_sub;
         $outer_sub = 'this.getCurrentSub()' if $Perlito5::Java::is_inside_subroutine;
 
@@ -2859,6 +2865,7 @@ package Perlito5::AST::Sub;
               $prototype,
               "new PlObject[]{ " . join(', ', @captures_java) . " }",
               Perlito5::Java::pkg,
+              $is_defined,
         );
         if (($self->{_do_block} || $self->{_eval_block}) && $outer_sub) {
             push @closure_args, $outer_sub;
