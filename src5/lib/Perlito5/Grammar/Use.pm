@@ -9,6 +9,7 @@ my %Perlito_internal_module = (
     'Carp'               => 'Perlito5X::Carp',
     'Config'             => 'Perlito5X::Config',
     'Data::Dumper'       => 'Perlito5X::Data::Dumper',
+    'DirHandle'          => 'Perlito5X::DirHandle',
     'Exporter'           => 'Perlito5X::Exporter',
     'Fcntl'              => 'Perlito5X::Fcntl',
     'IO'                 => 'Perlito5X::IO',
