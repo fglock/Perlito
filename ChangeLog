@@ -54,7 +54,7 @@
 -- regex %+ named captures
 -- regex named captures can have underscore in the name
 -- add core modules:
-	Cwd
+	Cwd, Sys::Hostname
 
 9.022 cpan:Perlito5  2017-05-xx
 - Parser:
