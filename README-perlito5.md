@@ -163,6 +163,15 @@ Libraries
 Parser
 ------
 
+- Regexes
+
+  - /x modifier is seen to late, after variable interpolation is processed:
+
+    ```sh
+    $ perl perlito5.pl -I src5/lib -Cast -e ' use strict; /abc # $v/x '
+    Global symbol "$v" requires explicit package name
+    ```
+
 - BEGIN blocks
 
   - Loops containing: BEGIN/INIT/END blocks, "use" statements, or named subroutines
