@@ -1025,13 +1025,12 @@ class PerlOp {
                 }
             }
         }
-        PlObject plFullName = caller.aget(item + 1);    // "package" comes from the next level
-        fullName = plFullName.toString();
 
+        PlObject plCoderef;
         PlObject packageName = PlCx.UNDEF;
-        int pos = fullName.lastIndexOf("::");
-        if (pos != -1) {
-            packageName = new PlString(fullName.substring(0, pos));
+        plCoderef = coderef.aget(item + 1);
+        if (plCoderef.is_coderef()) {
+            packageName = new PlString(((PlClosure)plCoderef).pkg_name);
         }
 
         if (wantarray != PlCx.LIST) {
@@ -1039,14 +1038,26 @@ class PerlOp {
             return packageName;
         }
 
-        plFullName = caller.aget(item);    // "subroutine" comes from the current level
-		PlObject plCoderef = coderef.aget(item);
+        // PlObject plFullName = caller.aget(item + 1);    // "package" comes from the next level
+        // fullName = plFullName.toString();
+        // int pos = fullName.lastIndexOf("::");
+        // if (pos != -1) {
+        //     packageName = new PlString(fullName.substring(0, pos));
+        // }
+        // if (wantarray != PlCx.LIST) {
+		// 	// caller() in scalar or void context
+        //     return packageName;
+        // }
+
+        PlObject plFullName = caller.aget(item);    // "subroutine" comes from the current level
+        plCoderef = coderef.aget(item);
         PlObject lineNumber = PlCx.UNDEF;
         String fileName = "";
         if (plCoderef.is_coderef()) {
             lineNumber = new PlInt(((PlClosure)plCoderef).perlLineNumber());
             fileName   = ((PlClosure)plCoderef).perlFileName();
         }
+
 
         if (!argDefined) {
 			// caller() in list context, without args
@@ -2343,14 +2354,14 @@ class PlV {
             }
         });
         // &main::import doesn't do anything
-        PlV.cset(
-            "main::import",
-            new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "main", true) {
-                public PlObject apply(int want, PlArray List__) {
-                    return PerlOp.context(want);
-                }
-            }
-        );
+        // PlV.cset(
+        //     "main::import",
+        //     new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "main", true) {
+        //         public PlObject apply(int want, PlArray List__) {
+        //             return PerlOp.context(want);
+        //         }
+        //     }
+        // );
 
         PerlOp.reset_match();
     }
