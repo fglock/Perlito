@@ -6,34 +6,45 @@ use Perlito5::Grammar;
 use strict;
 
 my %Perlito_internal_module = (
-    'Carp'               => 'Perlito5X::Carp',
-    'Config'             => 'Perlito5X::Config',
-    'Data::Dumper'       => 'Perlito5X::Data::Dumper',
-    'DirHandle'          => 'Perlito5X::DirHandle',
-    'Exporter'           => 'Perlito5X::Exporter',
-    'Fcntl'              => 'Perlito5X::Fcntl',
-    'IO'                 => 'Perlito5X::IO',
-    'IO::Handle'         => 'Perlito5X::IO::Handle',
-    'IO::Seekable'       => 'Perlito5X::IO::Seekable',
-    'JSON'               => 'Perlito5X::JSON',
-    'Symbol'             => 'Perlito5X::Symbol',
-    'Term::ANSIColor'    => 'Perlito5X::Term::ANSIColor',
-    'Tie::Array'         => 'Perlito5X::Tie::Array',
-    'Tie::Hash'          => 'Perlito5X::Tie::Hash',
-    'Tie::Scalar'        => 'Perlito5X::Tie::Scalar',
-    'UNIVERSAL'          => 'Perlito5X::UNIVERSAL',
-    'bytes'              => 'Perlito5X::bytes',
-    'encoding'           => 'Perlito5X::encoding',
-    'feature'            => 'Perlito5X::feature',
-    'integer'            => 'Perlito5X::integer',
-    'overload'           => 'Perlito5X::overload',
-    'overload::numbers'  => 'Perlito5X::overload::numbers',
-    'overloading'        => 'Perlito5X::overloading',
-    're'                 => 'Perlito5X::re',
-    'strict'             => 'Perlito5X::strict',
-    'utf8'               => 'Perlito5X::utf8',
-    'warnings'           => 'Perlito5X::warnings',
-    'warnings::register' => 'Perlito5X::warnings::register',
+    'Carp'                  => 'Perlito5X::Carp',
+    'Config'                => 'Perlito5X::Config',
+    'Data::Dumper'          => 'Perlito5X::Data::Dumper',
+    'DirHandle'             => 'Perlito5X::DirHandle',
+    'Exporter'              => 'Perlito5X::Exporter',
+    'Fcntl'                 => 'Perlito5X::Fcntl',
+    'File::Spec'            => 'Perlito5X::File::Spec',
+    'File::Spec::AmigaOS'   => 'Perlito5X::File::Spec::AmigaOS',
+    'File::Spec::Cygwin'    => 'Perlito5X::File::Spec::Cygwin',
+    'File::Spec::Epoc'      => 'Perlito5X::File::Spec::Epoc',
+    'File::Spec::Functions' => 'Perlito5X::File::Spec::Functions',
+    'File::Spec::Mac'       => 'Perlito5X::File::Spec::Mac',
+    'File::Spec::OS2'       => 'Perlito5X::File::Spec::OS2',
+    'File::Spec::Unix'      => 'Perlito5X::File::Spec::Unix',
+    'File::Spec::VMS'       => 'Perlito5X::File::Spec::VMS',
+    'File::Spec::Win32'     => 'Perlito5X::File::Spec::Win32',
+    'IO'                    => 'Perlito5X::IO',
+    'IO::Handle'            => 'Perlito5X::IO::Handle',
+    'IO::Seekable'          => 'Perlito5X::IO::Seekable',
+    'JSON'                  => 'Perlito5X::JSON',
+    'Symbol'                => 'Perlito5X::Symbol',
+    'Term::ANSIColor'       => 'Perlito5X::Term::ANSIColor',
+    'Tie::Array'            => 'Perlito5X::Tie::Array',
+    'Tie::Hash'             => 'Perlito5X::Tie::Hash',
+    'Tie::Scalar'           => 'Perlito5X::Tie::Scalar',
+    'UNIVERSAL'             => 'Perlito5X::UNIVERSAL',
+    'bytes'                 => 'Perlito5X::bytes',
+    'encoding'              => 'Perlito5X::encoding',
+    'feature'               => 'Perlito5X::feature',
+    'integer'               => 'Perlito5X::integer',
+    'overload'              => 'Perlito5X::overload',
+    'overload::numbers'     => 'Perlito5X::overload::numbers',
+    'overloading'           => 'Perlito5X::overloading',
+    're'                    => 'Perlito5X::re',
+    'strict'                => 'Perlito5X::strict',
+    'utf8'                  => 'Perlito5X::utf8',
+    'warnings'              => 'Perlito5X::warnings',
+    'warnings::register'    => 'Perlito5X::warnings::register',
+
     # constant => 'Perlito5X::constant',
     # subs     => 'Perlito5X::subs',
     # vars     => 'Perlito5X::vars',         # this is "hardcoded" in stmt_use()
@@ -387,6 +398,17 @@ sub require {
         my $version = $m2->{"version_string"}{capture}{buf};
         Perlito5::test_perl_version($version);
         return 1;
+    }
+
+    # test if there is a name translation registered
+    if (length($filename) > 3 && substr($filename, -3) eq '.pm') {
+        my $module_name = substr($filename, 0, -3);
+        $module_name =~ s{/}{::}g;
+        if (exists $Perlito_internal_module{$module_name}) {
+            my $s = $Perlito_internal_module{$module_name};
+            $s =~ s{::}{/}g;
+            $filename = $s . '.pm';
+        }
     }
 
     return 
