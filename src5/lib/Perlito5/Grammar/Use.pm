@@ -87,6 +87,10 @@ token term_require {
         }
     |   <Perlito5::Grammar::full_ident>
         {   my $module_name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
+
+            # mark the package as "seen"
+            $Perlito5::PACKAGES->{$module_name} = 1;
+
             my $filename = modulename_to_filename($module_name);
             $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
                                    code      => 'require',
