@@ -22,6 +22,7 @@ my %Perlito_internal_module = (
     'File::Spec::Unix'      => 'Perlito5X::File::Spec::Unix',
     'File::Spec::VMS'       => 'Perlito5X::File::Spec::VMS',
     'File::Spec::Win32'     => 'Perlito5X::File::Spec::Win32',
+    'Getopt::Std'           => 'Perlito5X::Getopt::Std',
     'IO'                    => 'Perlito5X::IO',
     'IO::Handle'            => 'Perlito5X::IO::Handle',
     'IO::Seekable'          => 'Perlito5X::IO::Seekable',
