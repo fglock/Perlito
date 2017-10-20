@@ -69,6 +69,7 @@ sub import {
     cc => 'cc',
     d_readlink => 'define',
     d_symlink => 'define',
+    d_readdir => '1',
     dlext => 'bundle',
     dlsrc => 'dl_dlopen.xs',
     dont_use_nlink => undef,
