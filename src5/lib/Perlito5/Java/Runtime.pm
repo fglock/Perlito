@@ -5228,7 +5228,8 @@ class PlLvalue extends PlObject {
         // @$x = ...
         PlObject o = this.get();
         if (o.is_undef()) {
-            this.set(new PlArrayRef());
+            o = new PlArrayRef();
+            this.set(o);
             return o.array_deref_set(v);
         }
         else if (o.is_arrayref()) {
@@ -5257,7 +5258,8 @@ class PlLvalue extends PlObject {
         // %$x = ...
         PlObject o = this.get();
         if (o.is_undef()) {
-            this.set(new PlHashRef());
+            o = new PlHashRef();
+            this.set(o);
             return o.hash_deref_set(v);
         }
         else if (o.is_hashref()) {
