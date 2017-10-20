@@ -131,6 +131,7 @@ token start_of_line {
            |  'head'     <.pod_pod_begin>
            |  'item'     <.pod_pod_begin>
            |  'over'     <.pod_pod_begin>
+           |  'back'     <.pod_pod_begin>
            |  'begin'    <.pod_begin>
            |  'for'      <.pod_begin>  # TODO - fixme: recognize a single paragraph (double-newline)
            |  'encoding' <.to_eol>
