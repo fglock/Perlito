@@ -54,6 +54,7 @@
 -- regex modifier /xx
 -- regex %+ named captures
 -- regex named captures can have underscore in the name
+-- SUPER method call
 -- add core modules:
 	Cwd, Sys::Hostname
 
