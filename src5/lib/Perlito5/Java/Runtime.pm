@@ -3701,6 +3701,9 @@ class PlFileHandle extends PlObject {
     public PlObject hget_scalarref(String i) {
         return this.hget(i);
     }
+    public PlObject scalar_deref_set(String namespace, PlObject v) {
+        return PlV.sset(typeglob_name, v);
+    }
 }
 
 EOT
