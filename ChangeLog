@@ -24,7 +24,8 @@
 	Getopt::Std, Getopt::Long
 	Tie::Hash, Tie::Scalar, Tie::Array, warnings::register,
 	Fcntl, subs, Symbol, Term::ANSIColor,
-	IO, IO::Handle, IO::Seekable, integer
+	IO, IO::Handle, IO::Seekable, IO::File,
+    integer
 -- syntax fixes for hash vs. block, and ${var->{index}}
 -- CORE:: prefix (CORE::print, CORE::tr)
 -- CORE::GLOBAL special namespace

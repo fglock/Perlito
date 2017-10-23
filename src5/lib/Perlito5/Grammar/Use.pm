@@ -25,6 +25,7 @@ my %Perlito_internal_module = (
     'Getopt::Std'           => 'Perlito5X::Getopt::Std',
     'Getopt::Long'          => 'Perlito5X::Getopt::Long',
     'IO'                    => 'Perlito5X::IO',
+    'IO::File'              => 'Perlito5X::IO::File',
     'IO::Handle'            => 'Perlito5X::IO::Handle',
     'IO::Seekable'          => 'Perlito5X::IO::Seekable',
     'JSON'                  => 'Perlito5X::JSON',
