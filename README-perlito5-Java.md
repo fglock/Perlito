@@ -85,8 +85,13 @@ Perlito5-Java work-in-progress
 
       - integrate with Perlito5 in CPAN
 
+  - precompile modules
 
-  - bootstrapping
+      - TODO - transparently load `pmc` files in `require` and `use`.
+
+      - `pmc` files could be plain `jar` files.
+
+  - bootstrapping using `perlito5-lib.jar`
 
       - bootstrapping is not possible with perlito5.jar, because it is built without the grammar modules.
 
@@ -163,7 +168,7 @@ Perlito5-Java work-in-progress
   - tied variables are partially implemented
       - DESTROY not used, because we use Java memory management
       - lazy lookup: possibly incomplete impl for proxy objects, this needs more tests
-      - tie filehandle todo
+      - TODO tie filehandle
 
   - overload is partially implemented
       - overload string, number, boolean work
@@ -220,10 +225,9 @@ Regex differences
       - /xx works
       - /ee works
       - /r not implemented
+      - /g has problems in certain backtracking zero-length-matches
 
   - regex variables $1, $2, ... and $&, $', $` work; other variables are not yet implemented.
-
-  - Perlito5 allows underscores in named captures. This is not allowed in Java regex.
 
   - capturing in zero-length-match has problems. Failing tests:
 
@@ -232,6 +236,8 @@ Regex differences
     t5/unit/regex_zero_length_match_match.t
     t5/unit/regex_zero_length_replace.t
     ```
+
+  - Perlito5 allows underscores in named captures. This is not allowed in Java regex.
 
   - TODO - check this error message, this may need to be implemented for compatibility:
 
@@ -243,6 +249,8 @@ Eval-string
 
 Limitations
 
+  - eval compilation is slow; after compilation, the code runs at native speed.
+
   - eval bytecode is cached - this will leak memory
       - review the ClassLoader for leaks
 
@@ -250,7 +258,7 @@ Limitations
       - `Java::inline` works inside eval-string
       - extensions can be precompiled in `perlito5.jar`
 
-See also:
+Possible workarounds for slow compilation:
 
   - `ASM`
       - TODO: prototype eval-string with ASM
@@ -1360,6 +1368,11 @@ See also:
 
   - extensive comments about problems in Java regex
     - https://stackoverflow.com/questions/5767627/how-to-add-features-missing-from-the-java-regex-implementation/5771326#5771326
+
+  - "Perldoop2, a Big Data-oriented Perl-Java source-to-source compiler"
+    - https://github.com/citiususc/Perldoop2
+    - uses JRegex: http://jregex.sourceforge.net/
+
 
 Threads
 -------

@@ -245,7 +245,7 @@ Parser
 
   http://perldoc.perl.org/perlsub.html#Prototypes
 
-  code that depends on prototypes being (re)defined later - this breaks when the program is pre-compiled,
+  code that depends on prototypes being (re)defined later - this breaks when the program is precompiled,
   because prototypes become stubs
 
   ```perl
