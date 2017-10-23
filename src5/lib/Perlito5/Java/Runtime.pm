@@ -992,10 +992,14 @@ class PerlOp {
         PlArray caller = PlV.array_get("Perlito5::CALLER");
         if (caller.length_of_array().to_boolean()) {
             // maybe we are inside an import() subroutine
-            if (wantarray == PlCx.LIST) {
-                return caller.aget(item).array_deref_strict();
+            PlObject arr = caller.aget(item);
+            if (arr.is_arrayref()) {
+                if (wantarray == PlCx.LIST) {
+                    return arr.array_deref_strict();
+                }
+                return arr.aget(0);
             }
-            return caller.aget(item).aget(0);
+            // fallback to normal caller()
         };
 
         String fullName = "";
