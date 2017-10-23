@@ -125,7 +125,10 @@ class PlJavaCompiler {
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
-            // System.out.println("\neval_ast:\n" + cls5 + "\n");
+
+            if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                System.out.println("\neval_ast:\n" + cls5 + "\n");
+            }
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -272,7 +275,10 @@ class PlJavaCompiler {
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
-            // System.out.println("\neval_perl_string:\n" + cls5 + "\n");
+
+            if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                System.out.println("\neval_perl_string:\n" + cls5 + "\n");
+            }
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(

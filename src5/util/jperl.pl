@@ -72,7 +72,7 @@ perlito5 [switches] [programfile]
     -V --version
     -v
     --verbose
-    -Ctarget        target backend: js, perl5, perl6, java
+    -Ctarget        target backend: perl5, java
     -Cast-perl5     emits a dump of the abstract syntax tree as a Perl dump
     -Cast-json      emits a dump of the abstract syntax tree in JSON format
     --expand_use --noexpand_use
@@ -83,6 +83,8 @@ perlito5 [switches] [programfile]
                     otherwise the new subroutine definitions will overwrite the current compiler
     --java_eval     enable java eval, using perlito5-lib.jar
     --nojava_eval   disable java eval, creates a standalone file that doesn't depend on perlito5-lib.jar
+    -J DEBUG=1      set java backend options
+                        DEBUG=1     dump the Java source code in eval-string
 ";
 my $copyright_message = <<"EOT";
 This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
@@ -135,6 +137,15 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
 {
     if ($ARGV[0] eq '--verbose') {
         $verbose = 1;
+        shift @ARGV;
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-J') {
+        my $java_opt = get_text_from_switch();
+        ($key, $value) = split("=", $java_opt, 2);
+        if (!defined $value) {
+            $value = 1;
+        }
+        ${"Perlito5::Java::$key"} = $value;
         shift @ARGV;
     }
     elsif (substr($ARGV[0], 0, 2) eq '-I') {
