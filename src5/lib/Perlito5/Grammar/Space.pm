@@ -115,13 +115,19 @@ token to_eol {
 };
 
 token pod_pod_begin {
-    |   [ \c10 | \c13 ] '=cut' <.to_eol>
-    |   . <.to_eol> <.pod_pod_begin>
+    [ <!before [ \c10 | \c13 ] '=cut' > . ]*
+
+    [   [ \c10 | \c13 ] '=cut' <.to_eol>
+    |   ''
+    ]
 };
 
 token pod_begin {
-    |   [ \c10 | \c13 ] '=end' <.to_eol>
-    |   . <.to_eol> <.pod_begin>
+    [ <!before [ \c10 | \c13 ] '=end' > . ]*
+
+    [   [ \c10 | \c13 ] '=end' <.to_eol>
+    |   ''
+    ]
 };
 
 token start_of_line {
