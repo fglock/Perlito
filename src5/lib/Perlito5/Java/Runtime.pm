@@ -764,7 +764,7 @@ class PerlOp {
         }
         if (methodCode.is_undef()) {
             PlCORE.die( "Can't locate object method \"" + method
-                + "\" via package \"" + packageName );
+                + "\" via package \"" + packageName + "\"");
         }
         return PerlOp.call(invocant, methodCode, args, context);
     }

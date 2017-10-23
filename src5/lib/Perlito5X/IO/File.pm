@@ -129,7 +129,7 @@ use strict;
 our($VERSION, @EXPORT, @EXPORT_OK, @ISA);
 use Carp;
 use Symbol;
-use SelectSaver;
+# use SelectSaver;
 use IO::Seekable;
 
 require Exporter;
