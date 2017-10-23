@@ -676,8 +676,20 @@ sub next_last_redo_parse {
     return list_parser( $str, $pos, $Next_Last_Redo_end_token );
 }
 sub argument_parse {
-    my ($str, $pos) = @_;
-    return list_parser( $str, $pos, $Argument_end_token );
+    my ( $str, $pos ) = @_;
+    my $m = Perlito5::Grammar::Expression::list_parser( $str, $pos, $Argument_end_token );
+
+    if ( $m->{capture} eq '*undef*' ) {
+        # a "<" is forbidden after a unary function, so this must be a "glob"
+        my $term = Perlito5::Grammar::String::term_glob( $str, $pos );
+        if ($term) {
+            $m->{capture} = $term->{capture}[1];
+            $m->{to}      = $term->{to};
+        }
+    }
+
+    return $m;
+
 }
 sub list_parse {
     my ($str, $pos) = @_;
