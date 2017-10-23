@@ -46,7 +46,7 @@ my %FileFunc = (
                     mode = mode + s.substring(0, 1);
                     s = s.substring(1);
                 }
-                if (s.length() > 1 && s.substring(0, 2) == ">>") {
+                if (s.length() > 1 && s.substring(0, 2).equals(">>")) {
                     mode = mode + s.substring(0, 2);
                     s = s.substring(2);
                 }
