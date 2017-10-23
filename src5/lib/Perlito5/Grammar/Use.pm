@@ -429,7 +429,14 @@ sub require {
     # print STDERR "require $filename [[ $source ]]\n";
     local $Perlito5::FILE_NAME = $filename;
     Perlito5::Grammar::Scope::check_variable_declarations();
-    Perlito5::Grammar::Scope::create_new_compile_time_scope();
+
+    local $Perlito5::BASE_SCOPE      = Perlito5::Grammar::Scope->new_base_scope();
+    local $Perlito5::CLOSURE_SCOPE   = $Perlito5::BASE_SCOPE;    # variables that are in scope in the current closure being compiled
+    local $Perlito5::SCOPE           = $Perlito5::BASE_SCOPE;    # variables that are in scope in the current block being compiled
+    local $Perlito5::SCOPE_DEPTH     = 0;
+    local @Perlito5::SCOPE_STMT      = ();
+
+    # Perlito5::Grammar::Scope::create_new_compile_time_scope();
     local $^H = 0;
     local %^H = ();
 
@@ -440,7 +447,7 @@ sub require {
     my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
     # print STDERR "result from require: ", Dumper $result;
 
-    Perlito5::Grammar::Scope::end_compile_time_scope();
+    # Perlito5::Grammar::Scope::end_compile_time_scope();
 
     if ($@) {
         $INC{$filename} = undef;
