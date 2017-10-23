@@ -40,6 +40,7 @@ my %Perlito_internal_module = (
     'bytes'                 => 'Perlito5X::bytes',
     'encoding'              => 'Perlito5X::encoding',
     'feature'               => 'Perlito5X::feature',
+    'if'                    => 'Perlito5X::if',
     'integer'               => 'Perlito5X::integer',
     'overload'              => 'Perlito5X::overload',
     'overload::numbers'     => 'Perlito5X::overload::numbers',

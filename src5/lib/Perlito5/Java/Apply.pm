@@ -72,7 +72,7 @@ package Perlito5::AST::Apply;
                 $modifier =~ s/g//g;
             }
             $str = 'PerlOp.replace('
-                    . $var->emit_java($level) . ', '
+                    . $var->emit_java($level, 'scalar') . ', '
                     . emit_qr_java( $regex_args->[0], $modifier, $level ) . ', '
                     . $replace_java . ', '
                     . Perlito5::Java::to_context($wantarray) . ', '
@@ -909,6 +909,9 @@ package Perlito5::AST::Apply;
         },
         'circumfix:<( )>' => sub {
             my ($self, $level, $wantarray) = @_;
+            if ($wantarray eq 'scalar' && @{ $self->{arguments} } == 1) {
+                return $self->{arguments}->[0]->emit_java( $level, $wantarray );
+            }
             'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'infix:<=>' => sub {
