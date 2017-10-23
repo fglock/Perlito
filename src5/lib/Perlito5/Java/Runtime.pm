@@ -992,7 +992,9 @@ class PerlOp {
         PlArray caller = PlV.array_get("Perlito5::CALLER");
         if (caller.length_of_array().to_boolean()) {
             // maybe we are inside an import() subroutine
-            PlObject arr = caller.aget(item);
+
+            PlObject arr = caller.aget(0);  // XXX this should be "item"
+                                            // XXX FIXME TODO - workaround for "export to level"
             if (arr.is_arrayref()) {
                 if (wantarray == PlCx.LIST) {
                     return arr.array_deref_strict();
