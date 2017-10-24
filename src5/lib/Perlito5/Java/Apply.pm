@@ -1686,16 +1686,19 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             'PlCORE.' . $op . '('
             .   Perlito5::Java::to_context($wantarray) . ', '
-            .   $self->{arguments}[0]->emit_java($level)
+            .   $self->{arguments}[0]->emit_java($level + 1)
             . ')';
         };
     }
-    for my $op (qw/ sleep ref exit warn die system qx pack unpack sprintf crypt join reverse /) {
+    for my $op (qw/
+        sleep ref exit warn die system qx pack unpack sprintf crypt join reverse
+        gmtime localtime /
+    ) {
         $emit_js{$op} = sub {
             my ($self, $level, $wantarray) = @_;
             'PlCORE.' . $op . '('
             .   Perlito5::Java::to_context($wantarray) . ', '
-            .   Perlito5::Java::to_list($self->{arguments}, $level)
+            .   Perlito5::Java::to_list($self->{arguments}, $level + 1)
             . ')';
         };
     }
@@ -1705,7 +1708,7 @@ package Perlito5::AST::Apply;
             'PlV.apply_maybe_core('
             .   Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $op) . ', '
             .   Perlito5::Java::to_context($wantarray) . ', '
-            .   Perlito5::Java::to_list($self->{arguments}, $level)
+            .   Perlito5::Java::to_list($self->{arguments}, $level + 1)
             . ')';
         };
     }

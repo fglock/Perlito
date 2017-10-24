@@ -1908,6 +1908,52 @@ EOT
     public static final String pack_x(int size) {
         return new String(new char[size]);
     }
+    public static final PlObject localtime(int want, PlArray List__) {
+        PlArray res = new PlArray();
+		ZonedDateTime date;
+        if (List__.to_boolean()) {
+        	long arg = List__.aget(0).to_long();
+            date = Instant.ofEpochSecond(arg).atZone(ZoneId.systemDefault());
+        }
+        else {
+			date = ZonedDateTime.now();
+        }
+        //      0    1    2     3     4    5     6     7     8
+        //   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
+		res.push(date.getSecond());
+		res.push(date.getMinute());
+		res.push(date.getHour());
+		res.push(date.getDayOfMonth());
+		res.push(date.getMonth().getValue() - 1);
+		res.push(date.getYear() - 1900);
+		res.push(date.getDayOfWeek().getValue());
+		res.push(date.getDayOfYear() - 1);
+		res.push(PlCx.UNDEF);   // isdst TODO
+        return res;
+    }
+    public static final PlObject gmtime(int want, PlArray List__) {
+        PlArray res = new PlArray();
+		ZonedDateTime date;
+        if (List__.to_boolean()) {
+        	long arg = List__.aget(0).to_long();
+            date = Instant.ofEpochSecond(arg).atZone(ZoneId.of("UTC"));
+        }
+        else {
+			date = ZonedDateTime.now(ZoneOffset.UTC);
+        }
+        //      0    1    2     3     4    5     6     7     8
+        //   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
+		res.push(date.getSecond());
+		res.push(date.getMinute());
+		res.push(date.getHour());
+		res.push(date.getDayOfMonth());
+		res.push(date.getMonth().getValue() - 1);
+		res.push(date.getYear() - 1900);
+		res.push(date.getDayOfWeek().getValue());
+		res.push(date.getDayOfYear() - 1);
+		res.push(PlCx.UNDEF);   // isdst TODO
+        return res;
+    }
     public static final PlObject time(int want, PlArray List__) {
         return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
     }
