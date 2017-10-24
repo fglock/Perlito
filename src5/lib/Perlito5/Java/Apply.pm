@@ -1416,6 +1416,14 @@ package Perlito5::AST::Apply;
              .      $list
              . ')';
         },
+        'stat' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @in  = @{$self->{arguments}};
+            @in = Perlito5::AST::Var::SCALAR_ARG() if !@in;
+            'PlCORE.stat(' . Perlito5::Java::to_context($wantarray) . ', '
+             .      Perlito5::Java::to_list(\@in, $level)
+             . ')';
+        },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};

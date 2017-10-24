@@ -605,6 +605,41 @@ EOT
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject stat(int want, PlArray List__) {
+        // TODO - "_" filehandle
+        PlArray res = new PlArray();
+        PlObject arg = List__.aget(0);
+        try {
+            //     0 dev      device number of filesystem
+            //     1 ino      inode number
+            //     2 mode     file mode  (type and permissions)
+            //     3 nlink    number of (hard) links to the file
+            //     4 uid      numeric user ID of file's owner
+            //     5 gid      numeric group ID of file's owner
+            //     6 rdev     the device identifier (special files only)
+            //     7 size     total size of file, in bytes
+            //     8 atime    last access time in seconds since the epoch
+            //     9 mtime    last modify time in seconds since the epoch
+            //    10 ctime    inode change time in seconds since the epoch (*)
+            //    11 blksize  preferred I/O size in bytes for interacting with the
+            //                file (may vary from file to file)
+            //    12 blocks   actual number of system-specific blocks allocated
+            //                on disk (often, but not always, 512 bytes each)
+            res.aset(7, PerlOp.p5size(arg));
+            res.aset(9, PerlOp.p5mtime(arg));
+            if (want == PlCx.SCALAR) {
+                return PlCx.TRUE;
+            }
+            return res;
+        }
+        catch(Exception e) {
+            PlV.sset("main::!", new PlString(e.getClass().getSimpleName() + ": " + e.getMessage()));
+        }
+        if (want == PlCx.SCALAR) {
+            return PlCx.FALSE;
+        }
+        return res;
+    }
     public static final PlObject select(PlFileHandle fh) {
         // select FILEHANDLE
         PlFileHandle fOld = PlV.STDOUT;
