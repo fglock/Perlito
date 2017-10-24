@@ -4780,6 +4780,7 @@ class PlLvalueSubstring extends PlLazyLvalue {
 
     public PlLvalueSubstring(PlLvalue lv, PlObject offset, PlObject length) {
         this.lv = lv;
+        this.replacement = "";
 
         String s = lv.toString();
         int ofs = offset.to_int();
