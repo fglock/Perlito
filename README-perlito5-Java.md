@@ -32,6 +32,10 @@ Perlito5-Java platform differences
       - file permissions for setuid, setgid, and sticky bit are not implemented
       - some signals are not available in Java.
 
+  - no `goto LABEL`
+      - `goto &code` works, but it doesn't do a tail-call
+      - Text::Balanced module doesn't work
+
 
 Build using make
 ----------------
