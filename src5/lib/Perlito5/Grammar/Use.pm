@@ -5,62 +5,10 @@ use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar;
 use strict;
 
-my %Perlito_internal_module = (
-    'Carp'                  => 'Perlito5X::Carp',
-    'Config'                => 'Perlito5X::Config',
-    'Data::Dumper'          => 'Perlito5X::Data::Dumper',
-    'DirHandle'             => 'Perlito5X::DirHandle',
-    'Exporter'              => 'Perlito5X::Exporter',
-    'Fcntl'                 => 'Perlito5X::Fcntl',
-    'File::Spec'            => 'Perlito5X::File::Spec',
-    'File::Spec::AmigaOS'   => 'Perlito5X::File::Spec::AmigaOS',
-    'File::Spec::Cygwin'    => 'Perlito5X::File::Spec::Cygwin',
-    'File::Spec::Epoc'      => 'Perlito5X::File::Spec::Epoc',
-    'File::Spec::Functions' => 'Perlito5X::File::Spec::Functions',
-    'File::Spec::Mac'       => 'Perlito5X::File::Spec::Mac',
-    'File::Spec::OS2'       => 'Perlito5X::File::Spec::OS2',
-    'File::Spec::Unix'      => 'Perlito5X::File::Spec::Unix',
-    'File::Spec::VMS'       => 'Perlito5X::File::Spec::VMS',
-    'File::Spec::Win32'     => 'Perlito5X::File::Spec::Win32',
-    'Getopt::Std'           => 'Perlito5X::Getopt::Std',
-    'Getopt::Long'          => 'Perlito5X::Getopt::Long',
-    'IO'                    => 'Perlito5X::IO',
-    'IO::File'              => 'Perlito5X::IO::File',
-    'IO::Handle'            => 'Perlito5X::IO::Handle',
-    'IO::Seekable'          => 'Perlito5X::IO::Seekable',
-    'JSON'                  => 'Perlito5X::JSON',
-    'Symbol'                => 'Perlito5X::Symbol',
-    'Text::Abbrev'          => 'Perlito5X::Text::Abbrev',
-    'Text::ParseWords'      => 'Perlito5X::Text::ParseWords',
-    'Term::ANSIColor'       => 'Perlito5X::Term::ANSIColor',
-    'Tie::Array'            => 'Perlito5X::Tie::Array',
-    'Tie::Hash'             => 'Perlito5X::Tie::Hash',
-    'Tie::Scalar'           => 'Perlito5X::Tie::Scalar',
-    'UNIVERSAL'             => 'Perlito5X::UNIVERSAL',
-    'bytes'                 => 'Perlito5X::bytes',
-    'encoding'              => 'Perlito5X::encoding',
-    'feature'               => 'Perlito5X::feature',
-    'if'                    => 'Perlito5X::if',
-    'integer'               => 'Perlito5X::integer',
-    'overload'              => 'Perlito5X::overload',
-    'overload::numbers'     => 'Perlito5X::overload::numbers',
-    'overloading'           => 'Perlito5X::overloading',
-    'parent'                => 'Perlito5X::parent',
-    're'                    => 'Perlito5X::re',
-    'strict'                => 'Perlito5X::strict',
-    'utf8'                  => 'Perlito5X::utf8',
-    'warnings'              => 'Perlito5X::warnings',
-    'warnings::register'    => 'Perlito5X::warnings::register',
-
-    # constant => 'Perlito5X::constant',
-    # subs     => 'Perlito5X::subs',
-    # vars     => 'Perlito5X::vars',         # this is "hardcoded" in stmt_use()
+our @Perlito_internal_lib_directory = (
+    'Perlito5X',
+    '',
 );
-
-sub register_internal_module {
-    my ($module, $real_name) = @_;
-    $Perlito_internal_module{$module} = $real_name;
-}
 
 token use_decl { 'use' | 'no' };
 
@@ -342,10 +290,16 @@ sub filename_lookup {
         }
     }
     for my $prefix (@INC) {
-        my $realfilename = "$prefix/$filename";
-        if (-f $realfilename) {
-            $INC{$filename} = $realfilename;
-            return "todo";
+        for my $internal (@Perlito_internal_lib_directory) {
+            my $realfilename = join( "/",
+                $prefix,
+                ($internal ? $internal : ()),
+                $filename
+            );
+            if (-f $realfilename) {
+                $INC{$filename} = $realfilename;
+                return "todo";
+            }
         }
     }
     Perlito5::Compiler::error "Can't locate $filename in \@INC ".'(@INC contains '.join(" ",@INC).').';
