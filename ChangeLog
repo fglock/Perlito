@@ -22,6 +22,7 @@
 -- add core modules:
 	DirHandle, File::Spec, File::Basename,
 	Text::Abbrev, Text::ParseWords
+	Time::Local
 	Getopt::Std, Getopt::Long
 	Tie::Hash, Tie::Scalar, Tie::Array, warnings::register,
 	Fcntl, Symbol, Term::ANSIColor,
