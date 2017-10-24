@@ -6,7 +6,9 @@ Perlito5 Java backend
 Requirements
 ------------
 
-- minimum Java version is Java 7
+- minimum Java version is Java 8
+
+  - Perlito5 runtime uses `java.time.ZonedDateTime`,  which was introduced in Java 8.
 
   - Perlito5 runtime uses `java.nio.file.Files`, which was introduced in Java 7.
 
