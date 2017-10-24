@@ -1928,7 +1928,9 @@ EOT
 		res.push(date.getYear() - 1900);
 		res.push(date.getDayOfWeek().getValue());
 		res.push(date.getDayOfYear() - 1);
-		res.push(PlCx.UNDEF);   // isdst TODO
+		res.push(
+            date.getZone().getRules().isDaylightSavings(date.toInstant()) ? PlCx.INT1 : PlCx.INT0
+        );
         return res;
     }
     public static final PlObject gmtime(int want, PlArray List__) {
@@ -1951,7 +1953,9 @@ EOT
 		res.push(date.getYear() - 1900);
 		res.push(date.getDayOfWeek().getValue());
 		res.push(date.getDayOfYear() - 1);
-		res.push(PlCx.UNDEF);   // isdst TODO
+		res.push(
+            date.getZone().getRules().isDaylightSavings(date.toInstant()) ? PlCx.INT1 : PlCx.INT0
+        );
         return res;
     }
     public static final PlObject time(int want, PlArray List__) {
