@@ -233,6 +233,7 @@ sub emit_java {
 import org.perlito.Perlito5.*;
 import java.util.regex.Pattern;
 import java.time.*;
+import java.time.format.*;
 
 EOT
     }
@@ -333,6 +334,7 @@ import java.nio.charset.*;
 import java.nio.ByteBuffer;
 import static java.nio.file.attribute.PosixFilePermission.*;
 import java.time.*;
+import java.time.format.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;

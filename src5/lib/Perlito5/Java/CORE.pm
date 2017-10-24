@@ -1918,6 +1918,9 @@ EOT
         else {
 			date = ZonedDateTime.now();
         }
+        if (want == PlCx.SCALAR) {
+            return new PlString(date.format( DateTimeFormatter.RFC_1123_DATE_TIME ));
+        }
         //      0    1    2     3     4    5     6     7     8
         //   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
 		res.push(date.getSecond());
@@ -1942,6 +1945,9 @@ EOT
         }
         else {
 			date = ZonedDateTime.now(ZoneOffset.UTC);
+        }
+        if (want == PlCx.SCALAR) {
+            return new PlString(date.format( DateTimeFormatter.RFC_1123_DATE_TIME ));
         }
         //      0    1    2     3     4    5     6     7     8
         //   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
