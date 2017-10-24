@@ -196,6 +196,9 @@ package Perlito5::AST::Apply;
         if ($code eq 'ternary:<? :>') {
             return $self->emit_java( $level+1 ) . '.set(' . $arguments->emit_java( $level+1 ) . ')';
         }
+        if ($code eq 'substr') {
+            return $self->emit_java( $level+1, 'scalar', 'lvalue' ) . '.set(' . $arguments->emit_java( $level+1 ) . ')';
+        }
 
         my $open  = $wantarray eq 'void' ? '' : '(';
         my $close = $wantarray eq 'void' ? '' : ')';
@@ -1150,10 +1153,11 @@ package Perlito5::AST::Apply;
             $arg->emit_java($level, 'scalar') . '.length()'
         },
         'substr' => sub {
-            my ($self, $level, $wantarray) = @_;
+            my ($self, $level, $wantarray, $autovivification_type) = @_;
+            my $meth = "substr";
+            $meth = "lvalue_substr" if $autovivification_type eq 'lvalue';
             my $arg = shift @{$self->{arguments}};
-                return $arg->emit_java($level, 'scalar')
-                    . '.substr('
+                return $arg->emit_java($level, 'scalar') . '.' . $meth . '('
                     .   join(', ', map( $_->emit_java($level, 'scalar'), @{$self->{arguments}} ))
                     . ')'
         },

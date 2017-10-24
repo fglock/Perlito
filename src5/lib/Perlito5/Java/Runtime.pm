@@ -3371,6 +3371,15 @@ EOT
         this.set( new PlString( start + replacement.toString() + end ) );
         return ret;
     }
+    public PlObject lvalue_substr(PlObject offset) {
+        return this.lvalue_substr(offset, new PlInt(this.toString().length()));
+    }
+    public PlObject lvalue_substr(PlObject offset, PlObject length) {
+        if (this.is_lvalue()) {
+            return new PlLvalueSubstring((PlLvalue)this, offset, length);
+        }
+        return this.substr(offset, length);
+    }
     public PlObject bless(String className) {
         PlCORE.die("Can't bless non-reference value");
         return this;
@@ -4760,6 +4769,7 @@ class PlLazyIndex extends PlLazyLvalue {
 }
 class PlLvalueSubstring extends PlLazyLvalue {
     private PlLvalue lv;
+    private String   s;
     private PlObject offset;
     private PlObject length;
 
@@ -4767,6 +4777,7 @@ class PlLvalueSubstring extends PlLazyLvalue {
         this.lv = lv;
         this.offset = offset;
         this.length = length;
+        this.s = lv.toString();
     }
 
     // PlObjecternal lazy api
@@ -4779,7 +4790,6 @@ class PlLvalueSubstring extends PlLazyLvalue {
     }
 
     public PlObject set(PlObject o) {
-        String s = lv.toString();
         int ofs = offset.to_int();
         int len = length.to_int();
         if (ofs < 0) {
@@ -4814,7 +4824,7 @@ class PlLvalueSubstring extends PlLazyLvalue {
         if ( len > 0 ) {
             sb.append(lv.toString().substring(0, this.offset.to_int() - 1));
         }
-        return new PlString(sb.toString());
+        return lv.set(new PlString(sb.toString()));
     }
 
     public PlObject pre_decr() {
