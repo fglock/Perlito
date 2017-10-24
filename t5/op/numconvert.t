@@ -1,5 +1,7 @@
 #!./perl
 
+use integer ();  # preload
+
 #
 # test the conversion operators
 #
