@@ -20,7 +20,8 @@
 -- use $^H and %^H
 -- set Perl version to 5.026
 -- add core modules:
-	DirHandle, File::Spec, Text::Abbrev, Text::ParseWords
+	DirHandle, File::Spec, File::Basename,
+	Text::Abbrev, Text::ParseWords
 	Getopt::Std, Getopt::Long
 	Tie::Hash, Tie::Scalar, Tie::Array, warnings::register,
 	Fcntl, Symbol, Term::ANSIColor,

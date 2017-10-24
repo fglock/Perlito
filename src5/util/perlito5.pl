@@ -139,6 +139,7 @@ sub get_text_from_switch {
 }
 
 my $use_warnings = "";
+my @user_inc;
 push @Use, "no strict";
 
 ARG_LOOP:
@@ -150,7 +151,7 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
     }
     elsif (substr($ARGV[0], 0, 2) eq '-I') {
         my $lib = get_text_from_switch();
-        unshift @INC, $lib;
+        push @user_inc, $lib;
         shift @ARGV;
     }
     elsif (substr($ARGV[0], 0, 2) eq '-e' || substr($ARGV[0], 0, 2) eq '-E') {
@@ -296,6 +297,8 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
         die "Unrecognized switch: $ARGV[0]  (-h will show valid options).\n";
     }
 }
+
+unshift @INC, @user_inc;
 
 if (!$expand_use) {
     $Perlito5::EMIT_USE = 1;
