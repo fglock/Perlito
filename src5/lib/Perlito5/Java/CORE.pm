@@ -1908,6 +1908,20 @@ EOT
     public static final String pack_x(int size) {
         return new String(new char[size]);
     }
+    public static final PlObject times(int want, PlArray List__) {
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean( );
+        long cpu = bean.isCurrentThreadCpuTimeSupported( ) ?
+            bean.getCurrentThreadCpuTime( ) : 0L;
+        long user = bean.isCurrentThreadCpuTimeSupported( ) ?
+            bean.getCurrentThreadUserTime( ) : 0L;
+        long system = cpu - user;
+        return new PlArray(
+            new PlDouble( user / 1000000000.0 ),
+            new PlDouble( system / 1000000000.0 ),
+            new PlDouble( 0.0 ),
+            new PlDouble( 0.0 )
+        );
+    }
     public static final PlObject localtime(int want, PlArray List__) {
         PlArray res = new PlArray();
 		ZonedDateTime date;

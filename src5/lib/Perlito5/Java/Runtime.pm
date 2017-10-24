@@ -234,6 +234,7 @@ import org.perlito.Perlito5.*;
 import java.util.regex.Pattern;
 import java.time.*;
 import java.time.format.*;
+import java.lang.management.*;
 
 EOT
     }
@@ -328,6 +329,7 @@ import java.lang.Math;
 import java.lang.System;
 import java.util.*;
 import java.io.*;
+import java.lang.management.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.nio.charset.*;

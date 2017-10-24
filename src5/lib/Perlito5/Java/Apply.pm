@@ -1696,7 +1696,7 @@ package Perlito5::AST::Apply;
     }
     for my $op (qw/
         sleep ref exit warn die system qx pack unpack sprintf crypt join reverse
-        gmtime localtime /
+        gmtime localtime times /
     ) {
         $emit_js{$op} = sub {
             my ($self, $level, $wantarray) = @_;
