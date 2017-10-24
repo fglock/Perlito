@@ -1152,7 +1152,7 @@ package Perlito5::AST::Apply;
         'substr' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = shift @{$self->{arguments}};
-                return Perlito5::Java::to_str($arg) 
+                return $arg->emit_java($level, 'scalar')
                     . '.substr('
                     .   join(', ', map( $_->emit_java($level, 'scalar'), @{$self->{arguments}} ))
                     . ')'

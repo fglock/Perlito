@@ -3331,8 +3331,45 @@ EOT
     }
     public PlObject substr(PlObject offset, PlObject length, PlObject replacement) {
         // substr EXPR,OFFSET,LENGTH,REPLACEMENT
-        PlCORE.die("TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT");
-        return this;
+        String s = this.toString();
+        int ofs = offset.to_int();
+        int len = length.to_int();
+        if (ofs < 0) {
+            ofs = s.length() + ofs;
+        }
+        if (ofs >= s.length()) {
+            return PlCORE.die("substr outside of string");
+        }
+
+        if (len < 0) {
+            len = s.length() + len;
+        }
+        else {
+            len = ofs + len;
+        }
+
+        if (len >= s.length()) {
+            len = s.length();
+        }
+        if (len <= 0) {
+            return PlCx.UNDEF;
+        }
+        if (ofs < 0) {
+            ofs = 0;
+        }
+
+        PlObject ret = new PlString(s.substring(ofs, len));
+        String start = "";
+        String end = "";
+        
+        if (ofs > 0) {
+            start = s.substring(0, ofs);
+        }
+        if (len < s.length()) {
+            end = s.substring(len);
+        }
+        this.set( new PlString( start + replacement.toString() + end ) );
+        return ret;
     }
     public PlObject bless(String className) {
         PlCORE.die("Can't bless non-reference value");
