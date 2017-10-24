@@ -4767,36 +4767,24 @@ class PlLazyIndex extends PlLazyLvalue {
     }
 
 }
+
 class PlLvalueSubstring extends PlLazyLvalue {
     private PlLvalue lv;
-    private String   s;
-    private PlObject offset;
-    private PlObject length;
+    private String start;
+    private String end;
+    private String replacement;
 
     public PlLvalueSubstring(PlLvalue lv, PlObject offset, PlObject length) {
         this.lv = lv;
-        this.offset = offset;
-        this.length = length;
-        this.s = lv.toString();
-    }
 
-    // PlObjecternal lazy api
-    public PlLvalue create_scalar() {
-        return this.lv;
-    }
-
-    public PlObject get() {
-        return this.lv.substr(this.offset, this.length);
-    }
-
-    public PlObject set(PlObject o) {
+        String s = lv.toString();
         int ofs = offset.to_int();
         int len = length.to_int();
         if (ofs < 0) {
             ofs = s.length() + ofs;
         }
         if (ofs >= s.length()) {
-            return o;
+            PlCORE.die("substr outside of string");
         }
 
         if (len < 0) {
@@ -4809,22 +4797,38 @@ class PlLvalueSubstring extends PlLazyLvalue {
         if (len >= s.length()) {
             len = s.length();
         }
-        if (len < 0) {
-            return o;
+        if (len <= 0) {
+            PlCORE.die("substr outside of string");
         }
         if (ofs < 0) {
             ofs = 0;
         }
 
-        StringBuilder sb = new StringBuilder();
-        if ( ofs > 0 ) {
-            sb.append(lv.toString().substring(0, ofs - 1));
+        PlObject ret = new PlString(s.substring(ofs, len));
+        this.start = "";
+        this.end = "";
+        
+        if (ofs > 0) {
+            this.start = s.substring(0, ofs);
         }
-        sb.append( o.toString() );
-        if ( len > 0 ) {
-            sb.append(lv.toString().substring(0, this.offset.to_int() - 1));
+        if (len < s.length()) {
+            this.end = s.substring(len);
         }
-        return lv.set(new PlString(sb.toString()));
+    }
+
+    // internal lazy api
+    public PlLvalue create_scalar() {
+        return this.lv;
+    }
+
+    public PlObject get() {
+        return new PlString( replacement );
+    }
+
+    public PlObject set(PlObject o) {
+        this.replacement = o.toString();
+        lv.set( new PlString( start + replacement + end ) );
+        return this;
     }
 
     public PlObject pre_decr() {

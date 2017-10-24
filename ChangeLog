@@ -54,7 +54,7 @@
 -- caller() now works "natively", decoding the Java stack trace
 -- symbol tables like %:: and typeglobs support
 -- '-e' file test
--- lvalue ternary "?:" and "vec"
+-- lvalue ternary "?:", "vec", "substr"
 -- regex modifier /xx
 -- regex %+ named captures
 -- regex named captures can have underscore in the name
