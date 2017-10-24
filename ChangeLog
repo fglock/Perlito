@@ -20,6 +20,7 @@
 -- use $^H and %^H
 -- set Perl version to 5.026
 -- add core modules:
+    Benchmark
 	DirHandle, File::Spec, File::Basename,
 	Text::Abbrev, Text::ParseWords
 	Time::Local
