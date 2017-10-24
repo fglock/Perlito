@@ -45,6 +45,7 @@ my %Perlito_internal_module = (
     'overload'              => 'Perlito5X::overload',
     'overload::numbers'     => 'Perlito5X::overload::numbers',
     'overloading'           => 'Perlito5X::overloading',
+    'parent'                => 'Perlito5X::parent',
     're'                    => 'Perlito5X::re',
     'strict'                => 'Perlito5X::strict',
     'utf8'                  => 'Perlito5X::utf8',
