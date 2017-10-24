@@ -2,28 +2,16 @@ package Perlito5::Grammar::Expression;
 
 token term_pos {
     'pos' <.Perlito5::Grammar::Space::opt_ws>
-    [
-        <Perlito5::Grammar::var_ident>   # pos $variable
+        <argument_parse>
         {
+            my $args = Perlito5::Match::flat($MATCH->{argument_parse});
             $MATCH->{capture} = [ 'term',
                 Perlito5::AST::Apply->new(
-                    code      => 'pos',
-                    arguments => [ $MATCH->{"Perlito5::Grammar::var_ident"}{capture} ],
+                    code      => "pos",
+                    arguments => $args eq '*undef*' ? [ Perlito5::AST::Var::SCALAR_ARG() ] : [$args],
                 )
             ];
         }
-    |
-        <!before '(' >
-        {
-            $MATCH->{capture} = [ 'term',
-                Perlito5::AST::Apply->new(
-                    code      => 'pos',
-                    arguments => [ Perlito5::AST::Var::SCALAR_ARG() ],
-                    bareword  => 1,
-                )
-            ];
-        }
-    ]
 };
 
 token declarator {
