@@ -532,7 +532,7 @@ EOT
     }
     public static final PlObject mkdir(int want, PlArray List__) {
         try {
-            Path path = PlV.path.resolve(List__.aget(0).toString()).toRealPath();
+            Path path = PlV.path.resolve(List__.aget(0).toString());
             int mask = List__.aget(1).to_int();
             Set<PosixFilePermission> perms = PerlOp.MaskToPermissions(mask);
             FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
