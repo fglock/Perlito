@@ -1001,7 +1001,7 @@ package Perlito5::AST::Apply;
         },
         'caller' => sub {
             my ($self, $level, $wantarray) = @_;
-            return 'PerlOp.caller('
+            return 'PlCORE.caller('
                             . Perlito5::Java::to_context($wantarray) . ', '
                             . Perlito5::Java::to_list($self->{arguments}, $level)
                         . ')'
