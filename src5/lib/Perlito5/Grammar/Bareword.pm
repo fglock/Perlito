@@ -180,31 +180,6 @@ sub term_bareword {
         $m_name->{to} = $p;
         return $m_name;
     }
-    if ( $str->[$p] eq '-' && $str->[$p+1] eq '>' ) {
-        # ->
-        if ( $is_subroutine_name ) {
-            # call()->method call
-            $m_name->{capture} = [ 'term', 
-                                   Perlito5::AST::Apply->new(
-                                       'arguments' => [],
-                                       'code'      => $name,
-                                       'namespace' => $namespace,
-                                   )
-                                 ];
-        }
-        else {
-            # class->method call
-            $m_name->{capture} = [ 'term',
-                                   Perlito5::AST::Var->new(
-                                        'name'      => '',
-                                        'namespace' => $full_name,
-                                        'sigil'     => '::',
-                                   )
-                                 ];
-        }
-        $m_name->{to} = $p;
-        return $m_name;
-    }
 
     # Note: how does this work: (See: perldoc CORE)
     #   $ perl -e ' use strict; sub print { die "here" }; print "123\n"; '
@@ -260,6 +235,8 @@ sub term_bareword {
         $effective_name = "CORE::$name";
         $sig = $Perlito5::CORE_PROTO->{$effective_name};
 
+        # CORE_GLOBAL_OVERRIDABLE
+
         my $core_global_name = "CORE::GLOBAL::$name";
         if (  ! $namespace
            && exists $Perlito5::CORE_GLOBAL_OVERRIDABLE->{$name}
@@ -269,6 +246,20 @@ sub term_bareword {
             $effective_name = $core_global_name;
             if (!exists $Perlito5::PROTO->{$core_global_name}) {
                 $Perlito5::PROTO->{$core_global_name} = prototype(&{$core_global_name});
+            }
+        }
+
+        # CORE_OVERRIDABLE
+
+        my $local_name = $Perlito5::PKG_NAME . "::$name";
+        if (  ! $namespace
+           && exists $Perlito5::CORE_OVERRIDABLE->{$name}
+           && exists &{$local_name}
+        ) {
+            $namespace = $$Perlito5::PKG_NAME;
+            $effective_name = $local_name;
+            if (!exists $Perlito5::PROTO->{$local_name}) {
+                $Perlito5::PROTO->{$local_name} = prototype(&{$local_name});
             }
         }
     }
@@ -292,6 +283,33 @@ sub term_bareword {
             return $m;
         }
     }
+
+    if ( $str->[$p] eq '-' && $str->[$p+1] eq '>' ) {
+        # ->
+        if ( $is_subroutine_name ) {
+            # call()->method call
+            $m_name->{capture} = [ 'term', 
+                                   Perlito5::AST::Apply->new(
+                                       'arguments' => [],
+                                       'code'      => $name,
+                                       'namespace' => $namespace,
+                                   )
+                                 ];
+        }
+        else {
+            # class->method call
+            $m_name->{capture} = [ 'term',
+                                   Perlito5::AST::Var->new(
+                                        'name'      => '',
+                                        'namespace' => $full_name,
+                                        'sigil'     => '::',
+                                   )
+                                 ];
+        }
+        $m_name->{to} = $p;
+        return $m_name;
+    }
+
 
     # TODO - parse the parameter list according to the sig
 

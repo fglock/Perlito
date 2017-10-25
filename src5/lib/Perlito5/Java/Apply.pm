@@ -1698,7 +1698,7 @@ package Perlito5::AST::Apply;
     }
     for my $op (qw/
         sleep ref exit warn die system qx pack unpack sprintf crypt join reverse
-        gmtime localtime times /
+        gmtime localtime time times /
     ) {
         $emit_js{$op} = sub {
             my ($self, $level, $wantarray) = @_;
@@ -1708,16 +1708,16 @@ package Perlito5::AST::Apply;
             . ')';
         };
     }
-    for my $op (qw/ time /) {
-        $emit_js{$op} = sub {
-            my ($self, $level, $wantarray) = @_;
-            'PlV.apply_maybe_core('
-            .   Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $op) . ', '
-            .   Perlito5::Java::to_context($wantarray) . ', '
-            .   Perlito5::Java::to_list($self->{arguments}, $level + 1)
-            . ')';
-        };
-    }
+    # for my $op (qw/ gmtime localtime time /) {
+    #     $emit_js{$op} = sub {
+    #         my ($self, $level, $wantarray) = @_;
+    #         'PlV.apply_maybe_core('
+    #         .   Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $op) . ', '
+    #         .   Perlito5::Java::to_context($wantarray) . ', '
+    #         .   Perlito5::Java::to_list($self->{arguments}, $level + 1)
+    #         . ')';
+    #     };
+    # }
 
     sub emit_java_op_table { return \%emit_js }
 
