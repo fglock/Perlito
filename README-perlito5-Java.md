@@ -165,6 +165,7 @@ Perlito5-Java work-in-progress
 
   - no Unix pipes
       - named pipes are possible using C and JNI
+      - See: https://github.com/jnr/jnr-posix
 
   - object system is partially implemented
       - method resolution order is not selectable
@@ -215,6 +216,7 @@ Perlito5-Java work-in-progress
   - not implemented CORE functions
       - format()
       - UNIX-specific operators
+      - See: https://github.com/jnr/jnr-posix
 
   - clone() is work-in-progress
       - deep clone of references is not implemented
