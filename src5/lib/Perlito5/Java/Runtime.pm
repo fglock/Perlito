@@ -2994,9 +2994,12 @@ EOT
         PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
         return this;
     }
-    public PlObject hexists(PlObject i) {
+    public PlObject hexists(String i) {
         PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
         return this;
+    }
+    public PlObject hexists(PlObject i) {
+        return this.hexists(i.toString());
     }
     public PlObject adelete(int want, PlObject i) {
         PlCORE.die("delete argument is not a HASH or ARRAY element or slice");
@@ -4212,6 +4215,9 @@ class PlHashRef extends PlReference {
     public PlObject hset_alias(String i, PlObject v) {
         return this.ha.hset_alias(i, v);
     }
+    public PlObject hexists(String i) {
+        return this.ha.hexists(i);
+    }
     public PlObject hexists(PlObject i) {
         return this.ha.hexists(i);
     }
@@ -5425,6 +5431,10 @@ EOT
     }
     public PlObject apply(int want, PlArray List__) {
         return this.get().apply(want, List__);
+    }
+    public PlObject hexists(String a) {
+        // exists $v->{$a}
+        return this.get().hexists(a);
     }
     public PlObject hexists(PlObject a) {
         // exists $v->{$a}
@@ -6949,6 +6959,9 @@ class PlHash extends PlObject {
     }
     public PlObject hset_alias(String s, PlObject lvalue) {
         return this.h.put(s, lvalue);
+    }
+    public PlObject hexists(String i) {
+        return this.h.containsKey(i) ? PlCx.TRUE : PlCx.FALSE;
     }
     public PlObject hexists(PlObject i) {
         return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
