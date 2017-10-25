@@ -28,7 +28,7 @@
 	Tie::Hash, Tie::Scalar, Tie::Array, warnings::register,
 	Fcntl, Symbol, Term::ANSIColor,
 	IO, IO::Handle, IO::Seekable, IO::File,
-	Class::Struct
+	Class::Struct, Perl::OSType
     integer, if, parent, subs
 -- syntax fixes for hash vs. block, and ${var->{index}}
 -- CORE:: prefix (CORE::print, CORE::tr)
