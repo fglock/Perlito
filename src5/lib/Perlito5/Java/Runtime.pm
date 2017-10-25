@@ -7293,6 +7293,9 @@ class PlString extends PlObject {
         // TODO - concatenate current namespace if needed
         return PlV.aset(s, v);
     }
+    public PlObject hget(String i) {
+        return this.hash_deref("").hget(i);
+    }
     public PlObject hash_deref(String namespace) {
         int pos = s.lastIndexOf("::");
         if (pos == -1) {

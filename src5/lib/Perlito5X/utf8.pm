@@ -16,5 +16,9 @@ sub unicode_to_native {
 	return $_[0];
 }
 
+sub encode {
+	return $_[0];
+}
+
 1;
 
