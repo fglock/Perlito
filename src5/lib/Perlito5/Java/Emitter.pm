@@ -2318,7 +2318,8 @@ package Perlito5::AST::Call;
             $method = 'hget_hashref'   if $autovivification_type eq 'hash';
             $method = 'hget_lvalue'    if $autovivification_type eq 'lvalue';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
-                . '.' . $method . '(' . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list')
+                . '.' . $method . '(' .
+                .   Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($self->{arguments}), $level + 1, 'list')
                 . ')';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
@@ -2460,7 +2461,7 @@ package Perlito5::AST::Call;
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
                     . '.hset(' 
-                        . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list') . ', '
+                        . Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($self->{arguments}), $level + 1, 'list') . ', '
                         . Perlito5::Java::to_scalar([$arguments], $level+1)
                     . ')';
         }
