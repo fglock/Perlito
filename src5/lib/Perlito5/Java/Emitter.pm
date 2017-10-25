@@ -623,6 +623,30 @@ package Perlito5::Java;
             }
     }
 
+    sub to_array_index {
+            my $cond = shift;
+            my $level = shift;
+            my $wantarray = shift;
+            if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
+               && $cond->{arguments} && @{$cond->{arguments}}
+               )
+            {
+                return to_array_index( $cond->{arguments}[0], $level, $wantarray )
+            }
+            if ($cond->isa( 'Perlito5::AST::Buf' )) {
+                return int( 0 + $cond->{buf} );
+            }
+            elsif ($cond->isa( 'Perlito5::AST::Int' )) {
+                return int( 0 + $cond->{int} );
+            }
+            elsif ($cond->isa( 'Perlito5::AST::Num' )) {
+                return int( 0 + $cond->{num} );
+            }
+            else {
+                return $cond->emit_java($level, $wantarray);
+            }
+    }
+
     sub to_str {
             my $cond = shift;
             my $level = shift;
@@ -1741,14 +1765,7 @@ package Perlito5::AST::Index;
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
             . ')';
         }
-        my $arg = $self->{index_exp};
-        my $s;
-        if ($arg->isa('Perlito5::AST::Int')) {
-            $s = $arg->{int};
-        }
-        else {
-            $s = $arg->emit_java($level, 'scalar');
-        }
+        my $s = Perlito5::Java::to_array_index( $self->{index_exp}, $level + 1, 'scalar' );
 
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
@@ -2308,7 +2325,8 @@ package Perlito5::AST::Call;
             $method = 'aget_hashref'   if $autovivification_type eq 'hash';
             $method = 'aget_lvalue'    if $autovivification_type eq 'lvalue';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
-                . '.' . $method . '(' . Perlito5::Java::to_scalar([$self->{arguments}], $level+1)
+                . '.' . $method . '('
+                .       Perlito5::Java::to_array_index( $self->{arguments}, $level + 1, 'scalar' )
                 . ')';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
@@ -2319,7 +2337,7 @@ package Perlito5::AST::Call;
             $method = 'hget_lvalue'    if $autovivification_type eq 'lvalue';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
                 . '.' . $method . '('
-                .   Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($self->{arguments}), $level + 1, 'list')
+                .       Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($self->{arguments}), $level + 1, 'list')
                 . ')';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
