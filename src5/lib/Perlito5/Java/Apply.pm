@@ -611,7 +611,9 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray, $autovivification_type) = @_;
             my $arg   = $self->{arguments}->[0];
             if ($autovivification_type eq 'lvalue') {
-                return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref()';
+                return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref('
+                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME )
+                    . ')';
             }
             elsif ( $self->{_strict_refs} ) {
                 return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref_strict()';
