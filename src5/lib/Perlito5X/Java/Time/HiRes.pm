@@ -7,6 +7,11 @@ our @EXPORT_OK = qw(time);
 
 package Java::System { import => "java.lang.System" }
 
+{
+no strict 'refs';
+*import = \&Exporter::import;
+}
+
 sub time {
     my $t = Java::System->currentTimeMillis();
     return $t * 0.001;

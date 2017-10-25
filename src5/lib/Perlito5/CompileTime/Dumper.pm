@@ -244,8 +244,8 @@ sub emit_globals_after_BEGIN {
         };
     }
 
-    # dump @ISA
     for my $pkg (keys %{$Perlito5::PACKAGES}) {;
+        # dump @ISA
         no strict 'refs';
         if (@{ $pkg . "::ISA" }) {
             $scope->{ '@' . $pkg . "::ISA" } //= {
@@ -258,6 +258,13 @@ sub emit_globals_after_BEGIN {
                 value => \@{ $pkg . "::ISA" },
             };
         }
+        # # TODO - look for imported subroutines
+        # for my $glob (%{ $pkg . "::" }) {
+        #     my $name = *{$glob}{NAME};
+        #     if (defined &{ $pkg . '::' . $name }) {
+        #         warn "sub $pkg :: " . $name . "\n";
+        #     }
+        # }
     }
 
     # dump __END__ blocks
