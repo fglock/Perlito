@@ -191,6 +191,18 @@ package Perlito5::Java;
         return $label;
     }
 
+    our %Java_constant_seen;
+    sub get_constant {
+        my ($type, $create) = @_;
+        if (exists $Java_constant_seen{$create}) {
+            return $Java_constant_seen{$create};
+        }
+        my $label = Perlito5::Java::get_label();
+        push @Perlito5::Java::Java_constants, "public static final $type $label = $create;";
+        $Java_constant_seen{$create} = $label;
+        return $label;
+    }
+
     # prefix operators that take a "str" parameter
     our %op_prefix_js_str = (
         'prefix:<-A>' => 'PerlOp.p5atime',
@@ -1581,7 +1593,9 @@ package Perlito5::AST::Int;
         if ( $v >= 0 && $v <= 2) {
             return "PlCx.INT" . abs($v);
         }
-        "new PlInt(" . $v . "L)";
+        my $s = "new PlInt(" . $v . "L)";
+
+        return Perlito5::Java::get_constant( "PlInt", $s );
     }
     sub emit_java_set {
         die "Can't modify constant item in scalar assignment";
@@ -1594,7 +1608,9 @@ package Perlito5::AST::Num;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        "new PlDouble(" . $self->{num} . "d)";
+        my $s = "new PlDouble(" . $self->{num} . "d)";
+
+        return Perlito5::Java::get_constant( "PlDouble", $s );
     }
     sub emit_java_set {
         die "Can't modify constant item in scalar assignment";
@@ -1607,7 +1623,9 @@ package Perlito5::AST::Buf;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        "new PlString(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
+        my $s = "new PlString(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
+
+        return Perlito5::Java::get_constant( "PlString", $s );
     }
     sub emit_java_set {
         die "Can't modify constant item in scalar assignment";

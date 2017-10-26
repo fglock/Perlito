@@ -22,6 +22,7 @@ sub perl5_to_java {
     local $Perlito5::PKG_NAME = $namespace;
     local @Perlito5::UNITCHECK_BLOCK;
     local @Perlito5::Java::Java_constants;
+    local %Perlito5::Java::Java_constant_seen;
     $@ = "";
 
     # warn "in eval enter\n";
