@@ -204,7 +204,11 @@ sub parse_time_eval {
         #   - require the module (evaluate the source code)
         #   - run import()
 
-        my $current_module_name = $Perlito5::PKG_NAME;
+        my $caller = [
+            $Perlito5::PKG_NAME,
+            $Perlito5::FILE_NAME,      # current file name being compiled
+            $Perlito5::LINE_NUMBER,    # current line number being compiled
+        ],
 
         # "require" the module
         my $filename = modulename_to_filename($module_name);
@@ -220,7 +224,7 @@ sub parse_time_eval {
                 my $code = $module_name->can('import');
                 if (defined($code)) {
                     # make sure that caller() points to the current module under compilation
-                    unshift @Perlito5::CALLER, [ $current_module_name ];
+                    unshift @Perlito5::CALLER, $caller;
                     eval {
                         # "package $current_module_name;\n"
                         $module_name->import(@$arguments);
@@ -234,7 +238,7 @@ sub parse_time_eval {
                 my $code = $module_name->can('unimport');
                 if (defined($code)) {
                     # make sure that caller() points to the current module under compilation
-                    unshift @Perlito5::CALLER, [ $current_module_name ];
+                    unshift @Perlito5::CALLER, $caller;
                     eval {
                         # "package $current_module_name;\n"
                         $module_name->unimport(@$arguments);
