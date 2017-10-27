@@ -2243,15 +2243,6 @@ class PlV {
                 return PlCx.UNDEF;
             }
         });
-        // &main::import doesn't do anything
-        // PlV.cset(
-        //     "main::import",
-        //     new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "main", true) {
-        //         public PlObject apply(int want, PlArray List__) {
-        //             return PerlOp.context(want);
-        //         }
-        //     }
-        // );
 
         PerlOp.reset_match();
     }
@@ -6475,7 +6466,8 @@ class PlHash extends PlObject {
         this.each_iterator.reset();
     }
     public PlHash(PlObject... args) {
-        PlHash hh = new PlHash();
+        this.each_iterator = new PlHashIterator();
+        this.h = new PlHashMap();
         int args_size = args.length;
         for (int i = 0; i < args_size; i++) {
             PlObject s = args[i];
@@ -6497,7 +6489,7 @@ class PlHash extends PlObject {
                     else {
                         value = s.aget(j);
                     }
-                    hh.hset(key, value);
+                    this.hset(key, value);
                 }
             }
             else {
@@ -6510,11 +6502,9 @@ class PlHash extends PlObject {
                 else {
                     value = args[i];
                 }
-                hh.hset(s, value);
+                this.hset(s, value);
             }
         }
-        this.h = hh.h;
-        this.each_iterator = hh.each_iterator;
         this.each_iterator.reset();
     }
 
