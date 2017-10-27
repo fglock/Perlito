@@ -311,6 +311,9 @@ package Perlito5::Java;
         prefix:<-->     1
         tie             1
         untie           1
+        unshift         1
+        shift           1
+        delete          1
     ); 
 
     my %safe_char = (
@@ -1115,6 +1118,30 @@ package Perlito5::Java::LexicalBlock;
             my @var_decl = $decl->emit_java_get_decl();
             for my $arg (@var_decl) {
                 push @str, $arg->emit_java_init($level, $wantarray);
+            }
+
+            if ( $decl->isa('Perlito5::AST::Apply') ) {
+                if ( $decl->{code} eq "infix:<||>" ) {
+                    $decl = Perlito5::AST::If->new(
+                        cond => $decl->{arguments}[0],
+                        body => Perlito5::AST::Block->new( stmts => [] ),
+                        otherwise => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
+                    );
+                }
+                if ( $decl->{code} eq "infix:<&&>" ) {
+                    $decl = Perlito5::AST::If->new(
+                        cond => $decl->{arguments}[0],
+                        body => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
+                        otherwise => Perlito5::AST::Block->new( stmts => [] ),
+                    );
+                }
+                if ( $decl->{code} eq "ternary:<? :>" ) {
+                    $decl = Perlito5::AST::If->new(
+                        cond => $decl->{arguments}[0],
+                        body => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
+                        otherwise => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[2] ] ),
+                    );
+                }
             }
 
             if ( !( $decl->isa('Perlito5::AST::Decl') && ($decl->decl eq 'my' || $decl->decl eq 'our') ) ) {
