@@ -5877,10 +5877,36 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return (PlLvalue)PlCORE.die("Not a SCALAR reference");
     }
 
+    public static PlArray construct_list_of_aliases(PlObject s) {
+        PlArrayList aa = new PlArrayList();
+        if (s.is_lvalue()) {
+            aa.add(s);  // store lvalue as-is
+        }
+        else if (s.is_hash()) {
+            // ( %x );
+            s = ((PlHash)s).to_list_of_aliases();
+            for (int i = 0; i < s.to_long(); i++) {
+                aa.add(s.aget_lvalue(i));
+            }
+        }
+        else if (s.is_array()) {
+            // ( @x, @y );
+            for (int i = 0; i < s.to_long(); i++) {
+                aa.add(s.aget_lvalue(i));
+            }
+        }
+        else {
+            aa.add(new PlROvalue(s));  // store "read only"
+        }
+        return new PlArray(aa);
+    }
     public static PlArray construct_list_of_aliases(PlObject... args) {
         PlArrayList aa = new PlArrayList();
         for (PlObject s : args) {
-            if (s.is_hash()) {
+            if (s.is_lvalue()) {
+                aa.add(s);  // store lvalue as-is
+            }
+            else if (s.is_hash()) {
                 // ( %x );
                 s = ((PlHash)s).to_list_of_aliases();
                 for (int i = 0; i < s.to_long(); i++) {
@@ -5892,9 +5918,6 @@ class PlArray extends PlObject implements Iterable<PlObject> {
                 for (int i = 0; i < s.to_long(); i++) {
                     aa.add(s.aget_lvalue(i));
                 }
-            }
-            else if (s.is_lvalue()) {
-                aa.add(s);  // store lvalue as-is
             }
             else {
                 aa.add(new PlROvalue(s));  // store "read only"
