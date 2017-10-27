@@ -793,19 +793,16 @@ class PerlOp {
     public static final PlObject call( String method, PlArray args, int context ) {
         PlObject invocant = args.aget(0);
 
-        if ( invocant.is_undef() ) {
-            PlCORE.die( "Can't call method \"" + method
-                + "\" on an undefined value" );
-            return PlCx.UNDEF;
-        }
-
-        if ( invocant.is_lvalue() ) {
-            invocant = invocant.get();
-        }
-
         PlClass pClass = invocant.blessed_class();
 
         if ( pClass == null ) {
+
+            if ( invocant.is_undef() ) {
+                PlCORE.die( "Can't call method \"" + method
+                    + "\" on an undefined value" );
+                return PlCx.UNDEF;
+            }
+
             if (invocant.is_typeglobref()) {
                 // \*FILE
                 invocant = ((PlGlobRef)invocant).filehandle;
@@ -4186,8 +4183,10 @@ class PlClass {
     public PlObject method_lookup(String method, int level) {
         if (this.methodCache.containsKey(method)) {
             // retrieve from method cache
+            // PlCORE.warn("match " + method);
             return this.methodCache.get(method);
         }
+        // PlCORE.warn("miss " + method);
 
         PlObject methodCode;
         int pos = method.indexOf("::");
@@ -7293,6 +7292,9 @@ class PlString extends PlObject {
             return PerlOp.deleteSymbolTable(this.s, a);
         }
         return PlV.hash_get(s).hdelete(want, a);
+    }
+    public PlClass blessed_class() {
+        return PlClass.getInstance(s);
     }
 
     public PlObject parse() {

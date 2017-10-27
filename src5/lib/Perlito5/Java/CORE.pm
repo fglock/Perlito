@@ -526,10 +526,18 @@ EOT
         . "    }\n"
         } sort keys %FileFunc
     ) . <<'EOT'
+
+    // shortcut functions for internal use: say, warn, die
     public static final PlObject say(String s) {
-        // say() shortcut for internal use
         return PlCORE.say(PlCx.VOID, PlV.STDOUT, new PlArray(new PlString(s)));
     }
+    public static final PlObject warn(String s) {
+        return PlCORE.warn(PlCx.VOID, new PlArray(new PlString(s)));
+    }
+    public static final PlObject die(String s) {
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));
+    }
+
     public static final PlObject mkdir(int want, PlArray List__) {
         try {
             Path path = PlV.path.resolve(List__.aget(0).toString());
@@ -736,10 +744,6 @@ EOT
         }
         PlObject arg = List__.aget(0);
         throw new PlDieException(arg);
-    }
-    public static final PlObject die(String s) {
-        // die() shortcut
-        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));
     }
     public static final PlString ref(int want, PlArray List__) {
         return List__.aget(0).ref();
