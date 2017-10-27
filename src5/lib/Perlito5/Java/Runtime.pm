@@ -7198,8 +7198,22 @@ EOT
         return !Double.isNaN(i) && i <= Long.MAX_VALUE && i >= Long.MIN_VALUE;
     }
 }
+class PlStringConstant extends PlString {
+    private PlClass cls;
+
+    public PlStringConstant(String s) {
+        super(s);
+    }
+
+    public PlClass blessed_class() {
+        if (cls == null) {
+            cls = PlClass.getInstance(s);
+        }
+        return cls;
+    }
+}
 class PlString extends PlObject {
-    private java.lang.String s;
+    public java.lang.String s;
     private PlObject numericValue;
 
     public PlString(String s) {

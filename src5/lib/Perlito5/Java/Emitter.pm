@@ -1640,9 +1640,9 @@ package Perlito5::AST::Buf;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        my $s = "new PlString(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
+        my $s = "new PlStringConstant(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
 
-        return Perlito5::Java::get_constant( "PlString", $s );
+        return Perlito5::Java::get_constant( "PlStringConstant", $s );
     }
     sub emit_java_set {
         die "Can't modify constant item in scalar assignment";
