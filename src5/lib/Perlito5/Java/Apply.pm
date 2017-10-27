@@ -640,14 +640,11 @@ package Perlito5::AST::Apply;
         },
         'circumfix:<[ ]>' => sub {
             my ($self, $level, $wantarray) = @_;
-            return 'new PlArrayRef(new PlArray(' . Perlito5::Java::to_list( $self->{arguments}, $level ) . '))';
-
-            # TODO - optimize: remove new "PlArray()"
-            # 'new PlArrayRef(' . Perlito5::Java::to_list( $self->{arguments}, $level ) . ')';
+            return 'new PlArrayRef(new PlArray(' . Perlito5::Java::to_list_for_push( $self->{arguments}, $level ) . '))';
         },
         'circumfix:<{ }>' => sub {
             my ($self, $level, $wantarray) = @_;
-            '(new PlHashRef(new PlHash(' . Perlito5::Java::to_list( $self->{arguments}, $level ) . ')))';
+            '(new PlHashRef(new PlHash(' . Perlito5::Java::to_list_for_push( $self->{arguments}, $level ) . ')))';
         },
         'prefix:<\\>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1239,7 +1236,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
             my $v = shift @arguments;     # TODO - this argument can also be a 'Decl' instead of 'Var'
-            return $v->emit_java( $level ) . '.unshift(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
+            return $v->emit_java( $level ) . '.unshift(' . Perlito5::Java::to_list_for_push(\@arguments, $level) . ')';
         },
         'push' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1250,7 +1247,7 @@ package Perlito5::AST::Apply;
                 return $v->emit_java( $level ) . '.push(' . $arguments[0]->emit_java( $level ) . ')';
             }
 
-            return $v->emit_java( $level ) . '.push(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
+            return $v->emit_java( $level ) . '.push(' . Perlito5::Java::to_list_for_push(\@arguments, $level) . ')';
         },
         'splice' => sub {
             my ($self, $level, $wantarray) = @_;

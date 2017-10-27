@@ -838,6 +838,22 @@ package Perlito5::Java;
         . ')';
     }
 
+    sub to_list_for_push {
+        my $items = to_list_preprocess( $_[0] );
+        my $level = $_[1];
+
+        if (@$items == 0) {
+            return "";
+        }
+
+        my $item = $items->[0];
+        if ( @$items == 1 && $item->isa('Perlito5::AST::Var') && ( $item->sigil eq '@' ) ) {
+            return $item->emit_java($level, 'list');
+        }
+
+        return join(', ', map( $_->emit_java($level, 'list'), @$items ));
+    }
+
     sub to_list {
         my $items = to_list_preprocess( $_[0] );
         my $level = $_[1];

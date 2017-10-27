@@ -6188,6 +6188,20 @@ EOT
     public PlObject aset(int i, PlLvalue v) {
         return this.a.aset(i, v.get());
     }
+
+    public PlObject push(PlObject... args) {
+        for (int i = 0; i < args.length; i++) {
+            this.push(args[i]);
+        }
+        return this.length_of_array();
+    }
+    public PlObject unshift(PlObject... args) {
+        for (int i = args.length-1; i >= 0; i--) {
+            this.unshift(args[i]);
+        }
+        return this.length_of_array();
+    }
+
 EOT
     , ((map {
             my $native = $_;
