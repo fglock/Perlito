@@ -759,7 +759,7 @@ class PerlOp {
 
     // objects
 
-    public static final PlObject callSuper( PlObject invocant, String method, String packageName, PlArray args, int context ) {
+    public static final PlObject callSuper( String method, String packageName, PlArray args, int context ) {
         // SUPER calls:  $v->SUPER::x;
         PlObject methodCode = PlCx.UNDEF;
       ISA:
@@ -773,38 +773,26 @@ class PerlOp {
             PlCORE.die( "Can't locate object method \"" + method
                 + "\" via package \"" + packageName + "\"");
         }
-        return PerlOp.call(invocant, methodCode, args, context);
+        return PerlOp.call(methodCode, args, context);
     }
 
     // coderef methods can be called on ANY invocant
     //  $m = sub {...};
     //  $a->$m
-    public static final PlObject call( PlObject invocant, PlObject method, PlArray args, int context ) {
+    public static final PlObject call( PlObject method, PlArray args, int context ) {
         if ( method.is_coderef() ) {
-            args.unshift(invocant);
             return method.apply(context, args);
         }
         else if ( method.is_lvalue() ) {
-            return call( invocant, method.get(), args, context );
+            return call( method.get(), args, context );
         }
         else {
-            return call( invocant, method.toString(), args, context );
+            return call( method.toString(), args, context );
         }
     }
-    public static final PlObject call( String invocant, PlObject method, PlArray args, int context ) {
-        if ( method.is_coderef() ) {
-            args.unshift( new PlString(invocant) );
-            return method.apply(context, args);
-        }
-        else if ( method.is_lvalue() ) {
-            return call( invocant, method.get(), args, context );
-        }
-        else {
-            return call( invocant, method.toString(), args, context );
-        }
-    }
-    // Intermediate calls, which have to be dispatched properly
-    public static final PlObject call( PlObject invocant, String method, PlArray args, int context ) {
+    public static final PlObject call( String method, PlArray args, int context ) {
+        PlObject invocant = args.aget(0);
+
         if ( invocant.is_undef() ) {
             PlCORE.die( "Can't call method \"" + method
                 + "\" on an undefined value" );
@@ -829,10 +817,29 @@ class PerlOp {
                     // *FILE
                     // $fh->print() is allowed, even if $fh is unblessed
                     if (method.equals("print")) {
+                        args.shift();   // TODO - keep filehandle in arg list
                         return PlCORE.print(context, (PlFileHandle)invocant, args);
                     }
                 }
-                return call( invocant.toString(), method, args, context );
+
+                String invocant_str = invocant.toString();
+
+                if ( invocant_str.equals("") ) {
+                    PlCORE.die( "Can't call method \"" + method
+                        + "\" on an undefined value" );
+                    return PlCx.UNDEF;
+                }
+
+                PlObject methodCode = PlClass.getInstance(invocant_str).method_lookup(method, 0);
+
+                if (methodCode.is_undef()) {
+                    PlCORE.die( "Can't locate object method \"" + method
+                        + "\" via package \"" + invocant_str
+                        + "\" (perhaps you forgot to load \"" + invocant_str + "\"?" );
+                    return PlCx.UNDEF;
+                }
+
+                return methodCode.apply(context, args);
             }
 
             PlCORE.die( "Can't call method \"" + method
@@ -850,26 +857,6 @@ class PerlOp {
             return PlCx.UNDEF;
         }
 
-        args.unshift( invocant );
-        return methodCode.apply(context, args);
-    }
-    public static final PlObject call( String invocant, String method, PlArray args, int context ) {
-        if ( invocant.equals("") ) {
-            PlCORE.die( "Can't call method \"" + method
-                + "\" on an undefined value" );
-            return PlCx.UNDEF;
-        }
-
-        PlObject methodCode = PlClass.getInstance(invocant).method_lookup(method, 0);
-
-        if (methodCode.is_undef()) {
-            PlCORE.die( "Can't locate object method \"" + method
-                + "\" via package \"" + invocant
-                + "\" (perhaps you forgot to load \"" + invocant + "\"?" );
-            return PlCx.UNDEF;
-        }
-
-        args.unshift( new PlString(invocant) );
         return methodCode.apply(context, args);
     }
 
@@ -3255,7 +3242,7 @@ EOT
     }
     public PlObject lvalue_substr(PlObject offset, PlObject length) {
         if (this.is_lvalue()) {
-            return new PlLvalueSubstring((PlLvalue)this, offset, length);
+            return new PlLvalueSubstring(this, offset, length);
         }
         return this.substr(offset, length);
     }
@@ -4115,12 +4102,14 @@ class PlClass {
     public PlString plClassName;
     public Boolean overload_flag;
     public Boolean overload_fallback_flag;
+    public HashMap<String, PlObject> methodCache;
 
     protected PlClass(String s) {
         this.className = s;
         this.plClassName = new PlString(s);
         this.overload_flag = null;
         this.overload_fallback_flag = null;
+        this.methodCache = new HashMap<String, PlObject>();
     }
     public static PlClass getInstance(PlObject s) {
         return PlClass.getInstance(s.toString());
@@ -4195,6 +4184,11 @@ class PlClass {
     }
 
     public PlObject method_lookup(String method, int level) {
+        if (this.methodCache.containsKey(method)) {
+            // retrieve from method cache
+            return this.methodCache.get(method);
+        }
+
         PlObject methodCode;
         int pos = method.indexOf("::");
         if (pos != -1) {
@@ -4221,6 +4215,7 @@ class PlClass {
                 }
                 else {
                     PlV.sset(className + "::AUTOLOAD", new PlString(className + "::" + method));
+                    // this.methodCache.put(method, methodCode);
                     return methodCode;
                 }
             }
@@ -4234,6 +4229,7 @@ class PlClass {
                 methodCode = PlClass.getInstance(className).method_lookup(method, level+1);
                 if (!methodCode.is_undef()) {
                     // found
+                    this.methodCache.put(method, methodCode);
                     return methodCode;
                 }
             }
@@ -4241,6 +4237,7 @@ class PlClass {
             // lookup in UNIVERSAL
             methodCode = PlV.cget_no_autoload("UNIVERSAL::" + method);
         }
+        this.methodCache.put(method, methodCode);
         return methodCode;
     }
     public PlObject isa(String s, int level) {
@@ -4305,7 +4302,7 @@ EOT
             for (String ovl : new String[] { PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_BOOL }) {
                 PlObject methodCode = bless.overload_lookup(ovl, 0);
                 if (!methodCode.is_undef()) {
-                    return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
+                    return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
                 }
                 if (!bless.is_overload_fallback()) {
                     break;
@@ -4315,7 +4312,7 @@ EOT
             // nomethod
             PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
             if (!methodCode.is_undef()) {
-                return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
+                return PerlOp.call(methodCode, new PlArray( o, PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
             }
         }
 
@@ -4327,7 +4324,7 @@ EOT
             for (String ovl : new String[] { PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_BOOL }) {
                 PlObject methodCode = bless.overload_lookup(ovl, 0);
                 if (!methodCode.is_undef()) {
-                    return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
+                    return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
                 }
                 if (!bless.is_overload_fallback()) {
                     break;
@@ -4337,7 +4334,7 @@ EOT
             // nomethod
             PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
             if (!methodCode.is_undef()) {
-                return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
+                return PerlOp.call(methodCode, new PlArray( o, PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
             }
         }
 
@@ -4349,7 +4346,7 @@ EOT
             for (String ovl : new String[] { PlCx.OVERLOAD_BOOL, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING }) {
                 PlObject methodCode = bless.overload_lookup(ovl, 0);
                 if (!methodCode.is_undef()) {
-                    return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
+                    return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
                 }
                 if (!bless.is_overload_fallback()) {
                     break;
@@ -4359,7 +4356,7 @@ EOT
             // nomethod
             PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
             if (!methodCode.is_undef()) {
-                return PerlOp.call(o, methodCode, new PlArray( PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
+                return PerlOp.call(methodCode, new PlArray( o, PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
             }
         }
 
@@ -4380,7 +4377,7 @@ EOT
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
             if (!methodCode.is_undef()) {
-                return PerlOp.call(o, methodCode, new PlArray(other, swap), PlCx.SCALAR);
+                return PerlOp.call(methodCode, new PlArray(o, other, swap), PlCx.SCALAR);
             }
             if (bless.is_overload_fallback()) {
                 o = PlClass.overload_to_number(o);
@@ -4421,7 +4418,7 @@ EOT
             if (!methodCode.is_undef()) {
 
                 if (!copyConstructorCode.is_undef()) {
-                    o = PerlOp.call(o, copyConstructorCode, new PlArray(), PlCx.SCALAR);
+                    o = PerlOp.call(copyConstructorCode, new PlArray(o), PlCx.SCALAR);
                 }
                 else if (o.is_scalarref()) {
                     // mutator: copy the reference
@@ -4433,7 +4430,7 @@ EOT
                     o.bless( bless.className() );
                 }
 
-                return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
+                return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
             }
             // if (bless.is_overload_fallback()) {
             PlObject v = PlClass.overload_to_number(o).${perl}();
@@ -4468,7 +4465,7 @@ EOT
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
             if (!methodCode.is_undef()) {
                 // PlCORE.say(\"overload_${perl} hit \");
-                return PerlOp.call(o, methodCode, new PlArray(), PlCx.SCALAR);
+                return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
             }
 "
 . ( $perl eq "neg" ?
@@ -4477,7 +4474,7 @@ EOT
             methodCode = bless.overload_lookup(\"(-\", 0);
             if (!methodCode.is_undef()) {
                 // PlCORE.say(\"overload_${perl} fallback (- \");
-                return PerlOp.call(o, methodCode, new PlArray(PlCx.INT0, PlCx.TRUE), PlCx.SCALAR);
+                return PerlOp.call(methodCode, new PlArray(o, PlCx.INT0, PlCx.TRUE), PlCx.SCALAR);
             }
 "
   : ())
@@ -4487,7 +4484,7 @@ EOT
             methodCode = bless.overload_lookup(\"(<\", 0);
             if (!methodCode.is_undef()) {
                 // PlCORE.say(\"overload_${perl} fallback (< \");
-                int cmp = PerlOp.call(o, methodCode, new PlArray(PlCx.INT0, PlCx.FALSE), PlCx.SCALAR).to_int();
+                int cmp = PerlOp.call(methodCode, new PlArray(o, PlCx.INT0, PlCx.FALSE), PlCx.SCALAR).to_int();
                 if (cmp > 0) {
                     return o.neg();
                 }
@@ -4497,7 +4494,7 @@ EOT
             methodCode = bless.overload_lookup(\"(<=>\", 0);
             if (!methodCode.is_undef()) {
                 // PlCORE.say(\"overload_${perl} fallback (<=> \");
-                int cmp = PerlOp.call(o, methodCode, new PlArray(PlCx.INT0, PlCx.FALSE), PlCx.SCALAR).to_int();
+                int cmp = PerlOp.call(methodCode, new PlArray(o, PlCx.INT0, PlCx.FALSE), PlCx.SCALAR).to_int();
                 if (cmp >= 0) {
                     return o;
                 }
@@ -4533,7 +4530,7 @@ EOT
         if ( bless != null && bless.is_overloaded() ) {
             PlObject methodCode = bless.overload_lookup(\"(${native}\", 0);
             if (!methodCode.is_undef()) {
-                return PerlOp.call(o, methodCode, new PlArray(other, swap), PlCx.SCALAR);
+                return PerlOp.call(methodCode, new PlArray(o, other, swap), PlCx.SCALAR);
             }
             if (bless.is_overload_fallback()) {
                 o = PlClass.overload_to_string(o);
@@ -4574,7 +4571,7 @@ EOT
                 // PlCORE.say(\"self_assign (${native} \" + other.toString());
 
                 if (!copyConstructorCode.is_undef()) {
-                    o = PerlOp.call(o, copyConstructorCode, new PlArray(), PlCx.SCALAR);
+                    o = PerlOp.call(copyConstructorCode, new PlArray(o), PlCx.SCALAR);
                 }
                 else if (o.is_scalarref()) {
                     // mutator: copy the reference
@@ -4586,7 +4583,7 @@ EOT
                     o.bless( bless.className() );
                 }
 
-                return PerlOp.call(o, methodCode, new PlArray(other, swap), PlCx.SCALAR);
+                return PerlOp.call(methodCode, new PlArray(o, other, swap), PlCx.SCALAR);
             }
             // TODO - overload_self_assign_${perl}
             //if (bless.is_overload_fallback()) {
@@ -4651,23 +4648,20 @@ class PlLazyIndex extends PlLazyLvalue {
 }
 
 class PlLvalueSubstring extends PlLazyLvalue {
-    private PlLvalue lv;
+    private PlObject lv;
     private String start;
     private String end;
     private String replacement;
 
-    public PlLvalueSubstring(PlLvalue lv, PlObject offset, PlObject length) {
+    public PlLvalueSubstring(PlObject lv, PlObject offset, PlObject length) {
         this.lv = lv;
-        this.replacement = "";
+        this.replacement = lv.get().substr(offset, length).toString();
 
         String s = lv.toString();
         int ofs = offset.to_int();
         int len = length.to_int();
         if (ofs < 0) {
             ofs = s.length() + ofs;
-        }
-        if (ofs >= s.length()) {
-            PlCORE.die("substr outside of string");
         }
 
         if (len < 0) {
@@ -4679,9 +4673,6 @@ class PlLvalueSubstring extends PlLazyLvalue {
 
         if (len >= s.length()) {
             len = s.length();
-        }
-        if (len <= 0) {
-            PlCORE.die("substr outside of string");
         }
         if (ofs < 0) {
             ofs = 0;
@@ -4701,7 +4692,7 @@ class PlLvalueSubstring extends PlLazyLvalue {
 
     // internal lazy api
     public PlLvalue create_scalar() {
-        return this.lv;
+        return (PlLvalue)this.lv;
     }
 
     public PlObject get() {
@@ -4835,21 +4826,21 @@ class PlTieScalar extends PlObject {
     }
 
     public PlObject get() {
-        PlObject v = PerlOp.call(tied, "FETCH", new PlArray(), PlCx.VOID);
+        PlObject v = PerlOp.call("FETCH", new PlArray(tied), PlCx.VOID);
         old_var = v;
         return v;
     }
 
     public PlObject set(PlObject o) {
-        PerlOp.call(tied, "STORE", new PlArray(o), PlCx.VOID);
+        PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
         return this;
     }
     public PlObject set(PlString o) {
-        PerlOp.call(tied, "STORE", new PlArray(o), PlCx.VOID);
+        PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
         return this;
     }
     public PlObject set(PlInt o) {
-        PerlOp.call(tied, "STORE", new PlArray(o), PlCx.VOID);
+        PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
         return this;
     }
 }
@@ -4920,8 +4911,7 @@ class PlLvalue extends PlObject {
             this.untie();
         }
         PlTieScalar v = new PlTieScalar();
-        PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name.toString(), "TIESCALAR", args, PlCx.VOID);
+        PlObject self = PerlOp.call("TIESCALAR", args, PlCx.VOID);
         v.tied = self;
         v.old_var = this.o;
         this.o = v;
@@ -4931,7 +4921,7 @@ class PlLvalue extends PlObject {
     public PlObject untie() {
         if (this.o.is_tiedScalar()) {
             PlObject tied = this.o.tied();
-            PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+            PlObject untie = PerlOp.call("can", new PlArray(tied, new PlString("UNTIE")), PlCx.SCALAR);
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };
@@ -5589,10 +5579,10 @@ class PlTieArrayIterator implements Iterator<PlObject> {
         this.tied = tied;
     }
     public PlObject next() {
-        return PerlOp.call(this.tied, "FETCH", new PlArray(new PlInt(this.key)), PlCx.SCALAR);
+        return PerlOp.call("FETCH", new PlArray(this.tied, new PlInt(this.key)), PlCx.SCALAR);
     }
     public boolean hasNext() {
-        return this.key < PerlOp.call(tied, "FETCHSIZE", new PlArray(), PlCx.SCALAR).to_int();
+        return this.key < PerlOp.call("FETCHSIZE", new PlArray(this.tied), PlCx.SCALAR).to_int();
     }
 }
 class PlTieArrayList extends PlArrayList {
@@ -5611,34 +5601,34 @@ class PlTieArrayList extends PlArrayList {
     // iterator()
 
     public boolean add(PlObject v) {
-        PerlOp.call(tied, "PUSH", new PlArray(v), PlCx.SCALAR);
+        PerlOp.call("PUSH", new PlArray(this.tied, v), PlCx.SCALAR);
         return true;
     }
     public void add(int i, PlObject v) {
         if (i == 0) {
-            PerlOp.call(tied, "UNSHIFT", new PlArray(v), PlCx.SCALAR);
+            PerlOp.call("UNSHIFT", new PlArray(tied, v), PlCx.SCALAR);
         }
         else {
-            PerlOp.call(tied, "PUSH", new PlArray(v), PlCx.SCALAR);
+            PerlOp.call("PUSH", new PlArray(tied, v), PlCx.SCALAR);
         }
     }
     public PlObject get(int i) {
-        return PerlOp.call(tied, "FETCH", new PlArray(new PlInt(i)), PlCx.SCALAR);
+        return PerlOp.call("FETCH", new PlArray(tied, new PlInt(i)), PlCx.SCALAR);
     }
     public PlObject remove(int i) {
         if (i == 0) {
-            return PerlOp.call(tied, "SHIFT", new PlArray(), PlCx.SCALAR);
+            return PerlOp.call("SHIFT", new PlArray(tied), PlCx.SCALAR);
         }
-        return PerlOp.call(tied, "POP", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call("POP", new PlArray(tied), PlCx.SCALAR);
     }
     public PlObject set(int i, PlObject v) {
-        return PerlOp.call(tied, "STORE", new PlArray(new PlInt(i), v), PlCx.SCALAR);
+        return PerlOp.call("STORE", new PlArray(tied, new PlInt(i), v), PlCx.SCALAR);
     }
     public int size() {
-        return PerlOp.call(tied, "FETCHSIZE", new PlArray(), PlCx.SCALAR).to_int();
+        return PerlOp.call("FETCHSIZE", new PlArray(tied), PlCx.SCALAR).to_int();
     }
     public void clear() {
-        PerlOp.call(tied, "STORESIZE", new PlArray(PlCx.INT0), PlCx.SCALAR);
+        PerlOp.call("STORESIZE", new PlArray(tied, PlCx.INT0), PlCx.SCALAR);
     }
     public Iterator<PlObject> iterator() {
         return new PlTieArrayIterator(this.tied);
@@ -5649,14 +5639,14 @@ class PlTieArrayList extends PlArrayList {
     // add(0, v) == UNSHIFT
 
     public PlObject aexists(PlObject i) {
-        return PerlOp.call(tied, "EXISTS", new PlArray(i), PlCx.SCALAR);
+        return PerlOp.call("EXISTS", new PlArray(tied, i), PlCx.SCALAR);
     }
     public PlObject adelete(int want, PlObject i) {
-        return PerlOp.call(tied, "DELETE", new PlArray(i), want);
+        return PerlOp.call("DELETE", new PlArray(tied, i), want);
     }
 
     public PlObject set_end_of_array_index(int i) {
-        return PerlOp.call(tied, "STORESIZE", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call("STORESIZE", new PlArray(tied), PlCx.SCALAR);
     }
     public PlObject aset(int i, PlObject v) {
         this.set(i, v);
@@ -5666,14 +5656,14 @@ class PlTieArrayList extends PlArrayList {
         return this.get(i);
     }
     public PlObject shift() {
-        return PerlOp.call(tied, "SHIFT", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call("SHIFT", new PlArray(tied), PlCx.SCALAR);
     }
     public PlObject pop() {
-        return PerlOp.call(tied, "POP", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call("POP", new PlArray(tied), PlCx.SCALAR);
     }
 
     public PlObject scalar() {
-        return PerlOp.call(this.tied, "SCALAR", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call("SCALAR", new PlArray(this.tied), PlCx.SCALAR);
     }
     public boolean is_tiedArray() {
         return true;
@@ -5844,8 +5834,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
             this.untie();
         }
         PlTieArrayList v = new PlTieArrayList();
-        PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name.toString(), "TIEARRAY", args, PlCx.VOID);
+        PlObject self = PerlOp.call("TIEARRAY", args, PlCx.VOID);
         v.tied = self;
         v.old_var = this.a;
         this.a = v;
@@ -5855,7 +5844,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     public PlObject untie() {
         if (this.a.is_tiedArray()) {
             PlObject tied = this.a.tied();
-            PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+            PlObject untie = PerlOp.call("can", new PlArray(tied, new PlString("UNTIE")), PlCx.SCALAR);
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };
@@ -6377,15 +6366,15 @@ class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
     public Map.Entry<String, PlObject> next() {
         return new AbstractMap.SimpleEntry<String, PlObject>(
                     this.key.toString(),
-                    PerlOp.call(this.tied, "FETCH", new PlArray(this.key), PlCx.SCALAR)
+                    PerlOp.call("FETCH", new PlArray(this.tied, this.key), PlCx.SCALAR)
                );
     }
     public boolean hasNext() {
         if (this.key == null) {
-            this.key = PerlOp.call(this.tied, "FIRSTKEY", new PlArray(), PlCx.SCALAR);
+            this.key = PerlOp.call("FIRSTKEY", new PlArray(this.tied), PlCx.SCALAR);
         }
         else {
-            this.key = PerlOp.call(this.tied, "NEXTKEY", new PlArray(), PlCx.SCALAR);
+            this.key = PerlOp.call("NEXTKEY", new PlArray(this.tied), PlCx.SCALAR);
         }
         return !this.key.is_undef();
     }
@@ -6404,25 +6393,25 @@ class PlTieHashMap extends PlHashMap {
     // entrySet().iterator() == iterator()
 
     public PlObject get(Object i) {
-        return PerlOp.call(this.tied, "FETCH", new PlArray(new PlString((String)i)), PlCx.SCALAR);
+        return PerlOp.call("FETCH", new PlArray(this.tied, new PlString((String)i)), PlCx.SCALAR);
     }
     public PlObject put(String i, PlObject v) {
-        return PerlOp.call(this.tied, "STORE", new PlArray(new PlString(i), v), PlCx.SCALAR);
+        return PerlOp.call("STORE", new PlArray(this.tied, new PlString(i), v), PlCx.SCALAR);
     }
     public boolean containsKey(Object i) {
-        return PerlOp.call(this.tied, "EXISTS", new PlArray(new PlString((String)i)), PlCx.SCALAR).to_boolean();
+        return PerlOp.call("EXISTS", new PlArray(this.tied, new PlString((String)i)), PlCx.SCALAR).to_boolean();
     }
     public PlObject remove(Object i) {
-        return PerlOp.call(this.tied, "DELETE", new PlArray(new PlString((String)i)), PlCx.SCALAR);
+        return PerlOp.call("DELETE", new PlArray(this.tied, new PlString((String)i)), PlCx.SCALAR);
     }
     public void clear() {
-        PerlOp.call(this.tied, "CLEAR", new PlArray(), PlCx.SCALAR);
+        PerlOp.call("CLEAR", new PlArray(this.tied), PlCx.SCALAR);
     }
     public Iterator<Map.Entry<String, PlObject>> iterator() {
         return new PlTieHashIterator(this.tied);
     }
     public PlObject scalar() {
-        return PerlOp.call(this.tied, "SCALAR", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call("SCALAR", new PlArray(this.tied), PlCx.SCALAR);
     }
     public boolean is_tiedHash() {
         return true;
@@ -6525,8 +6514,7 @@ class PlHash extends PlObject {
             this.untie();
         }
         PlTieHashMap v = new PlTieHashMap();
-        PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name.toString(), "TIEHASH", args, PlCx.VOID);
+        PlObject self = PerlOp.call("TIEHASH", args, PlCx.VOID);
         v.tied = self;
         v.old_var = this.h;
         this.h = v;
@@ -6536,7 +6524,7 @@ class PlHash extends PlObject {
     public PlObject untie() {
         if (this.h.is_tiedHash()) {
             PlObject tied = this.h.tied();
-            PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+            PlObject untie = PerlOp.call("can", new PlArray(tied, new PlString("UNTIE")), PlCx.SCALAR);
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };

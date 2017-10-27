@@ -800,6 +800,23 @@ package Perlito5::Java;
              .      ')'
     }
 
+    sub to_method_call_param_list {
+        my ($this, $items, $level) = @_;
+        my $items = to_list_preprocess( $items );
+
+        if ($this->isa('Perlito5::AST::Var') && $this->{sigil} eq "::") {
+            # convert bareword to string
+            $this = Perlito5::AST::Buf->new( buf => $this->{namespace} );
+        }
+
+        'PlArray.construct_list_of_aliases('
+        .   join(', ',
+                $this->emit_java($level, 'scalar', 'lvalue'),
+                map( $_->emit_java($level, 'list', 'lvalue'), @$items ),
+            )
+        . ')';
+    }
+
     sub to_param_list {
         my $items = to_list_preprocess( $_[0] );
         my $level = $_[1];
@@ -2386,10 +2403,9 @@ package Perlito5::AST::Call;
             if ($method) {
                 $method = Perlito5::Java::escape_string($method);
                 return 'PerlOp.callSuper('
-                         . $self->{invocant}->emit_java($level, 'scalar') . ', '
                          . $method . ', ' 
                          . Perlito5::Java::pkg . ', '
-                         . Perlito5::Java::to_list($self->{arguments}) . ', '
+                         . Perlito5::Java::to_method_call_param_list($self->{invocant}, $self->{arguments}, $level + 1) . ', '
                          . Perlito5::Java::to_context($wantarray)
                   . ')'
             }
@@ -2478,11 +2494,12 @@ package Perlito5::AST::Call;
         else {
             $meth = Perlito5::Java::escape_string($meth);
         }
-        return 'PerlOp.call(' . $invocant . ', ' 
-                         . $meth . ', ' 
-                         . Perlito5::Java::to_list($self->{arguments}) . ', '
-                         . Perlito5::Java::to_context($wantarray)
-                  . ')'
+
+        return 'PerlOp.call('
+                   . $meth . ', ' 
+                   . Perlito5::Java::to_method_call_param_list($self->{invocant}, $self->{arguments}, $level + 1) . ', '
+                   . Perlito5::Java::to_context($wantarray)
+             . ')'
     }
 
     sub emit_java_set {
