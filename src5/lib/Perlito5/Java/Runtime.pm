@@ -4112,12 +4112,12 @@ class PlClass {
         return PlClass.getInstance(s.toString());
     }
     public static PlClass getInstance(String s) {
-        if (!classes.containsKey(s)) {
-            PlClass c = new PlClass(s);
+        PlClass c = classes.get(s);
+        if (c == null) {
+            c = new PlClass(s);
             classes.put(s, c);
-            return c;
         }
-        return classes.get(s);
+        return c;
     }
     public String className() {
         return this.className;
