@@ -5553,6 +5553,11 @@ class PlROvalue extends PlLvalue {
 
 }
 class PlSlice extends PlArray {
+    public PlSlice( PlArrayList a ) {
+        this.each_iterator = 0;
+        this.a = a;
+    }
+
     public boolean is_slice() {
         return true;
     }
@@ -5895,9 +5900,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
                 aa.add(new PlROvalue(s));  // store "read only"
             }
         }
-        PlArray result = new PlArray();
-        result.a = aa;
-        return result;
+        return new PlArray(aa);
     }
     public static PlArray construct_list_of_references(PlObject... args) {
         PlArray aa = PlArray.construct_list_of_aliases(args);
@@ -6073,8 +6076,7 @@ EOT
         for (PlObject i : a) {
             aa.add( this.aget_lvalue(i) );
         }
-        PlSlice result = new PlSlice();
-        result.a = aa;
+        PlSlice result = new PlSlice(aa);
         if (want == PlCx.LIST) {
             return result;
         }
@@ -6087,8 +6089,7 @@ EOT
             aa.add( i );
             aa.add( this.aget_lvalue(i) );
         }
-        PlSlice result = new PlSlice();
-        result.a = aa;
+        PlSlice result = new PlSlice(aa);
         if (want == PlCx.LIST) {
             return result;
         }
@@ -6597,8 +6598,7 @@ class PlHash extends PlObject {
             PlObject value = this.hget_lvalue(key);
             aa.add(value);
         }
-        PlSlice result = new PlSlice();
-        result.a = aa;
+        PlSlice result = new PlSlice(aa);
         return result;
     }
 
@@ -6624,8 +6624,7 @@ class PlHash extends PlObject {
             PlObject value = this.hget_lvalue(key);
             aa.add(value);
         }
-        PlSlice result = new PlSlice();
-        result.a = aa;
+        PlSlice result = new PlSlice(aa);
         if (want == PlCx.LIST) {
             return result;
         }
@@ -6640,8 +6639,7 @@ class PlHash extends PlObject {
             PlObject value = this.hget_lvalue(key);
             aa.add(value);
         }
-        PlArray result = new PlArray();
-        result.a = aa;
+        PlArray result = new PlArray(aa);
         if (want == PlCx.LIST) {
             return result;
         }
