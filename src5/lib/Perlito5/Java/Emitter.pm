@@ -1129,6 +1129,7 @@ package Perlito5::Java::LexicalBlock;
                 elsif ( $decl->isa('Perlito5::AST::Apply')
                   && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
                   && !( $Perlito5::Java::valid_java_statement{ $decl->{code} } ) 
+                  && !( $decl->{namespace} ne "" && $decl->{namespace} ne "CORE" ) 
                   )
                 {
                     # workaround for "Error: not a statement"
