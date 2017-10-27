@@ -795,65 +795,53 @@ class PerlOp {
 
         PlClass pClass = invocant.blessed_class();
 
-        if ( pClass == null ) {
-
-            if ( invocant.is_undef() ) {
-                PlCORE.die( "Can't call method \"" + method
-                    + "\" on an undefined value" );
-                return PlCx.UNDEF;
+        if ( pClass != null ) {
+            PlObject methodCode = pClass.method_lookup(method, 0);
+            if (methodCode.is_undef()) {
+                String className = pClass.className();
+                return PlCORE.die( "Can't locate object method \"" + method
+                    + "\" via package \"" + className
+                    + "\" (perhaps you forgot to load \"" + className + "\"?" );
             }
-
-            if (invocant.is_typeglobref()) {
-                // \*FILE
-                invocant = ((PlGlobRef)invocant).filehandle;
-            }
-
-            if (!invocant.is_ref()) {
-                // invocant can be a package name or a nonref-typeglob
-                if (invocant.is_filehandle()) {
-                    // *FILE
-                    // $fh->print() is allowed, even if $fh is unblessed
-                    if (method.equals("print")) {
-                        args.shift();   // TODO - keep filehandle in arg list
-                        return PlCORE.print(context, (PlFileHandle)invocant, args);
-                    }
-                }
-
-                String invocant_str = invocant.toString();
-
-                if ( invocant_str.equals("") ) {
-                    PlCORE.die( "Can't call method \"" + method
-                        + "\" on an undefined value" );
-                    return PlCx.UNDEF;
-                }
-
-                PlObject methodCode = PlClass.getInstance(invocant_str).method_lookup(method, 0);
-
-                if (methodCode.is_undef()) {
-                    PlCORE.die( "Can't locate object method \"" + method
-                        + "\" via package \"" + invocant_str
-                        + "\" (perhaps you forgot to load \"" + invocant_str + "\"?" );
-                    return PlCx.UNDEF;
-                }
-
-                return methodCode.apply(context, args);
-            }
-
-            PlCORE.die( "Can't call method \"" + method
-                + "\" on unblessed reference" );
-            return PlCx.UNDEF;
+            return methodCode.apply(context, args);
         }
 
-        PlObject methodCode = pClass.method_lookup(method, 0);
+        if ( invocant.is_lvalue() ) {
+            invocant = invocant.get();
+        }
+        if ( invocant.is_undef() ) {
+            return PlCORE.die( "Can't call method \"" + method + "\" on an undefined value" );
+        }
+        if (invocant.is_typeglobref()) {
+            // \*FILE
+            invocant = ((PlGlobRef)invocant).filehandle;
+        }
 
+        if (invocant.is_ref()) {
+            return PlCORE.die( "Can't call method \"" + method + "\" on unblessed reference" );
+        }
+
+        if (invocant.is_filehandle()) {
+            // invocant can be a nonref-typeglob
+            // *FILE
+            // $fh->print() is allowed, even if $fh is unblessed
+            if (method.equals("print")) {
+                args.shift();   // TODO - keep filehandle in arg list
+                return PlCORE.print(context, (PlFileHandle)invocant, args);
+            }
+        }
+
+        // invocant can be a package name
+        String invocant_str = invocant.toString();
+        if ( invocant_str.equals("") ) {
+            return PlCORE.die( "Can't call method \"" + method + "\" on an undefined value" );
+        }
+        PlObject methodCode = PlClass.getInstance(invocant_str).method_lookup(method, 0);
         if (methodCode.is_undef()) {
-            String className = pClass.className();
-            PlCORE.die( "Can't locate object method \"" + method
-                + "\" via package \"" + className
-                + "\" (perhaps you forgot to load \"" + className + "\"?" );
-            return PlCx.UNDEF;
+            return PlCORE.die( "Can't locate object method \"" + method
+                + "\" via package \"" + invocant_str
+                + "\" (perhaps you forgot to load \"" + invocant_str + "\"?" );
         }
-
         return methodCode.apply(context, args);
     }
 
