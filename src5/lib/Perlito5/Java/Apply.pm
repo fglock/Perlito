@@ -1545,6 +1545,11 @@ package Perlito5::AST::Apply;
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.defined_or2() : '
                 . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
         },
+        'ref' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my $arg = $self->{arguments}->[0];
+            return $arg->emit_java($level, 'scalar') . '.ref()';
+        },
         'exists' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = $self->{arguments}->[0];
@@ -1703,7 +1708,7 @@ package Perlito5::AST::Apply;
         };
     }
     for my $op (qw/
-        sleep ref exit warn die system qx pack unpack sprintf crypt join reverse
+        sleep exit warn die system qx pack unpack sprintf crypt join reverse
         gmtime localtime time times /
     ) {
         $emit_js{$op} = sub {

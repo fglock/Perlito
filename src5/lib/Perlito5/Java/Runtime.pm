@@ -1033,7 +1033,7 @@ EOT
         if (arg1.is_num() || arg1.is_int()) {
             return arg0.num_eq(arg1);
         }
-        return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type '"), PlCORE.ref(PlCx.SCALAR, new PlArray(arg1)), new PlString("'")));
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type '"), arg1.ref(), new PlString("'")));
     }
 
     // and1(x) ? y : and3()

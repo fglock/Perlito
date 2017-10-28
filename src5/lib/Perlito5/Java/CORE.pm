@@ -745,9 +745,9 @@ EOT
         PlObject arg = List__.aget(0);
         throw new PlDieException(arg);
     }
-    public static final PlString ref(int want, PlArray List__) {
-        return List__.aget(0).ref();
-    }
+    // public static final PlString ref(int want, PlArray List__) {
+    //     return List__.aget(0).ref();
+    // }
     public static final PlObject values(int want, PlObject List__) {
         return want == PlCx.LIST ? List__.values() : List__.values().scalar();
     }
