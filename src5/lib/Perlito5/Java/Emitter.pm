@@ -1208,7 +1208,6 @@ package Perlito5::Java::LexicalBlock;
             }
 
             if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
-
                 if ( $self->{top_level} || $last_statement->{_return_from_block} ) {
                     if (!@{$last_statement->{arguments}}) {
                         push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
@@ -1217,15 +1216,6 @@ package Perlito5::Java::LexicalBlock;
                         push @str, emit_return($has_local, $local_label,
                                 Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1, 'runtime')
                             ) . ';';
-
-                        # push @str, emit_return($has_local, $local_label, $last_statement->{"arguments"}->[0]->emit_java($level, "runtime")) . ';';
-
-                            #     $wantarray eq 'runtime'
-                            #   ? Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
-                            #   : $wantarray eq 'scalar'
-                            #   ? Perlito5::Java::to_scalar([$last_statement->{arguments}[0]], $level+1)
-                            #   : $last_statement->{arguments}[0]->emit_java($level, $wantarray)
-                            # ) . ';';
                     }
                 }
                 else {
