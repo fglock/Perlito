@@ -1701,17 +1701,11 @@ package Perlito5::AST::Block;
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         local $Perlito5::THROW = 0;
-        my $body;
-        if ($wantarray ne 'void') {
-            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts}, block_label => $self->{label},
-                continue => $self->{continue},
-            );
-        }
-        else {
-            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts}, block_label => $self->{label},
-                continue => $self->{continue},
-            );
-        }
+        my $body = Perlito5::Java::LexicalBlock->new(
+            block       => $self->{stmts},
+            block_label => $self->{label},
+            continue    => $self->{continue},
+        );
 
         my $init = "";
         if ($self->{name} eq 'INIT') {
@@ -2953,17 +2947,13 @@ package Perlito5::AST::Sub;
             # eval-block
             $block->{top_level} = 1;
             $block->{eval_block} = 1;
-            my $outer_throw = $Perlito5::THROW_RETURN;
-            $Perlito5::THROW_RETURN = 0;
+            local $Perlito5::THROW_RETURN = 0;
             @js_block = $block->emit_java( $level + 3, 'runtime' ),
-            $Perlito5::THROW_RETURN = $outer_throw;
         }
         else {
             $block->{top_level} = 1;
-            my $outer_throw = $Perlito5::THROW_RETURN;
-            $Perlito5::THROW_RETURN = 0;
+            local $Perlito5::THROW_RETURN = 0;
             @js_block = $block->emit_java( $level + 3, 'runtime' );
-            $Perlito5::THROW_RETURN = $outer_throw;
         }
 
         if (!@js_block) {
