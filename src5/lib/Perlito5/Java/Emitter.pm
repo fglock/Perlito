@@ -1116,6 +1116,7 @@ package Perlito5::Java::LexicalBlock;
                || ( $decl->isa('Perlito5::AST::Num') )
                || ( $decl->isa('Perlito5::AST::Buf') )
                || ( $decl->isa('Perlito5::AST::Var') && $decl->{sigil} ne '&' )
+               || ( $decl->isa('Perlito5::AST::Apply') && $decl->code eq 'undef' && !@{$decl->{arguments}} )
                )
             {
                 # this looks like dead code
@@ -1207,12 +1208,7 @@ package Perlito5::Java::LexicalBlock;
         for my $i ( 0 .. $block_last ) {
             my $stmt = $self->{block}[$i];
             if (defined($stmt)) {
-                if ( $i < $block_last && ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->code eq 'undef' && !@{$stmt->{arguments}} ) {
-                    # don't emit code for undef() in the middle of the block
-                }
-                else {
-                    push @block, $stmt;
-                }
+                push @block, $stmt;
             }
         }
         if ($self->{top_level} && !@block) {
