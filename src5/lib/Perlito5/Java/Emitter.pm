@@ -314,6 +314,7 @@ package Perlito5::Java;
         unshift         1
         shift           1
         delete          1
+        die             1
     ); 
 
     my %safe_char = (
@@ -1072,6 +1073,20 @@ package Perlito5::Java::LexicalBlock;
         : 'return ' . $value;
     }
 
+    sub looks_like_statement {
+        my ($decl) = @_;
+        if (  ( $decl->isa('Perlito5::AST::Int') )
+           || ( $decl->isa('Perlito5::AST::Num') )
+           || ( $decl->isa('Perlito5::AST::Buf') )
+           || ( $decl->isa('Perlito5::AST::Var') && $decl->{sigil} ne '&' )
+           || ( $decl->isa('Perlito5::AST::Apply') && $decl->code eq 'undef' && !@{$decl->{arguments}} )
+           )
+        {
+            # this looks like dead code
+            return 0;
+        }
+        return 1;
+    }
 
     sub emit_body_statement {
         my ($decl, $level, $wantarray ) = @_;
@@ -1086,44 +1101,19 @@ package Perlito5::Java::LexicalBlock;
             push @str, $arg->emit_java_init($level, $wantarray);
         }
 
-        if ( $decl->isa('Perlito5::AST::Apply') ) {
-            if ( $decl->{code} eq "infix:<||>" ) {
-                $decl = Perlito5::AST::If->new(
-                    cond => $decl->{arguments}[0],
-                    body => Perlito5::AST::Block->new( stmts => [] ),
-                    otherwise => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
-                );
-            }
-            if ( $decl->{code} eq "infix:<&&>" ) {
-                $decl = Perlito5::AST::If->new(
-                    cond => $decl->{arguments}[0],
-                    body => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
-                    otherwise => Perlito5::AST::Block->new( stmts => [] ),
-                );
-            }
-            if ( $decl->{code} eq "ternary:<? :>" ) {
-                $decl = Perlito5::AST::If->new(
-                    cond => $decl->{arguments}[0],
-                    body => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
-                    otherwise => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[2] ] ),
-                );
-            }
-        }
-
         if ( !( $decl->isa('Perlito5::AST::Decl') && ($decl->decl eq 'my' || $decl->decl eq 'our') ) ) {
-            if (  ( $decl->isa('Perlito5::AST::Int') )
-               || ( $decl->isa('Perlito5::AST::Num') )
-               || ( $decl->isa('Perlito5::AST::Buf') )
-               || ( $decl->isa('Perlito5::AST::Var') && $decl->{sigil} ne '&' )
-               || ( $decl->isa('Perlito5::AST::Apply') && $decl->code eq 'undef' && !@{$decl->{arguments}} )
-               )
-            {
+            if ( !looks_like_statement( $decl ) ) {
                 # this looks like dead code
             }
             elsif ( $decl->isa('Perlito5::AST::Apply')
               && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
               && !( $Perlito5::Java::valid_java_statement{ $decl->{code} } ) 
               && !( $decl->{namespace} ne "" && $decl->{namespace} ne "CORE" ) 
+              && !( $decl->{code} eq "infix:<&&>" )
+              && !( $decl->{code} eq "infix:<||>" )
+              && !( $decl->{code} eq "infix:<and>" )
+              && !( $decl->{code} eq "infix:<or>" )
+              && !( $decl->{code} eq "ternary:<? :>" )
               )
             {
                 # workaround for "Error: not a statement"
@@ -1204,10 +1194,14 @@ package Perlito5::Java::LexicalBlock;
 
         my @block;
         my $block_last = $#{$self->{block}};
+      STMT:
         for my $i ( 0 .. $block_last ) {
             my $stmt = $self->{block}[$i];
             if (defined($stmt)) {
                 push @block, $stmt;
+                if ( $stmt->isa( 'Perlito5::AST::Apply' ) && $stmt->code eq 'return' ) {
+                    last STMT;
+                }
             }
         }
         if ($self->{top_level} && !@block) {
@@ -1298,7 +1292,11 @@ package Perlito5::Java::LexicalBlock;
         if ($self->{not_a_loop}) {
             # if (1) { ... } simple lexical block
             if ($has_local && !$last_statement) {
-                push @str, 'PerlOp.cleanup_local(' . $local_label . ', PlCx.UNDEF);';
+                if (@block && $block[-1]->isa( 'Perlito5::AST::Apply' ) && $block[-1]->code eq 'return' ) {
+                }
+                else {
+                    push @str, 'PerlOp.cleanup_local(' . $local_label . ', PlCx.UNDEF);';
+                }
             }
             return ( @pre, @str );
         }
@@ -2336,6 +2334,9 @@ package Perlito5::AST::Decl;
         my $type = $self->{type} || 'PlLvalue';
         my $id = $self->{var}{_id};
         if ( $id ) {
+
+            return if $Java_var->{ $id };   # done
+
             $Java_var->{ $id } = { id => $id, type => $type };
         }
 

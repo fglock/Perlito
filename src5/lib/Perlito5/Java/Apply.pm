@@ -445,8 +445,11 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
-                  '(' . Perlito5::Java::to_boolean($self->{arguments}->[0], $level) . ' ? '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF)';
+                    Perlito5::AST::If->new(
+                        cond => $self->{arguments}[0],
+                        body => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
+                        otherwise => Perlito5::AST::Block->new( stmts => [] ),
+                    )->emit_java($level, $wantarray);
             }
             # and1(x) ? y : and3()
             '(PerlOp.and1('
@@ -457,8 +460,11 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
-                  '(' . Perlito5::Java::to_boolean($self->{arguments}->[0], $level) . ' ? '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF)';
+                    Perlito5::AST::If->new(
+                        cond => $self->{arguments}[0],
+                        body => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
+                        otherwise => Perlito5::AST::Block->new( stmts => [] ),
+                    )->emit_java($level, $wantarray);
             }
             # and1(x) ? y : and3()
             '(PerlOp.and1('
@@ -469,8 +475,11 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
-                  '(' . Perlito5::Java::to_boolean($self->{arguments}->[0], $level) . ' ? '
-                . ' PlCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')';
+                    Perlito5::AST::If->new(
+                        cond => $self->{arguments}[0],
+                        body => Perlito5::AST::Block->new( stmts => [] ),
+                        otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
+                    )->emit_java($level, $wantarray);
             }
             # or1(x) ? or2() : y
             '(PerlOp.or1('
@@ -481,8 +490,11 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
-                  '(' . Perlito5::Java::to_boolean($self->{arguments}->[0], $level) . ' ? '
-                . ' PlCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')';
+                    Perlito5::AST::If->new(
+                        cond => $self->{arguments}[0],
+                        body => Perlito5::AST::Block->new( stmts => [] ),
+                        otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
+                    )->emit_java($level, $wantarray);
             }
             # or1(x) ? or2() : y
             '(PerlOp.or1('
@@ -890,6 +902,14 @@ package Perlito5::AST::Apply;
 
         'ternary:<? :>' => sub {
             my ($self, $level, $wantarray) = @_;
+            if ($wantarray eq 'void') {
+                return
+                    Perlito5::AST::If->new(
+                        cond => $self->{arguments}[0],
+                        body => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
+                        otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[2] ] ),
+                    )->emit_java($level, $wantarray);
+            }
             '( ' . Perlito5::Java::to_boolean( $self->{arguments}->[0], $level ) . ' ? ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray ) . ' : ' . ( $self->{arguments}->[2] )->emit_java( $level, $wantarray ) . ')';
         },
         'my' => sub {
