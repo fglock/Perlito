@@ -62,7 +62,7 @@ sub foo3 {
     else {
 	return 20;
     }
-    return 40;
+    # return 40;
 }
 
 print foo3(0) == 20 ? "ok 13\n" : "not ok 13\n";

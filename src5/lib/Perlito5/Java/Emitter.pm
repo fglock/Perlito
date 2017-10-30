@@ -1217,6 +1217,8 @@ package Perlito5::Java::LexicalBlock;
             $has_regex = 1;
         }
         my $local_label = Perlito5::Java::get_label();
+        local $Perlito5::JAVA_HAS_LOCAL = $has_local;
+        local $Perlito5::JAVA_LOCAL_LABEL = $local_label;
         if ( $has_local ) {
             push @pre, 'int ' . $local_label . ' = PerlOp.local_length();';
             if ($has_regex) {
@@ -1314,6 +1316,7 @@ package Perlito5::Java::LexicalBlock;
 
                 # TODO - set up next/last/redo inside continue block
 
+                local $Perlito5::JAVA_CAN_RETURN = 0;
                 push @continue, 
                     "if (!$redo_label) {",
                       [ "try {",
@@ -1379,6 +1382,7 @@ package Perlito5::AST::CompUnit;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
+        local $Perlito5::JAVA_CAN_RETURN = 0;
         return Perlito5::Java::LexicalBlock->new(
                 block => $self->{body},
                 not_a_loop => 1,
@@ -1699,6 +1703,7 @@ package Perlito5::AST::Block;
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         local $Perlito5::THROW = 0;
+        local $Perlito5::JAVA_CAN_RETURN = 0;
         my $body = Perlito5::Java::LexicalBlock->new(
             block       => $self->{stmts},
             block_label => $self->{label},

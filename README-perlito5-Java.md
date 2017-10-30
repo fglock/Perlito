@@ -138,6 +138,11 @@ Perlito5-Java work-in-progress
       - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
 
 
+  - detect and fix "unreachable code"
+
+      - See: `t5/cmd/switch.t` line 65
+
+
   - BEGIN blocks
 
       - Loops containing: BEGIN blocks, `use` statements, or named subroutines.
