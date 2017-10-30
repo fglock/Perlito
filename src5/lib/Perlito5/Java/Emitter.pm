@@ -1244,9 +1244,8 @@ package Perlito5::Java::LexicalBlock;
         # print STDERR Perlito5::Dumper::Dumper( $self );
         # print STDERR Perlito5::Dumper::Dumper( \@str );
 
-        my $out;
-
         if ($self->{eval_block}) {
+            # eval { ... }
             return ( @pre,
                 "try {",
                     \@str,
@@ -1278,19 +1277,34 @@ package Perlito5::Java::LexicalBlock;
                 "}",
             );
         }
-        elsif ($self->{top_level} && $Perlito5::THROW_RETURN) {
-            push @pre,
-                "try {",
-                   [ @str ],
-                '}',
-                'catch(PlReturnException e) {',
-                   [ emit_return($has_local, $local_label, 'e.ret') . ";" ],
-                '}';
-            @str = ();
-        }
-        elsif ( ($Perlito5::THROW || ($self->{continue} && @{$self->{continue}{stmts}} > 0)) && !$self->{not_a_loop} ) {
 
-            # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
+        if ($self->{top_level}) {
+            # sub { ... }
+            if ($Perlito5::THROW_RETURN) {
+                return ( @pre,
+                    "try {",
+                       [ @str ],
+                    '}',
+                    'catch(PlReturnException e) {',
+                       [ emit_return($has_local, $local_label, 'e.ret') . ";" ],
+                    '}',
+                );
+            }
+            else {
+                return ( @pre, @str );
+            }
+        }
+
+        if ($self->{not_a_loop}) {
+            # if (1) { ... } simple lexical block
+            if ($has_local && !$last_statement) {
+                push @str, 'PerlOp.cleanup_local(' . $local_label . ', PlCx.UNDEF);';
+            }
+            return ( @pre, @str );
+        }
+
+        if ( $Perlito5::THROW || ($self->{continue} && @{$self->{continue}{stmts}} > 0) ) {
+            # { ... } block with next/last/redo/continue
 
             my $redo_label = Perlito5::Java::get_label();
             my $test_label = 'e.label_id != 0';
@@ -1354,10 +1368,9 @@ package Perlito5::Java::LexicalBlock;
                 "} while ($redo_label);";
             @str = ();
         }
-        else {
-            if ($has_local && !$last_statement) {
-                push @str, 'PerlOp.cleanup_local(' . $local_label . ', PlCx.UNDEF);';
-            }
+        elsif ($has_local && !$last_statement) {
+            # block with "local"
+            push @str, 'PerlOp.cleanup_local(' . $local_label . ', PlCx.UNDEF);';
         }
         return ( @pre, @str );
     }
