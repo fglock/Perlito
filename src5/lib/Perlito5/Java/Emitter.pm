@@ -1054,7 +1054,6 @@ package Perlito5::Java::LexicalBlock;
     sub new { my $class = shift; bless {@_}, $class }
     sub block { $_[0]->{block} }
     # top_level - true if this is the main block in a subroutine;
-    # create_context - ... 
 
     sub has_decl {
         my $self = $_[0];
@@ -1199,7 +1198,7 @@ package Perlito5::Java::LexicalBlock;
 
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        my $original_level = $level;
+        local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;
         my $block_label = Perlito5::Java::get_java_loop_label( $self->{block_label} );
         $Perlito5::THROW = 1 if $block_label;
 
@@ -1223,22 +1222,12 @@ package Perlito5::Java::LexicalBlock;
             $has_local = 1;
             $has_regex = 1;
         }
-
         my $local_label = Perlito5::Java::get_label();
-        # $has_local = 0;
-
         if ( $has_local ) {
             push @pre, 'int ' . $local_label . ' = PerlOp.local_length();';
             if ($has_regex) {
                 push @pre, 'PerlOp.push_local_regex_result();'
             }
-        }
-
-        my $create_context = $self->{create_context} && $self->has_decl("my");
-        local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;
-
-        if ($self->{top_level} || $create_context) {
-            $level++;
         }
 
         my $last_statement;
@@ -2590,17 +2579,13 @@ package Perlito5::AST::If;
             ? $self->{body} # may be undef
             : (!@{ $self->{body}->stmts })
             ? undef
-            : $wantarray ne 'void'
-            ? Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, not_a_loop => 1 )
-            : Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, create_context => 1, not_a_loop => 1 );
+            : Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, not_a_loop => 1 );
         my $otherwise =
               ref($self->{otherwise}) ne 'Perlito5::AST::Block'
             ? $self->{otherwise}  # may be undef
             : (!@{ $self->{otherwise}->stmts })
             ? undef
-            : $wantarray ne 'void'
-            ? Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, not_a_loop => 1 )
-            : Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, create_context => 1, not_a_loop => 1 );
+            : Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, not_a_loop => 1 );
  
         push @str, 'if (' . Perlito5::Java::to_boolean($cond, $level + 1) . ') {';
         if ($body) {
@@ -2666,9 +2651,7 @@ package Perlito5::AST::When;
             ? Perlito5::Java::LexicalBlock->new( block => [ $self->{body} ], not_a_loop => 1 )
             : (!@{ $self->{body}->stmts })
             ? undef
-            : $wantarray ne 'void'
-            ? Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, not_a_loop => 1 )
-            : Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, create_context => 1, not_a_loop => 1 );
+            : Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, not_a_loop => 1 );
         push @{ $body->{block} }, $next; 
 
         push @str, 'if (' . Perlito5::Java::to_boolean($cond, $level + 1) . ') {';
