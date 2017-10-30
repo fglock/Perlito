@@ -2947,12 +2947,10 @@ package Perlito5::AST::Sub;
             # eval-block
             $block->{top_level} = 1;
             $block->{eval_block} = 1;
-            local $Perlito5::THROW_RETURN = 0;
             @js_block = $block->emit_java( $level + 3, 'runtime' ),
         }
         else {
             $block->{top_level} = 1;
-            local $Perlito5::THROW_RETURN = 0;
             @js_block = $block->emit_java( $level + 3, 'runtime' );
         }
 
