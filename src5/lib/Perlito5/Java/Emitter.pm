@@ -1073,6 +1073,129 @@ package Perlito5::Java::LexicalBlock;
         : 'return ' . $value;
     }
 
+
+    sub emit_body_statement {
+        my ($decl, $level, $wantarray ) = @_;
+        my @str;
+
+        if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
+            $Perlito5::PKG_NAME = $decl->{namespace};
+        }
+
+        my @var_decl = $decl->emit_java_get_decl();
+        for my $arg (@var_decl) {
+            push @str, $arg->emit_java_init($level, $wantarray);
+        }
+
+        if ( $decl->isa('Perlito5::AST::Apply') ) {
+            if ( $decl->{code} eq "infix:<||>" ) {
+                $decl = Perlito5::AST::If->new(
+                    cond => $decl->{arguments}[0],
+                    body => Perlito5::AST::Block->new( stmts => [] ),
+                    otherwise => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
+                );
+            }
+            if ( $decl->{code} eq "infix:<&&>" ) {
+                $decl = Perlito5::AST::If->new(
+                    cond => $decl->{arguments}[0],
+                    body => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
+                    otherwise => Perlito5::AST::Block->new( stmts => [] ),
+                );
+            }
+            if ( $decl->{code} eq "ternary:<? :>" ) {
+                $decl = Perlito5::AST::If->new(
+                    cond => $decl->{arguments}[0],
+                    body => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
+                    otherwise => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[2] ] ),
+                );
+            }
+        }
+
+        if ( !( $decl->isa('Perlito5::AST::Decl') && ($decl->decl eq 'my' || $decl->decl eq 'our') ) ) {
+            if (  ( $decl->isa('Perlito5::AST::Int') )
+               || ( $decl->isa('Perlito5::AST::Num') )
+               || ( $decl->isa('Perlito5::AST::Buf') )
+               || ( $decl->isa('Perlito5::AST::Var') && $decl->{sigil} ne '&' )
+               )
+            {
+                # this looks like dead code
+            }
+            elsif ( $decl->isa('Perlito5::AST::Apply')
+              && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
+              && !( $Perlito5::Java::valid_java_statement{ $decl->{code} } ) 
+              && !( $decl->{namespace} ne "" && $decl->{namespace} ne "CORE" ) 
+              )
+            {
+                # workaround for "Error: not a statement"
+                push @str, 'PerlOp.statement(' . $decl->emit_java( $level+1, 'void' ) . ');';
+            }
+            elsif ( $decl->isa('Perlito5::AST::CompUnit')
+                  || $decl->isa('Perlito5::AST::For' )
+                  || $decl->isa('Perlito5::AST::While' )
+                  || $decl->isa('Perlito5::AST::If' )
+                  || $decl->isa('Perlito5::AST::Block' )
+                  )
+            {
+                push @str, $decl->emit_java( $level, 'void' );
+            }
+            else {
+                push @str, $decl->emit_java( $level, 'void' ) . ';';
+            }
+        }
+        return @str;
+    }
+
+    sub emit_last_statement {
+        my ($last_statement, $level, $wantarray ) = @_;
+        my @str;
+
+        my @var_decl = $last_statement->emit_java_get_decl();
+        for my $arg (@var_decl) {
+            push @str, $arg->emit_java_init($level, $wantarray);
+        }
+
+        my @stmt = Perlito5::Macro::insert_return($last_statement);
+        $last_statement = pop @stmt;
+
+        for (@stmt) {
+            push @str, $_->emit_java($level, 'void') . ';';
+        }
+
+        if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
+            if ( $self->{top_level} || $last_statement->{_return_from_block} ) {
+                if (!@{$last_statement->{arguments}}) {
+                    push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
+                }
+                else {
+                    push @str, emit_return($has_local, $local_label,
+                            Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1, 'runtime')
+                        ) . ';';
+                }
+            }
+            else {
+                if (!@{$last_statement->{arguments}}) {
+                    $Perlito5::THROW_RETURN = 1;
+                    push @str, 'return PerlOp.ret(PerlOp.context(return_context));'; 
+                }
+                else {
+                    $Perlito5::THROW_RETURN = 1;
+                    push @str, 'return PerlOp.ret('
+                        . Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1, 'return')
+                        . ');';
+                }
+            }
+        }
+        else {
+            my $s = $last_statement->emit_java($level, 'runtime');
+            $s .= ';'
+              unless $last_statement->isa('Perlito5::AST::If')
+              || $last_statement->isa('Perlito5::AST::While')
+              || $last_statement->isa('Perlito5::AST::Block');
+            push @str, $s;
+        }
+        return @str;
+    }
+
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $original_level = $level;
@@ -1127,119 +1250,10 @@ package Perlito5::Java::LexicalBlock;
             $last_statement = pop @block;
         }
         for my $decl ( @block ) {
-            if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
-                $Perlito5::PKG_NAME = $decl->{namespace};
-            }
-
-            my @var_decl = $decl->emit_java_get_decl();
-            for my $arg (@var_decl) {
-                push @str, $arg->emit_java_init($level, $wantarray);
-            }
-
-            if ( $decl->isa('Perlito5::AST::Apply') ) {
-                if ( $decl->{code} eq "infix:<||>" ) {
-                    $decl = Perlito5::AST::If->new(
-                        cond => $decl->{arguments}[0],
-                        body => Perlito5::AST::Block->new( stmts => [] ),
-                        otherwise => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
-                    );
-                }
-                if ( $decl->{code} eq "infix:<&&>" ) {
-                    $decl = Perlito5::AST::If->new(
-                        cond => $decl->{arguments}[0],
-                        body => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
-                        otherwise => Perlito5::AST::Block->new( stmts => [] ),
-                    );
-                }
-                if ( $decl->{code} eq "ternary:<? :>" ) {
-                    $decl = Perlito5::AST::If->new(
-                        cond => $decl->{arguments}[0],
-                        body => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[1] ] ),
-                        otherwise => Perlito5::AST::Block->new( stmts => [ $decl->{arguments}[2] ] ),
-                    );
-                }
-            }
-
-            if ( !( $decl->isa('Perlito5::AST::Decl') && ($decl->decl eq 'my' || $decl->decl eq 'our') ) ) {
-                if (  ( $decl->isa('Perlito5::AST::Int') )
-                   || ( $decl->isa('Perlito5::AST::Num') )
-                   || ( $decl->isa('Perlito5::AST::Buf') )
-                   || ( $decl->isa('Perlito5::AST::Var') && $decl->{sigil} ne '&' )
-                   )
-                {
-                    # this looks like dead code
-                }
-                elsif ( $decl->isa('Perlito5::AST::Apply')
-                  && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
-                  && !( $Perlito5::Java::valid_java_statement{ $decl->{code} } ) 
-                  && !( $decl->{namespace} ne "" && $decl->{namespace} ne "CORE" ) 
-                  )
-                {
-                    # workaround for "Error: not a statement"
-                    push @str, 'PerlOp.statement(' . $decl->emit_java( $level+1, 'void' ) . ');';
-                }
-                elsif ( $decl->isa('Perlito5::AST::CompUnit')
-                      || $decl->isa('Perlito5::AST::For' )
-                      || $decl->isa('Perlito5::AST::While' )
-                      || $decl->isa('Perlito5::AST::If' )
-                      || $decl->isa('Perlito5::AST::Block' )
-                      )
-                {
-                    push @str, $decl->emit_java( $level, 'void' );
-                }
-                else {
-                    push @str, $decl->emit_java( $level, 'void' ) . ';';
-                }
-            }
+            push @str, emit_body_statement( $decl, $level, 'void' );
         }
-
         if ($last_statement) {
-
-            my @var_decl = $last_statement->emit_java_get_decl();
-            for my $arg (@var_decl) {
-                push @str, $arg->emit_java_init($level, $wantarray);
-            }
-
-            my @stmt = Perlito5::Macro::insert_return($last_statement);
-            $last_statement = pop @stmt;
-
-            for (@stmt) {
-                push @str, $_->emit_java($level, 'void') . ';';
-            }
-
-            if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
-                if ( $self->{top_level} || $last_statement->{_return_from_block} ) {
-                    if (!@{$last_statement->{arguments}}) {
-                        push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
-                    }
-                    else {
-                        push @str, emit_return($has_local, $local_label,
-                                Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1, 'runtime')
-                            ) . ';';
-                    }
-                }
-                else {
-                    if (!@{$last_statement->{arguments}}) {
-                        $Perlito5::THROW_RETURN = 1;
-                        push @str, 'return PerlOp.ret(PerlOp.context(return_context));'; 
-                    }
-                    else {
-                        $Perlito5::THROW_RETURN = 1;
-                        push @str, 'return PerlOp.ret('
-                            . Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1, 'return')
-                            . ');';
-                    }
-                }
-            }
-            else {
-                my $s = $last_statement->emit_java($level, 'runtime');
-                $s .= ';'
-                  unless $last_statement->isa('Perlito5::AST::If')
-                  || $last_statement->isa('Perlito5::AST::While')
-                  || $last_statement->isa('Perlito5::AST::Block');
-                push @str, $s;
-            }
-
+            push @str, emit_last_statement( $last_statement, $level, $wantarray );
         }
 
         # print STDERR Perlito5::Dumper::Dumper( $self );
