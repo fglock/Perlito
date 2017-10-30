@@ -1235,7 +1235,7 @@ package Perlito5::Java::LexicalBlock;
         }
 
         my $create_context = $self->{create_context} && $self->has_decl("my");
-        my $outer_pkg   = $Perlito5::PKG_NAME;
+        local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;
 
         if ($self->{top_level} || $create_context) {
             $level++;
@@ -1370,7 +1370,6 @@ package Perlito5::Java::LexicalBlock;
                 push @str, 'PerlOp.cleanup_local(' . $local_label . ', PlCx.UNDEF);';
             }
         }
-        $Perlito5::PKG_NAME = $outer_pkg;
         return ( @pre, @str );
     }
     sub emit_java_has_regex { () }
