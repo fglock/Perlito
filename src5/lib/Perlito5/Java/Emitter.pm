@@ -1146,7 +1146,7 @@ package Perlito5::Java::LexicalBlock;
     }
 
     sub emit_last_statement {
-        my ($last_statement, $level, $wantarray ) = @_;
+        my ($last_statement, $level, $wantarray, $has_local, $local_label ) = @_;
         my @str;
 
         my @var_decl = $last_statement->emit_java_get_decl();
@@ -1253,7 +1253,7 @@ package Perlito5::Java::LexicalBlock;
             push @str, emit_body_statement( $decl, $level, 'void' );
         }
         if ($last_statement) {
-            push @str, emit_last_statement( $last_statement, $level, $wantarray );
+            push @str, emit_last_statement( $last_statement, $level, $wantarray, $has_local, $local_label );
         }
 
         # print STDERR Perlito5::Dumper::Dumper( $self );
