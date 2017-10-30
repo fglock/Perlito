@@ -2941,15 +2941,18 @@ package Perlito5::AST::Sub;
         my @js_block;
         if ($self->{_do_block}) {
             # do-block
+            local $Perlito5::JAVA_CAN_RETURN = 0;
             @js_block = $block->emit_java( $level + 3, 'runtime' );
         }
         elsif ($self->{_eval_block}) {
             # eval-block
             $block->{top_level} = 1;
             $block->{eval_block} = 1;
+            local $Perlito5::JAVA_CAN_RETURN = 1;
             @js_block = $block->emit_java( $level + 3, 'runtime' ),
         }
         else {
+            local $Perlito5::JAVA_CAN_RETURN = 1;
             $block->{top_level} = 1;
             @js_block = $block->emit_java( $level + 3, 'runtime' );
         }

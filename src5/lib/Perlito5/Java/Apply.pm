@@ -969,6 +969,17 @@ package Perlito5::AST::Apply;
         },
         'return' => sub {
             my ($self, $level, $wantarray) = @_;
+
+            # TODO - use plain Java return() when possible
+            #
+            # if ($wantarray eq 'void' && $Perlito5::JAVA_CAN_RETURN) {
+            #     my $has_local = 0;      # TODO
+            #     my $local_label = "";   # TODO
+            #     Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label,
+            #         Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1, 'return' )
+            #     );
+            # }
+
             $Perlito5::THROW_RETURN = 1;
 
             $wantarray = '';
@@ -979,7 +990,7 @@ package Perlito5::AST::Apply;
             if ( ! @{ $self->{arguments} } ) {
                 return 'PerlOp.ret(PerlOp.context(' . Perlito5::Java::to_context($wantarray) . '))';
             }
-            'PerlOp.ret(' . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1, $wantarray ) . ')';
+            return 'PerlOp.ret(' . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1, $wantarray ) . ')';
         },
         'goto' => sub {
             my ($self, $level, $wantarray) = @_;
