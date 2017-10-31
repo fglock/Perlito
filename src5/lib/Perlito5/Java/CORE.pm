@@ -2121,11 +2121,10 @@ EOT
                     }
                     if (value.is_coderef()) {
                         PlClosure code = (PlClosure)value;
-                        // PlCORE.say("sub " + fullName + " " + firstStack.getLineNumber() + " " + lastStack.getLineNumber() );
-                        if ( code.javaClassName != null &&
-                             elem.getClassName().equals(code.javaClassName) &&
-                             elem.getLineNumber() > code.firstLineNumber &&
-                             elem.getLineNumber() < code.lastLineNumber
+                        if ( code.javaClassName() != null &&
+                             elem.getClassName().equals(code.javaClassName()) &&
+                             elem.getLineNumber() > code.firstLineNumber() &&
+                             elem.getLineNumber() < code.lastLineNumber()
                         ) {
                             // PlCORE.say(" Perl sub &" + fullName);
                             caller.push(perlSubName);

@@ -3720,11 +3720,11 @@ class PlClosure extends PlReference implements Runnable {
     public String pkg_name;      // 'main'
     public static final PlString REF = new PlString("CODE");
     public PlClosure currentSub;
-    // metadata for caller()
-    public String  javaClassName;
-    public Integer firstLineNumber;
-    public Integer lastLineNumber;
     public boolean is_defined;
+    // metadata for caller()
+    public String  _javaClassName;
+    public Integer _firstLineNumber;
+    public Integer _lastLineNumber;
 
     public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
         this.prototype = prototype;
@@ -3732,15 +3732,6 @@ class PlClosure extends PlReference implements Runnable {
         this.pkg_name = pkg_name;
         this.currentSub = this;
         this.is_defined = is_defined;
-
-        // initialize metadata for caller()
-        StackTraceElement firstStack = this.firstLine();
-        StackTraceElement lastStack = this.lastLine();
-        if ( firstStack != null ) {
-             javaClassName = firstStack.getClassName();
-             firstLineNumber = firstStack.getLineNumber();
-             lastLineNumber = lastStack.getLineNumber();
-        }
     }
     public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined, PlClosure currentSub) {
         // this is the constructor for do-BLOCK; currentSub points to the "sub" outside
@@ -3749,6 +3740,36 @@ class PlClosure extends PlReference implements Runnable {
         this.pkg_name = pkg_name;
         this.currentSub = currentSub;
         this.is_defined = is_defined;
+    }
+
+    public String javaClassName() {
+        if (_javaClassName == null) {
+            StackTraceElement firstStack = this.firstLine();
+            if ( firstStack != null ) {
+                _javaClassName = firstStack.getClassName();
+            }
+        }
+        return _javaClassName;
+    }
+
+    public Integer firstLineNumber() {
+        if (_firstLineNumber == null) {
+            StackTraceElement firstStack = this.firstLine();
+            if ( firstStack != null ) {
+                _firstLineNumber = firstStack.getLineNumber();
+            }
+        }
+        return _firstLineNumber;
+    }
+
+    public Integer lastLineNumber() {
+        if (_lastLineNumber == null) {
+            StackTraceElement lastStack = this.lastLine();
+            if ( lastStack != null ) {
+                _lastLineNumber = lastStack.getLineNumber();
+            }
+        }
+        return _lastLineNumber;
     }
 
     public PlClosure getCurrentSub() {
