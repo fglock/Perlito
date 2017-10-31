@@ -1152,7 +1152,7 @@ package Perlito5::Java::LexicalBlock;
         }
 
         if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
-            if ( $self->{top_level} || $last_statement->{_return_from_block} ) {
+            if ( $self->{top_level} || $last_statement->{_return_from_block} || $Perlito5::JAVA_CAN_RETURN ) {
                 if (!@{$last_statement->{arguments}}) {
                     push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
                 }
@@ -1219,6 +1219,7 @@ package Perlito5::Java::LexicalBlock;
         my $local_label = Perlito5::Java::get_label();
         local $Perlito5::JAVA_HAS_LOCAL = $has_local;
         local $Perlito5::JAVA_LOCAL_LABEL = $local_label;
+        $Perlito5::JAVA_CAN_RETURN = 0 if $has_local;
         if ( $has_local ) {
             push @pre, 'int ' . $local_label . ' = PerlOp.local_length();';
             if ($has_regex) {
