@@ -501,6 +501,13 @@ package Perlito5::AST::Apply;
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : '
                 . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
         },
+        'infix:<//>' => sub { 
+            my ($self, $level, $wantarray) = @_;
+            # defined_or1(x) ? defined_or2() : y
+            '(PerlOp.defined_or1('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.defined_or2() : '
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
+        },
         'infix:<xor>' => sub {
             my ($self, $level, $wantarray) = @_;
             '( ' . Perlito5::Java::to_boolean( $self->{arguments}->[0], $level ) . ' ? new PlBool(!'
@@ -1579,13 +1586,6 @@ package Perlito5::AST::Apply;
                 . 'List__, '
                 . Perlito5::Java::to_context($wantarray)
             . ')';
-        },
-        'infix:<//>' => sub { 
-            my ($self, $level, $wantarray) = @_;
-            # defined_or1(x) ? defined_or2() : y
-            '(PerlOp.defined_or1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.defined_or2() : '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
         },
         'ref' => sub {
             my ($self, $level, $wantarray) = @_;
