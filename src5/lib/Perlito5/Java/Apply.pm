@@ -1049,6 +1049,12 @@ package Perlito5::AST::Apply;
             my $arg = $self->{arguments}->[0];
             if ($arg->isa( "Perlito5::AST::Block" )) {
                 # do BLOCK
+
+                # this is disabled because we use "do-block" as a way to avoid the java error: "code too large"
+                # if ($wantarray eq 'void') {
+                #     return $arg->emit_java( $level, $wantarray );
+                # }
+
                 # rewrite to:   sub {...}->()
                 my $ast = Perlito5::AST::Sub->new(
                     'block' => $arg,

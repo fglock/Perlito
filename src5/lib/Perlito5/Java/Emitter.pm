@@ -299,22 +299,27 @@ package Perlito5::Java;
         infix:<<>   <
     );
     our %valid_java_statement = qw(
-        print           1
-        say             1
-        printf          1
-        return          1
-        push            1
+        delete          1
+        die             1
+        do              1
         infix:<=>       1
+        last            1
+        next            1
         postfix:<++>    1
         postfix:<-->    1
         prefix:<++>     1
         prefix:<-->     1
-        tie             1
-        untie           1
-        unshift         1
+        print           1
+        printf          1
+        push            1
+        redo            1
+        return          1
+        say             1
         shift           1
-        delete          1
-        die             1
+        tie             1
+        unshift         1
+        untie           1
+        warn            1
     ); 
 
     my %safe_char = (
