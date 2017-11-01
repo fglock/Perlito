@@ -2538,7 +2538,8 @@ package Perlito5::AST::Call;
             $meth = $meth->emit_java($level, 'scalar');
         }
         else {
-            $meth = Perlito5::Java::escape_string($meth);
+            # create a PlStringConstant
+            $meth = Perlito5::AST::Buf->new( buf => $meth )->emit_java($level, 'scalar');
         }
 
         return 'PerlOp.call('
