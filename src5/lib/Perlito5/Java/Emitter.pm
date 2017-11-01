@@ -2985,11 +2985,18 @@ package Perlito5::AST::Sub;
             push @closure_args, $outer_sub;
         }
 
-        my $perlFileName = 'null';
-        my $perlLineNumber = 'null';
+        my @perl_pos;
         if ($self->{pos}) {
-            $perlFileName = Perlito5::Java::escape_string( $self->{pos}{file} );
-            $perlLineNumber = 0 + $self->{pos}{line};
+            @perl_pos = (
+                  "public String perlFileName() {",
+                    [ "return " . Perlito5::Java::escape_string( $self->{pos}{file} ) . ";",
+                    ],
+                  "}",
+                  "public Integer perlLineNumber() {",
+                    [ "return " . (0 + $self->{pos}{line}) . ";",
+                    ],
+                  "}",
+            );
         }
 
         my $method_decl;
@@ -3004,14 +3011,7 @@ package Perlito5::AST::Sub;
         my @s = (
             "new PlClosure(" . join( ", ", @closure_args ) . ") {",
                 [
-                  "public String perlFileName() {",
-                    [ "return $perlFileName;",
-                    ],
-                  "}",
-                  "public Integer perlLineNumber() {",
-                    [ "return $perlLineNumber;",
-                    ],
-                  "}",
+                  @perl_pos,
                   "public StackTraceElement firstLine() {",
                     [ "return PlCx.mainThread.getStackTrace()[1];",
                     ],
