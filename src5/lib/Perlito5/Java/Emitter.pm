@@ -1080,6 +1080,9 @@ package Perlito5::Java::LexicalBlock;
 
     sub looks_like_statement {
         my ($decl) = @_;
+
+        # TODO - add "circumfix:<( )>" with dead-code args
+
         if (  ( $decl->isa('Perlito5::AST::Int') )
            || ( $decl->isa('Perlito5::AST::Num') )
            || ( $decl->isa('Perlito5::AST::Buf') )
@@ -1204,6 +1207,9 @@ package Perlito5::Java::LexicalBlock;
             my $stmt = $self->{block}[$i];
             if (defined($stmt)) {
                 push @block, $stmt;
+
+                # TODO - test for "if" with "return" in both sides
+
                 if ( $stmt->isa( 'Perlito5::AST::Apply' ) && $stmt->code eq 'return' ) {
                     last STMT;
                 }
