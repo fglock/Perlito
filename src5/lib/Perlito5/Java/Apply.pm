@@ -232,7 +232,7 @@ package Perlito5::AST::Apply;
         },
         '__PACKAGE__' => sub {
             my ($self, $level, $wantarray) = @_;
-            "new PlString(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")";
+            return Perlito5::AST::Buf->new( buf => $Perlito5::PKG_NAME )->emit_java($level, 'scalar');
         },
         '__SUB__' => sub {
             my ($self, $level, $wantarray) = @_;
