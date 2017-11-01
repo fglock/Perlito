@@ -658,7 +658,7 @@ package Perlito5::AST::Apply;
         },
         'circumfix:<{ }>' => sub {
             my ($self, $level, $wantarray) = @_;
-            '(new PlHashRef(new PlHash(' . Perlito5::Java::to_list_for_push( $self->{arguments}, $level ) . ')))';
+            'new PlHashRef(new PlHash(' . Perlito5::Java::to_list_for_push( $self->{arguments}, $level ) . '))';
         },
         'prefix:<\\>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -687,10 +687,10 @@ package Perlito5::AST::Apply;
                     return 'new PlArrayRef(' . $arg->emit_java($level) . ')';
                 }
                 if ( $arg->sigil eq '%' ) {
-                    return '(new PlHashRef(' . $arg->emit_java($level) . '))';
+                    return 'new PlHashRef(' . $arg->emit_java($level) . ')';
                 }
                 if ( $arg->sigil eq '*' ) {
-                    return '(new PlGlobRef(' . $arg->emit_java($level) . '))';
+                    return 'new PlGlobRef(' . $arg->emit_java($level) . ')';
                 }
                 if ( $arg->sigil eq '&' ) {
                     my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
