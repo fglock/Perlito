@@ -2264,24 +2264,6 @@ class PlV {
         svar.hset_alias(name, v);
     }
 
-    // code
-    public static final PlObject apply(String name, int want, PlArray List__) {
-        PlObject code = cvar.hget(name);
-        if ( code.is_coderef() ) {
-            return code.apply(want, List__);
-        }
-        int pos = name.lastIndexOf("::");
-        if (pos != -1) {
-            String namespace = name.substring(0, pos);
-            PlLvalue autoload = PlV.cget_no_autoload(namespace + "::AUTOLOAD");
-            if ( autoload.is_coderef() ) {
-                PlV.sset(namespace + "::AUTOLOAD", new PlString(name));
-                return autoload.apply(want, List__);
-            }
-        }
-        return PlCORE.die("Undefined subroutine &" + name + " called");
-    }
-
     public static final PlLvalue cget(String name) {
         // this implements " \&name "
         PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);
@@ -2634,7 +2616,21 @@ EOT
     public PlObject apply(int want, PlArray List__) {
         // $ perl -e ' $a = 5; $a->() '
         // Undefined subroutine &main::5 called
-        return PlCORE.die("subroutine call error");
+        String name = this.toString();
+        PlObject code = PlV.cvar.hget(name);
+        if ( code.is_coderef() ) {
+            return code.apply(want, List__);
+        }
+        int pos = name.lastIndexOf("::");
+        if (pos != -1) {
+            String namespace = name.substring(0, pos);
+            PlLvalue autoload = PlV.cget_no_autoload(namespace + "::AUTOLOAD");
+            if ( autoload.is_coderef() ) {
+                PlV.sset(namespace + "::AUTOLOAD", new PlString(name));
+                return autoload.apply(want, List__);
+            }
+        }
+        return PlCORE.die("Undefined subroutine &" + name + " called");
     }
 
     public PlObject length() {
@@ -7235,6 +7231,7 @@ EOT
 }
 class PlStringConstant extends PlString {
     private PlClass cls;
+    private PlObject codeRef;
 
     public PlStringConstant(String s) {
         super(s);
@@ -7245,6 +7242,28 @@ class PlStringConstant extends PlString {
             cls = PlClass.getInstance(s);
         }
         return cls;
+    }
+    public PlObject apply(int want, PlArray List__) {
+        if (this.codeRef == null) {
+            String name = this.toString();
+            PlObject code = PlV.cvar.hget(name);
+            if ( code.is_coderef() ) {
+                this.codeRef = code;
+            }
+            else {
+                int pos = name.lastIndexOf("::");
+                if (pos != -1) {
+                    String namespace = name.substring(0, pos);
+                    PlLvalue autoload = PlV.cget_no_autoload(namespace + "::AUTOLOAD");
+                    if ( autoload.is_coderef() ) {
+                        PlV.sset(namespace + "::AUTOLOAD", new PlString(name));
+                        return autoload.apply(want, List__);
+                    }
+                }
+                return PlCORE.die("Undefined subroutine &" + name + " called");
+            }
+        }
+        return this.codeRef.apply(want, List__);
     }
 }
 class PlString extends PlObject {

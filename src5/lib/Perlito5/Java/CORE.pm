@@ -555,9 +555,9 @@ EOT
     public static final PlObject require(int want, PlObject file, boolean is_bareword) {
         // TODO - require-version
         if (is_bareword) {
-            file = PlV.apply("Perlito5::Grammar::Use::modulename_to_filename", PlCx.SCALAR, new PlArray(file));
+            file = new PlString("Perlito5::Grammar::Use::modulename_to_filename").apply(PlCx.SCALAR, new PlArray(file));
         }
-        return PlV.apply("Perlito5::Grammar::Use::require", want, new PlArray(file));
+        return new PlString("Perlito5::Grammar::Use::require").apply(want, new PlArray(file));
     }
     public static final PlObject rmdir(int want, PlArray List__) {
         try {

@@ -1604,7 +1604,7 @@ package Perlito5::AST::CompUnit;
                [ "public static PlObject[] apply(String functionName, String... args) {",
                  [
                      "PlArray list = new PlArray(args);",
-                     "PlObject result = PlV.apply(functionName, PlCx.LIST, list);",
+                     "PlObject result = new PlString(functionName).apply(PlCx.LIST, list);",
                      "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",
@@ -1619,7 +1619,7 @@ package Perlito5::AST::CompUnit;
                [ "public static PlObject[] apply(String functionName, PlObject... args) {",
                  [
                      "PlArray list = new PlArray(args);",
-                     "PlObject result = PlV.apply(functionName, PlCx.LIST, list);",
+                     "PlObject result = new PlString(functionName).apply(PlCx.LIST, list);",
                      "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",
@@ -2133,8 +2133,9 @@ package Perlito5::AST::Var;
         }
         if ( $sigil eq '&' ) {
             my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
-            return 'PlV.apply(' . Perlito5::Java::escape_string($namespace . '::' . $str_name ) . ', '
-                . Perlito5::Java::to_context($wantarray) . ', List__)';
+            # create a PlStringConstant
+            my $sub = Perlito5::AST::Buf->new( buf => $namespace . '::' . $str_name )->emit_java($level, 'scalar');
+            return $sub . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
         }
         if ($sigil eq '@') {
             if ($self->{sigil} eq '$#') {

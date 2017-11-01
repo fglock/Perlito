@@ -564,7 +564,9 @@ package Perlito5::AST::Apply;
             my $arg  = $self->{arguments}->[0];
             if ($arg->{is_version_string}) {
                 # require VERSION
-                return 'PlV.apply("Perlito5::test_perl_version", PlCx.VOID, new PlArray('
+                # create a PlStringConstant
+                $code = Perlito5::AST::Buf->new( buf => "Perlito5::test_perl_version" )->emit_java($level, 'scalar');
+                return $code . '.apply(PlCx.VOID, new PlArray('
                     .       $arg->emit_java( $level, 'scalar' )
                     . '))';
             }
@@ -1933,30 +1935,19 @@ package Perlito5::AST::Apply;
                 $sig = substr($sig, 1);
             }
 
-            return 
-                'PlV.apply(' . Perlito5::Java::escape_string( $code ) . ', '
+            # create a PlStringConstant
+            $code = Perlito5::AST::Buf->new( buf => $code )->emit_java($level, 'scalar');
+            return $code . '.apply(' 
                         . Perlito5::Java::to_context($wantarray)
                         . ', PlArray.construct_list_of_aliases(' . join(', ', @out) . ')'
-                        # . Perlito5::Java::to_param_list(\@in, $level+1)  # TODO
                 . ')';
         }
 
         my $items = Perlito5::Java::to_list_preprocess( $self->{arguments} );
 
-        # TODO - autoload
-        # if ( $may_need_autoload ) {
-        #     # p5cget(namespace, name).apply(list, want)
-        #     my $name = $self->{code};
-        #     my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
-        #     return 'p5cget('
-        #             . Perlito5::Java::escape_string($namespace) . ', '
-        #             . Perlito5::Java::escape_string($name) . ').apply('
-        #             . $arg_code . ', '
-        #             . Perlito5::Java::to_context($wantarray)
-        #          . ')';
-        # }
-
-        'PlV.apply(' . Perlito5::Java::escape_string( $code ) . ', '
+        # create a PlStringConstant
+        $code = Perlito5::AST::Buf->new( buf => $code )->emit_java($level, 'scalar');
+        return $code . '.apply('
                 . Perlito5::Java::to_context($wantarray) . ', '
                 . Perlito5::Java::to_param_list($items, $level+1)
               . ')';
