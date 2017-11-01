@@ -13,9 +13,9 @@ token term_digit {
     | <Perlito5::Grammar::Number::val_num>
         # 123.456
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::val_num"}) ]  }
-    | <Perlito5::Grammar::Number::val_int>
-        # 123
-        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::val_int"}) ]  }
+    # | <Perlito5::Grammar::Number::val_int>
+    #     # 123
+    #     { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::val_int"}) ]  }
 };
 
 Perlito5::Grammar::Precedence::add_term( $_  => \&term_digit )
@@ -34,29 +34,56 @@ sub digit {
     : 0;
 }
 
+sub octal_digit {
+    my $str = $_[0];
+    my $pos = $_[1];
+    $str->[$pos] ge '0' && $str->[$pos] le '7'
+    ? {
+        str  => $str,
+        from => $pos,
+        to   => $pos + 1,
+      }
+    : 0;
+}
+
+sub hex_digit {
+    my $str = $_[0];
+    my $pos = $_[1];
+    (  ($str->[$pos] ge '0' && $str->[$pos] le '9')
+    || ($str->[$pos] ge 'A' && $str->[$pos] le 'F')
+    || ($str->[$pos] ge 'a' && $str->[$pos] le 'f')
+    )
+    ? {
+        str  => $str,
+        from => $pos,
+        to   => $pos + 1,
+      }
+    : 0;
+}
+
 token exponent {
     [ 'e' | 'E' ]  [ '+' | '-' | '' ]  [ '_' | \d ]+
 };
 
 token val_num {
     [   \. \d [ '_' | \d]*    <.exponent>?    # .10 .10e10
-    |      \d [ '_' | \d]*  [ <.exponent>  |   \. <!before \. > [ '_' | \d]*  <.exponent>? ]
+    |      \d [ '_' | \d]*
+                [ <.exponent>
+                | \. <!before \. > [ '_' | \d]*  <.exponent>?
+                |
+                    {
+                        my $s = Perlito5::Match::flat($MATCH);
+                        $s =~ s/_//g;
+                        $MATCH->{capture} = Perlito5::AST::Int->new( int => $s );
+                        return $MATCH;
+                    }
+                ]
     ]
     {
         my $s = Perlito5::Match::flat($MATCH);
         $s =~ s/_//g;
         $MATCH->{capture} = Perlito5::AST::Num->new( num => $s ) 
     }
-};
-
-token octal_digit {
-    '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7'
-};
-
-token hex_digit {
-    '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' |
-    'A' | 'B' | 'C' | 'D' | 'E' | 'F' |
-    'a' | 'b' | 'c' | 'd' | 'e' | 'f'
 };
 
 token digits {
