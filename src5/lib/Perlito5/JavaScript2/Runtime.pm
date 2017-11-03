@@ -11,19 +11,15 @@ sub perl5_to_js {
     local ${^GLOBAL_PHASE};
     local $^H = $scalar_hints;
     local %^H = %$hash_hints;
-    local $Perlito5::BASE_SCOPE = $scope_js->[0];
+    local @Perlito5::BASE_SCOPE = ($scope_js->[0]);
     local @Perlito5::SCOPE_STMT;
-    local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;
-    local $Perlito5::SCOPE         = $Perlito5::BASE_SCOPE;
-    local $Perlito5::SCOPE_DEPTH = 0;
+    local $Perlito5::CLOSURE_SCOPE = 0;
     local $Perlito5::PKG_NAME = $namespace;
     local @Perlito5::UNITCHECK_BLOCK;
     # warn "in eval enter\n";
     # warn "External scope ", Data::Dumper::Dumper($scope_js);
     # warn "BASE_SCOPE ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
     # warn "SCOPE_STMT ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
-    # warn "SCOPE ", Data::Dumper::Dumper($Perlito5::SCOPE);
-    # warn "SCOPE_DEPTH ", Data::Dumper::Dumper($Perlito5::SCOPE_DEPTH);
 
     my $match = Perlito5::Grammar::exp_stmts( $source, 0 );
 

@@ -167,7 +167,7 @@ sub _dump_AST_from_scope {
 #         variables are shared or not.
 #         Closures can have un-shared variables if the closure is created
 #         in a loop inside BEGIN
-#       - shared lexicals can be obtained from the data in $Perlito5::SCOPE
+#       - shared lexicals can be obtained from the data in @Perlito5::BASE_SCOPE
 
 #   - this Perl warning should probably be fatal in Perlito5:
 #       Variable "$z" will not stay shared

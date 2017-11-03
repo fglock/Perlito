@@ -14,11 +14,9 @@ sub perl5_to_java {
 
     local $_;
     local ${^GLOBAL_PHASE};
-    local $Perlito5::BASE_SCOPE = $scope_java;  # ->[0];
+    local @Perlito5::BASE_SCOPE = ($scope_java);  # ->[0];
     local @Perlito5::SCOPE_STMT;
-    local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;
-    local $Perlito5::SCOPE         = $Perlito5::BASE_SCOPE;
-    local $Perlito5::SCOPE_DEPTH = 0;
+    local $Perlito5::CLOSURE_SCOPE = 0;
     local $Perlito5::PKG_NAME = $namespace;
     local @Perlito5::UNITCHECK_BLOCK;
     local @Perlito5::Java::Java_constants;
@@ -29,8 +27,6 @@ sub perl5_to_java {
     # warn "External scope ", Data::Dumper::Dumper($scope_java);
     # warn "BASE_SCOPE ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
     # warn "SCOPE_STMT ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
-    # warn "SCOPE ", Data::Dumper::Dumper($Perlito5::SCOPE);
-    # warn "SCOPE_DEPTH ", Data::Dumper::Dumper($Perlito5::SCOPE_DEPTH);
 
     my $match = Perlito5::Grammar::exp_stmts( $source, 0 );
 

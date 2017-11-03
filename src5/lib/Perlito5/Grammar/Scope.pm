@@ -12,27 +12,21 @@ sub new_base_scope {
 }
 
 sub create_new_compile_time_scope {
-    my $new_scope = { block => [] };
-    push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new compile-time lexical scope
-    $Perlito5::SCOPE_DEPTH++;
-    # warn "ENTER ", $Perlito5::SCOPE_DEPTH, " $Perlito5::PKG_NAME \n";
-    $Perlito5::SCOPE = $new_scope;
-    $Perlito5::SCOPE->{hint_scalar} = $^H;
-    $Perlito5::SCOPE->{hint_hash}   = { %^H };
+    # start new compile-time lexical scope
+    push @Perlito5::BASE_SCOPE, {
+        block       => [],
+        hint_scalar => $^H,
+        hint_hash   => {%^H},
+    };
+    # warn "ENTER $Perlito5::PKG_NAME \n";
     # print STDERR "create_new_compile_time_scope [ $^H ]\n";
 }
 
 sub end_compile_time_scope {
-    # warn "EXIT  ", $Perlito5::SCOPE_DEPTH, "\n";
-    $^H = $Perlito5::SCOPE->{hint_scalar};
-    %^H = %{ $Perlito5::SCOPE->{hint_hash} || {} };
-    my $pos = 0;
-    $Perlito5::SCOPE_DEPTH--;
-    $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
-    while ($Perlito5::SCOPE_DEPTH > $pos) {
-        $pos++;
-        $Perlito5::SCOPE = $Perlito5::SCOPE->{block}[-1]; 
-    }
+    # warn "EXIT\n";
+    my $scope = pop @Perlito5::BASE_SCOPE;
+    $^H = $scope->{hint_scalar};
+    %^H = %{ $scope->{hint_hash} || {} };
     # print STDERR "end_compile_time_scope [ $^H ]\n";
 }
 
@@ -64,12 +58,12 @@ sub compile_time_glob_set {
 sub lookup_variable {
     # search for a variable declaration in the compile-time scope
     my $var = shift;
-    my $scope = shift() // $Perlito5::BASE_SCOPE;
+    my $scope = shift() // 0;
 
     return $var if $var->{namespace};       # global variable
     return $var if $var->{_decl};           # predeclared variable
 
-    my $look = lookup_variable_inner($var, $scope, 0);
+    my $look = lookup_variable_inner($var, $scope);
     return $look if $look;
 
     return if ref($var) ne 'Perlito5::AST::Var';
@@ -96,19 +90,20 @@ sub lookup_variable {
 
 sub lookup_variable_inner {
     # search for a variable declaration in the compile-time scope
-    my ($var, $scope, $depth) = @_;
+    my ($var, $scope) = @_;
 
-    # warn "depth $depth ", $Perlito5::SCOPE_DEPTH, "\n";
-    return if $depth > $Perlito5::SCOPE_DEPTH;
+    # warn "depth $scope ", $#Perlito5::BASE_SCOPE, "\n";
+    return if $scope > $#Perlito5::BASE_SCOPE;
 
-    my $block = $scope->{block};
-    if ( @$block && ref($block->[-1]) eq 'HASH' && $block->[-1]{block} ) {
+    if ( $scope < $#Perlito5::BASE_SCOPE ) {
         # lookup in the inner scope first
-        my $look = lookup_variable_inner($var, $block->[-1], $depth + 1);
+        my $look = lookup_variable_inner($var, $scope + 1);
         return $look if $look;
     }
+    my $block = $Perlito5::BASE_SCOPE[$scope]->{block};
 
-    if ( ($scope->{compacted} + 100) < @$block ) {
+    if ( ($Perlito5::BASE_SCOPE[$scope]->{compacted} + 100) < @$block ) {
+        # TODO - simplify this
         # garbage-collect the scope
         my %seen;
         my @out;
@@ -123,9 +118,9 @@ sub lookup_variable_inner {
             } keys(%{$item}));
             $seen{$s}++ || push(@out, $item)
         }
-        # print STDERR:: 'block ', scalar(@{$block}), ' ', scalar(@out), ' ', $scope->{compacted}, "\n";
-        $scope->{'block'} = [ @{$block}[ 0 .. $start - 1 ], @out ];
-        $scope->{compacted} += 100;
+        # print STDERR:: 'block ', scalar(@{$block}), ' ', scalar(@out), ' ', $Perlito5::BASE_SCOPE[$scope]->{compacted}, "\n";
+        $Perlito5::BASE_SCOPE[$scope]->{'block'} = [ @{$block}[ 0 .. $start - 1 ], @out ];
+        $Perlito5::BASE_SCOPE[$scope]->{compacted} += 100;
     }
 
     for my $item (reverse @$block) {
@@ -151,7 +146,7 @@ sub check_variable_declarations {
     # - check if the variables were declared
     # - insert the variables in the current compile-time scope
 
-    # print "env: ", Data::Dumper::Dumper( $Perlito5::SCOPE->{block} );
+    # print "env: ", Data::Dumper::Dumper( \@Perlito5::BASE_SCOPE );
     for my $item ( @Perlito5::SCOPE_STMT ) {
         if (ref($item) eq 'Perlito5::AST::Var') {
             my $var = $item;
@@ -200,7 +195,7 @@ sub check_variable_declarations {
             }
         }
     }
-    push @{ $Perlito5::SCOPE->{block} }, @Perlito5::SCOPE_STMT;
+    push @{ $Perlito5::BASE_SCOPE[-1]->{block} }, @Perlito5::SCOPE_STMT;
     @Perlito5::SCOPE_STMT = ();
 }
 
@@ -208,13 +203,14 @@ sub get_snapshot {
     # return a structure with the variable declarations in the current compile-time scope
     # this is used by eval-string at runtime
     my @result;
-    my $scope = shift() // $Perlito5::BASE_SCOPE;
-    my $block = $scope->{block};
-    if ( @$block && ref($block->[-1]) eq 'HASH' && $block->[-1]{block} ) {
+    my $scope = shift() // 0;
+
+    if ( $scope < $#Perlito5::BASE_SCOPE ) {
         # lookup in the inner scope first
-        my $look = get_snapshot($block->[-1]);
+        my $look = get_snapshot($scope + 1);
         unshift @result, @{ $look->{block} };
     }
+    my $block = $Perlito5::BASE_SCOPE[$scope]->{block};
     for my $item (@$block) {
         if (   ref($item) eq 'Perlito5::AST::Var'
             && $item->{_decl}

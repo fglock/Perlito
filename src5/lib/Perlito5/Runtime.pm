@@ -32,10 +32,8 @@ our $FILE_NAME    = '';   # current file name being compiled
 
 # information about the current compilation process
 our $GLOBAL          = {};
-our $BASE_SCOPE      = Perlito5::Grammar::Scope->new_base_scope();
-our $CLOSURE_SCOPE   = $BASE_SCOPE;    # variables that are in scope in the current closure being compiled
-our $SCOPE           = $BASE_SCOPE;    # variables that are in scope in the current block being compiled
-our $SCOPE_DEPTH     = 0;
+our @BASE_SCOPE      = ( Perlito5::Grammar::Scope->new_base_scope() );
+our $CLOSURE_SCOPE   = 0;    # variables that are in scope in the current closure being compiled
 our @SCOPE_STMT      = ();
 our @END_BLOCK       = ();    # END block LIFO - array of subs
 our @INIT_BLOCK      = ();    # INIT block FIFO - array of subs

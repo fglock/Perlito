@@ -354,8 +354,6 @@ if ($backend) {
 
     # TODO - reset information about the current compilation process,
     #        this should happen before the eval-string below is *compiled*.
-    # our $BASE_SCOPE   = Perlito5::Grammar::Scope->new_base_scope();
-    # our $SCOPE        = $BASE_SCOPE;    # information about the current block being compiled
 
     Perlito5::Java::Lib::init()
         if $backend eq 'java';
@@ -594,7 +592,7 @@ $source
                     print $@;
                 }
                 elsif ($backend eq '_comp') {
-                    say Perlito5::Dumper::ast_dumper( $Perlito5::SCOPE );
+                    say Perlito5::Dumper::ast_dumper( \@Perlito5::BASE_SCOPE );
                 }
                 else {
                     die "don't know what to do with backend '$backend'";

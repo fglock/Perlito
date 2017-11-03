@@ -64,7 +64,7 @@ sub closure_block {
     # before entering the block, so that it can be seen immediately
     Perlito5::Grammar::Scope::check_variable_declarations();
     Perlito5::Grammar::Scope::create_new_compile_time_scope();
-    local $Perlito5::CLOSURE_SCOPE = $Perlito5::SCOPE;  # this is the only diff from plain <block>
+    local $Perlito5::CLOSURE_SCOPE = $#Perlito5::BASE_SCOPE;  # this is the only diff from plain <block>
 
     $m = Perlito5::Grammar::exp_stmts($str, $pos);
     if (!$m) {
@@ -216,10 +216,6 @@ sub special_named_block {
     $p = $m->{to};
     my $block = Perlito5::Match::flat($m);
  
-    my $compile_block = $Perlito5::SCOPE->{block}[-1];
-    $compile_block->{type} = 'sub';
-    $compile_block->{name} = $block_name;
-  
     if ($block_name eq 'INIT') {
         push @Perlito5::INIT_BLOCK, eval_end_block( $block, 'INIT' );
         $m->{capture} = ast_nop();
@@ -318,12 +314,6 @@ token named_sub_def {
             #     if exists $Perlito5::PROTO->{$full_name};
 
             $Perlito5::PROTO->{$full_name} = $sig;  # TODO - cleanup - replace $PROTO with prototype()
-
-            if ($MATCH->{_tmp}) {
-                my $block = $Perlito5::SCOPE->{block}[-1];
-                $block->{type} = 'sub';
-                $block->{name} = $full_name;
-            }
         }
         my $sub = Perlito5::AST::Sub->new(
             name       => $name, 
