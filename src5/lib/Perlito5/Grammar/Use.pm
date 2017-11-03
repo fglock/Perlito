@@ -336,6 +336,12 @@ sub bootstrapping_use {
     my $source = <FILE>;
     close FILE;
 
+    local @Perlito5::BASE_SCOPE      = (Perlito5::Grammar::Scope->new_base_scope());
+    local $Perlito5::CLOSURE_SCOPE   = 0;    # variables that are in scope in the current closure being compiled
+    local @Perlito5::SCOPE_STMT      = ();
+    local $^H = 0;
+    local %^H = ();
+
     # compile; push AST into comp_units
     # warn $source;
     my $m = Perlito5::Grammar::exp_stmts($source, 0);
@@ -394,8 +400,6 @@ sub require {
     local @Perlito5::BASE_SCOPE      = (Perlito5::Grammar::Scope->new_base_scope());
     local $Perlito5::CLOSURE_SCOPE   = 0;    # variables that are in scope in the current closure being compiled
     local @Perlito5::SCOPE_STMT      = ();
-
-    # Perlito5::Grammar::Scope::create_new_compile_time_scope();
     local $^H = 0;
     local %^H = ();
 
