@@ -2624,7 +2624,7 @@ package Perlito5::AST::If;
                && ref($otherwise->{block}[0]) eq 'Perlito5::AST::If'
                )
             {
-                push @str, 'else', [ $otherwise->{block}[0]->emit_java( $level, $wantarray ) ];
+                push @str, ( 'else', $otherwise->{block}[0]->emit_java( $level, $wantarray ) );
             }
             else {
                 push @str, 
