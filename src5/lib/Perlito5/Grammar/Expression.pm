@@ -146,6 +146,14 @@ sub reduce_postfix {
     my $op = shift;
     my $value = shift;
     my $v = $op;
+    if ($v->[1] eq '.{ }') {
+        $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v->[2] );
+        return $v;
+    }
+    if ($v->[1] eq '.[ ]') {
+        $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<[ ]>', arguments => $v->[2] );
+        return $v;
+    }
     if ($v->[1] eq 'methcall_no_params') {
         if ($v->[2] eq '@*') {
             return 
@@ -244,14 +252,6 @@ sub reduce_postfix {
         # }
 
         $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list );
-        return $v;
-    }
-    if ($v->[1] eq '.[ ]') {
-        $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<[ ]>', arguments => $v->[2] );
-        return $v;
-    }
-    if ($v->[1] eq '.{ }') {
-        $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v->[2] );
         return $v;
     }
     push @$op, $value;
@@ -608,7 +608,6 @@ sub list_parser {
     my $last_pos = $pos;
     my $is_first_token = 1;
     my $lexer_stack = [];
-    my $last_token_was_space = 1;
     my $get_token = sub {
         my $last_is_term = $_[0];
         my $v;
@@ -647,7 +646,6 @@ sub list_parser {
                 $last_pos = $m->{to};
             }
         }
-        $last_token_was_space = ($v->[0] eq 'space');
         $is_first_token = 0;
         return $v;
     };
