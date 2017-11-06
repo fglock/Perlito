@@ -595,44 +595,30 @@ sub list_parser {
     my $expr;
     my $last_pos = $pos;
     my $is_first_token = 1;
-    my $lexer_stack = [];
     my $get_token = sub {
         my $last_is_term = $_[0];
         my $v;
-        if (scalar(@$lexer_stack)) {
-            $v = pop @$lexer_stack;
-            if  (  $is_first_token
-                && ($v->[0] eq 'op')
-                && !(Perlito5::Grammar::Precedence::is_fixity_type('prefix', $v->[1]))
-                )
-            {
-                # say "# finishing list - first token is: ", $v->[1];
-                $v->[0] = 'end';
+        my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
+        if ($m) {
+            my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
+            if ($spc) {
+                $m->{to} = $spc->{to};
             }
         }
-        else {
-            my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
-            if ($m) {
-                my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
-                if ($spc) {
-                    $m->{to} = $spc->{to};
-                }
-            }
-            if (!$m) {
-                return [ 'end', '*end*' ];
-            }
-            $v = $m->{capture};
-            if  (  $is_first_token
-                && ($v->[0] eq 'op')
-                && !(Perlito5::Grammar::Precedence::is_fixity_type('prefix', $v->[1]))
-                )
-            {
-                # say "# finishing list - first token is: ", $v->[1];
-                $v->[0] = 'end';
-            }
-            if ($v->[0] ne 'end') {
-                $last_pos = $m->{to};
-            }
+        if (!$m) {
+            return [ 'end', '*end*' ];
+        }
+        $v = $m->{capture};
+        if  (  $is_first_token
+            && ($v->[0] eq 'op')
+            && !(Perlito5::Grammar::Precedence::is_fixity_type('prefix', $v->[1]))
+            )
+        {
+            # say "# finishing list - first token is: ", $v->[1];
+            $v->[0] = 'end';
+        }
+        if ($v->[0] ne 'end') {
+            $last_pos = $m->{to};
         }
         $is_first_token = 0;
         return $v;
@@ -746,28 +732,22 @@ sub exp_parse {
     # say "# exp_parse input: ",$str," at ",$pos;
     my $expr;
     my $last_pos = $pos;
-    my $lexer_stack = [];
     my $get_token = sub {
         my $last_is_term = $_[0];
         my $v;
-        if (scalar(@$lexer_stack)) {
-            $v = pop @$lexer_stack;
+        my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
+        if ($m) {
+            my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
+            if ($spc) {
+                $m->{to} = $spc->{to};
+            }
         }
-        else {
-            my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
-            if ($m) {
-                my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
-                if ($spc) {
-                    $m->{to} = $spc->{to};
-                }
-            }
-            if (!$m) {
-                return [ 'end', '*end*' ];
-            }
-            $v = $m->{capture};
-            if ($v->[0] ne 'end') {
-                $last_pos = $m->{to};
-            }
+        if (!$m) {
+            return [ 'end', '*end*' ];
+        }
+        $v = $m->{capture};
+        if ($v->[0] ne 'end') {
+            $last_pos = $m->{to};
         }
         return $v;
     };
