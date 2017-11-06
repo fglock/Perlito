@@ -592,7 +592,6 @@ my $Argument_end_token = {
 sub list_parser {
     my ($str, $pos, $end_token) = @_;
     # say "# argument_parse: input ",$str," at ",$pos;
-    my $expr;
     my $last_pos = $pos;
     my $is_first_token = 1;
     my $get_token = sub {
@@ -669,7 +668,6 @@ sub list_parse {
 sub circumfix_parse {
     my ($str, $pos, $delimiter) = @_;
     # say "# circumfix_parse input: ",$str," at ",$pos;
-    my $expr;
     my $last_pos = $pos;
     my $get_token = sub {
         my $last_is_term = $_[0];
@@ -726,7 +724,6 @@ sub paren_parse {
 sub exp_parse {
     my ($str, $pos) = @_;
     # say "# exp_parse input: ",$str," at ",$pos;
-    my $expr;
     my $last_pos = $pos;
     my $get_token = sub {
         my $last_is_term = $_[0];
