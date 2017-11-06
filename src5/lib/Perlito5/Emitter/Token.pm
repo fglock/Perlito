@@ -118,18 +118,17 @@ sub new { my $class = shift; bless {@_}, $class }
 sub or_list { $_[0]->{or_list} }
 sub emit_perl5 {
     my $self = $_[0];
-    my $item = shift @{$self->{or_list}};
-    if (! @{$self->{or_list}} ) {
-        return $item->emit_perl5;
-    }
-    my $tail = $self->emit_perl5();
 
-      '('
-        . '(push @stack, $MATCH->{to}), '
-        . '(' . $item->emit_perl5() . ')'
-        . ' ? ((pop @stack), 1)'
-        . ' : (($MATCH->{to} = pop @stack), ' . $tail . ')'
-    . ')'
+    if ( scalar( @{$self->{or_list}} ) == 1 ) {
+        return $self->{or_list}[0]->emit_perl5;
+    }
+
+    '(do { '
+        . 'my $pos1 = $MATCH->{to}; (do { '
+        . join( '}) || (do { $MATCH->{to} = $pos1; ',
+              map( $_->emit_perl5, @{$self->{or_list}} )
+            )
+    . '}) })';
 }
 sub set_captures_to_array {
     my $self = $_[0];
