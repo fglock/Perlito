@@ -132,13 +132,13 @@ Command-line options
 Libraries
 ---------
 
-- these should go into namespace `Perlito5X::*`
+- these go into namespace `Perlito5X::*`
 
 - Test (implemented as Perlito5::Test)
 
 - Data::Dumper (implemented as Perlito5X::Dumper)
 
-- create perlito5-specific libs for:
+- there are perlito5-specific libs for:
 
     ```
     feature.pm
@@ -153,9 +153,6 @@ Libraries
     Tie::Scalar
     Symbol
     ```
-
-    alternately, check `$^H` for strictness - such that perl's own strict.pm just works
-    and `${^WARNING_BITS}` for warnings
 
   - add tests for core modules
 
@@ -791,22 +788,6 @@ Compile-time execution environment
 
   ```sh
   $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
-  {
-      'block' => [
-          {
-              'block' => [],
-          },
-          {
-              'block' => [
-                  {
-                      'block' => [],
-                  },
-              ],
-              'name' => 'main::x',
-              'type' => 'sub',
-          },
-      ],
-  }
   ```
 
 
@@ -833,9 +814,6 @@ Nice to Have
     Illegal modulus zero at -e line 1.
 
 - no warnings 'redefine';
-
-- INIT{}, END{}
-   look at the implementation in perlito6-in-Go
 
 - source code - remove Perl 6 code such as "token"
    (fixed: This is only loaded if the grammar compiler is needed)
