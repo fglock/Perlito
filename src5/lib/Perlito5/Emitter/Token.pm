@@ -95,12 +95,14 @@ sub emit_perl5 {
     if ($self->{quant} eq '?') {
         $self->{term}->set_captures_to_array;
         return
-          '('
-            . '(push @stack, $MATCH), '
-            . '(' . $self->{term}->emit_perl5() . ')'
-            . ' ? ((pop @stack), 1)'
-            . ' : (($MATCH = pop @stack), 1)'
-        . ')'
+            '(do { '
+            .   'my $m = $MATCH; '
+            .   'if (!' . $self->{term}->emit_perl5() . ') '
+            .   '{ '
+            .       '$MATCH = $m; '
+            .   '}; '
+            .   '1 '
+            . '})';
     }
 
     die "Perlito5::Rul::Quantifier:  not implemented";
@@ -286,13 +288,15 @@ sub rule_exp { $_[0]->{rule_exp} }
 sub emit_perl5 {
     my $self = $_[0];
 
-      '('
-        . '(push @stack, $MATCH), '
-        . '($MATCH = { \'from\' => $stack[-1]->{to}, \'to\' => $stack[-1]->{to} }), '
-        . '(' . $self->{rule_exp}->emit_perl5() . ')'
-        . ' ? (($MATCH = pop @stack), 1)'
-        . ' : (($MATCH = pop @stack), 0)'
-    . ')'
+    '(do { ' .
+        'my $tmp = $MATCH; ' .
+        '$MATCH = { \'from\' => $tmp->{to}, \'to\' => $tmp->{to} }; ' .
+        'my $res = ' .
+            $self->{rule_exp}->emit_perl5() .
+        '; ' .
+        '$MATCH = $tmp; ' .
+        '$res ? 1 : 0 ' .
+    '})'
 }
 sub set_captures_to_array {
     my $self = $_[0];
@@ -306,13 +310,15 @@ sub rule_exp { $_[0]->{rule_exp} }
 sub emit_perl5 {
     my $self = $_[0];
 
-      '('
-        . '(push @stack, $MATCH), '
-        . '($MATCH = { \'from\' => $stack[-1]->{to}, \'to\' => $stack[-1]->{to} }), '
-        . '(' . $self->{rule_exp}->emit_perl5() . ')'
-        . ' ? (($MATCH = pop @stack), 0)'
-        . ' : (($MATCH = pop @stack), 1)'
-    . ')'
+    '(do { ' .
+        'my $tmp = $MATCH; ' .
+        '$MATCH = { \'from\' => $tmp->{to}, \'to\' => $tmp->{to} }; ' .
+        'my $res = ' .
+            $self->{rule_exp}->emit_perl5() .
+        '; ' .
+        '$MATCH = $tmp; ' .
+        '$res ? 0 : 1 ' .
+    '})'
 }
 sub set_captures_to_array {
     my $self = $_[0];
