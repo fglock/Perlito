@@ -258,7 +258,7 @@ sub reduce_postfix {
     return $op;
 }
 
-my $reduce_to_ast = sub {
+sub reduce_to_ast {
     my $op_stack = shift;
     my $num_stack = shift;
 
@@ -622,7 +622,6 @@ sub list_parser {
     };
     my $prec = Perlito5::Grammar::Precedence->new(
         get_token       => $get_token, 
-        reduce          => $reduce_to_ast,
         end_token       => $end_token,
         end_token_chars => $Expr_end_token_chars,
     );
@@ -693,7 +692,6 @@ sub circumfix_parse {
     $delim_token{ $delimiter } = 1;
     my $prec = Perlito5::Grammar::Precedence->new(
         get_token       => $get_token,
-        reduce          => $reduce_to_ast,
         end_token       => \%delim_token,
         end_token_chars => [ length $delimiter ],
     );
@@ -744,7 +742,6 @@ sub exp_parse {
     };
     my $prec = Perlito5::Grammar::Precedence->new(
         get_token       => $get_token,
-        reduce          => $reduce_to_ast,
         end_token       => $Expr_end_token,
         end_token_chars => $Expr_end_token_chars,
     );

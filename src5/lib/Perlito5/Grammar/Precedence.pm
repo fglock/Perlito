@@ -6,7 +6,6 @@ use strict;
 
 # Perlito5::Grammar::Precedence attributes:
 #   get_token - code ref
-#   reduce    - code ref
 #   end_token - array ref
 #   end_token_chars - array ref (index to end_token entries)
 
@@ -295,7 +294,6 @@ sub precedence_parse {
     my $self = shift;
 
     my $get_token       = $self->{get_token};
-    my $reduce          = $self->{reduce};
     my $last_end_token  = $End_token;
     my $last_end_token_chars = $End_token_chars;
     $End_token          = $self->{end_token};
@@ -322,7 +320,7 @@ sub precedence_parse {
         {
             my $pr = $Precedence->{$token->[1]};
             while (scalar(@$op_stack) && ($pr <= get_token_precedence($op_stack->[0]))) {
-                $reduce->($op_stack, $num_stack);
+                Perlito5::Grammar::Expression::reduce_to_ast($op_stack, $num_stack);
             }
             if ($token->[0] ne 'postfix_or_term') {
                 $token->[0] = 'postfix';
@@ -345,12 +343,12 @@ sub precedence_parse {
             my $pr = $Precedence->{$token->[1]};
             if ($Assoc->{right}{$token->[1]}) {
                 while (scalar(@$op_stack) && ( $pr < get_token_precedence($op_stack->[0]))) {
-                    $reduce->($op_stack, $num_stack);
+                    Perlito5::Grammar::Expression::reduce_to_ast($op_stack, $num_stack);
                 }
             }
             else {
                 while (scalar(@$op_stack) && ( $pr <= get_token_precedence($op_stack->[0]))) {
-                    $reduce->($op_stack, $num_stack);
+                    Perlito5::Grammar::Expression::reduce_to_ast($op_stack, $num_stack);
                 }
             }
             if ($Operator->{ternary}{$token->[1]}) {
@@ -375,7 +373,7 @@ sub precedence_parse {
         Perlito5::Compiler::error( "Unexpected end token: ", $token );
     }
     while (scalar(@$op_stack)) {
-        $reduce->($op_stack, $num_stack);
+        Perlito5::Grammar::Expression::reduce_to_ast($op_stack, $num_stack);
     }
     # say "# precedence return";
     $End_token = $last_end_token;  # restore previous 'end token' context
@@ -395,7 +393,6 @@ Perlito5::Grammar::Precedence - precedence parser for Perlito
 
     my $prec = Perlito5::Grammar::Precedence->new(
         get_token => $get_token,
-        reduce    => $reduce_to_ast,
         end_token => [ 
                 {}, 
                 { ']' => 1, ')' => 1, '}' => 1, ';' => 1 } 
