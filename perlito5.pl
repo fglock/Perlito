@@ -54,7 +54,7 @@ use feature 'say';
     }
     sub warnings::register_categories {}
     sub warnings::warnif {;
-        warnings::warn(pop(@_))
+        warn(pop(@_))
     }
     1
 }
@@ -64,17 +64,13 @@ use feature 'say';
     sub Perlito5::Match::flat {
         my $self = $_[0];
         defined($self->{"capture"}) && return $self->{"capture"};
-        return join('', @{$self->{"str"}}[$self->{"from"} .. $self->{"to"} - 1])
+        return join('', @{$self->{"str"}}[$self->{"from"} .. ($self->{"to"}) - 1])
     }
     1
 }
 {
     package main;
     package Perlito5::Grammar::Precedence;
-    sub Perlito5::Grammar::Precedence::new {
-        my $class = shift;
-        bless({@_, }, $class)
-    }
     my $Operator = {};
     my $Precedence = {};
     my $PrefixPrecedence = {};
@@ -88,13 +84,6 @@ use feature 'say';
         my $fixity_type = shift;
         my $op_name = shift;
         return $Operator->{$fixity_type}->{$op_name}
-    }
-    sub Perlito5::Grammar::Precedence::is_term {
-        my $token = shift;
-        ($token->[0] eq "term") || ($token->[0] eq "postfix_or_term") || ($token->[0] eq "postfix")
-    }
-    sub Perlito5::Grammar::Precedence::is_num {;
-        $_[0] ge 0 && $_[0] le 9
     }
     sub Perlito5::Grammar::Precedence::is_ident_middle {
         my $c = shift;
@@ -133,10 +122,10 @@ use feature 'say';
         for my $len (@{$End_token_chars}) {
             my $term = substr($tok, 0, $len);
             if (exists($End_token->{$term})) {
-                my $c1 = $str->[$pos + $len - 1];
+                my $c1 = $str->[($pos + $len) - 1];
                 my $c2 = $str->[$pos + $len];
                 if (!(Perlito5::Grammar::Precedence::is_ident_middle($c1) && Perlito5::Grammar::Precedence::is_ident_middle($c2)) && !($c1 eq "<" && $c2 eq "<")) {;
-                    return {"str", $str, "from", $pos, "to", $pos, "capture", ["end", $term]}
+                    return {"str" => $str, "from" => $pos, "to" => $pos, "capture" => ["end", $term], }
                 }
             }
         }
@@ -144,9 +133,9 @@ use feature 'say';
             for my $len (@Term_chars) {
                 my $term = substr($tok, 0, $len);
                 if (exists($Term{$term})) {
-                    my $c1 = $str->[$pos + $len - 1];
+                    my $c1 = $str->[($pos + $len) - 1];
                     my $c2 = $str->[$pos + $len];
-                    if (Perlito5::Grammar::Precedence::is_num($c1) || !Perlito5::Grammar::Precedence::is_ident_middle($c1) || !Perlito5::Grammar::Precedence::is_ident_middle($c2)) {
+                    if (($c1 ge 0 && $c1 le 9) || !Perlito5::Grammar::Precedence::is_ident_middle($c1) || !Perlito5::Grammar::Precedence::is_ident_middle($c2)) {
                         my $m = $Term{$term}->($str, $pos);
                         $m && return $m
                     }
@@ -163,12 +152,12 @@ use feature 'say';
         for my $len (@Op_chars) {
             my $op = substr($tok, 0, $len);
             if (exists($Op{$op})) {
-                my $c1 = $str->[$pos + $len - 1];
+                my $c1 = $str->[($pos + $len) - 1];
                 my $c2 = $str->[$pos + $len];
                 if ((!(Perlito5::Grammar::Precedence::is_ident_middle($c1) && Perlito5::Grammar::Precedence::is_ident_middle($c2)) && !($c1 eq "&" && $c2 eq "&")) || ($c1 eq "x" && $c2 ge 0 && $c2 le 9)) {
                     if (exists($Operator->{"infix"}->{$op}) && !exists($Operator->{"prefix"}->{$op}) && !$last_is_term) {}
                     else {;
-                        return {"str", $str, "from", $pos, "to", $pos + $len, "capture", ["op", $op]}
+                        return {"str" => $str, "from" => $pos, "to" => $pos + $len, "capture" => ["op", $op], }
                     }
                 }
             }
@@ -195,7 +184,7 @@ use feature 'say';
     $prec = $prec - 1;
     Perlito5::Grammar::Precedence::add_op("infix", ["**"], $prec, {"assoc" => "right", });
     $prec = $prec - 1;
-    Perlito5::Grammar::Precedence::add_op("prefix", ["\\", "+", "-", "~", "!"], $prec);
+    Perlito5::Grammar::Precedence::add_op("prefix", ["\\", "+", "-", "~", "~.", "!"], $prec);
     $prec = $prec - 1;
     Perlito5::Grammar::Precedence::add_op("infix", ["=~", "!~"], $prec);
     $prec = $prec - 1;
@@ -211,9 +200,9 @@ use feature 'say';
     $prec = $prec - 1;
     Perlito5::Grammar::Precedence::add_op("infix", ["<=>", "cmp", "==", "!=", "ne", "eq"], $prec, {"assoc" => "chain", });
     $prec = $prec - 1;
-    Perlito5::Grammar::Precedence::add_op("infix", ["&"], $prec);
+    Perlito5::Grammar::Precedence::add_op("infix", ["&", "&."], $prec);
     $prec = $prec - 1;
-    Perlito5::Grammar::Precedence::add_op("infix", ["|", "^"], $prec);
+    Perlito5::Grammar::Precedence::add_op("infix", ["|", "|.", "^", "^."], $prec);
     $prec = $prec - 1;
     Perlito5::Grammar::Precedence::add_op("infix", ["..", "..."], $prec);
     Perlito5::Grammar::Precedence::add_op("infix", ["~~"], $prec, {"assoc" => "chain", });
@@ -225,7 +214,7 @@ use feature 'say';
     $prec = $prec - 1;
     Perlito5::Grammar::Precedence::add_op("ternary", ["? :"], $prec, {"assoc" => "right", });
     $prec = $prec - 1;
-    Perlito5::Grammar::Precedence::add_op("infix", ["=", "**=", "+=", "-=", "*=", "/=", "x=", "|=", "&=", ".=", "<<=", ">>=", "%=", "||=", "&&=", "^=", "//="], $prec, {"assoc" => "right", });
+    Perlito5::Grammar::Precedence::add_op("infix", ["=", "**=", "+=", "-=", "*=", "/=", "x=", "|=", "&=", ".=", "<<=", ">>=", "%=", "||=", "&&=", "^=", "//=", "|.=", "&.=", "^.="], $prec, {"assoc" => "right", });
     $prec = $prec - 1;
     Perlito5::Grammar::Precedence::add_op("infix", ["=>"], $prec, {"assoc" => "right", });
     $prec = $prec - 1;
@@ -246,13 +235,11 @@ use feature 'say';
         return $Precedence->{$token->[1]}
     }
     sub Perlito5::Grammar::Precedence::precedence_parse {
-        my $self = shift;
-        my $get_token = $self->{"get_token"};
-        my $reduce = $self->{"reduce"};
+        my $get_token = $_[0];
         my $last_end_token = $End_token;
         my $last_end_token_chars = $End_token_chars;
-        $End_token = $self->{"end_token"};
-        $End_token_chars = $self->{"end_token_chars"};
+        $End_token = $_[1];
+        $End_token_chars = $_[2];
         my $op_stack = [];
         my $num_stack = [];
         my $last = ["op", "*start*"];
@@ -262,7 +249,7 @@ use feature 'say';
             $token = $get_token->($last_is_term)
         }
         while ((defined($token)) && ($token->[0] ne "end")) {
-            my $token_is_term = Perlito5::Grammar::Precedence::is_term($token);
+            my $token_is_term = ($token->[0] eq "term") || ($token->[0] eq "postfix_or_term") || ($token->[0] eq "postfix");
             if (($token->[1] eq ",") && (($last->[1] eq "*start*") || ($last->[1] eq ","))) {;
                 push(@{$num_stack}, ["term", undef])
             }
@@ -273,7 +260,7 @@ use feature 'say';
             elsif ($Operator->{"postfix"}->{$token->[1]} && $last_is_term) {
                 my $pr = $Precedence->{$token->[1]};
                 while (scalar(@{$op_stack}) && ($pr <= Perlito5::Grammar::Precedence::get_token_precedence($op_stack->[0]))) {;
-                    $reduce->($op_stack, $num_stack)
+                    Perlito5::Grammar::Expression::reduce_to_ast($op_stack, $num_stack)
                 }
                 if ($token->[0] ne "postfix_or_term") {;
                     $token->[0] = "postfix"
@@ -292,12 +279,12 @@ use feature 'say';
                 my $pr = $Precedence->{$token->[1]};
                 if ($Assoc->{"right"}->{$token->[1]}) {;
                     while (scalar(@{$op_stack}) && ($pr < Perlito5::Grammar::Precedence::get_token_precedence($op_stack->[0]))) {;
-                        $reduce->($op_stack, $num_stack)
+                        Perlito5::Grammar::Expression::reduce_to_ast($op_stack, $num_stack)
                     }
                 }
                 else {;
                     while (scalar(@{$op_stack}) && ($pr <= Perlito5::Grammar::Precedence::get_token_precedence($op_stack->[0]))) {;
-                        $reduce->($op_stack, $num_stack)
+                        Perlito5::Grammar::Expression::reduce_to_ast($op_stack, $num_stack)
                     }
                 }
                 if ($Operator->{"ternary"}->{$token->[1]}) {;
@@ -322,39 +309,12 @@ use feature 'say';
             Perlito5::Compiler::error("Unexpected end token: ", $token)
         }
         while (scalar(@{$op_stack})) {;
-            $reduce->($op_stack, $num_stack)
+            Perlito5::Grammar::Expression::reduce_to_ast($op_stack, $num_stack)
         }
         $End_token = $last_end_token;
         $End_token_chars = $last_end_token_chars;
         return $num_stack
     }
-    sub Perlito5::Grammar::Precedence::term_core {
-        my $str = shift;
-        my $pos = shift;
-        my $tok = join('', @{$str}[$pos .. $pos + 20]);
-        length($tok) < 7 && return;
-        substr($tok, 0, 6) ne "CORE::" && return;
-        substr($tok, 6, 1) !~ m/\w/ && return;
-        $tok = substr($tok, 6);
-        $pos += 6;
-        for my $len (@Term_chars) {
-            my $term = substr($tok, 0, $len);
-            if (exists($Term{$term})) {
-                my $c1 = $str->[$pos + $len - 1];
-                my $c2 = $str->[$pos + $len];
-                if (Perlito5::Grammar::Precedence::is_num($c1) || !Perlito5::Grammar::Precedence::is_ident_middle($c1) || !Perlito5::Grammar::Precedence::is_ident_middle($c2)) {
-                    my $m = $Term{$term}->($str, $pos);
-                    if ($m) {
-                        my $node = $m->{"capture"}->[1];
-                        $node->{"namespace"} = "CORE";
-                        return $m
-                    }
-                }
-            }
-        }
-        return
-    }
-    Perlito5::Grammar::Precedence::add_term("CORE", \&term_core);
     1
 }
 {
@@ -363,14 +323,14 @@ use feature 'say';
     sub Perlito5::Grammar::Bareword::the_object {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
                 ((do {
                     my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = (("\$" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("\$" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                     $MATCH = $tmp;
                     $res ? 1 : 0
                 }) && (do {
@@ -389,7 +349,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("{" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("{" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Expression::curly_parse($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -399,7 +359,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::curly_parse"});
                     1
                 }))
@@ -470,8 +430,8 @@ use feature 'say';
                 my $package = Perlito5::Match::flat($invocant);
                 if ($package) {
                     $invocant->{"capture"} = Perlito5::AST::Var::->new("sigil", "::", "name", '', "namespace", $package);
-                    if ($str->[$invocant->{"to"}] eq ":" && $str->[$invocant->{"to"} + 1] eq ":") {;
-                        $invocant->{"to"} = $invocant->{"to"} + 2
+                    if ($str->[$invocant->{"to"}] eq ":" && $str->[($invocant->{"to"}) + 1] eq ":") {;
+                        $invocant->{"to"} = ($invocant->{"to"}) + 2
                     }
                     elsif (!$Perlito5::PACKAGES->{$package}) {;
                         $invocant = undef
@@ -512,19 +472,9 @@ use feature 'say';
             $m_name->{"to"} = $p;
             return $m_name
         }
-        if ($str->[$p] eq "-" && $str->[$p + 1] eq ">") {
-            if ($is_subroutine_name) {;
-                $m_name->{"capture"} = ["term", Perlito5::AST::Apply::->new("arguments", [], "code", $name, "namespace", $namespace)]
-            }
-            else {;
-                $m_name->{"capture"} = ["term", Perlito5::AST::Var::->new("name", '', "namespace", $full_name, "sigil", "::")]
-            }
-            $m_name->{"to"} = $p;
-            return $m_name
-        }
         my $sig = undef;
         {
-            my $op = $str->[$p] . $str->[$p + 1];
+            my $op = ($str->[$p]) . ($str->[$p + 1]);
             if ($op eq "!=" || $op eq "!~" || $op eq "=~") {;
                 $sig = ''
             }
@@ -544,6 +494,14 @@ use feature 'say';
                     $Perlito5::PROTO->{$core_global_name} = prototype(&{$core_global_name})
                 }
             }
+            my $local_name = $Perlito5::PKG_NAME . ("::" . $name);
+            if (!$namespace && exists($Perlito5::CORE_OVERRIDABLE->{$name}) && exists(&{$local_name})) {
+                $namespace = ${$Perlito5::PKG_NAME};
+                $effective_name = $local_name;
+                if (!exists($Perlito5::PROTO->{$local_name})) {;
+                    $Perlito5::PROTO->{$local_name} = prototype(&{$local_name})
+                }
+            }
         }
         else {
             my $m = Perlito5::Grammar::Number::val_version($str, $pos);
@@ -551,6 +509,16 @@ use feature 'say';
                 $m->{"capture"} = ["term", $m->{"capture"}];
                 return $m
             }
+        }
+        if ($str->[$p] eq "-" && $str->[$p + 1] eq ">") {
+            if ($is_subroutine_name) {;
+                $m_name->{"capture"} = ["term", Perlito5::AST::Apply::->new("arguments", [], "code", $name, "namespace", $namespace)]
+            }
+            else {;
+                $m_name->{"capture"} = ["term", Perlito5::AST::Var::->new("name", '', "namespace", $full_name, "sigil", "::")]
+            }
+            $m_name->{"to"} = $p;
+            return $m_name
         }
         my $has_paren = 0;
         if (defined($sig)) {
@@ -755,11 +723,11 @@ use feature 'say';
     sub Perlito5::Grammar::Bareword::prototype_is_ampersand {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("s" eq $str->[$MATCH->{"to"} + 0]) && ("u" eq $str->[$MATCH->{"to"} + 1]) && ("b" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
+                ((("s" eq $str->[($MATCH->{"to"}) + 0]) && ("u" eq $str->[($MATCH->{"to"}) + 1]) && ("b" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -802,8 +770,8 @@ use feature 'say';
                 $MATCH->{"to"} = $pos1;
                 ((do {
                     my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = ((("\\" eq $str->[$MATCH->{"to"} + 0]) && ("\\" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = ((("\\" eq $str->[($MATCH->{"to"}) + 0]) && ("\\" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
                         my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
                         if ($m2) {
                             $MATCH->{"to"} = $m2->{"to"};
@@ -812,7 +780,7 @@ use feature 'say';
                         else {;
                             0
                         }
-                    }) && (("&" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)));
+                    }) && (("&" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)));
                     $MATCH = $tmp;
                     $res ? 1 : 0
                 }) && (do {
@@ -844,9 +812,9 @@ use feature 'say';
         my @attributes;
         my $ws = Perlito5::Grammar::Space::opt_ws($str, $pos);
         if ($str->[$ws->{"to"}] ne ":") {;
-            return {"to", $pos, "capture", []}
+            return {"to" => $pos, "capture" => [], }
         }
-        $ws = Perlito5::Grammar::Space::opt_ws($str, $ws->{"to"} + 1);
+        $ws = Perlito5::Grammar::Space::opt_ws($str, ($ws->{"to"}) + 1);
         my $p = $ws->{"to"};
         my $m = Perlito5::Grammar::ident($str, $p);
         !$m && Perlito5::Compiler::error("syntax error");
@@ -856,7 +824,7 @@ use feature 'say';
             $to = $m->{"to"};
             my $delimiter = $str->[$to];
             if ($delimiter eq "(") {
-                my $params = Perlito5::Grammar::String::string_interpolation_parse($str, $m->{"to"} + 1, "(", ")", 0);
+                my $params = Perlito5::Grammar::String::string_interpolation_parse($str, ($m->{"to"}) + 1, "(", ")", 0);
                 !$params && Perlito5::Compiler::error("syntax error");
                 $attr->[1] = Perlito5::Match::flat($params)->{"buf"};
                 $to = $params->{"to"}
@@ -864,11 +832,11 @@ use feature 'say';
             push(@attributes, $attr);
             $ws = Perlito5::Grammar::Space::opt_ws($str, $to);
             if ($str->[$ws->{"to"}] eq ":") {;
-                $ws = Perlito5::Grammar::Space::opt_ws($str, $ws->{"to"} + 1)
+                $ws = Perlito5::Grammar::Space::opt_ws($str, ($ws->{"to"}) + 1)
             }
             $p = $ws->{"to"};
             $m = Perlito5::Grammar::ident($str, $p);
-            !$m && return {"to", $to, "capture", \@attributes}
+            !$m && return {"to" => $to, "capture" => \@attributes, }
         }
     }
     1
@@ -899,11 +867,11 @@ use feature 'say';
         my $ref = ref($obj);
         if (!$ref) {
             if (ref(\$obj) eq "GLOB") {;
-                return $obj
+                return '' . $obj
             }
             return Perlito5::Dumper::escape_string($obj)
         }
-        my $as_string = $obj;
+        my $as_string = '' . $obj;
         $seen->{$as_string} && return $seen->{$as_string};
         $seen->{$as_string} = $pos;
         my $tab1 = $tab . "    ";
@@ -986,7 +954,7 @@ use feature 'say';
         return join(" . ", @out)
     }
     sub Perlito5::Dumper::_identity {;
-        $_[0] eq $_[1]
+        '' . $_[0] eq '' . $_[1]
     }
     1
 }
@@ -1104,13 +1072,13 @@ use feature 'say';
     package Perlito5::Macro;
     {
         package Perlito5::AST::Apply;
-        my %op = ("infix:<+=>", "infix:<+>", "infix:<-=>", "infix:<->", "infix:<*=>", "infix:<*>", "infix:</=>", "infix:</>", "infix:<||=>", "infix:<||>", "infix:<&&=>", "infix:<&&>", "infix:<|=>", "infix:<|>", "infix:<&=>", "infix:<&>", "infix:<//=>", "infix:<//>", "infix:<.=>", "list:<.>", "infix:<x=>", "infix:<x>");
+        my %op = ("infix:<+=>", "infix:<+>", "infix:<-=>", "infix:<->", "infix:<*=>", "infix:<*>", "infix:</=>", "infix:</>", "infix:<%=>", "infix:<%>", "infix:<||=>", "infix:<||>", "infix:<&&=>", "infix:<&&>", "infix:<|=>", "infix:<|>", "infix:<&=>", "infix:<&>", "infix:<^=>", "infix:<^>", "infix:<//=>", "infix:<//>", "infix:<**=>", "infix:<**>", "infix:<.=>", "list:<.>", "infix:<x=>", "infix:<x>", "infix:<<<=>", "infix:<<<>", "infix:<>>=>", "infix:<>>>", "infix:<&.=>", "infix:<&.>", "infix:<|.=>", "infix:<|.>", "infix:<^.=>", "infix:<^.>");
         sub Perlito5::AST::Apply::op_assign {
             my $self = $_[0];
             my $code = $self->{"code"};
             ref($code) && return 0;
             if (exists($op{$code})) {;
-                return Perlito5::AST::Apply::->new("code", "infix:<=>", "arguments", [$self->{"arguments"}->[0], Perlito5::AST::Apply::->new("code", $op{$code}, "arguments", $self->{"arguments"})])
+                return Perlito5::AST::Apply::->new("code", "infix:<=>", "arguments", [$self->{"arguments"}->[0], Perlito5::AST::Apply::->new("code", $op{$code}, "arguments", $self->{"arguments"}, ($self->{"_integer"} ? ("_integer", 1) : ()))])
             }
             return 0
         }
@@ -1187,14 +1155,14 @@ use feature 'say';
             my $state_var = $decl->{"var"};
             my $var = Perlito5::AST::Var::->new("namespace", $state_var->{"namespace"}, "sigil", $state_var->{"sigil"}, "name", $state_var->{"name"}, "_id", $state_var->{"_id"}, "_decl", "my");
             my $label = Perlito5::get_label();
-            my $flagvar = Perlito5::AST::Var::->new("name", $var->{"name"} . "_inited_" . $label, "sigil", "\$", "namespace", '', "_id", $Perlito5::ID++, "_decl", "my");
+            my $flagvar = Perlito5::AST::Var::->new("name", ($var->{"name"}) . "_inited_" . $label, "sigil", "\$", "namespace", '', "_id", $Perlito5::ID++, "_decl", "my");
             my $init_block = Perlito5::AST::Apply::->new("code", "do", "namespace", $decl->{"namespace"}, "arguments", [Perlito5::AST::Block::->new("sig", undef, "stmts", [Perlito5::AST::Apply::->new("code", "infix:<=>", "namespace", $decl->{"namespace"}, "arguments", [$flagvar, Perlito5::AST::Int::->new("int", 1)]), ((ref($target) eq "Perlito5::AST::Apply") ? Perlito5::AST::Apply::->new("code", "infix:<=>", "namespace", $decl->{"namespace"}, "arguments", [$var, $rhs]) : $var)])]);
             my $transformed = Perlito5::AST::Apply::->new("code", "ternary:<? :>", "namespace", $decl->{"namespace"}, "arguments", [$flagvar, $var, $init_block]);
             return ($transformed, $var, $flagvar)
         }
         sub Perlito5::AST::Sub::nest {
             (my($xs)) = @_;
-            if (scalar(@{$xs} == 0)) {;
+            if (scalar(@{$xs}) == 0) {;
                 return
             }
             return [Perlito5::AST::Sub::flatten($xs->[0]), Perlito5::AST::Sub::nest([@{$xs}[1 .. $#{$xs}]])]
@@ -1237,7 +1205,7 @@ use feature 'say';
         ref($self) ne "Perlito5::AST::While" && return 0;
         my $cond = $self->{"cond"};
         if ($cond->isa("Perlito5::AST::Apply") && ($cond->{"code"} eq "readline")) {
-            $self->{"cond"} = bless({"arguments", [bless({"arguments", [Perlito5::AST::Var::SCALAR_ARG(), $cond], "code", "infix:<=>", "namespace", ''}, "Perlito5::AST::Apply")], "bareword", '', "code", "defined", "namespace", ''}, "Perlito5::AST::Apply");
+            $self->{"cond"} = bless({"arguments" => [bless({"arguments" => [Perlito5::AST::Var::SCALAR_ARG(), $cond], "code" => "infix:<=>", "namespace" => '', }, "Perlito5::AST::Apply")], "bareword" => '', "code" => "defined", "namespace" => '', }, "Perlito5::AST::Apply");
             return $self
         }
         return 0
@@ -1332,8 +1300,8 @@ use feature 'say';
     sub Perlito5::Grammar::Statement::stmt_yadayada {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("." eq $str->[$MATCH->{"to"} + 0]) && ("." eq $str->[$MATCH->{"to"} + 1]) && ("." eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("." eq $str->[($MATCH->{"to"}) + 0]) && ("." eq $str->[($MATCH->{"to"}) + 1]) && ("." eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
             $MATCH->{"capture"} = Perlito5::AST::Apply::->new("code", "die", "namespace", '', "arguments", [Perlito5::AST::Buf::->new("buf", "Unimplemented")]);
             1
         })));
@@ -1342,8 +1310,8 @@ use feature 'say';
     sub Perlito5::Grammar::Statement::stmt_format {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("f" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("r" eq $str->[$MATCH->{"to"} + 2]) && ("m" eq $str->[$MATCH->{"to"} + 3]) && ("a" eq $str->[$MATCH->{"to"} + 4]) && ("t" eq $str->[$MATCH->{"to"} + 5]) && ($MATCH->{"to"} += 6)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("f" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("r" eq $str->[($MATCH->{"to"}) + 2]) && ("m" eq $str->[($MATCH->{"to"}) + 3]) && ("a" eq $str->[($MATCH->{"to"}) + 4]) && ("t" eq $str->[($MATCH->{"to"}) + 5]) && ($MATCH->{"to"} += 6)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -1387,7 +1355,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (("=" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && (("=" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -1402,8 +1370,8 @@ use feature 'say';
     sub Perlito5::Grammar::Statement::stmt_package {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("p" eq $str->[$MATCH->{"to"} + 0]) && ("a" eq $str->[$MATCH->{"to"} + 1]) && ("c" eq $str->[$MATCH->{"to"} + 2]) && ("k" eq $str->[$MATCH->{"to"} + 3]) && ("a" eq $str->[$MATCH->{"to"} + 4]) && ("g" eq $str->[$MATCH->{"to"} + 5]) && ("e" eq $str->[$MATCH->{"to"} + 6]) && ($MATCH->{"to"} += 7)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("p" eq $str->[($MATCH->{"to"}) + 0]) && ("a" eq $str->[($MATCH->{"to"}) + 1]) && ("c" eq $str->[($MATCH->{"to"}) + 2]) && ("k" eq $str->[($MATCH->{"to"}) + 3]) && ("a" eq $str->[($MATCH->{"to"}) + 4]) && ("g" eq $str->[($MATCH->{"to"}) + 5]) && ("e" eq $str->[($MATCH->{"to"}) + 6]) && ($MATCH->{"to"} += 7)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -1558,26 +1526,26 @@ use feature 'say';
             Perlito5::Compiler::error("Expected expression after '", Perlito5::Match::flat($modifier), "'")
         }
         if ($modifier eq "if") {;
-            return {"str", $str, "from", $pos, "to", $modifier_exp->{"to"}, "capture", Perlito5::AST::Apply::->new("arguments", [Perlito5::Match::flat($modifier_exp), $expression], "code", "infix:<&&>", "namespace", '')}
+            return {"str" => $str, "from" => $pos, "to" => $modifier_exp->{"to"}, "capture" => Perlito5::AST::Apply::->new("arguments", [Perlito5::Match::flat($modifier_exp), $expression], "code", "infix:<&&>", "namespace", ''), }
         }
         if ($modifier eq "unless") {;
-            return {"str", $str, "from", $pos, "to", $modifier_exp->{"to"}, "capture", Perlito5::AST::Apply::->new("arguments", [Perlito5::Match::flat($modifier_exp), $expression], "code", "infix:<||>", "namespace", '')}
+            return {"str" => $str, "from" => $pos, "to" => $modifier_exp->{"to"}, "capture" => Perlito5::AST::Apply::->new("arguments", [Perlito5::Match::flat($modifier_exp), $expression], "code", "infix:<||>", "namespace", ''), }
         }
         if ($modifier eq "when") {;
-            return {"str", $str, "from", $pos, "to", $modifier_exp->{"to"}, "capture", Perlito5::AST::When::->new("cond", Perlito5::Match::flat($modifier_exp), "body", $expression)}
+            return {"str" => $str, "from" => $pos, "to" => $modifier_exp->{"to"}, "capture" => Perlito5::AST::When::->new("cond", Perlito5::Match::flat($modifier_exp), "body", $expression), }
         }
         if ($modifier eq "while") {
             my $stmt = Perlito5::AST::While::->new("cond", Perlito5::Match::flat($modifier_exp), "body", $expression);
             my $out = Perlito5::Macro::while_file($stmt);
             $out && ($stmt = $out);
-            return {"str", $str, "from", $pos, "to", $modifier_exp->{"to"}, "capture", $stmt}
+            return {"str" => $str, "from" => $pos, "to" => $modifier_exp->{"to"}, "capture" => $stmt, }
         }
         if ($modifier eq "until") {
             my $stmt = Perlito5::AST::While::->new("cond", Perlito5::AST::Apply::->new("arguments", [Perlito5::Match::flat($modifier_exp)], "code", "prefix:<!>", "namespace", ''), "body", $expression);
-            return {"str", $str, "from", $pos, "to", $modifier_exp->{"to"}, "capture", $stmt}
+            return {"str" => $str, "from" => $pos, "to" => $modifier_exp->{"to"}, "capture" => $stmt, }
         }
         if ($modifier eq "for" || $modifier eq "foreach") {;
-            return {"str", $str, "from", $pos, "to", $modifier_exp->{"to"}, "capture", Perlito5::AST::For::->new("cond", Perlito5::Match::flat($modifier_exp), "body", $expression, "topic", Perlito5::AST::Var::SCALAR_ARG())}
+            return {"str" => $str, "from" => $pos, "to" => $modifier_exp->{"to"}, "capture" => Perlito5::AST::For::->new("cond", Perlito5::Match::flat($modifier_exp), "body", $expression, "topic", Perlito5::AST::Var::SCALAR_ARG()), }
         }
         Perlito5::Compiler::error("Unexpected statement modifier '" . $modifier . "'")
     }
@@ -1603,7 +1571,7 @@ use feature 'say';
         }
         if ($str->[$res->{"to"}] eq ":" && $res->{"capture"}->isa("Perlito5::AST::Apply") && $res->{"capture"}->{"bareword"}) {
             my $label = $res->{"capture"}->{"code"};
-            my $ws = Perlito5::Grammar::Space::opt_ws($str, $res->{"to"} + 1);
+            my $ws = Perlito5::Grammar::Space::opt_ws($str, ($res->{"to"}) + 1);
             my $stmt = Perlito5::Grammar::Statement::statement_parse($str, $ws->{"to"});
             if ($stmt) {
                 $stmt->{"capture"}->{"label"} = $label;
@@ -1669,7 +1637,7 @@ use feature 'say';
             return $o
         }
         my $stmts = $o->stmts();
-        if (!(defined($stmts)) || scalar(@{$stmts}) == 0) {;
+        if (!defined($stmts) || scalar(@{$stmts}) == 0) {;
             return Perlito5::AST::Apply::->new("code", "circumfix:<{ }>", "namespace", '', "arguments", [])
         }
         if (scalar(@{$stmts}) != 1) {;
@@ -1682,10 +1650,15 @@ use feature 'say';
         if (ref($stmt) ne "Perlito5::AST::Apply") {;
             return $o
         }
-        if ($stmt->code() eq "infix:<=>>" || $stmt->code() eq "prefix:<%>" || $stmt->code() eq "prefix:<\@>") {;
+        if ($stmt->code() eq "infix:<=>>" || $stmt->code() eq "prefix:<%>" || $stmt->code() eq "prefix:<\@>" || $stmt->code() eq "list:<,>") {
+            if (@{$stmt->{"arguments"}}) {
+                my $arg = $stmt->{"arguments"}->[0];
+                if (ref($arg) eq "Perlito5::AST::Apply" && $arg->{"code"} eq "prefix:<&>") {;
+                    return $o
+                }
+            }
             return Perlito5::AST::Apply::->new("code", "circumfix:<{ }>", "namespace", '', "arguments", [$stmt])
         }
-        if ($stmt->code() ne "list:<,>") {}
         return Perlito5::AST::Apply::->new("code", "circumfix:<{ }>", "namespace", '', "arguments", Perlito5::Grammar::Expression::expand_list($stmt))
     }
     sub Perlito5::Grammar::Expression::pop_term {
@@ -1745,6 +1718,14 @@ use feature 'say';
         my $op = shift;
         my $value = shift;
         my $v = $op;
+        if ($v->[1] eq ".{ }") {
+            $v = Perlito5::AST::Call::->new("invocant", $value, "method", "postcircumfix:<{ }>", "arguments", $v->[2]);
+            return $v
+        }
+        if ($v->[1] eq ".[ ]") {
+            $v = Perlito5::AST::Call::->new("invocant", $value, "method", "postcircumfix:<[ ]>", "arguments", $v->[2]);
+            return $v
+        }
         if ($v->[1] eq "methcall_no_params") {
             if ($v->[2] eq "\@*") {;
                 return Perlito5::AST::Apply::->new("code", "prefix:<\@>", "arguments", [$value])
@@ -1765,11 +1746,11 @@ use feature 'say';
         }
         if ($v->[1] eq "( )") {
             my $param_list = Perlito5::Grammar::Expression::expand_list($v->[2]);
-            if (ref($value) eq "Perlito5::AST::Apply" && !(defined($value->arguments()))) {
+            if (ref($value) eq "Perlito5::AST::Apply" && !defined($value->arguments())) {
                 $value->{"arguments"} = $param_list;
                 return $value
             }
-            if (ref($value) eq "Perlito5::AST::Call" && !(defined($value->arguments()))) {
+            if (ref($value) eq "Perlito5::AST::Call" && !defined($value->arguments())) {
                 $value->{"arguments"} = $param_list;
                 return $value
             }
@@ -1807,26 +1788,25 @@ use feature 'say';
             $v = Perlito5::AST::Call::->new("invocant", $value, "method", "postcircumfix:<( )>", "arguments", $param_list);
             return $v
         }
-        if ($v->[1] eq ".[ ]") {
-            $v = Perlito5::AST::Call::->new("invocant", $value, "method", "postcircumfix:<[ ]>", "arguments", $v->[2]);
-            return $v
-        }
-        if ($v->[1] eq ".{ }") {
-            $v = Perlito5::AST::Call::->new("invocant", $value, "method", "postcircumfix:<{ }>", "arguments", $v->[2]);
-            return $v
-        }
         push(@{$op}, $value);
         return $op
     }
-    my $reduce_to_ast = sub {
+    sub Perlito5::Grammar::Expression::reduce_to_ast {
         my $op_stack = shift;
         my $num_stack = shift;
         my $last_op = shift(@{$op_stack});
-        if ($last_op->[0] eq "prefix") {;
-            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "prefix:<" . $last_op->[1] . ">", "arguments", [Perlito5::Grammar::Expression::pop_term($num_stack)]))
+        if ($last_op->[0] eq "prefix") {
+            my $v = Perlito5::Grammar::Expression::pop_term($num_stack);
+            if (ref($v) eq "Perlito5::AST::Apply" && $v->{"code"} eq "circumfix:<( )>" && @{$v->{"arguments"}} == 1) {;
+                $v = $v->{"arguments"}
+            }
+            else {;
+                $v = [$v]
+            }
+            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "prefix:<" . ($last_op->[1]) . ">", "arguments", $v))
         }
         elsif ($last_op->[0] eq "postfix") {;
-            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "postfix:<" . $last_op->[1] . ">", "arguments", [Perlito5::Grammar::Expression::pop_term($num_stack)]))
+            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "postfix:<" . ($last_op->[1]) . ">", "arguments", [Perlito5::Grammar::Expression::pop_term($num_stack)]))
         }
         elsif ($last_op->[0] eq "postfix_or_term") {;
             push(@{$num_stack}, Perlito5::Grammar::Expression::reduce_postfix($last_op, Perlito5::Grammar::Expression::pop_term($num_stack)))
@@ -1835,11 +1815,11 @@ use feature 'say';
             my $arg;
             if (scalar(@{$num_stack}) < 2) {
                 my $v2 = Perlito5::Grammar::Expression::pop_term($num_stack);
-                if (ref($v2) eq "Perlito5::AST::Apply" && $v2->code() eq ("list:<" . $last_op->[1] . ">")) {;
+                if (ref($v2) eq "Perlito5::AST::Apply" && $v2->code() eq ("list:<" . ($last_op->[1]) . ">")) {;
                     push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", $v2->namespace(), "code", $v2->code(), "arguments", [@{$v2->arguments()}]))
                 }
                 else {;
-                    push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "list:<" . $last_op->[1] . ">", "arguments", [$v2]))
+                    push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "list:<" . ($last_op->[1]) . ">", "arguments", [$v2]))
                 }
                 return
             }
@@ -1847,40 +1827,41 @@ use feature 'say';
                 my $v2 = Perlito5::Grammar::Expression::pop_term($num_stack);
                 $arg = [Perlito5::Grammar::Expression::pop_term($num_stack), $v2]
             }
-            if (ref($arg->[0]) eq "Perlito5::AST::Apply" && $last_op->[0] eq "infix" && ($arg->[0]->code() eq "list:<" . $last_op->[1] . ">")) {
+            if (ref($arg->[0]) eq "Perlito5::AST::Apply" && $last_op->[0] eq "infix" && ($arg->[0]->code() eq "list:<" . ($last_op->[1]) . ">")) {
                 push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", ($arg->[0])->code(), "arguments", [@{($arg->[0])->arguments()}, $arg->[1]]));
                 return
             }
-            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "list:<" . $last_op->[1] . ">", "arguments", $arg))
+            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "list:<" . ($last_op->[1]) . ">", "arguments", $arg))
         }
         elsif (Perlito5::Grammar::Precedence::is_assoc_type("chain", $last_op->[1])) {
             if (scalar(@{$num_stack}) < 2) {;
-                Perlito5::Compiler::error("Missing value after operator " . $last_op->[1])
+                Perlito5::Compiler::error("Missing value after operator " . ($last_op->[1]))
             }
             my $v2 = Perlito5::Grammar::Expression::pop_term($num_stack);
             my $arg = [Perlito5::Grammar::Expression::pop_term($num_stack), $v2];
-            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "infix:<" . $last_op->[1] . ">", "arguments", $arg))
+            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "infix:<" . ($last_op->[1]) . ">", "arguments", $arg))
         }
         elsif ($last_op->[0] eq "ternary") {
             if (scalar(@{$num_stack}) < 2) {;
                 Perlito5::Compiler::error("Missing value after ternary operator")
             }
             my $v2 = Perlito5::Grammar::Expression::pop_term($num_stack);
-            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "ternary:<" . $last_op->[1] . ">", "arguments", [Perlito5::Grammar::Expression::pop_term($num_stack), $last_op->[2], $v2]))
+            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "ternary:<" . ($last_op->[1]) . ">", "arguments", [Perlito5::Grammar::Expression::pop_term($num_stack), $last_op->[2], $v2]))
         }
         else {
             if (scalar(@{$num_stack}) < 2) {;
-                Perlito5::Compiler::error("missing value after operator '" . $last_op->[1] . "'")
+                Perlito5::Compiler::error("missing value after operator '" . ($last_op->[1]) . "'")
             }
             my $v2 = Perlito5::Grammar::Expression::pop_term($num_stack);
-            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "infix:<" . $last_op->[1] . ">", "arguments", [Perlito5::Grammar::Expression::pop_term($num_stack), $v2]))
+            my $op = $last_op->[1];
+            push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "infix:<" . $op . ">", "arguments", [Perlito5::Grammar::Expression::pop_term($num_stack), $v2], Perlito5::integer_flag($op), Perlito5::overloading_flag()))
         }
-    };
+    }
     sub Perlito5::Grammar::Expression::term_arrow {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("-" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("-" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -1892,7 +1873,7 @@ use feature 'say';
         }) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -1902,13 +1883,13 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = ["postfix_or_term", ".( )", Perlito5::Match::flat($MATCH->{"paren_parse"})];
                     1
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("[" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("[" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Expression::square_parse($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -1918,13 +1899,13 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("]" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("]" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = ["postfix_or_term", ".[ ]", Perlito5::Match::flat($MATCH->{"square_parse"})];
                     1
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("{" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("{" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
                         ((do {
@@ -1955,7 +1936,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && (("}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        }) && (("}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             $MATCH->{"capture"} = ["postfix_or_term", ".{ }", Perlito5::AST::Buf::->new("buf", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}))];
                             1
                         }))
@@ -1974,7 +1955,7 @@ use feature 'say';
                         }) && (do {
                             my $pos1 = $MATCH->{"to"};
                             (do {;
-                                (("}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                                (("}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                             }) || (do {
                                 $MATCH->{"to"} = $pos1;
                                 (do {
@@ -1990,7 +1971,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("\$" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("\$" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::ident($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -2012,7 +1993,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        ((("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        ((("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -2022,7 +2003,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             $MATCH->{"capture"} = ["postfix_or_term", "methcall", Perlito5::AST::Var::->new("sigil", "\$", "namespace", '', "name", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"})), Perlito5::Match::flat($MATCH->{"paren_parse"})];
                             1
                         }))
@@ -2058,7 +2039,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        ((("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        ((("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -2068,7 +2049,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             $MATCH->{"capture"} = ["postfix_or_term", "methcall", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"}), Perlito5::Match::flat($MATCH->{"paren_parse"})];
                             1
                         }))
@@ -2082,7 +2063,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("\@" eq $str->[$MATCH->{"to"} + 0]) && ("*" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+                ((("\@" eq $str->[($MATCH->{"to"}) + 0]) && ("*" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
                     $MATCH->{"capture"} = ["postfix_or_term", "methcall_no_params", "\@*"];
                     1
                 }))
@@ -2093,8 +2074,8 @@ use feature 'say';
     sub Perlito5::Grammar::Expression::term_ternary {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("?" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("?" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Expression::ternary5_parse($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -2104,7 +2085,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && ((":" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && ((":" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             $MATCH->{"capture"} = ["op", "? :", Perlito5::Match::flat($MATCH->{"ternary5_parse"})];
             1
         })));
@@ -2113,8 +2094,8 @@ use feature 'say';
     sub Perlito5::Grammar::Expression::term_paren {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -2124,7 +2105,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             $MATCH->{"capture"} = ["postfix_or_term", "( )", Perlito5::Match::flat($MATCH->{"paren_parse"})];
             1
         })));
@@ -2133,8 +2114,8 @@ use feature 'say';
     sub Perlito5::Grammar::Expression::term_square {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("[" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("[" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Expression::square_parse($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -2144,7 +2125,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (("]" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && (("]" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             $MATCH->{"capture"} = ["postfix_or_term", "[ ]", Perlito5::Match::flat($MATCH->{"square_parse"})];
             1
         })));
@@ -2153,8 +2134,8 @@ use feature 'say';
     sub Perlito5::Grammar::Expression::term_curly {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("{" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("{" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m = $MATCH;
             if (!(do {
                 my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
@@ -2197,7 +2178,7 @@ use feature 'say';
                         $MATCH = $m
                     }
                     1
-                }) && (("}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = ["postfix_or_term", "block", [Perlito5::AST::Apply::->new("arguments", [], "bareword", 1, "code", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}), "namespace", '')]];
                     1
                 }))
@@ -2238,7 +2219,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        (("}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
                         (do {
@@ -2254,493 +2235,42 @@ use feature 'say';
         })));
         $tmp ? $MATCH : undef
     }
-    sub Perlito5::Grammar::Expression::term_pos {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("p" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("s" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $pos1 = $MATCH->{"to"};
-            (do {;
-                ((do {
-                    my $m2 = Perlito5::Grammar::var_ident($str, $MATCH->{"to"});
-                    if ($m2) {
-                        $MATCH->{"to"} = $m2->{"to"};
-                        $MATCH->{"Perlito5::Grammar::var_ident"} = $m2;
-                        1
-                    }
-                    else {;
-                        0
-                    }
-                }) && (do {
-                    $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "pos", "arguments", [$MATCH->{"Perlito5::Grammar::var_ident"}->{"capture"}])];
-                    1
-                }))
-            }) || (do {
-                $MATCH->{"to"} = $pos1;
-                ((do {
-                    my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
-                    $MATCH = $tmp;
-                    $res ? 0 : 1
-                }) && (do {
-                    $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "pos", "arguments", [Perlito5::AST::Var::SCALAR_ARG()], "bareword", 1)];
-                    1
-                }))
-            })
-        })));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::declarator {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = ((do {
-            my $pos1 = $MATCH->{"to"};
-            (do {;
-                (("m" eq $str->[$MATCH->{"to"} + 0]) && ("y" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2))
-            }) || (do {
-                $MATCH->{"to"} = $pos1;
-                (("s" eq $str->[$MATCH->{"to"} + 0]) && ("t" eq $str->[$MATCH->{"to"} + 1]) && ("a" eq $str->[$MATCH->{"to"} + 2]) && ("t" eq $str->[$MATCH->{"to"} + 3]) && ("e" eq $str->[$MATCH->{"to"} + 4]) && ($MATCH->{"to"} += 5))
-            }) || (do {
-                $MATCH->{"to"} = $pos1;
-                (("o" eq $str->[$MATCH->{"to"} + 0]) && ("u" eq $str->[$MATCH->{"to"} + 1]) && ("r" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3))
-            })
-        }));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::term_declarator {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((do {
-            my $m2 = Perlito5::Grammar::Expression::declarator($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"declarator"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $pos1 = $MATCH->{"to"};
-            (do {;
-                ((do {
-                    my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
-                    if ($m2) {
-                        $MATCH->{"to"} = $m2->{"to"};
-                        1
-                    }
-                    else {;
-                        0
-                    }
-                }) && (do {
-                    my $pos1 = $MATCH->{"to"};
-                    (do {;
-                        ((do {
-                            my $m2 = Perlito5::Grammar::Block::named_sub($str, $MATCH->{"to"});
-                            if ($m2) {
-                                $MATCH->{"to"} = $m2->{"to"};
-                                $MATCH->{"Perlito5::Grammar::Block::named_sub"} = $m2;
-                                1
-                            }
-                            else {;
-                                0
-                            }
-                        }) && (do {
-                            my $sub = $MATCH->{"Perlito5::Grammar::Block::named_sub"}->{"capture"};
-                            $sub->{"decl"} = Perlito5::Match::flat($MATCH->{"declarator"});
-                            $MATCH->{"capture"} = ["term", $sub];
-                            return $MATCH;
-                            1
-                        }))
-                    }) || (do {
-                        $MATCH->{"to"} = $pos1;
-                        (do {
-                            my $m2 = Perlito5::Grammar::opt_type($str, $MATCH->{"to"});
-                            if ($m2) {
-                                $MATCH->{"to"} = $m2->{"to"};
-                                $MATCH->{"Perlito5::Grammar::opt_type"} = $m2;
-                                1
-                            }
-                            else {;
-                                0
-                            }
-                        })
-                    })
-                }))
-            }) || (do {
-                $MATCH->{"to"} = $pos1;
-                1
-            })
-        }) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::var_ident($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"Perlito5::Grammar::var_ident"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::Attribute::opt_attribute($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $declarator = Perlito5::Match::flat($MATCH->{"declarator"});
-            my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::opt_type"});
-            $type && !$Perlito5::PACKAGES->{$type} && Perlito5::Compiler::error("No such class " . $type);
-            my $var = $MATCH->{"Perlito5::Grammar::var_ident"}->{"capture"};
-            $var->{"namespace"} && Perlito5::Compiler::error("No package name allowed for variable " . $var->{"sigil"} . $var->{"name"} . " in \"" . $declarator . "\"");
-            $var->{"_decl"} = $declarator;
-            $var->{"_id"} = $Perlito5::ID++;
-            $declarator eq "our" && ($var->{"_namespace"} = $Perlito5::PKG_NAME);
-            my $decl = Perlito5::AST::Decl::->new("decl", $declarator, "type", $type, "var", $var, "attributes", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"}));
-            $MATCH->{"capture"} = ["term", $decl];
-            1
-        })));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::operator_with_paren {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = ((do {
-            my $pos1 = $MATCH->{"to"};
-            (do {;
-                (("c" eq $str->[$MATCH->{"to"} + 0]) && ("h" eq $str->[$MATCH->{"to"} + 1]) && ("o" eq $str->[$MATCH->{"to"} + 2]) && ("m" eq $str->[$MATCH->{"to"} + 3]) && ("p" eq $str->[$MATCH->{"to"} + 4]) && ($MATCH->{"to"} += 5))
-            }) || (do {
-                $MATCH->{"to"} = $pos1;
-                (("c" eq $str->[$MATCH->{"to"} + 0]) && ("h" eq $str->[$MATCH->{"to"} + 1]) && ("o" eq $str->[$MATCH->{"to"} + 2]) && ("p" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))
-            })
-        }));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::term_operator_with_paren {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((do {
-            my $m2 = Perlito5::Grammar::Expression::operator_with_paren($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"operator_with_paren"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                1
-            }
-            else {;
-                0
-            }
-        }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
-            my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"paren_parse"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
-            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", Perlito5::Match::flat($MATCH->{"operator_with_paren"}), "arguments", Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($MATCH->{"paren_parse"})), "namespace", '')];
-            1
-        })));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::term_not {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("n" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("t" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                1
-            }
-            else {;
-                0
-            }
-        }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
-            my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"paren_parse"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
-            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "prefix:<not>", "arguments", Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($MATCH->{"paren_parse"})), "namespace", '')];
-            1
-        })));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::term_local {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("l" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("c" eq $str->[$MATCH->{"to"} + 2]) && ("a" eq $str->[$MATCH->{"to"} + 3]) && ("l" eq $str->[$MATCH->{"to"} + 4]) && ($MATCH->{"to"} += 5)) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::Sigil::term_sigil($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"Perlito5::Grammar::Sigil::term_sigil"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $declarator = "local";
-            my $type = '';
-            $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil::term_sigil"})->[1];
-            $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
-            my $var = $MATCH->{"capture"};
-            my $look = Perlito5::Grammar::Scope::lookup_variable($var);
-            if ($look && ($look->{"_decl"} eq "my" || $look->{"_decl"} eq "state")) {;
-                Perlito5::Compiler::error("Can't localize lexical variable " . $var->{"sigil"} . $var->{"name"})
-            }
-            $var->{"_id"} = $Perlito5::ID++;
-            $var->{"_decl"} = $declarator;
-            !$var->{"namespace"} && !$var->{"_namespace"} && ($var->{"_namespace"} = $Perlito5::PKG_NAME);
-            my $decl = Perlito5::AST::Decl::->new("decl", $declarator, "type", $type, "var", $var);
-            $MATCH->{"capture"} = ["term", $decl];
-            1
-        })));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::term_return {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("r" eq $str->[$MATCH->{"to"} + 0]) && ("e" eq $str->[$MATCH->{"to"} + 1]) && ("t" eq $str->[$MATCH->{"to"} + 2]) && ("u" eq $str->[$MATCH->{"to"} + 3]) && ("r" eq $str->[$MATCH->{"to"} + 4]) && ("n" eq $str->[$MATCH->{"to"} + 5]) && ($MATCH->{"to"} += 6)) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::Expression::list_parse($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"list_parse"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $args = Perlito5::Match::flat($MATCH->{"list_parse"});
-            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "return", "arguments", $args eq "*undef*" ? [] : [$args], "namespace", '', "bareword", $args eq "*undef*" ? 1 : 0)];
-            1
-        })));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::term_file_test {
-        (my($str), my($pos)) = @_;
-        my $code = $str->[$pos] . $str->[$pos + 1];
-        $pos += 2;
-        my $spc = Perlito5::Grammar::Space::ws($str, $pos);
-        if ($spc) {;
-            $pos = $spc->{"to"}
-        }
-        my $arg = Perlito5::Grammar::Expression::argument_parse($str, $pos);
-        if ($arg) {
-            my $argument = Perlito5::Match::flat($arg);
-            if (ref($argument) eq "Perlito5::AST::Apply" && ($argument->{"code"} =~ m/^prefix:<-\w>$/ || $argument->{"code"} eq "infix:<&&>")) {
-                my $op2 = $argument;
-                my $file = $op2->{"arguments"}->[0];
-                $arg->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "infix:<&&>", "namespace", '', "arguments", [$op2, Perlito5::AST::Apply::->new("code", "prefix:<" . $code . ">", "arguments", [Perlito5::AST::Var::->new("_decl", "global", "_namespace", "main", "name", "_", "namespace", '', "sigil", "*")], "namespace", '', "bareword", 0)])]
-            }
-            else {
-                if ($argument eq "*undef*") {
-                    if ($code eq "-t") {;
-                        $argument = Perlito5::AST::Var::->new("_decl", "global", "_namespace", "main", "name", "STDIN", "namespace", '', "sigil", "*")
-                    }
-                    else {;
-                        $argument = Perlito5::AST::Var::SCALAR_ARG()
-                    }
-                }
-                $arg->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "prefix:<" . $code . ">", "arguments", $argument eq "*undef*" ? [] : [$argument], "namespace", '', "bareword", 0)]
-            }
-        }
-        return $arg
-    }
-    sub Perlito5::Grammar::Expression::next_last_redo {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = ((do {
-            my $pos1 = $MATCH->{"to"};
-            (do {;
-                (("n" eq $str->[$MATCH->{"to"} + 0]) && ("e" eq $str->[$MATCH->{"to"} + 1]) && ("x" eq $str->[$MATCH->{"to"} + 2]) && ("t" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))
-            }) || (do {
-                $MATCH->{"to"} = $pos1;
-                (("l" eq $str->[$MATCH->{"to"} + 0]) && ("a" eq $str->[$MATCH->{"to"} + 1]) && ("s" eq $str->[$MATCH->{"to"} + 2]) && ("t" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))
-            }) || (do {
-                $MATCH->{"to"} = $pos1;
-                (("r" eq $str->[$MATCH->{"to"} + 0]) && ("e" eq $str->[$MATCH->{"to"} + 1]) && ("d" eq $str->[$MATCH->{"to"} + 2]) && ("o" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))
-            })
-        }));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::term_next_last_redo {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((do {
-            my $m2 = Perlito5::Grammar::Expression::next_last_redo($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"next_last_redo"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::Expression::next_last_redo_parse($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"next_last_redo_parse"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            my $args = Perlito5::Match::flat($MATCH->{"next_last_redo_parse"});
-            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", Perlito5::Match::flat($MATCH->{"next_last_redo"}), "arguments", $args eq "*undef*" ? [] : [$args], "namespace", '', "bareword", $args eq "*undef*" ? 1 : 0)];
-            1
-        })));
-        $tmp ? $MATCH : undef
-    }
-    sub Perlito5::Grammar::Expression::term_eval {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("e" eq $str->[$MATCH->{"to"} + 0]) && ("v" eq $str->[$MATCH->{"to"} + 1]) && ("a" eq $str->[$MATCH->{"to"} + 2]) && ("l" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
-            my $m2 = Perlito5::Grammar::block($str, $MATCH->{"to"});
-            if ($m2) {
-                $MATCH->{"to"} = $m2->{"to"};
-                $MATCH->{"Perlito5::Grammar::block"} = $m2;
-                1
-            }
-            else {;
-                0
-            }
-        }) && (do {
-            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "eval", "arguments", [Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::block"})], "namespace", '')];
-            1
-        })));
-        $tmp ? $MATCH : undef
-    }
     my $Expr_end_token_chars = [7, 6, 5, 4, 3, 2, 1];
-    my $Expr_end_token = {"]", 1, ")", 1, "}", 1, ";", 1, "if", 1, "for", 1, "else", 1, "when", 1, "while", 1, "until", 1, "elsif", 1, "unless", 1, "foreach", 1};
-    my $List_end_token = {":", 1, "or", 1, "and", 1, "xor", 1, %{$Expr_end_token}};
-    my $Next_Last_Redo_end_token = {",", 1, "=>", 1, %{$List_end_token}};
-    my $Argument_end_token = {",", 1, "<", 1, ">", 1, "=", 1, "|", 1, "^", 1, "?", 1, "=>", 1, "lt", 1, "le", 1, "gt", 1, "=>", 1, "lt", 1, "le", 1, "gt", 1, "ge", 1, "<=", 1, ">=", 1, "==", 1, "!=", 1, "ne", 1, "eq", 1, "..", 1, "~~", 1, "&&", 1, "||", 1, "+=", 1, "-=", 1, "*=", 1, "/=", 1, "x=", 1, "|=", 1, "&=", 1, ".=", 1, "^=", 1, "%=", 1, "//", 1, "...", 1, "<=>", 1, "cmp", 1, "<<=", 1, ">>=", 1, "||=", 1, "&&=", 1, "//=", 1, "**=", 1, "last", 1, "next", 1, "redo", 1, %{$List_end_token}};
+    my $Expr_end_token = {"]" => 1, ")" => 1, "}" => 1, ";" => 1, "if" => 1, "for" => 1, "else" => 1, "when" => 1, "while" => 1, "until" => 1, "elsif" => 1, "unless" => 1, "foreach" => 1, };
+    my $List_end_token = {":" => 1, "or" => 1, "and" => 1, "xor" => 1, %{$Expr_end_token}, };
+    my $Next_Last_Redo_end_token = {"," => 1, "=>" => 1, %{$List_end_token}, };
+    my $Argument_end_token = {"," => 1, "<" => 1, ">" => 1, "=" => 1, "|" => 1, "^" => 1, "?" => 1, "=>" => 1, "lt" => 1, "le" => 1, "gt" => 1, "=>" => 1, "lt" => 1, "le" => 1, "gt" => 1, "ge" => 1, "<=" => 1, ">=" => 1, "==" => 1, "!=" => 1, "ne" => 1, "eq" => 1, ".." => 1, "~~" => 1, "&&" => 1, "||" => 1, "+=" => 1, "-=" => 1, "*=" => 1, "/=" => 1, "x=" => 1, "|=" => 1, "&=" => 1, ".=" => 1, "^=" => 1, "%=" => 1, "//" => 1, "|." => 1, "&." => 1, "^." => 1, "..." => 1, "<=>" => 1, "cmp" => 1, "<<=" => 1, ">>=" => 1, "||=" => 1, "&&=" => 1, "//=" => 1, "**=" => 1, "|.=" => 1, "&.=" => 1, "^.=" => 1, "last" => 1, "next" => 1, "redo" => 1, %{$List_end_token}, };
     sub Perlito5::Grammar::Expression::list_parser {
         (my($str), my($pos), my($end_token)) = @_;
-        my $expr;
         my $last_pos = $pos;
         my $is_first_token = 1;
-        my $lexer_stack = [];
-        my $last_token_was_space = 1;
         my $get_token = sub {
             my $last_is_term = $_[0];
             my $v;
-            if (scalar(@{$lexer_stack})) {
-                $v = pop(@{$lexer_stack});
-                if ($is_first_token && ($v->[0] eq "op") && !(Perlito5::Grammar::Precedence::is_fixity_type("prefix", $v->[1]))) {;
-                    $v->[0] = "end"
-                }
+            my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
+            if (!$m) {;
+                return ["end", "*end*"]
             }
-            else {
-                my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
-                if ($m) {
-                    my $spc = Perlito5::Grammar::Space::ws($str, $m->{"to"});
-                    if ($spc) {;
-                        $m->{"to"} = $spc->{"to"}
-                    }
-                }
-                if (!$m) {;
-                    return ["end", "*end*"]
-                }
-                $v = $m->{"capture"};
-                if ($is_first_token && ($v->[0] eq "op") && !(Perlito5::Grammar::Precedence::is_fixity_type("prefix", $v->[1]))) {;
-                    $v->[0] = "end"
-                }
-                if ($v->[0] ne "end") {;
-                    $last_pos = $m->{"to"}
-                }
+            my $spc = Perlito5::Grammar::Space::ws($str, $m->{"to"});
+            if ($spc) {;
+                $m->{"to"} = $spc->{"to"}
             }
-            $last_token_was_space = ($v->[0] eq "space");
+            $v = $m->{"capture"};
+            if ($is_first_token && ($v->[0] eq "op") && !Perlito5::Grammar::Precedence::is_fixity_type("prefix", $v->[1])) {;
+                $v->[0] = "end"
+            }
+            if ($v->[0] ne "end") {;
+                $last_pos = $m->{"to"}
+            }
             $is_first_token = 0;
             return $v
         };
-        my $prec = Perlito5::Grammar::Precedence::->new("get_token", $get_token, "reduce", $reduce_to_ast, "end_token", $end_token, "end_token_chars", $Expr_end_token_chars);
-        my $res = $prec->precedence_parse();
+        my $res = Perlito5::Grammar::Precedence::precedence_parse($get_token, $end_token, $Expr_end_token_chars);
         if (scalar(@{$res}) == 0) {;
-            return {"str", $str, "from", $pos, "to", $last_pos, "capture", "*undef*"}
+            return {"str" => $str, "from" => $pos, "to" => $last_pos, "capture" => "*undef*", }
         }
         my $result = Perlito5::Grammar::Expression::pop_term($res);
-        return {"str", $str, "from", $pos, "to", $last_pos, "capture", $result}
+        return {"str" => $str, "from" => $pos, "to" => $last_pos, "capture" => $result, }
     }
     sub Perlito5::Grammar::Expression::next_last_redo_parse {
         (my($str), my($pos)) = @_;
@@ -2748,7 +2278,15 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Expression::argument_parse {
         (my($str), my($pos)) = @_;
-        return Perlito5::Grammar::Expression::list_parser($str, $pos, $Argument_end_token)
+        my $m = Perlito5::Grammar::Expression::list_parser($str, $pos, $Argument_end_token);
+        if ($m->{"capture"} eq "*undef*") {
+            my $term = Perlito5::Grammar::String::term_glob($str, $pos);
+            if ($term) {
+                $m->{"capture"} = $term->{"capture"}->[1];
+                $m->{"to"} = $term->{"to"}
+            }
+        }
+        return $m
     }
     sub Perlito5::Grammar::Expression::list_parse {
         (my($str), my($pos)) = @_;
@@ -2756,21 +2294,18 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Expression::circumfix_parse {
         (my($str), my($pos), my($delimiter)) = @_;
-        my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
             my $last_is_term = $_[0];
             my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
-            if ($m) {
-                my $spc = Perlito5::Grammar::Space::ws($str, $m->{"to"});
-                if ($spc) {;
-                    $m->{"to"} = $spc->{"to"}
-                }
-            }
             if (!$m) {
                 my $msg = "Expected closing delimiter: " . $delimiter;
                 ($delimiter eq "}" || $delimiter eq "]") && ($msg = "Missing right curly or square bracket");
                 Perlito5::Compiler::error($msg . " near ", $last_pos)
+            }
+            my $spc = Perlito5::Grammar::Space::ws($str, $m->{"to"});
+            if ($spc) {;
+                $m->{"to"} = $spc->{"to"}
             }
             my $v = $m->{"capture"};
             if ($v->[0] ne "end") {;
@@ -2780,13 +2315,12 @@ use feature 'say';
         };
         my %delim_token;
         $delim_token{$delimiter} = 1;
-        my $prec = Perlito5::Grammar::Precedence::->new("get_token", $get_token, "reduce", $reduce_to_ast, "end_token", \%delim_token, "end_token_chars", [length($delimiter)]);
-        my $res = $prec->precedence_parse();
+        my $res = Perlito5::Grammar::Precedence::precedence_parse($get_token, \%delim_token, [length($delimiter)]);
         $res = Perlito5::Grammar::Expression::pop_term($res);
-        if (!(defined($res))) {;
+        if (!defined($res)) {;
             $res = "*undef*"
         }
-        return {"str", $str, "from", $pos, "to", $last_pos, "capture", $res}
+        return {"str" => $str, "from" => $pos, "to" => $last_pos, "capture" => $res, }
     }
     sub Perlito5::Grammar::Expression::ternary5_parse {;
         return Perlito5::Grammar::Expression::circumfix_parse(@_, ":")
@@ -2802,56 +2336,31 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Expression::exp_parse {
         (my($str), my($pos)) = @_;
-        my $expr;
         my $last_pos = $pos;
-        my $lexer_stack = [];
         my $get_token = sub {
             my $last_is_term = $_[0];
             my $v;
-            if (scalar(@{$lexer_stack})) {;
-                $v = pop(@{$lexer_stack})
+            my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
+            if (!$m) {;
+                return ["end", "*end*"]
             }
-            else {
-                my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
-                if ($m) {
-                    my $spc = Perlito5::Grammar::Space::ws($str, $m->{"to"});
-                    if ($spc) {;
-                        $m->{"to"} = $spc->{"to"}
-                    }
-                }
-                if (!$m) {;
-                    return ["end", "*end*"]
-                }
-                $v = $m->{"capture"};
-                if ($v->[0] ne "end") {;
-                    $last_pos = $m->{"to"}
-                }
+            my $spc = Perlito5::Grammar::Space::ws($str, $m->{"to"});
+            if ($spc) {;
+                $m->{"to"} = $spc->{"to"}
+            }
+            $v = $m->{"capture"};
+            if ($v->[0] ne "end") {;
+                $last_pos = $m->{"to"}
             }
             return $v
         };
-        my $prec = Perlito5::Grammar::Precedence::->new("get_token", $get_token, "reduce", $reduce_to_ast, "end_token", $Expr_end_token, "end_token_chars", $Expr_end_token_chars);
-        my $res = $prec->precedence_parse();
+        my $res = Perlito5::Grammar::Precedence::precedence_parse($get_token, $Expr_end_token, $Expr_end_token_chars);
         if (scalar(@{$res}) == 0) {;
             return 0
         }
         my $result = Perlito5::Grammar::Expression::pop_term($res);
-        return {"str", $str, "from", $pos, "to", $last_pos, "capture", $result}
+        return {"str" => $str, "from" => $pos, "to" => $last_pos, "capture" => $result, }
     }
-    Perlito5::Grammar::Precedence::add_term("my", \&term_declarator);
-    Perlito5::Grammar::Precedence::add_term("our", \&term_declarator);
-    Perlito5::Grammar::Precedence::add_term("eval", \&term_eval);
-    Perlito5::Grammar::Precedence::add_term("state", \&term_declarator);
-    Perlito5::Grammar::Precedence::add_term("local", \&term_local);
-    Perlito5::Grammar::Precedence::add_term("return", \&term_return);
-    Perlito5::Grammar::Precedence::add_term("not", \&term_not);
-    Perlito5::Grammar::Precedence::add_term("pos", \&term_pos);
-    Perlito5::Grammar::Precedence::add_term("chomp", \&term_operator_with_paren);
-    Perlito5::Grammar::Precedence::add_term("chop", \&term_operator_with_paren);
-    Perlito5::Grammar::Precedence::add_term("next", \&term_next_last_redo);
-    Perlito5::Grammar::Precedence::add_term("last", \&term_next_last_redo);
-    Perlito5::Grammar::Precedence::add_term("redo", \&term_next_last_redo);
-    Perlito5::Grammar::Precedence::add_term($_, \&term_file_test)
-        for "-r", "-w", "-x", "-o", "-R", "-W", "-X", "-O", "-e", "-z", "-s", "-f", "-d", "-l", "-p", "-S", "-b", "-c", "-t", "-u", "-g", "-k", "-T", "-B", "-M", "-A", "-C";
     1
 }
 {
@@ -2860,8 +2369,8 @@ use feature 'say';
     sub Perlito5::Grammar::unless {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("u" eq $str->[$MATCH->{"to"} + 0]) && ("n" eq $str->[$MATCH->{"to"} + 1]) && ("l" eq $str->[$MATCH->{"to"} + 2]) && ("e" eq $str->[$MATCH->{"to"} + 3]) && ("s" eq $str->[$MATCH->{"to"} + 4]) && ("s" eq $str->[$MATCH->{"to"} + 5]) && ($MATCH->{"to"} += 6)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("u" eq $str->[($MATCH->{"to"}) + 0]) && ("n" eq $str->[($MATCH->{"to"}) + 1]) && ("l" eq $str->[($MATCH->{"to"}) + 2]) && ("e" eq $str->[($MATCH->{"to"}) + 3]) && ("s" eq $str->[($MATCH->{"to"}) + 4]) && ("s" eq $str->[($MATCH->{"to"}) + 5]) && ($MATCH->{"to"} += 6)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -2914,7 +2423,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("e" eq $str->[$MATCH->{"to"} + 0]) && ("l" eq $str->[$MATCH->{"to"} + 1]) && ("s" eq $str->[$MATCH->{"to"} + 2]) && ("e" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+                }) && (("e" eq $str->[($MATCH->{"to"}) + 0]) && ("l" eq $str->[($MATCH->{"to"}) + 1]) && ("s" eq $str->[($MATCH->{"to"}) + 2]) && ("e" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
                     my $m2 = Perlito5::Grammar::block2($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -2939,7 +2448,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("e" eq $str->[$MATCH->{"to"} + 0]) && ("l" eq $str->[$MATCH->{"to"} + 1]) && ("s" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
+                }) && (("e" eq $str->[($MATCH->{"to"}) + 0]) && ("l" eq $str->[($MATCH->{"to"}) + 1]) && ("s" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
                     my $m2 = Perlito5::Grammar::if_($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -2969,8 +2478,8 @@ use feature 'say';
     sub Perlito5::Grammar::if_ {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("i" eq $str->[$MATCH->{"to"} + 0]) && ("f" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("i" eq $str->[($MATCH->{"to"}) + 0]) && ("f" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3023,7 +2532,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("e" eq $str->[$MATCH->{"to"} + 0]) && ("l" eq $str->[$MATCH->{"to"} + 1]) && ("s" eq $str->[$MATCH->{"to"} + 2]) && ("e" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+                }) && (("e" eq $str->[($MATCH->{"to"}) + 0]) && ("l" eq $str->[($MATCH->{"to"}) + 1]) && ("s" eq $str->[($MATCH->{"to"}) + 2]) && ("e" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
                     my $m2 = Perlito5::Grammar::block2($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -3048,7 +2557,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("e" eq $str->[$MATCH->{"to"} + 0]) && ("l" eq $str->[$MATCH->{"to"} + 1]) && ("s" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
+                }) && (("e" eq $str->[($MATCH->{"to"}) + 0]) && ("l" eq $str->[($MATCH->{"to"}) + 1]) && ("s" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
                     my $m2 = Perlito5::Grammar::if_($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -3078,8 +2587,8 @@ use feature 'say';
     sub Perlito5::Grammar::when {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("w" eq $str->[$MATCH->{"to"} + 0]) && ("h" eq $str->[$MATCH->{"to"} + 1]) && ("e" eq $str->[$MATCH->{"to"} + 2]) && ("n" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("w" eq $str->[($MATCH->{"to"}) + 0]) && ("h" eq $str->[($MATCH->{"to"}) + 1]) && ("e" eq $str->[($MATCH->{"to"}) + 2]) && ("n" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3136,10 +2645,10 @@ use feature 'say';
     sub Perlito5::Grammar::for {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("f" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("r" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("f" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("r" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
             my $m = $MATCH;
-            if (!(("e" eq $str->[$MATCH->{"to"} + 0]) && ("a" eq $str->[$MATCH->{"to"} + 1]) && ("c" eq $str->[$MATCH->{"to"} + 2]) && ("h" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))) {;
+            if (!(("e" eq $str->[($MATCH->{"to"}) + 0]) && ("a" eq $str->[($MATCH->{"to"}) + 1]) && ("c" eq $str->[($MATCH->{"to"}) + 2]) && ("h" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4))) {;
                 $MATCH = $m
             }
             1
@@ -3188,8 +2697,8 @@ use feature 'say';
                             }
                         }) && (do {
                             my $tmp = $MATCH;
-                            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                            my $res = (("\$" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                            my $res = (("\$" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                             $MATCH = $tmp;
                             $res ? 1 : 0
                         }) && (do {
@@ -3224,7 +2733,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -3234,7 +2743,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::block($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -3273,7 +2782,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
                         ((do {
@@ -3306,8 +2815,8 @@ use feature 'say';
                             }
                         }) && (do {
                             my $tmp = $MATCH;
-                            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                            my $res = ((";" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                            my $res = ((";" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                             $MATCH = $tmp;
                             $res ? 1 : 0
                         }))
@@ -3315,7 +2824,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        (((";" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        (((";" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             $MATCH->{"c_style_for"} = 1;
                             1
                         }) && (do {
@@ -3351,7 +2860,7 @@ use feature 'say';
                                     }
                                 })
                             })
-                        }) && ((";" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        }) && ((";" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             my $pos1 = $MATCH->{"to"};
                             (do {;
                                 (do {
@@ -3386,7 +2895,7 @@ use feature 'say';
                         $MATCH->{"to"} = $pos1;
                         1
                     })
-                }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::block($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -3431,8 +2940,8 @@ use feature 'say';
     sub Perlito5::Grammar::while {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("w" eq $str->[$MATCH->{"to"} + 0]) && ("h" eq $str->[$MATCH->{"to"} + 1]) && ("i" eq $str->[$MATCH->{"to"} + 2]) && ("l" eq $str->[$MATCH->{"to"} + 3]) && ("e" eq $str->[$MATCH->{"to"} + 4]) && ($MATCH->{"to"} += 5)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("w" eq $str->[($MATCH->{"to"}) + 0]) && ("h" eq $str->[($MATCH->{"to"}) + 1]) && ("i" eq $str->[($MATCH->{"to"}) + 2]) && ("l" eq $str->[($MATCH->{"to"}) + 3]) && ("e" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3444,7 +2953,7 @@ use feature 'say';
         }) && (do {
             Perlito5::Grammar::Scope::create_new_compile_time_scope();
             1
-        }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3454,7 +2963,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::block($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3493,8 +3002,8 @@ use feature 'say';
     sub Perlito5::Grammar::until {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("u" eq $str->[$MATCH->{"to"} + 0]) && ("n" eq $str->[$MATCH->{"to"} + 1]) && ("t" eq $str->[$MATCH->{"to"} + 2]) && ("i" eq $str->[$MATCH->{"to"} + 3]) && ("l" eq $str->[$MATCH->{"to"} + 4]) && ($MATCH->{"to"} += 5)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("u" eq $str->[($MATCH->{"to"}) + 0]) && ("n" eq $str->[($MATCH->{"to"}) + 1]) && ("t" eq $str->[($MATCH->{"to"}) + 2]) && ("i" eq $str->[($MATCH->{"to"}) + 3]) && ("l" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3506,7 +3015,7 @@ use feature 'say';
         }) && (do {
             Perlito5::Grammar::Scope::create_new_compile_time_scope();
             1
-        }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3516,7 +3025,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::block($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3552,8 +3061,8 @@ use feature 'say';
     sub Perlito5::Grammar::given {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("g" eq $str->[$MATCH->{"to"} + 0]) && ("i" eq $str->[$MATCH->{"to"} + 1]) && ("v" eq $str->[$MATCH->{"to"} + 2]) && ("e" eq $str->[$MATCH->{"to"} + 3]) && ("n" eq $str->[$MATCH->{"to"} + 4]) && ($MATCH->{"to"} += 5)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("g" eq $str->[($MATCH->{"to"}) + 0]) && ("i" eq $str->[($MATCH->{"to"}) + 1]) && ("v" eq $str->[($MATCH->{"to"}) + 2]) && ("e" eq $str->[($MATCH->{"to"}) + 3]) && ("n" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3565,7 +3074,7 @@ use feature 'say';
         }) && (do {
             Perlito5::Grammar::Scope::create_new_compile_time_scope();
             1
-        }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3575,7 +3084,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::block($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3611,14 +3120,14 @@ use feature 'say';
     sub Perlito5::Grammar::String::term_q_quote {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("q" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("q" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        (("#" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("#" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
                         ((do {
@@ -3632,8 +3141,8 @@ use feature 'say';
                             }
                         }) && (do {
                             my $tmp = $MATCH;
-                            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                            my $res = (("=" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+                            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                            my $res = (("=" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
                             $MATCH = $tmp;
                             $res ? 0 : 1
                         }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -3641,7 +3150,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("'" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             })
         }) && (do {
             my $m2 = Perlito5::Grammar::String::q_quote_parse($str, $MATCH->{"to"});
@@ -3662,14 +3171,14 @@ use feature 'say';
     sub Perlito5::Grammar::String::term_qq_quote {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("q" eq $str->[$MATCH->{"to"} + 0]) && ("q" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+                ((("q" eq $str->[($MATCH->{"to"}) + 0]) && ("q" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        (("#" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("#" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
                         ((do {
@@ -3683,8 +3192,8 @@ use feature 'say';
                             }
                         }) && (do {
                             my $tmp = $MATCH;
-                            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                            my $res = (("=" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+                            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                            my $res = (("=" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
                             $MATCH = $tmp;
                             $res ? 0 : 1
                         }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -3692,7 +3201,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("\"" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("\"" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             })
         }) && (do {
             my $m2 = Perlito5::Grammar::String::qq_quote_parse($str, $MATCH->{"to"});
@@ -3713,11 +3222,11 @@ use feature 'say';
     sub Perlito5::Grammar::String::term_qw_quote {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("q" eq $str->[$MATCH->{"to"} + 0]) && ("w" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("q" eq $str->[($MATCH->{"to"}) + 0]) && ("w" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("#" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("#" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
                 ((do {
@@ -3731,8 +3240,8 @@ use feature 'say';
                     }
                 }) && (do {
                     my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = (("=" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("=" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
                     $MATCH = $tmp;
                     $res ? 0 : 1
                 }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -3756,14 +3265,14 @@ use feature 'say';
     sub Perlito5::Grammar::String::term_m_quote {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("m" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("m" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        (("#" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("#" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
                         ((do {
@@ -3777,8 +3286,8 @@ use feature 'say';
                             }
                         }) && (do {
                             my $tmp = $MATCH;
-                            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                            my $res = (("=" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+                            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                            my $res = (("=" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
                             $MATCH = $tmp;
                             $res ? 0 : 1
                         }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -3786,7 +3295,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("/" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("/" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             })
         }) && (do {
             my $m2 = Perlito5::Grammar::String::m_quote_parse($str, $MATCH->{"to"});
@@ -3807,11 +3316,11 @@ use feature 'say';
     sub Perlito5::Grammar::String::term_s_quote {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("s" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("s" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("#" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("#" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
                 ((do {
@@ -3825,8 +3334,8 @@ use feature 'say';
                     }
                 }) && (do {
                     my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = (("=" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("=" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
                     $MATCH = $tmp;
                     $res ? 0 : 1
                 }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -3850,14 +3359,14 @@ use feature 'say';
     sub Perlito5::Grammar::String::term_qx {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("q" eq $str->[$MATCH->{"to"} + 0]) && ("x" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+                ((("q" eq $str->[($MATCH->{"to"}) + 0]) && ("x" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        (("#" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("#" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
                         ((do {
@@ -3871,8 +3380,8 @@ use feature 'say';
                             }
                         }) && (do {
                             my $tmp = $MATCH;
-                            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                            my $res = (("=" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+                            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                            my $res = (("=" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
                             $MATCH = $tmp;
                             $res ? 0 : 1
                         }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -3880,7 +3389,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("`" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("`" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             })
         }) && (do {
             my $m2 = Perlito5::Grammar::String::qx_quote_parse($str, $MATCH->{"to"});
@@ -3901,8 +3410,8 @@ use feature 'say';
     sub Perlito5::Grammar::String::term_glob {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("<" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("<" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::String::glob_quote_parse($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -3921,19 +3430,19 @@ use feature 'say';
     sub Perlito5::Grammar::String::term_tr_quote {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("t" eq $str->[$MATCH->{"to"} + 0]) && ("r" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2))
+                (("t" eq $str->[($MATCH->{"to"}) + 0]) && ("r" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("y" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("y" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             })
         }) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("#" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("#" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
                 ((do {
@@ -3947,8 +3456,8 @@ use feature 'say';
                     }
                 }) && (do {
                     my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = (("=" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("=" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
                     $MATCH = $tmp;
                     $res ? 0 : 1
                 }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -3972,11 +3481,11 @@ use feature 'say';
     sub Perlito5::Grammar::String::term_qr_quote {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("q" eq $str->[$MATCH->{"to"} + 0]) && ("r" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("q" eq $str->[($MATCH->{"to"}) + 0]) && ("r" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("#" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("#" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
                 ((do {
@@ -3990,8 +3499,8 @@ use feature 'say';
                     }
                 }) && (do {
                     my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = (("=" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("=" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
                     $MATCH = $tmp;
                     $res ? 0 : 1
                 }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -4092,7 +3601,7 @@ use feature 'say';
         }
         $part2 = Perlito5::Grammar::String::string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 0);
         $part2 || return $part2;
-        my @replace = @{$str}[$p .. $part2->{"to"} - 2];
+        my @replace = @{$str}[$p .. ($part2->{"to"}) - 2];
         my $replace;
         $p = $part2->{"to"};
         my $modifiers = '';
@@ -4166,10 +3675,10 @@ use feature 'say';
         my $open_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($delimiter = $pair{$delimiter});
         if ($str->[$pos] eq "<" && $str->[$pos + 1] eq ">" && $str->[$pos + 2] eq ">") {;
-            return {"str", $str, "from", $pos, "to", $pos + 3, "capture", Perlito5::AST::Apply::->new("code", "readline", "arguments", [Perlito5::AST::Apply::->new("code", "<>", "arguments", [], "namespace", '', "bareword", 1)], "namespace", '')}
+            return {"str" => $str, "from" => $pos, "to" => $pos + 3, "capture" => Perlito5::AST::Apply::->new("code", "readline", "arguments", [Perlito5::AST::Apply::->new("code", "<>", "arguments", [], "namespace", '', "bareword", 1)], "namespace", ''), }
         }
         if ($str->[$pos] eq ">") {;
-            return {"str", $str, "from", $pos, "to", $pos + 1, "capture", Perlito5::AST::Apply::->new("code", "readline", "arguments", [], "namespace", '')}
+            return {"str" => $str, "from" => $pos, "to" => $pos + 1, "capture" => Perlito5::AST::Apply::->new("code", "readline", "arguments", [], "namespace", ''), }
         }
         my $p = $pos;
         my $sigil = "::";
@@ -4183,9 +3692,9 @@ use feature 'say';
         my $m_name = Perlito5::Grammar::ident($str, $p);
         if ($m_name && $str->[$m_name->{"to"}] eq ">") {
             if ($sigil eq "::") {;
-                return {"str", $str, "from", $pos, "to", $m_name->{"to"} + 1, "capture", Perlito5::AST::Apply::->new("code", "readline", "arguments", [Perlito5::AST::Apply::->new("code", Perlito5::Match::flat($m_name), "arguments", [], "namespace", $namespace, "bareword", 1)], "namespace", '')}
+                return {"str" => $str, "from" => $pos, "to" => ($m_name->{"to"}) + 1, "capture" => Perlito5::AST::Apply::->new("code", "readline", "arguments", [Perlito5::AST::Apply::->new("code", Perlito5::Match::flat($m_name), "arguments", [], "namespace", $namespace, "bareword", 1)], "namespace", ''), }
             }
-            return {"str", $str, "from", $pos, "to", $m_name->{"to"} + 1, "capture", Perlito5::AST::Apply::->new("code", "readline", "arguments", [Perlito5::AST::Var::->new("sigil", $sigil, "name", Perlito5::Match::flat($m_name), "namespace", $namespace)], "namespace", '')}
+            return {"str" => $str, "from" => $pos, "to" => ($m_name->{"to"}) + 1, "capture" => Perlito5::AST::Apply::->new("code", "readline", "arguments", [Perlito5::AST::Var::->new("sigil", $sigil, "name", Perlito5::Match::flat($m_name), "namespace", $namespace)], "namespace", ''), }
         }
         my $m = Perlito5::Grammar::String::string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 1);
         if ($m) {;
@@ -4264,7 +3773,7 @@ use feature 'say';
         my @args;
         my $buf = '';
         my $d1 = substr($delimiter, 0, 1);
-        while ($p < @{$str} && !($str->[$p] eq $d1 && join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter)) {
+        while ($p < @{$str} && !($str->[$p] eq $d1 && join('', @{$str}[$p .. ($p + length($delimiter)) - 1]) eq $delimiter)) {
             my $c = $str->[$p];
             my $c2 = $str->[$p + 1];
             my $m;
@@ -4345,13 +3854,13 @@ use feature 'say';
                 }
                 if ($c) {
                     if ($interpolate == 2) {;
-                        $m = {"str", $str, "from", $p, "to", $p + 2, "capture", Perlito5::AST::Buf::->new("buf", $str->[$p] . $str->[$p + 1])}
+                        $m = {"str" => $str, "from" => $p, "to" => $p + 2, "capture" => Perlito5::AST::Buf::->new("buf", ($str->[$p]) . ($str->[$p + 1])), }
                     }
                     elsif ($interpolate == 1) {;
                         $m = Perlito5::Grammar::String::double_quoted_unescape($str, $p)
                     }
                     else {;
-                        $m = $c2 eq "\\" ? {"str", $str, "from", $p, "to", $p + 2, "capture", Perlito5::AST::Buf::->new("buf", "\\")} : $c2 eq "'" ? {"str", $str, "from", $p, "to", $p + 2, "capture", Perlito5::AST::Buf::->new("buf", "'")} : 0
+                        $m = $c2 eq "\\" ? {"str" => $str, "from" => $p, "to" => $p + 2, "capture" => Perlito5::AST::Buf::->new("buf", "\\"), } : $c2 eq "'" ? {"str" => $str, "from" => $p, "to" => $p + 2, "capture" => Perlito5::AST::Buf::->new("buf", "'"), } : 0
                     }
                 }
             }
@@ -4390,19 +3899,20 @@ use feature 'say';
         if (length($buf)) {;
             push(@args, Perlito5::AST::Buf::->new("buf", $buf))
         }
-        join('', @{$str}[$p .. $p + length($delimiter) - 1]) ne $delimiter && Perlito5::Compiler::error("Can't find string terminator '" . $delimiter . "' anywhere before EOF");
+        join('', @{$str}[$p .. ($p + length($delimiter)) - 1]) ne $delimiter && Perlito5::Compiler::error("Can't find string terminator '" . $delimiter . "' anywhere before EOF");
         $p += length($delimiter);
         my $ast;
         if (!@args) {;
             $ast = Perlito5::AST::Buf::->new("buf", '')
         }
-        elsif (@args == 1) {;
+        elsif (@args == 1 && ref($args[0]) eq "Perlito5::AST::Buf") {;
             $ast = $args[0]
         }
-        else {;
-            $ast = Perlito5::AST::Apply::->new("namespace", '', "code", "list:<.>", "arguments", \@args)
+        else {
+            @args == 1 && unshift(@args, Perlito5::AST::Buf::->new("buf", ''));
+            $ast = Perlito5::AST::Apply::->new("namespace", '', "code", "list:<.>", "arguments", \@args, Perlito5::overloading_flag())
         }
-        return {"str", $str, "from", $pos, "to", $p, "capture", $ast}
+        return {"str" => $str, "from" => $pos, "to" => $p, "capture" => $ast, }
     }
     our @Here_doc;
     sub Perlito5::Grammar::String::here_doc_wanted {
@@ -4449,29 +3959,29 @@ use feature 'say';
         }
         my $placeholder = Perlito5::AST::Apply::->new("code", "list:<.>", "namespace", '', "arguments", [Perlito5::AST::Apply::->new("code", "list:<.>", "namespace", '', "arguments", [])]);
         push(@Here_doc, [$type, $placeholder->{"arguments"}->[0]->{"arguments"}, $delimiter, $indented]);
-        return {"str", $str, "from", $pos, "to", $p, "capture", ["term", $placeholder]}
+        return {"str" => $str, "from" => $pos, "to" => $p, "capture" => ["term", $placeholder], }
     }
     sub Perlito5::Grammar::String::newline {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
                 ((("
-" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m = $MATCH;
-                    if (!(("\x{d}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))) {;
+                    if (!(("\x{d}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))) {;
                         $MATCH = $m
                     }
                     1
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("\x{d}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("\x{d}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m = $MATCH;
                     if (!(("
-" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))) {;
+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))) {;
                         $MATCH = $m
                     }
                     1
@@ -4484,7 +3994,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         if (!@Here_doc) {;
-            return {"str", $str, "from", $pos, "to", $pos}
+            return {"str" => $str, "from" => $pos, "to" => $pos, }
         }
         my $p = $pos;
         my $here = shift(@Here_doc);
@@ -4502,7 +4012,7 @@ use feature 'say';
                 }
                 $spaces = join('', @{$str}[$p0 .. $p - 1])
             }
-            if (join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter) {
+            if (join('', @{$str}[$p .. ($p + length($delimiter)) - 1]) eq $delimiter) {
                 my $c = $str->[$p + length($delimiter)];
                 if ($c eq '' || $c eq " " || $c eq "\x{9}" || $c eq chr(10) || $c eq chr(13)) {
                     my @here_string = split("
@@ -4541,7 +4051,7 @@ use feature 'say';
                     my $m = Perlito5::Grammar::String::newline($str, $p);
                     if ($p >= @{$str} || $m) {
                         $m && ($p = $m->{"to"});
-                        return {"str", $str, "from", $pos, "to", $p - 1}
+                        return {"str" => $str, "from" => $pos, "to" => $p - 1, }
                     }
                 }
             }
@@ -4560,12 +4070,12 @@ use feature 'say';
         my $c2 = $str->[$pos + 1];
         my $m;
         if (exists($escape_sequence{$c2})) {;
-            $m = {"str", $str, "from", $pos, "to", $pos + 2, "capture", Perlito5::AST::Buf::->new("buf", chr($escape_sequence{$c2}))}
+            $m = {"str" => $str, "from" => $pos, "to" => $pos + 2, "capture" => Perlito5::AST::Buf::->new("buf", chr($escape_sequence{$c2})), }
         }
         elsif ($c2 eq "c") {
-            my $c3 = ord(uc($str->[$pos + 2])) - ord("A") + 1;
+            my $c3 = (ord(uc($str->[$pos + 2])) - ord("A")) + 1;
             $c3 < 0 && ($c3 = 128 + $c3);
-            $m = {"str", $str, "from", $pos, "to", $pos + 3, "capture", Perlito5::AST::Buf::->new("buf", chr($c3))}
+            $m = {"str" => $str, "from" => $pos, "to" => $pos + 3, "capture" => Perlito5::AST::Buf::->new("buf", chr($c3)), }
         }
         elsif ($c2 eq "x") {
             if ($str->[$pos + 2] eq "{") {
@@ -4575,7 +4085,7 @@ use feature 'say';
                 my $hex_code = join('', @{$str}[$pos + 3 .. $p - 1]);
                 $hex_code || ($hex_code = 0);
                 my $tmp = oct("0x" . $hex_code);
-                $m = {"str", $str, "from", $pos, "to", $p + 1, "capture", Perlito5::AST::Buf::->new("buf", chr($tmp))}
+                $m = {"str" => $str, "from" => $pos, "to" => $p + 1, "capture" => Perlito5::AST::Buf::->new("buf", chr($tmp)), }
             }
             else {
                 my $p = $pos + 2;
@@ -4584,7 +4094,7 @@ use feature 'say';
                 my $hex_code = join('', @{$str}[$pos + 2 .. $p - 1]);
                 $hex_code || ($hex_code = 0);
                 my $tmp = oct("0x" . $hex_code);
-                $m = {"str", $str, "from", $pos, "to", $p, "capture", Perlito5::AST::Buf::->new("buf", chr($tmp))}
+                $m = {"str" => $str, "from" => $pos, "to" => $p, "capture" => Perlito5::AST::Buf::->new("buf", chr($tmp)), }
             }
         }
         elsif (exists($octal{$c2})) {
@@ -4594,13 +4104,13 @@ use feature 'say';
             $octal{$str->[$p]} && $p++;
             my $oct_code = join('', @{$str}[$pos + 1 .. $p - 1]);
             my $tmp = oct($oct_code);
-            $m = {"str", $str, "from", $pos, "to", $p, "capture", Perlito5::AST::Buf::->new("buf", chr($tmp))}
+            $m = {"str" => $str, "from" => $pos, "to" => $p, "capture" => Perlito5::AST::Buf::->new("buf", chr($tmp)), }
         }
         elsif ($c2 eq "N") {;
             Perlito5::Compiler::error("TODO - \\N{charname} not implemented; requires 'use charnames'")
         }
         else {;
-            $m = {"str", $str, "from", $pos, "to", $pos + 2, "capture", Perlito5::AST::Buf::->new("buf", $c2)}
+            $m = {"str" => $str, "from" => $pos, "to" => $pos + 2, "capture" => Perlito5::AST::Buf::->new("buf", $c2), }
         }
         return $m
     }
@@ -4682,7 +4192,7 @@ use feature 'say';
             return $m
         }
         elsif ($c eq "\$" && $c2 eq "\$" && !Perlito5::Grammar::word($str, $pos + 2)) {;
-            return {"str", $str, "capture", Perlito5::AST::Var::->new("name", "\$", "sigil", "\$", "namespace", ''), "from", $pos, "to", $pos + 2}
+            return {"str" => $str, "capture" => Perlito5::AST::Var::->new("name", "\$", "sigil", "\$", "namespace", ''), "from" => $pos, "to" => $pos + 2, }
         }
         elsif ($c eq "\$" && join('', @{$str}[$pos + 1 .. $pos + length($delimiter)]) ne $delimiter) {
             my $m = Perlito5::Grammar::Sigil::term_sigil($str, $pos);
@@ -4726,7 +4236,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $len = 0;
-        my $s = $str->[$pos] . $str->[$pos + 1] . $str->[$pos + 2];
+        my $s = ($str->[$pos]) . ($str->[$pos + 1]) . ($str->[$pos + 2]);
         if ($s eq "\$#[") {;
             $len = 2
         }
@@ -4734,17 +4244,17 @@ use feature 'say';
             $len = length($s)
         }
         else {
-            $s = $str->[$pos] . $str->[$pos + 1];
+            $s = ($str->[$pos]) . ($str->[$pos + 1]);
             if (exists($special_var{$s})) {;
                 $len = 2
             }
         }
         if ($len) {
-            my $c0 = $str->[$pos + $len - 1];
+            my $c0 = $str->[($pos + $len) - 1];
             my $c1 = $str->[$pos + $len];
             if (($c0 eq "\$" || $c0 eq "\@" || $c0 eq "%" || $c0 eq "*" || $c0 eq "&") && ($c1 eq "\$" || $c1 eq "\@" || $c1 eq "%" || $c1 eq "*" || $c1 eq "&" || ($c1 ge "a" && $c1 le "z") || ($c1 ge "A" && $c1 le "Z") || ($c1 ge 0 && $c1 le 9))) {}
             else {;
-                return {"str", $str, "from", $pos, "to", $pos + $len, "capture", ["term", Perlito5::AST::Var::->new("sigil", substr($s, 0, $len - 1), "namespace", $special_var{$s}, "name", substr($s, $len - 1, 1), "_namespace", "main")]}
+                return {"str" => $str, "from" => $pos, "to" => $pos + $len, "capture" => ["term", Perlito5::AST::Var::->new("sigil", substr($s, 0, $len - 1), "namespace", $special_var{$s}, "name", substr($s, $len - 1, 1), "_namespace", "main")], }
             }
         }
         return 0
@@ -4780,7 +4290,7 @@ use feature 'say';
                     $name = Perlito5::Match::flat($n);
                     $pos = $n->{"to"}
                 }
-                if ($namespace || $name) {
+                if (($namespace || $name) && !(($namespace eq "CORE" || $namespace eq '') && ($name eq "sub"))) {
                     my $spc = Perlito5::Grammar::Space::opt_ws($str, $pos);
                     my $pos = $spc->{"to"};
                     if ($str->[$pos] eq "{" || $str->[$pos] eq "[" || $str->[$pos] eq "}") {
@@ -4828,7 +4338,7 @@ use feature 'say';
                     return $caret
                 }
             }
-            my $special = $sigil . $str->[$p];
+            my $special = $sigil . ($str->[$p]);
             if (exists($special_var{$special})) {
                 my $m = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
                 my $p2 = $m->{"to"};
@@ -4863,7 +4373,7 @@ use feature 'say';
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
             my $p2 = $m2->{"to"};
             my $c2 = $str->[$p2];
-            if ($c2 ne "," && $c2 ne ";") {
+            if ($c2 eq "_" || $c2 eq "\$" || !exists($special_var{"\$" . $c2})) {
                 $m = Perlito5::Grammar::Sigil::term_sigil($str, $p);
                 if ($m) {
                     $m->{"capture"} = ["term", Perlito5::AST::Apply::->new("arguments", [$m->{"capture"}->[1]], "code", "prefix:<" . $sigil . ">", "namespace", '', "_strict_refs", (${^H} & $Perlito5::STRICT_REFS))];
@@ -4896,22 +4406,18 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Use;
-    my %Perlito_internal_module = ("Carp", "Perlito5X::Carp", "Config", "Perlito5X::Config", "Data::Dumper", "Perlito5X::Data::Dumper", "Exporter", "Perlito5X::Exporter", "Fcntl", "Perlito5X::Fcntl", "IO", "Perlito5X::IO", "IO::Handle", "Perlito5X::IO::Handle", "IO::Seekable", "Perlito5X::IO::Seekable", "JSON", "Perlito5X::JSON", "Symbol", "Perlito5X::Symbol", "Term::ANSIColor", "Perlito5X::Term::ANSIColor", "Tie::Array", "Perlito5X::Tie::Array", "Tie::Hash", "Perlito5X::Tie::Hash", "Tie::Scalar", "Perlito5X::Tie::Scalar", "UNIVERSAL", "Perlito5X::UNIVERSAL", "bytes", "Perlito5X::bytes", "encoding", "Perlito5X::encoding", "feature", "Perlito5X::feature", "re", "Perlito5X::re", "strict", "Perlito5X::strict", "utf8", "Perlito5X::utf8", "warnings", "Perlito5X::warnings", "warnings::register", "Perlito5X::warnings::register");
-    sub Perlito5::Grammar::Use::register_internal_module {
-        (my($module), my($real_name)) = @_;
-        $Perlito_internal_module{$module} = $real_name
-    }
+    our @Perlito_internal_lib_directory = ("Perlito5X", '');
     sub Perlito5::Grammar::Use::use_decl {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("u" eq $str->[$MATCH->{"to"} + 0]) && ("s" eq $str->[$MATCH->{"to"} + 1]) && ("e" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3))
+                (("u" eq $str->[($MATCH->{"to"}) + 0]) && ("s" eq $str->[($MATCH->{"to"}) + 1]) && ("e" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("n" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2))
+                (("n" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2))
             })
         }));
         $tmp ? $MATCH : undef
@@ -4919,7 +4425,7 @@ use feature 'say';
     sub Perlito5::Grammar::Use::version_string {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
@@ -4961,8 +4467,8 @@ use feature 'say';
     sub Perlito5::Grammar::Use::term_require {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("r" eq $str->[$MATCH->{"to"} + 0]) && ("e" eq $str->[$MATCH->{"to"} + 1]) && ("q" eq $str->[$MATCH->{"to"} + 2]) && ("u" eq $str->[$MATCH->{"to"} + 3]) && ("i" eq $str->[$MATCH->{"to"} + 4]) && ("r" eq $str->[$MATCH->{"to"} + 5]) && ("e" eq $str->[$MATCH->{"to"} + 6]) && ($MATCH->{"to"} += 7)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("r" eq $str->[($MATCH->{"to"}) + 0]) && ("e" eq $str->[($MATCH->{"to"}) + 1]) && ("q" eq $str->[($MATCH->{"to"}) + 2]) && ("u" eq $str->[($MATCH->{"to"}) + 3]) && ("i" eq $str->[($MATCH->{"to"}) + 4]) && ("r" eq $str->[($MATCH->{"to"}) + 5]) && ("e" eq $str->[($MATCH->{"to"}) + 6]) && ($MATCH->{"to"} += 7)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -5004,6 +4510,7 @@ use feature 'say';
                     }
                 }) && (do {
                     my $module_name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
+                    $Perlito5::PACKAGES->{$module_name} = 1;
                     my $filename = Perlito5::Grammar::Use::modulename_to_filename($module_name);
                     $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "require", "namespace", '', "arguments", [Perlito5::AST::Buf::->new("buf", $filename)])];
                     1
@@ -5015,7 +4522,7 @@ use feature 'say';
     sub Perlito5::Grammar::Use::stmt_use {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Use::use_decl($str, $MATCH->{"to"});
             if ($m2) {
@@ -5068,7 +4575,7 @@ use feature 'say';
                     }
                 }) && (do {
                     my $m = $MATCH;
-                    if (!((("-" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                    if (!((("-" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                         my $m2 = Perlito5::Grammar::ident($str, $MATCH->{"to"});
                         if ($m2) {
                             $MATCH->{"to"} = $m2->{"to"};
@@ -5124,8 +4631,8 @@ use feature 'say';
                         }
                     }) && (do {
                         my $tmp = $MATCH;
-                        $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                        my $res = (("," eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                        $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                        my $res = (("," eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                         $MATCH = $tmp;
                         $res ? 0 : 1
                     }))) {;
@@ -5220,7 +4727,7 @@ use feature 'say';
                         $MATCH->{"capture"} = Perlito5::AST::Apply::->new("code", "use", "special_arg", Perlito5::AST::Apply::->new("code", $full_ident, "bareword", 1, "arguments", []), "arguments", $list)
                     }
                     else {;
-                        $MATCH->{"capture"} = Perlito5::Grammar::Use::parse_time_eval({"mod", $full_ident, "code", $use_decl, "arguments", $list})
+                        $MATCH->{"capture"} = Perlito5::Grammar::Use::parse_time_eval({"mod" => $full_ident, "code" => $use_decl, "arguments" => $list, })
                     }
                     1
                 }))
@@ -5242,14 +4749,13 @@ use feature 'say';
         my $skip_import = defined($arguments) && @{$arguments} == 0;
         defined($arguments) || ($arguments = []);
         if ($Perlito5::EXPAND_USE) {
-            my $current_module_name = $Perlito5::PKG_NAME;
-            my $filename = Perlito5::Grammar::Use::modulename_to_filename($module_name);
+            my $caller = [$Perlito5::PKG_NAME, $Perlito5::FILE_NAME, $Perlito5::LINE_NUMBER], my $filename = Perlito5::Grammar::Use::modulename_to_filename($module_name);
             Perlito5::Grammar::Use::require($filename);
             if (!$skip_import) {
                 if ($use_or_not eq "use") {
                     my $code = $module_name->can("import");
                     if (defined($code)) {
-                        unshift(@Perlito5::CALLER, [$current_module_name]);
+                        unshift(@Perlito5::CALLER, $caller);
                         eval {
                             $module_name->import(@{$arguments});
                             1
@@ -5260,7 +4766,7 @@ use feature 'say';
                 elsif ($use_or_not eq "no") {
                     my $code = $module_name->can("unimport");
                     if (defined($code)) {
-                        unshift(@Perlito5::CALLER, [$current_module_name]);
+                        unshift(@Perlito5::CALLER, $caller);
                         eval {
                             $module_name->unimport(@{$arguments});
                             1
@@ -5304,11 +4810,13 @@ use feature 'say';
                 return "todo"
             }
         }
-        for my $prefix (@INC) {
-            my $realfilename = $prefix . "/" . $filename;
-            if (-f $realfilename) {
-                $INC{$filename} = $realfilename;
-                return "todo"
+        for my $prefix (@INC) {;
+            for my $internal (@Perlito_internal_lib_directory) {
+                my $realfilename = join("/", $prefix, ($internal ? $internal : ()), $filename);
+                if (-f $realfilename) {
+                    $INC{$filename} = $realfilename;
+                    return "todo"
+                }
             }
         }
         Perlito5::Compiler::error("Can't locate " . $filename . " in \@INC " . "(\@INC contains " . join(" ", @INC) . ").")
@@ -5326,10 +4834,15 @@ use feature 'say';
         local $/ = undef;
         my $source = <FILE>;
         close(FILE);
+        local @Perlito5::BASE_SCOPE = (Perlito5::Grammar::Scope::->new_base_scope());
+        local $Perlito5::CLOSURE_SCOPE = 0;
+        local @Perlito5::SCOPE_STMT = ();
+        local ${^H} = 0;
+        local %{^H} = ();
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         $m->{"to"} != length($source) && Perlito5::Compiler::error("Syntax Error near ", $m->{"to"});
         if ($m->{"to"} != length($source)) {
-            my $pos = $m->{"to"} - 10;
+            my $pos = ($m->{"to"}) - 10;
             $pos < 0 && ($pos = 0);
             print("* near: ", substr($source, $pos, 20), "
 ");
@@ -5348,17 +4861,27 @@ use feature 'say';
             Perlito5::test_perl_version($version);
             return 1
         }
+        if (length($filename) > 3 && substr($filename, -3) eq ".pm") {
+            my $module_name = substr($filename, 0, -3);
+            $module_name =~ s!/!::!g;
+            if (exists($Perlito_internal_module{$module_name})) {
+                my $s = $Perlito_internal_module{$module_name};
+                $s =~ s!::!/!g;
+                $filename = $s . ".pm"
+            }
+        }
         Perlito5::Grammar::Use::filename_lookup($filename) eq "done" && return;
         my $source = Perlito5::Grammar::Use::slurp_file($filename);
         local $Perlito5::FILE_NAME = $filename;
         Perlito5::Grammar::Scope::check_variable_declarations();
-        Perlito5::Grammar::Scope::create_new_compile_time_scope();
+        local @Perlito5::BASE_SCOPE = (Perlito5::Grammar::Scope::->new_base_scope());
+        local $Perlito5::CLOSURE_SCOPE = 0;
+        local @Perlito5::SCOPE_STMT = ();
         local ${^H} = 0;
         local %{^H} = ();
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         my $ast = Perlito5::AST::Block::->new("stmts", Perlito5::Match::flat($m));
         my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
-        Perlito5::Grammar::Scope::end_compile_time_scope();
         if (${"\@"}) {
             $INC{$filename} = undef;
             Perlito5::Compiler::error(${"\@"})
@@ -5384,11 +4907,43 @@ use feature 'say';
             return "undef"
         };
         my $realfilename = $INC{$filename};
+        Perlito5::Grammar::Use::slurp_source_file($realfilename)
+    }
+    sub Perlito5::Grammar::Use::slurp_source_file {
+        my $realfilename = shift;
         open(FILE, "<", $realfilename) or Perlito5::Compiler::error("Cannot read " . $realfilename . ": " . ${"!"} . "
 ");
+        binmode(FILE);
         local $/ = undef;
         my $source = <FILE>;
         close(FILE);
+        my $charset = '';
+        eval {
+            my $c0 = substr($source, 0, 1);
+            my $c1 = substr($source, 1, 1);
+            my $c2 = substr($source, 2, 1);
+            my $c3 = substr($source, 3, 1);
+            if ($c0 eq "\x{ef}" && $c1 eq "\x{bb}" && $c2 eq "\x{bf}") {
+                $charset = "UTF-8";
+                $source = substr($source, 3)
+            }
+            elsif ($c0 eq "\x{fe}" && $c1 eq "\x{ff}") {
+                $charset = "UTF-16BE";
+                $source = substr($source, 2)
+            }
+            elsif ($c0 eq "\x{ff}" && $c1 eq "\x{fe}") {
+                $charset = "UTF-16LE";
+                $source = substr($source, 2)
+            }
+            elsif ($c0 eq "\x{0}" && $c1 ne "\x{0}" && $c2 eq "\x{0}" && $c3 ne "\x{0}") {;
+                $charset = "UTF-16BE"
+            }
+            elsif ($c0 ne "\x{0}" && $c1 eq "\x{0}" && $c2 ne "\x{0}" && $c3 eq "\x{0}") {;
+                $charset = "UTF-16LE"
+            }
+            $charset && ($source = Encode::decode($charset, $source));
+            1
+        } or warn("Source code charset '" . $charset . "' decoding failed: " . ${"\@"});
         return $source
     }
     Perlito5::Grammar::Statement::add_statement("no", \&stmt_use);
@@ -5499,7 +5054,7 @@ use feature 'say';
         my $self = shift;
         my $index = shift;
         if ($index->isa("Perlito5::AST::Apply") && $index->{"bareword"}) {
-            my $full_name = ($index->{"namespace"} ? $index->{"namespace"} . "::" : '') . $index->{"code"};
+            my $full_name = ($index->{"namespace"} ? ($index->{"namespace"}) . "::" : '') . ($index->{"code"});
             if (!exists($Perlito5::PROTO->{$full_name})) {;
                 return Perlito5::AST::Buf::->new("buf", $full_name)
             }
@@ -5733,24 +5288,13 @@ use feature 'say';
     sub Perlito5::Grammar::Scope::new_base_scope {;
         return {"block" => [], }
     }
-    sub Perlito5::Grammar::Scope::create_new_compile_time_scope {
-        my $new_scope = {"block" => [], };
-        push(@{$Perlito5::SCOPE->{"block"}}, $new_scope);
-        $Perlito5::SCOPE_DEPTH++;
-        $Perlito5::SCOPE = $new_scope;
-        $Perlito5::SCOPE->{"hint_scalar"} = ${^H};
-        $Perlito5::SCOPE->{"hint_hash"} = {%{^H}, }
+    sub Perlito5::Grammar::Scope::create_new_compile_time_scope {;
+        push(@Perlito5::BASE_SCOPE, {"block" => [], "hint_scalar" => ${^H}, "hint_hash" => {%{^H}, }, })
     }
     sub Perlito5::Grammar::Scope::end_compile_time_scope {
-        ${^H} = $Perlito5::SCOPE->{"hint_scalar"};
-        %{^H} = %{$Perlito5::SCOPE->{"hint_hash"} || {}};
-        my $pos = 0;
-        $Perlito5::SCOPE_DEPTH--;
-        $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
-        while ($Perlito5::SCOPE_DEPTH > $pos) {
-            $pos++;
-            $Perlito5::SCOPE = $Perlito5::SCOPE->{"block"}->[-1]
-        }
+        my $scope = pop(@Perlito5::BASE_SCOPE);
+        ${^H} = $scope->{"hint_scalar"};
+        %{^H} = %{$scope->{"hint_hash"} || {}}
     }
     sub Perlito5::Grammar::Scope::compile_time_glob_set {
         (my($glob), my($value), my($namespace)) = @_;
@@ -5775,10 +5319,10 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Scope::lookup_variable {
         my $var = shift;
-        my $scope = shift() // $Perlito5::BASE_SCOPE;
+        my $scope = shift() // 0;
         $var->{"namespace"} && return $var;
         $var->{"_decl"} && return $var;
-        my $look = Perlito5::Grammar::Scope::lookup_variable_inner($var, $scope, 0);
+        my $look = Perlito5::Grammar::Scope::lookup_variable_inner($var, $scope);
         $look && return $look;
         ref($var) ne "Perlito5::AST::Var" && return;
         my $c = substr($var->{"name"}, 0, 1);
@@ -5797,14 +5341,14 @@ use feature 'say';
         return
     }
     sub Perlito5::Grammar::Scope::lookup_variable_inner {
-        (my($var), my($scope), my($depth)) = @_;
-        $depth > $Perlito5::SCOPE_DEPTH && return;
-        my $block = $scope->{"block"};
-        if (@{$block} && ref($block->[-1]) eq "HASH" && $block->[-1]->{"block"}) {
-            my $look = Perlito5::Grammar::Scope::lookup_variable_inner($var, $block->[-1], $depth + 1);
+        (my($var), my($scope)) = @_;
+        $scope > $#Perlito5::BASE_SCOPE && return;
+        if ($scope < $#Perlito5::BASE_SCOPE) {
+            my $look = Perlito5::Grammar::Scope::lookup_variable_inner($var, $scope + 1);
             $look && return $look
         }
-        if (($scope->{"compacted"} + 100) < @{$block}) {
+        my $block = $Perlito5::BASE_SCOPE[$scope]->{"block"};
+        if ((($Perlito5::BASE_SCOPE[$scope]->{"compacted"}) + 100) < @{$block}) {
             my %seen;
             my @out;
             my $start = $#{$block} - 500;
@@ -5812,14 +5356,14 @@ use feature 'say';
             for my $i ($start .. $#{$block}) {
                 my $item = $block->[$i];
                 my $s = join(":", map {;
-                    $_ . "=" . $item->{$_}
+                    $_ . "=" . ($item->{$_})
                 } sort {;
                     $a cmp $b
                 } keys(%{$item}));
                 $seen{$s}++ || push(@out, $item)
             }
-            $scope->{"block"} = [@{$block}[0 .. $start - 1], @out];
-            $scope->{"compacted"} += 100
+            $Perlito5::BASE_SCOPE[$scope]->{"block"} = [@{$block}[0 .. $start - 1], @out];
+            $Perlito5::BASE_SCOPE[$scope]->{"compacted"} += 100
         }
         for my $item (reverse(@{$block})) {;
             if (ref($item) eq "Perlito5::AST::Var" && $item->{"_decl"} && $item->{"_decl"} ne "global" && $item->{"name"} eq $var->{"name"}) {
@@ -5847,9 +5391,9 @@ use feature 'say';
                         my $sigil = $var->{"_real_sigil"} || $var->{"sigil"};
                         if ($sigil ne "*" && $sigil ne "&") {
                             if (length($var->{"name"}) >= 2 && substr($var->{"name"}, -2) eq "::") {}
-                            elsif ($Perlito5::VARS{$sigil . $Perlito5::PKG_NAME . "::" . $var->{"name"}}) {}
+                            elsif ($Perlito5::VARS{$sigil . $Perlito5::PKG_NAME . "::" . ($var->{"name"})}) {}
                             else {;
-                                Perlito5::Compiler::error("Global symbol \"" . $sigil . $var->{"name"} . "\"" . " requires explicit package name")
+                                Perlito5::Compiler::error("Global symbol \"" . $sigil . ($var->{"name"}) . "\"" . " requires explicit package name")
                             }
                         }
                     }
@@ -5859,26 +5403,26 @@ use feature 'say';
                 if ($var->{"name"} && ($var->{"namespace"} || $var->{"_namespace"})) {
                     my $compiletime_name;
                     if ($var->{"name"} lt "A" || $var->{"name"} eq "\\") {;
-                        $compiletime_name = ($var->{"_real_sigil"} || $var->{"sigil"}) . $var->{"name"}
+                        $compiletime_name = ($var->{"_real_sigil"} || $var->{"sigil"}) . ($var->{"name"})
                     }
                     else {;
-                        $compiletime_name = ($var->{"_real_sigil"} || $var->{"sigil"}) . ($var->{"namespace"} || $var->{"_namespace"}) . "::" . $var->{"name"} . ($var->{"_decl"} eq "global" ? '' : $var->{"_id"} ? "_" . $var->{"_id"} : '')
+                        $compiletime_name = ($var->{"_real_sigil"} || $var->{"sigil"}) . ($var->{"namespace"} || $var->{"_namespace"}) . "::" . ($var->{"name"}) . ($var->{"_decl"} eq "global" ? '' : $var->{"_id"} ? "_" . ($var->{"_id"}) : '')
                     }
-                    $Perlito5::GLOBAL->{$compiletime_name} = {"value", undef, "ast", $var}
+                    $Perlito5::GLOBAL->{$compiletime_name} = {"value" => undef, "ast" => $var, }
                 }
             }
         }
-        push(@{$Perlito5::SCOPE->{"block"}}, @Perlito5::SCOPE_STMT);
+        push(@{$Perlito5::BASE_SCOPE[-1]->{"block"}}, @Perlito5::SCOPE_STMT);
         @Perlito5::SCOPE_STMT = ()
     }
     sub Perlito5::Grammar::Scope::get_snapshot {
         my @result;
-        my $scope = shift() // $Perlito5::BASE_SCOPE;
-        my $block = $scope->{"block"};
-        if (@{$block} && ref($block->[-1]) eq "HASH" && $block->[-1]->{"block"}) {
-            my $look = Perlito5::Grammar::Scope::get_snapshot($block->[-1]);
+        my $scope = shift() // 0;
+        if ($scope < $#Perlito5::BASE_SCOPE) {
+            my $look = Perlito5::Grammar::Scope::get_snapshot($scope + 1);
             unshift(@result, @{$look->{"block"}})
         }
+        my $block = $Perlito5::BASE_SCOPE[$scope]->{"block"};
         for my $item (@{$block}) {;
             if (ref($item) eq "Perlito5::AST::Var" && $item->{"_decl"} && $item->{"_decl"} ne "global" && $item->{"_decl"} ne "local") {;
                 unshift(@result, $item)
@@ -5945,7 +5489,7 @@ use feature 'say';
         sub Perlito5::AST::Var::emit_begin_scratchpad {
             my $self = $_[0];
             if (!$self->{"namespace"} && $Perlito5::BEGIN_SCRATCHPAD{$self->{"_id"} || ''}) {;
-                return __PACKAGE__()->new(%{$self}, "_decl", "global", "namespace", "Perlito5::BEGIN", "name", "_" . $self->{"_id"} . "_" . $self->{"name"})
+                return __PACKAGE__()->new(%{$self}, "_decl", "global", "namespace", "Perlito5::BEGIN", "name", "_" . ($self->{"_id"}) . "_" . ($self->{"name"}))
             }
             return $self
         }
@@ -6298,7 +5842,7 @@ use feature 'say';
         $pos++;
         Perlito5::Grammar::Scope::check_variable_declarations();
         Perlito5::Grammar::Scope::create_new_compile_time_scope();
-        local $Perlito5::CLOSURE_SCOPE = $Perlito5::SCOPE;
+        local $Perlito5::CLOSURE_SCOPE = $#Perlito5::BASE_SCOPE;
         $m = Perlito5::Grammar::exp_stmts($str, $pos);
         if (!$m) {;
             Perlito5::Compiler::error("syntax error")
@@ -6344,7 +5888,7 @@ use feature 'say';
     sub Perlito5::Grammar::Block::opt_continue_block {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
@@ -6357,7 +5901,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("c" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("n" eq $str->[$MATCH->{"to"} + 2]) && ("t" eq $str->[$MATCH->{"to"} + 3]) && ("i" eq $str->[$MATCH->{"to"} + 4]) && ("n" eq $str->[$MATCH->{"to"} + 5]) && ("u" eq $str->[$MATCH->{"to"} + 6]) && ("e" eq $str->[$MATCH->{"to"} + 7]) && ($MATCH->{"to"} += 8)) && (do {
+                }) && (("c" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("n" eq $str->[($MATCH->{"to"}) + 2]) && ("t" eq $str->[($MATCH->{"to"}) + 3]) && ("i" eq $str->[($MATCH->{"to"}) + 4]) && ("n" eq $str->[($MATCH->{"to"}) + 5]) && ("u" eq $str->[($MATCH->{"to"}) + 6]) && ("e" eq $str->[($MATCH->{"to"}) + 7]) && ($MATCH->{"to"} += 8)) && (do {
                     my $m2 = Perlito5::Grammar::Block::block($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -6421,9 +5965,6 @@ use feature 'say';
         !$m && return;
         $p = $m->{"to"};
         my $block = Perlito5::Match::flat($m);
-        my $compile_block = $Perlito5::SCOPE->{"block"}->[-1];
-        $compile_block->{"type"} = "sub";
-        $compile_block->{"name"} = $block_name;
         if ($block_name eq "INIT") {
             push(@Perlito5::INIT_BLOCK, Perlito5::Grammar::Block::eval_end_block($block, "INIT"));
             $m->{"capture"} = Perlito5::Grammar::Block::ast_nop()
@@ -6447,7 +5988,7 @@ use feature 'say';
         }
         elsif ($block_name eq "AUTOLOAD" || $block_name eq "DESTROY") {
             my $sub = Perlito5::AST::Sub::->new("attributes", [], "block", $block, "name", $block_name, "namespace", $Perlito5::PKG_NAME, "sig", undef, "pos", Perlito5::Compiler::compiler_pos());
-            my $full_name = $sub->{"namespace"} . "::" . $sub->{"name"};
+            my $full_name = ($sub->{"namespace"}) . "::" . ($sub->{"name"});
             $Perlito5::PROTO->{$full_name} = undef;
             $Perlito5::GLOBAL->{$full_name} = $sub;
             $block = Perlito5::AST::Block::->new("stmts", [$sub]);
@@ -6463,7 +6004,7 @@ use feature 'say';
     sub Perlito5::Grammar::Block::named_sub_def {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::optional_namespace_before_ident($str, $MATCH->{"to"});
             if ($m2) {
@@ -6581,12 +6122,7 @@ use feature 'say';
                     $namespace = $name eq "_" ? "main" : $Perlito5::PKG_NAME
                 }
                 my $full_name = $namespace . "::" . $name;
-                $Perlito5::PROTO->{$full_name} = $sig;
-                if ($MATCH->{"_tmp"}) {
-                    my $block = $Perlito5::SCOPE->{"block"}->[-1];
-                    $block->{"type"} = "sub";
-                    $block->{"name"} = $full_name
-                }
+                $Perlito5::PROTO->{$full_name} = $sig
             }
             my $sub = Perlito5::AST::Sub::->new("name", $name, "namespace", $namespace, "sig", $sig, "block", $MATCH->{"_tmp"}, "attributes", $attributes, "pos", Perlito5::Compiler::compiler_pos());
             if ($Perlito5::EXPAND_USE && $name) {
@@ -6622,8 +6158,8 @@ use feature 'say';
     sub Perlito5::Grammar::Block::term_anon_sub {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("s" eq $str->[$MATCH->{"to"} + 0]) && ("u" eq $str->[$MATCH->{"to"} + 1]) && ("b" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("s" eq $str->[($MATCH->{"to"}) + 0]) && ("u" eq $str->[($MATCH->{"to"}) + 1]) && ("b" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -6651,8 +6187,8 @@ use feature 'say';
     sub Perlito5::Grammar::Block::term_do {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("d" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("d" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
             my $m2 = Perlito5::Grammar::block($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -6671,7 +6207,7 @@ use feature 'say';
     sub Perlito5::Grammar::Block::args_sig {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $last_match_null = 0;
             my $m = $MATCH;
@@ -6679,34 +6215,34 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{"to"};
                 (do {;
-                    ((";" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    ((";" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("\\" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("\\" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("[" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("[" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("]" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("]" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("*" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("*" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("+" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("\@" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("\@" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("%" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("%" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("\$" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("\$" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("&" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("&" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 })
             }) && ($last_match_null < 2)) {
                 if ($to == $MATCH->{"to"}) {;
@@ -6727,7 +6263,7 @@ use feature 'say';
     sub Perlito5::Grammar::Block::prototype_ {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
@@ -6740,7 +6276,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -6749,7 +6285,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("_" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -6758,7 +6294,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = "_";
                     1
                 }))
@@ -6773,7 +6309,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -6801,7 +6337,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = '' . Perlito5::Match::flat($MATCH->{"args_sig"});
                     1
                 }))
@@ -6818,7 +6354,7 @@ use feature 'say';
     sub Perlito5::Grammar::Block::anon_sub_def {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Block::prototype_($str, $MATCH->{"to"});
             if ($m2) {
@@ -6929,9 +6465,9 @@ use feature 'say';
         }
         if ($str->[$p] eq "_") {
             my $s = join('', @{$str}[$p .. $p + 6]);
-            ($s eq "__END__" || $s . $str->[$p + 7] eq "__DATA__") && return Perlito5::Grammar::Space::term_end($str, $p)
+            ($s eq "__END__" || $s . ($str->[$p + 7]) eq "__DATA__") && return Perlito5::Grammar::Space::term_end($str, $p)
         }
-        return {"str", $str, "from", $pos, "to", $p, "capture", ["space", " "]}
+        return {"str" => $str, "from" => $pos, "to" => $p, "capture" => ["space", " "], }
     }
     sub Perlito5::Grammar::Space::term_end {
         my $str = $_[0];
@@ -6942,7 +6478,7 @@ use feature 'say';
             $p = $p + 7;
             $is_data = 1
         }
-        elsif ($s . $str->[$p + 7] eq "__DATA__") {
+        elsif ($s . ($str->[$p + 7]) eq "__DATA__") {
             $p = $p + 8;
             $is_data = 1
         }
@@ -6964,13 +6500,13 @@ use feature 'say';
             my $source = join('', @{$str});
             my $len = length($source);
             $source =~ s/^.*\n#--START--\n# line 1//s;
-            my $pos = $p - $len + length($source);
-            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {"pos", $pos, "data", $source};
+            my $pos = ($p - $len) + length($source);
+            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {"pos" => $pos, "data" => $source, };
             my $pkg = $Perlito5::PKG_NAME;
             open(*{$pkg . "::DATA"}, "<", \$Perlito5::DATA_SECTION{$pkg}->{"data"});
             seek(*{$pkg . "::DATA"}, $Perlito5::DATA_SECTION{$pkg}->{"pos"}, 0)
         }
-        return {"str", $str, "from", $_[1], "to", scalar(@{$str}), "capture", ["space", " "]}
+        return {"str" => $str, "from" => $_[1], "to" => scalar(@{$str}), "capture" => ["space", " "], }
     }
     Perlito5::Grammar::Precedence::add_term("#", \&term_space);
     Perlito5::Grammar::Precedence::add_term(chr(9), \&term_space);
@@ -6983,22 +6519,22 @@ use feature 'say';
     sub Perlito5::Grammar::Space::to_eol {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $last_match_null = 0;
             my $m = $MATCH;
             my $to = $MATCH->{"to"};
             while (((do {
                 my $tmp = $MATCH;
-                $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
+                $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
                 my $res = (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
                         (("
-" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        (("\x{d}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("\x{d}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     })
                 });
                 $MATCH = $tmp;
@@ -7022,20 +6558,52 @@ use feature 'say';
     sub Perlito5::Grammar::Space::pod_pod_begin {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = ((do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((do {
+            my $last_match_null = 0;
+            my $m = $MATCH;
+            my $to = $MATCH->{"to"};
+            while (((do {
+                my $tmp = $MATCH;
+                $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                my $res = ((do {
+                    my $pos1 = $MATCH->{"to"};
+                    (do {;
+                        (("
+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                    }) || (do {
+                        $MATCH->{"to"} = $pos1;
+                        (("\x{d}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                    })
+                }) && (("=" eq $str->[($MATCH->{"to"}) + 0]) && ("c" eq $str->[($MATCH->{"to"}) + 1]) && ("u" eq $str->[($MATCH->{"to"}) + 2]) && ("t" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)));
+                $MATCH = $tmp;
+                $res ? 0 : 1
+            }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"})) && ($last_match_null < 2)) {
+                if ($to == $MATCH->{"to"}) {;
+                    $last_match_null = $last_match_null + 1
+                }
+                else {;
+                    $last_match_null = 0
+                }
+                $m = $MATCH;
+                $to = $MATCH->{"to"}
+            }
+            $MATCH = $m;
+            $MATCH->{"to"} = $to;
+            1
+        }) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
                 ((do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
                         (("
-" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        (("\x{d}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("\x{d}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     })
-                }) && (("=" eq $str->[$MATCH->{"to"} + 0]) && ("c" eq $str->[$MATCH->{"to"} + 1]) && ("u" eq $str->[$MATCH->{"to"} + 2]) && ("t" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+                }) && (("=" eq $str->[($MATCH->{"to"}) + 0]) && ("c" eq $str->[($MATCH->{"to"}) + 1]) && ("u" eq $str->[($MATCH->{"to"}) + 2]) && ("t" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
                     my $m2 = Perlito5::Grammar::Space::to_eol($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -7047,46 +6615,60 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}) && (do {
-                    my $m2 = Perlito5::Grammar::Space::to_eol($str, $MATCH->{"to"});
-                    if ($m2) {
-                        $MATCH->{"to"} = $m2->{"to"};
-                        1
-                    }
-                    else {;
-                        0
-                    }
-                }) && (do {
-                    my $m2 = Perlito5::Grammar::Space::pod_pod_begin($str, $MATCH->{"to"});
-                    if ($m2) {
-                        $MATCH->{"to"} = $m2->{"to"};
-                        1
-                    }
-                    else {;
-                        0
-                    }
-                }))
+                1
             })
-        }));
+        })));
         $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Space::pod_begin {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = ((do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((do {
+            my $last_match_null = 0;
+            my $m = $MATCH;
+            my $to = $MATCH->{"to"};
+            while (((do {
+                my $tmp = $MATCH;
+                $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                my $res = ((do {
+                    my $pos1 = $MATCH->{"to"};
+                    (do {;
+                        (("
+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                    }) || (do {
+                        $MATCH->{"to"} = $pos1;
+                        (("\x{d}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                    })
+                }) && (("=" eq $str->[($MATCH->{"to"}) + 0]) && ("e" eq $str->[($MATCH->{"to"}) + 1]) && ("n" eq $str->[($MATCH->{"to"}) + 2]) && ("d" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)));
+                $MATCH = $tmp;
+                $res ? 0 : 1
+            }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"})) && ($last_match_null < 2)) {
+                if ($to == $MATCH->{"to"}) {;
+                    $last_match_null = $last_match_null + 1
+                }
+                else {;
+                    $last_match_null = 0
+                }
+                $m = $MATCH;
+                $to = $MATCH->{"to"}
+            }
+            $MATCH = $m;
+            $MATCH->{"to"} = $to;
+            1
+        }) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
                 ((do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
                         (("
-" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        (("\x{d}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("\x{d}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     })
-                }) && (("=" eq $str->[$MATCH->{"to"} + 0]) && ("e" eq $str->[$MATCH->{"to"} + 1]) && ("n" eq $str->[$MATCH->{"to"} + 2]) && ("d" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+                }) && (("=" eq $str->[($MATCH->{"to"}) + 0]) && ("e" eq $str->[($MATCH->{"to"}) + 1]) && ("n" eq $str->[($MATCH->{"to"}) + 2]) && ("d" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
                     my $m2 = Perlito5::Grammar::Space::to_eol($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -7098,33 +6680,15 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}) && (do {
-                    my $m2 = Perlito5::Grammar::Space::to_eol($str, $MATCH->{"to"});
-                    if ($m2) {
-                        $MATCH->{"to"} = $m2->{"to"};
-                        1
-                    }
-                    else {;
-                        0
-                    }
-                }) && (do {
-                    my $m2 = Perlito5::Grammar::Space::pod_begin($str, $MATCH->{"to"});
-                    if ($m2) {
-                        $MATCH->{"to"} = $m2->{"to"};
-                        1
-                    }
-                    else {;
-                        0
-                    }
-                }))
+                1
             })
-        }));
+        })));
         $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Space::start_of_line {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::String::here_doc($str, $MATCH->{"to"});
             if ($m2) {
@@ -7137,10 +6701,10 @@ use feature 'say';
         }) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("=" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("=" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        ((("p" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("d" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
+                        ((("p" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("d" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
                             my $m2 = Perlito5::Grammar::Space::pod_pod_begin($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -7152,7 +6716,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        ((("h" eq $str->[$MATCH->{"to"} + 0]) && ("e" eq $str->[$MATCH->{"to"} + 1]) && ("a" eq $str->[$MATCH->{"to"} + 2]) && ("d" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+                        ((("h" eq $str->[($MATCH->{"to"}) + 0]) && ("e" eq $str->[($MATCH->{"to"}) + 1]) && ("a" eq $str->[($MATCH->{"to"}) + 2]) && ("d" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
                             my $m2 = Perlito5::Grammar::Space::pod_pod_begin($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -7164,7 +6728,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        ((("i" eq $str->[$MATCH->{"to"} + 0]) && ("t" eq $str->[$MATCH->{"to"} + 1]) && ("e" eq $str->[$MATCH->{"to"} + 2]) && ("m" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+                        ((("i" eq $str->[($MATCH->{"to"}) + 0]) && ("t" eq $str->[($MATCH->{"to"}) + 1]) && ("e" eq $str->[($MATCH->{"to"}) + 2]) && ("m" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
                             my $m2 = Perlito5::Grammar::Space::pod_pod_begin($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -7176,7 +6740,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        ((("o" eq $str->[$MATCH->{"to"} + 0]) && ("v" eq $str->[$MATCH->{"to"} + 1]) && ("e" eq $str->[$MATCH->{"to"} + 2]) && ("r" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+                        ((("o" eq $str->[($MATCH->{"to"}) + 0]) && ("v" eq $str->[($MATCH->{"to"}) + 1]) && ("e" eq $str->[($MATCH->{"to"}) + 2]) && ("r" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
                             my $m2 = Perlito5::Grammar::Space::pod_pod_begin($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -7188,7 +6752,19 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        ((("b" eq $str->[$MATCH->{"to"} + 0]) && ("e" eq $str->[$MATCH->{"to"} + 1]) && ("g" eq $str->[$MATCH->{"to"} + 2]) && ("i" eq $str->[$MATCH->{"to"} + 3]) && ("n" eq $str->[$MATCH->{"to"} + 4]) && ($MATCH->{"to"} += 5)) && (do {
+                        ((("b" eq $str->[($MATCH->{"to"}) + 0]) && ("a" eq $str->[($MATCH->{"to"}) + 1]) && ("c" eq $str->[($MATCH->{"to"}) + 2]) && ("k" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
+                            my $m2 = Perlito5::Grammar::Space::pod_pod_begin($str, $MATCH->{"to"});
+                            if ($m2) {
+                                $MATCH->{"to"} = $m2->{"to"};
+                                1
+                            }
+                            else {;
+                                0
+                            }
+                        }))
+                    }) || (do {
+                        $MATCH->{"to"} = $pos1;
+                        ((("b" eq $str->[($MATCH->{"to"}) + 0]) && ("e" eq $str->[($MATCH->{"to"}) + 1]) && ("g" eq $str->[($MATCH->{"to"}) + 2]) && ("i" eq $str->[($MATCH->{"to"}) + 3]) && ("n" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5)) && (do {
                             my $m2 = Perlito5::Grammar::Space::pod_begin($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -7200,7 +6776,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        ((("f" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("r" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
+                        ((("f" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("r" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
                             my $m2 = Perlito5::Grammar::Space::pod_begin($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -7212,7 +6788,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        ((("e" eq $str->[$MATCH->{"to"} + 0]) && ("n" eq $str->[$MATCH->{"to"} + 1]) && ("c" eq $str->[$MATCH->{"to"} + 2]) && ("o" eq $str->[$MATCH->{"to"} + 3]) && ("d" eq $str->[$MATCH->{"to"} + 4]) && ("i" eq $str->[$MATCH->{"to"} + 5]) && ("n" eq $str->[$MATCH->{"to"} + 6]) && ("g" eq $str->[$MATCH->{"to"} + 7]) && ($MATCH->{"to"} += 8)) && (do {
+                        ((("e" eq $str->[($MATCH->{"to"}) + 0]) && ("n" eq $str->[($MATCH->{"to"}) + 1]) && ("c" eq $str->[($MATCH->{"to"}) + 2]) && ("o" eq $str->[($MATCH->{"to"}) + 3]) && ("d" eq $str->[($MATCH->{"to"}) + 4]) && ("i" eq $str->[($MATCH->{"to"}) + 5]) && ("n" eq $str->[($MATCH->{"to"}) + 6]) && ("g" eq $str->[($MATCH->{"to"}) + 7]) && ($MATCH->{"to"} += 8)) && (do {
                             my $m2 = Perlito5::Grammar::Space::to_eol($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -7224,7 +6800,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        ((("c" eq $str->[$MATCH->{"to"} + 0]) && ("u" eq $str->[$MATCH->{"to"} + 1]) && ("t" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3)) && (do {
+                        ((("c" eq $str->[($MATCH->{"to"}) + 0]) && ("u" eq $str->[($MATCH->{"to"}) + 1]) && ("t" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
                             my $m2 = Perlito5::Grammar::Space::to_eol($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -7238,17 +6814,17 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("#" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("#" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $last_match_null = 0;
                     my $m = $MATCH;
                     my $to = $MATCH->{"to"};
                     while ((do {
                         my $pos1 = $MATCH->{"to"};
                         (do {;
-                            ((" " eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            ((" " eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         }) || (do {
                             $MATCH->{"to"} = $pos1;
-                            (("\x{9}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            (("\x{9}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         })
                     }) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{"to"}) {;
@@ -7263,7 +6839,7 @@ use feature 'say';
                     $MATCH = $m;
                     $MATCH->{"to"} = $to;
                     1
-                }) && (("l" eq $str->[$MATCH->{"to"} + 0]) && ("i" eq $str->[$MATCH->{"to"} + 1]) && ("n" eq $str->[$MATCH->{"to"} + 2]) && ("e" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+                }) && (("l" eq $str->[($MATCH->{"to"}) + 0]) && ("i" eq $str->[($MATCH->{"to"}) + 1]) && ("n" eq $str->[($MATCH->{"to"}) + 2]) && ("e" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
                     my $last_match_null = 0;
                     my $m = $MATCH;
                     my $to = $MATCH->{"to"};
@@ -7271,10 +6847,10 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{"to"};
                         (do {;
-                            ((" " eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            ((" " eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         }) || (do {
                             $MATCH->{"to"} = $pos1;
-                            (("\x{9}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            (("\x{9}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         })
                     }) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{"to"}) {;
@@ -7307,10 +6883,10 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{"to"};
                         (do {;
-                            ((" " eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            ((" " eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         }) || (do {
                             $MATCH->{"to"} = $pos1;
-                            (("\x{9}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            (("\x{9}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         })
                     }) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{"to"}) {;
@@ -7354,12 +6930,12 @@ use feature 'say';
         }
         if ($str->[$p] eq "_") {
             my $s = join('', @{$str}[$p .. $p + 6]);
-            ($s eq "__END__" || $s . $str->[$p + 7] eq "__DATA__") && return Perlito5::Grammar::Space::term_end($str, $p)
+            ($s eq "__END__" || $s . ($str->[$p + 7]) eq "__DATA__") && return Perlito5::Grammar::Space::term_end($str, $p)
         }
         if ($p == $pos) {;
             return
         }
-        return {"str", $str, "from", $pos, "to", $p}
+        return {"str" => $str, "from" => $pos, "to" => $p, }
     }
     sub Perlito5::Grammar::Space::opt_ws {
         my $str = $_[0];
@@ -7370,9 +6946,9 @@ use feature 'say';
         }
         if ($str->[$p] eq "_") {
             my $s = join('', @{$str}[$p .. $p + 6]);
-            ($s eq "__END__" || $s . $str->[$p + 7] eq "__DATA__") && return Perlito5::Grammar::Space::term_end($_[0], $p)
+            ($s eq "__END__" || $s . ($str->[$p + 7]) eq "__DATA__") && return Perlito5::Grammar::Space::term_end($_[0], $p)
         }
-        return {"str", $_[0], "from", $pos, "to", $p}
+        return {"str" => $_[0], "from" => $pos, "to" => $p, }
     }
     1
 }
@@ -7383,23 +6959,23 @@ use feature 'say';
     sub Perlito5::Grammar::Print::print_decl {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("p" eq $str->[$MATCH->{"to"} + 0]) && ("r" eq $str->[$MATCH->{"to"} + 1]) && ("i" eq $str->[$MATCH->{"to"} + 2]) && ("n" eq $str->[$MATCH->{"to"} + 3]) && ("t" eq $str->[$MATCH->{"to"} + 4]) && ("f" eq $str->[$MATCH->{"to"} + 5]) && ($MATCH->{"to"} += 6))
+                (("p" eq $str->[($MATCH->{"to"}) + 0]) && ("r" eq $str->[($MATCH->{"to"}) + 1]) && ("i" eq $str->[($MATCH->{"to"}) + 2]) && ("n" eq $str->[($MATCH->{"to"}) + 3]) && ("t" eq $str->[($MATCH->{"to"}) + 4]) && ("f" eq $str->[($MATCH->{"to"}) + 5]) && ($MATCH->{"to"} += 6))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("p" eq $str->[$MATCH->{"to"} + 0]) && ("r" eq $str->[$MATCH->{"to"} + 1]) && ("i" eq $str->[$MATCH->{"to"} + 2]) && ("n" eq $str->[$MATCH->{"to"} + 3]) && ("t" eq $str->[$MATCH->{"to"} + 4]) && ($MATCH->{"to"} += 5))
+                (("p" eq $str->[($MATCH->{"to"}) + 0]) && ("r" eq $str->[($MATCH->{"to"}) + 1]) && ("i" eq $str->[($MATCH->{"to"}) + 2]) && ("n" eq $str->[($MATCH->{"to"}) + 3]) && ("t" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("s" eq $str->[$MATCH->{"to"} + 0]) && ("a" eq $str->[$MATCH->{"to"} + 1]) && ("y" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3))
+                (("s" eq $str->[($MATCH->{"to"}) + 0]) && ("a" eq $str->[($MATCH->{"to"}) + 1]) && ("y" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("e" eq $str->[$MATCH->{"to"} + 0]) && ("x" eq $str->[$MATCH->{"to"} + 1]) && ("e" eq $str->[$MATCH->{"to"} + 2]) && ("c" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))
+                (("e" eq $str->[($MATCH->{"to"}) + 0]) && ("x" eq $str->[($MATCH->{"to"}) + 1]) && ("e" eq $str->[($MATCH->{"to"}) + 2]) && ("c" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("s" eq $str->[$MATCH->{"to"} + 0]) && ("y" eq $str->[$MATCH->{"to"} + 1]) && ("s" eq $str->[$MATCH->{"to"} + 2]) && ("t" eq $str->[$MATCH->{"to"} + 3]) && ("e" eq $str->[$MATCH->{"to"} + 4]) && ("m" eq $str->[$MATCH->{"to"} + 5]) && ($MATCH->{"to"} += 6))
+                (("s" eq $str->[($MATCH->{"to"}) + 0]) && ("y" eq $str->[($MATCH->{"to"}) + 1]) && ("s" eq $str->[($MATCH->{"to"}) + 2]) && ("t" eq $str->[($MATCH->{"to"}) + 3]) && ("e" eq $str->[($MATCH->{"to"}) + 4]) && ("m" eq $str->[($MATCH->{"to"}) + 5]) && ($MATCH->{"to"} += 6))
             })
         }));
         $tmp ? $MATCH : undef
@@ -7407,14 +6983,14 @@ use feature 'say';
     sub Perlito5::Grammar::Print::the_object {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
                 ((do {
                     my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = (("\$" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("\$" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                     $MATCH = $tmp;
                     $res ? 1 : 0
                 }) && (do {
@@ -7429,8 +7005,8 @@ use feature 'say';
                     }
                 }) && (do {
                     my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = (("+" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                     $MATCH = $tmp;
                     $res ? 0 : 1
                 }) && (do {
@@ -7441,8 +7017,8 @@ use feature 'say';
                 $MATCH->{"to"} = $pos1;
                 ((do {
                     my $tmp = $MATCH;
-                    $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                    my $res = (("{" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("{" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                     $MATCH = $tmp;
                     $res ? 1 : 0
                 }) && (do {
@@ -7487,23 +7063,23 @@ use feature 'say';
             }
         }) && (do {
             my $tmp = $MATCH;
-            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
+            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
             my $res = (do {
                 my $pos1 = $MATCH->{"to"};
                 (do {;
-                    (("," eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("," eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("?" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("?" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("-" eq $str->[$MATCH->{"to"} + 0]) && (">" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2))
+                    (("-" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("[" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("[" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    (("{" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("{" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 })
             });
             $MATCH = $tmp;
@@ -7530,7 +7106,7 @@ use feature 'say';
     sub Perlito5::Grammar::Print::typeglob {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Print::typeglob_bareword($str, $MATCH->{"to"});
             if ($m2) {
@@ -7543,8 +7119,8 @@ use feature 'say';
             }
         }) && (do {
             my $tmp = $MATCH;
-            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-            my $res = (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+            my $res = (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
             $MATCH = $tmp;
             $res ? 0 : 1
         }) && (do {
@@ -7571,7 +7147,7 @@ use feature 'say';
         my $name = Perlito5::Match::flat($m_name);
         $p = $m_name->{"to"};
         my $s = $str->[$p];
-        my $s2 = $s . $str->[$p + 1];
+        my $s2 = $s . ($str->[$p + 1]);
         if ($s2 eq "::") {
             $m_name->{"to"} = $p + 2;
             $m_name->{"capture"} = Perlito5::AST::Var::->new("sigil", "::", "name", '', "namespace", $namespace . "::" . $name);
@@ -7596,7 +7172,7 @@ use feature 'say';
     sub Perlito5::Grammar::Print::term_print {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Print::print_decl($str, $MATCH->{"to"});
             if ($m2) {
@@ -7619,7 +7195,7 @@ use feature 'say';
         }) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -7663,7 +7239,7 @@ use feature 'say';
                             1
                         })
                     })
-                }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::list_parse"});
                     !ref($list) && return;
                     $MATCH->{"capture"} = ["term", Perlito5::Grammar::Print::print_ast(Perlito5::Match::flat($MATCH->{"print_decl"}), Perlito5::Match::flat($MATCH->{"the_object"}), Perlito5::Grammar::Expression::expand_list($list))];
@@ -7729,14 +7305,14 @@ use feature 'say';
     sub Perlito5::Grammar::Map::map_or_grep {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("m" eq $str->[$MATCH->{"to"} + 0]) && ("a" eq $str->[$MATCH->{"to"} + 1]) && ("p" eq $str->[$MATCH->{"to"} + 2]) && ($MATCH->{"to"} += 3))
+                (("m" eq $str->[($MATCH->{"to"}) + 0]) && ("a" eq $str->[($MATCH->{"to"}) + 1]) && ("p" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("g" eq $str->[$MATCH->{"to"} + 0]) && ("r" eq $str->[$MATCH->{"to"} + 1]) && ("e" eq $str->[$MATCH->{"to"} + 2]) && ("p" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4))
+                (("g" eq $str->[($MATCH->{"to"}) + 0]) && ("r" eq $str->[($MATCH->{"to"}) + 1]) && ("e" eq $str->[($MATCH->{"to"}) + 2]) && ("p" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4))
             })
         }));
         $tmp ? $MATCH : undef
@@ -7744,7 +7320,7 @@ use feature 'say';
     sub Perlito5::Grammar::Map::term_map_or_grep {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Map::map_or_grep($str, $MATCH->{"to"});
             if ($m2) {
@@ -7793,7 +7369,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -7822,7 +7398,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", Perlito5::Match::flat($MATCH->{"map_or_grep"}), "special_arg", $MATCH->{"Perlito5::Grammar::block"}->{"capture"}, "arguments", Perlito5::Grammar::Expression::expand_list($MATCH->{"Perlito5::Grammar::Expression::list_parse"}->{"capture"}), "namespace", '')];
                     1
                 }))
@@ -7833,7 +7409,7 @@ use feature 'say';
     sub Perlito5::Grammar::Map::non_core_ident {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::full_ident($str, $MATCH->{"to"});
             if ($m2) {
@@ -7854,8 +7430,8 @@ use feature 'say';
     sub Perlito5::Grammar::Map::term_sort {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("s" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("r" eq $str->[$MATCH->{"to"} + 2]) && ("t" eq $str->[$MATCH->{"to"} + 3]) && ($MATCH->{"to"} += 4)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("s" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("r" eq $str->[($MATCH->{"to"}) + 2]) && ("t" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -7867,7 +7443,7 @@ use feature 'say';
         }) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -7923,8 +7499,8 @@ use feature 'say';
                         $MATCH->{"to"} = $pos1;
                         ((do {
                             my $tmp = $MATCH;
-                            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                            my $res = (("\$" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                            my $res = (("\$" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                             $MATCH = $tmp;
                             $res ? 1 : 0
                         }) && (do {
@@ -7954,7 +7530,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ((")" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "sort", "special_arg", $MATCH->{"_tmp"}, "arguments", Perlito5::Grammar::Expression::expand_list($MATCH->{"Perlito5::Grammar::Expression::list_parse"}->{"capture"}), "namespace", '')];
                     1
                 }))
@@ -7998,8 +7574,8 @@ use feature 'say';
                         $MATCH->{"to"} = $pos1;
                         ((do {
                             my $tmp = $MATCH;
-                            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                            my $res = (("\$" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                            my $res = (("\$" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                             $MATCH = $tmp;
                             $res ? 1 : 0
                         }) && (do {
@@ -8054,7 +7630,7 @@ use feature 'say';
     sub Perlito5::Grammar::Number::term_digit {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
@@ -8104,22 +7680,6 @@ use feature 'say';
                     $MATCH->{"capture"} = ["term", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::val_num"})];
                     1
                 }))
-            }) || (do {
-                $MATCH->{"to"} = $pos1;
-                ((do {
-                    my $m2 = Perlito5::Grammar::Number::val_int($str, $MATCH->{"to"});
-                    if ($m2) {
-                        $MATCH->{"to"} = $m2->{"to"};
-                        $MATCH->{"Perlito5::Grammar::Number::val_int"} = $m2;
-                        1
-                    }
-                    else {;
-                        0
-                    }
-                }) && (do {
-                    $MATCH->{"capture"} = ["term", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::val_int"})];
-                    1
-                }))
             })
         }));
         $tmp ? $MATCH : undef
@@ -8129,27 +7689,37 @@ use feature 'say';
     sub Perlito5::Grammar::Number::digit {
         my $str = $_[0];
         my $pos = $_[1];
-        $str->[$pos] ge 0 && $str->[$pos] le 9 ? {"str", $str, "from", $pos, "to", $pos + 1} : 0
+        $str->[$pos] ge 0 && $str->[$pos] le 9 ? {"str" => $str, "from" => $pos, "to" => $pos + 1, } : 0
+    }
+    sub Perlito5::Grammar::Number::octal_digit {
+        my $str = $_[0];
+        my $pos = $_[1];
+        $str->[$pos] ge 0 && $str->[$pos] le 7 ? {"str" => $str, "from" => $pos, "to" => $pos + 1, } : 0
+    }
+    sub Perlito5::Grammar::Number::hex_digit {
+        my $str = $_[0];
+        my $pos = $_[1];
+        (($str->[$pos] ge 0 && $str->[$pos] le 9) || ($str->[$pos] ge "A" && $str->[$pos] le "F") || ($str->[$pos] ge "a" && $str->[$pos] le "f")) ? {"str" => $str, "from" => $pos, "to" => $pos + 1, } : 0
     }
     sub Perlito5::Grammar::Number::exponent {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("e" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("e" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("E" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("E" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             })
         }) && (do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("+" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("-" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("-" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
                 1
@@ -8162,7 +7732,7 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{"to"};
                 (do {;
-                    (("_" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
                     (do {
@@ -8196,11 +7766,11 @@ use feature 'say';
     sub Perlito5::Grammar::Number::val_num {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("." eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("." eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Number::digit($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -8216,7 +7786,7 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{"to"};
                         (do {;
-                            (("_" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         }) || (do {
                             $MATCH->{"to"} = $pos1;
                             (do {
@@ -8277,7 +7847,7 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{"to"};
                         (do {;
-                            (("_" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         }) || (do {
                             $MATCH->{"to"} = $pos1;
                             (do {
@@ -8319,10 +7889,10 @@ use feature 'say';
                         })
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        ((("." eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        ((("." eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             my $tmp = $MATCH;
-                            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                            my $res = (("." eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                            my $res = (("." eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                             $MATCH = $tmp;
                             $res ? 0 : 1
                         }) && (do {
@@ -8332,7 +7902,7 @@ use feature 'say';
                             while ((do {
                                 my $pos1 = $MATCH->{"to"};
                                 (do {;
-                                    (("_" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                                    (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                                 }) || (do {
                                     $MATCH->{"to"} = $pos1;
                                     (do {
@@ -8375,6 +7945,15 @@ use feature 'say';
                             }
                             1
                         }))
+                    }) || (do {
+                        $MATCH->{"to"} = $pos1;
+                        (do {
+                            my $s = Perlito5::Match::flat($MATCH);
+                            $s =~ s/_//g;
+                            $MATCH->{"capture"} = Perlito5::AST::Int::->new("int", $s);
+                            return $MATCH;
+                            1
+                        })
                     })
                 }))
             })
@@ -8389,7 +7968,7 @@ use feature 'say';
     sub Perlito5::Grammar::Number::digits {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $last_match_null = 0;
             my $m = $MATCH;
@@ -8424,7 +8003,7 @@ use feature 'say';
     sub Perlito5::Grammar::Number::digits_underscore {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Number::digit($str, $MATCH->{"to"});
             if ($m2) {
@@ -8441,7 +8020,7 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{"to"};
                 (do {;
-                    (("_" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                    (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
                     (do {
@@ -8471,28 +8050,23 @@ use feature 'say';
         })));
         $tmp ? $MATCH : undef
     }
-    sub Perlito5::Grammar::Number::val_octal {
+    sub Perlito5::Grammar::Number::hex_digits_underscore {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = ((((0 eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
-            my $pos1 = $MATCH->{"to"};
-            (do {;
-                ((do {
-                    my $pos1 = $MATCH->{"to"};
-                    (do {;
-                        (("x" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
-                    }) || (do {
-                        $MATCH->{"to"} = $pos1;
-                        (("X" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
-                    })
-                }) && (do {
-                    my $last_match_null = 0;
-                    my $m = $MATCH;
-                    my $to = $MATCH->{"to"};
-                    my $count = 0;
-                    while ((do {
-                        my $m2 = Perlito5::Grammar::word($str, $MATCH->{"to"});
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = ((do {
+            my $last_match_null = 0;
+            my $m = $MATCH;
+            my $to = $MATCH->{"to"};
+            my $count = 0;
+            while ((do {
+                my $pos1 = $MATCH->{"to"};
+                (do {;
+                    (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                }) || (do {
+                    $MATCH->{"to"} = $pos1;
+                    (do {
+                        my $m2 = Perlito5::Grammar::Number::hex_digit($str, $MATCH->{"to"});
                         if ($m2) {
                             $MATCH->{"to"} = $m2->{"to"};
                             1
@@ -8500,30 +8074,328 @@ use feature 'say';
                         else {;
                             0
                         }
-                    }) && ($last_match_null < 2)) {
-                        if ($to == $MATCH->{"to"}) {;
-                            $last_match_null = $last_match_null + 1
+                    })
+                })
+            }) && ($last_match_null < 2)) {
+                if ($to == $MATCH->{"to"}) {;
+                    $last_match_null = $last_match_null + 1
+                }
+                else {;
+                    $last_match_null = 0
+                }
+                $m = $MATCH;
+                $to = $MATCH->{"to"};
+                $count = $count + 1
+            }
+            $MATCH = $m;
+            $MATCH->{"to"} = $to;
+            $count > 0
+        }));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Number::hex_digits_underscore2 {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((do {
+            my $m2 = Perlito5::Grammar::Number::hex_digit($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $last_match_null = 0;
+            my $m = $MATCH;
+            my $to = $MATCH->{"to"};
+            while ((do {
+                my $pos1 = $MATCH->{"to"};
+                (do {;
+                    (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                }) || (do {
+                    $MATCH->{"to"} = $pos1;
+                    (do {
+                        my $m2 = Perlito5::Grammar::Number::hex_digit($str, $MATCH->{"to"});
+                        if ($m2) {
+                            $MATCH->{"to"} = $m2->{"to"};
+                            1
                         }
                         else {;
-                            $last_match_null = 0
+                            0
                         }
-                        $m = $MATCH;
-                        $to = $MATCH->{"to"};
-                        $count = $count + 1
-                    }
-                    $MATCH = $m;
-                    $MATCH->{"to"} = $to;
-                    $count > 0
+                    })
+                })
+            }) && ($last_match_null < 2)) {
+                if ($to == $MATCH->{"to"}) {;
+                    $last_match_null = $last_match_null + 1
+                }
+                else {;
+                    $last_match_null = 0
+                }
+                $m = $MATCH;
+                $to = $MATCH->{"to"}
+            }
+            $MATCH = $m;
+            $MATCH->{"to"} = $to;
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Number::hex_exponent {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                (("+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                (("-" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                1
+            })
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Number::hex_digits_underscore($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Number::val_octal {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = ((((0 eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                ((do {
+                    my $pos1 = $MATCH->{"to"};
+                    (do {;
+                        (("x" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                    }) || (do {
+                        $MATCH->{"to"} = $pos1;
+                        (("X" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                    })
+                }) && (do {
+                    my $pos1 = $MATCH->{"to"};
+                    (do {;
+                        ((do {
+                            my $pos1 = $MATCH->{"to"};
+                            (do {;
+                                ((("." eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                                    my $last_match_null = 0;
+                                    my $m = $MATCH;
+                                    my $to = $MATCH->{"to"};
+                                    my $count = 0;
+                                    while ((do {
+                                        my $m2 = Perlito5::Grammar::Number::hex_digits_underscore2($str, $MATCH->{"to"});
+                                        if ($m2) {
+                                            $MATCH->{"to"} = $m2->{"to"};
+                                            if (exists($MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore2"})) {;
+                                                push(@{$MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore2"}}, $m2)
+                                            }
+                                            else {;
+                                                $MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore2"} = [$m2]
+                                            }
+                                            1
+                                        }
+                                        else {;
+                                            0
+                                        }
+                                    }) && ($last_match_null < 2)) {
+                                        if ($to == $MATCH->{"to"}) {;
+                                            $last_match_null = $last_match_null + 1
+                                        }
+                                        else {;
+                                            $last_match_null = 0
+                                        }
+                                        $m = $MATCH;
+                                        $to = $MATCH->{"to"};
+                                        $count = $count + 1
+                                    }
+                                    $MATCH = $m;
+                                    $MATCH->{"to"} = $to;
+                                    $count > 0
+                                }))
+                            }) || (do {
+                                $MATCH->{"to"} = $pos1;
+                                ((do {
+                                    my $last_match_null = 0;
+                                    my $m = $MATCH;
+                                    my $to = $MATCH->{"to"};
+                                    my $count = 0;
+                                    while ((do {
+                                        my $m2 = Perlito5::Grammar::Number::hex_digits_underscore($str, $MATCH->{"to"});
+                                        if ($m2) {
+                                            $MATCH->{"to"} = $m2->{"to"};
+                                            if (exists($MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore"})) {;
+                                                push(@{$MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore"}}, $m2)
+                                            }
+                                            else {;
+                                                $MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore"} = [$m2]
+                                            }
+                                            1
+                                        }
+                                        else {;
+                                            0
+                                        }
+                                    }) && ($last_match_null < 2)) {
+                                        if ($to == $MATCH->{"to"}) {;
+                                            $last_match_null = $last_match_null + 1
+                                        }
+                                        else {;
+                                            $last_match_null = 0
+                                        }
+                                        $m = $MATCH;
+                                        $to = $MATCH->{"to"};
+                                        $count = $count + 1
+                                    }
+                                    $MATCH = $m;
+                                    $MATCH->{"to"} = $to;
+                                    $count > 0
+                                }) && (do {
+                                    my $pos1 = $MATCH->{"to"};
+                                    (do {;
+                                        ((("." eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                                            my $m = $MATCH;
+                                            if (!(do {
+                                                my $m2 = Perlito5::Grammar::Number::hex_digits_underscore2($str, $MATCH->{"to"});
+                                                if ($m2) {
+                                                    $MATCH->{"to"} = $m2->{"to"};
+                                                    if (exists($MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore2"})) {;
+                                                        push(@{$MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore2"}}, $m2)
+                                                    }
+                                                    else {;
+                                                        $MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore2"} = [$m2]
+                                                    }
+                                                    1
+                                                }
+                                                else {;
+                                                    0
+                                                }
+                                            })) {;
+                                                $MATCH = $m
+                                            }
+                                            1
+                                        }))
+                                    }) || (do {
+                                        $MATCH->{"to"} = $pos1;
+                                        1
+                                    })
+                                }))
+                            })
+                        }) && (do {
+                            my $pos1 = $MATCH->{"to"};
+                            (do {;
+                                (("p" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                            }) || (do {
+                                $MATCH->{"to"} = $pos1;
+                                (("P" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
+                            })
+                        }) && (do {
+                            my $m2 = Perlito5::Grammar::Number::hex_exponent($str, $MATCH->{"to"});
+                            if ($m2) {
+                                $MATCH->{"to"} = $m2->{"to"};
+                                $MATCH->{"hex_exponent"} = $m2;
+                                1
+                            }
+                            else {;
+                                0
+                            }
+                        }) && (do {
+                            my $h1 = $MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore"};
+                            my $h2 = $MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore2"};
+                            my $h3 = Perlito5::Match::flat($MATCH->{"hex_exponent"});
+                            if ($h1 && @{$h1}) {;
+                                $h1 = Perlito5::Match::flat($h1->[0])
+                            }
+                            else {;
+                                $h1 = 0
+                            }
+                            if ($h2 && @{$h2}) {;
+                                $h2 = Perlito5::Match::flat($h2->[0])
+                            }
+                            else {;
+                                $h2 = 0
+                            }
+                            $h1 =~ s/_//g;
+                            $h2 =~ s/_//g;
+                            $h3 =~ s/_//g;
+                            my $mul = 1;
+                            my $sig = substr($h3, 0, 1);
+                            if ($sig eq "+" || $sig eq "-") {
+                                $mul = $sig . 1;
+                                $h3 = substr($h3, 1)
+                            }
+                            $h1 = hex($h1);
+                            if (length($h2)) {;
+                                $h2 = hex($h2) / (16**length($h2))
+                            }
+                            else {;
+                                $h2 = 0
+                            }
+                            $h3 = hex($h3);
+                            $MATCH->{"capture"} = Perlito5::AST::Num::->new("num", ($h1 + $h2) * (2**($mul * $h3)));
+                            return $MATCH;
+                            1
+                        }))
+                    }) || (do {
+                        $MATCH->{"to"} = $pos1;
+                        (do {
+                            my $last_match_null = 0;
+                            my $m = $MATCH;
+                            my $to = $MATCH->{"to"};
+                            my $count = 0;
+                            while ((do {
+                                my $m2 = Perlito5::Grammar::Number::hex_digits_underscore($str, $MATCH->{"to"});
+                                if ($m2) {
+                                    $MATCH->{"to"} = $m2->{"to"};
+                                    if (exists($MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore"})) {;
+                                        push(@{$MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore"}}, $m2)
+                                    }
+                                    else {;
+                                        $MATCH->{"Perlito5::Grammar::Number::hex_digits_underscore"} = [$m2]
+                                    }
+                                    1
+                                }
+                                else {;
+                                    0
+                                }
+                            }) && ($last_match_null < 2)) {
+                                if ($to == $MATCH->{"to"}) {;
+                                    $last_match_null = $last_match_null + 1
+                                }
+                                else {;
+                                    $last_match_null = 0
+                                }
+                                $m = $MATCH;
+                                $to = $MATCH->{"to"};
+                                $count = $count + 1
+                            }
+                            $MATCH = $m;
+                            $MATCH->{"to"} = $to;
+                            $count > 0
+                        })
+                    })
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
                 ((do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        (("b" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("b" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     }) || (do {
                         $MATCH->{"to"} = $pos1;
-                        (("B" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                        (("B" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                     })
                 }) && (do {
                     my $last_match_null = 0;
@@ -8533,13 +8405,13 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{"to"};
                         (do {;
-                            (("_" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         }) || (do {
                             $MATCH->{"to"} = $pos1;
-                            ((0 eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            ((0 eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         }) || (do {
                             $MATCH->{"to"} = $pos1;
-                            ((1 eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            ((1 eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         })
                     }) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{"to"}) {;
@@ -8566,11 +8438,11 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{"to"};
                         (do {;
-                            (("_" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                            (("_" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
                         }) || (do {
                             $MATCH->{"to"} = $pos1;
                             (do {
-                                my $m2 = Perlito5::Grammar::Number::digit($str, $MATCH->{"to"});
+                                my $m2 = Perlito5::Grammar::Number::octal_digit($str, $MATCH->{"to"});
                                 if ($m2) {
                                     $MATCH->{"to"} = $m2->{"to"};
                                     1
@@ -8605,7 +8477,7 @@ use feature 'say';
     sub Perlito5::Grammar::Number::val_int {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Number::digits_underscore($str, $MATCH->{"to"});
             if ($m2) {
@@ -8626,7 +8498,7 @@ use feature 'say';
     sub Perlito5::Grammar::Number::val_vstring {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Number::val_int($str, $MATCH->{"to"});
             if ($m2) {
@@ -8642,7 +8514,7 @@ use feature 'say';
             my $m = $MATCH;
             my $to = $MATCH->{"to"};
             my $count = 0;
-            while (((("." eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+            while (((("." eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                 my $m2 = Perlito5::Grammar::Number::digits_underscore($str, $MATCH->{"to"});
                 if ($m2) {
                     $MATCH->{"to"} = $m2->{"to"};
@@ -8686,8 +8558,8 @@ use feature 'say';
     sub Perlito5::Grammar::Number::val_version {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("v" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("v" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Number::val_int($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -8699,7 +8571,7 @@ use feature 'say';
             }
         }) && (do {
             my $tmp = $MATCH;
-            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
+            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
             my $res = ((do {
                 my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
                 if ($m2) {
@@ -8709,14 +8581,14 @@ use feature 'say';
                 else {;
                     0
                 }
-            }) && (("(" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)));
+            }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)));
             $MATCH = $tmp;
             $res ? 0 : 1
         }) && (do {
             my $last_match_null = 0;
             my $m = $MATCH;
             my $to = $MATCH->{"to"};
-            while (((("." eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+            while (((("." eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                 my $m2 = Perlito5::Grammar::Number::digits_underscore($str, $MATCH->{"to"});
                 if ($m2) {
                     $MATCH->{"to"} = $m2->{"to"};
@@ -8765,7 +8637,7 @@ use feature 'say';
         my $pos = $_[1];
         ($str->[$pos] ge "a" && $str->[$pos] le "z") || ($str->[$pos] ge "A" && $str->[$pos] le "Z") || ($str->[$pos] ge 0 && $str->[$pos] le 9) || ($str->[$pos] eq "_") || return;
         $pos++;
-        return {"str", $_[0], "from", $_[1], "to", $pos}
+        return {"str" => $_[0], "from" => $_[1], "to" => $pos, }
     }
     sub Perlito5::Grammar::ident {
         my $str = $_[0];
@@ -8776,7 +8648,7 @@ use feature 'say';
             $pos++
         }
         ($pos - $_[1]) > 251 && die("Identifier too long");
-        return {"str", $_[0], "from", $_[1], "to", $pos}
+        return {"str" => $_[0], "from" => $_[1], "to" => $pos, }
     }
     sub Perlito5::Grammar::caret_char {
         my $str = $_[0];
@@ -8786,18 +8658,18 @@ use feature 'say';
             $pos++;
             $c = $str->[$pos];
             ($c lt "A" || $c gt "Z") && return 0;
-            $c = chr(ord($c) - ord("A") + 1)
+            $c = chr((ord($c) - ord("A")) + 1)
         }
         elsif (Perlito5::Grammar::Space::ws($_[0], $pos)) {;
             return
         }
         ($c lt "\x{1}" || $c gt "\x{1a}") && return;
-        return {"str", $_[0], "from", $_[1], "to", $pos + 1, "capture", $c}
+        return {"str" => $_[0], "from" => $_[1], "to" => $pos + 1, "capture" => $c, }
     }
     sub Perlito5::Grammar::full_ident {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::ident($str, $MATCH->{"to"});
             if ($m2) {
@@ -8811,7 +8683,7 @@ use feature 'say';
             my $last_match_null = 0;
             my $m = $MATCH;
             my $to = $MATCH->{"to"};
-            while ((((":" eq $str->[$MATCH->{"to"} + 0]) && (":" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+            while ((((":" eq $str->[($MATCH->{"to"}) + 0]) && (":" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
                 my $m2 = Perlito5::Grammar::ident($str, $MATCH->{"to"});
                 if ($m2) {
                     $MATCH->{"to"} = $m2->{"to"};
@@ -8839,7 +8711,7 @@ use feature 'say';
     sub Perlito5::Grammar::namespace_before_ident {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::ident($str, $MATCH->{"to"});
             if ($m2) {
@@ -8851,15 +8723,15 @@ use feature 'say';
             }
         }) && (do {
             my $tmp = $MATCH;
-            $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-            my $res = ((":" eq $str->[$MATCH->{"to"} + 0]) && (":" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+            $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+            my $res = ((":" eq $str->[($MATCH->{"to"}) + 0]) && (":" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
             $MATCH = $tmp;
             $res ? 1 : 0
         }) && (do {
             my $last_match_null = 0;
             my $m = $MATCH;
             my $to = $MATCH->{"to"};
-            while ((((":" eq $str->[$MATCH->{"to"} + 0]) && (":" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+            while ((((":" eq $str->[($MATCH->{"to"}) + 0]) && (":" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
                 my $m2 = Perlito5::Grammar::ident($str, $MATCH->{"to"});
                 if ($m2) {
                     $MATCH->{"to"} = $m2->{"to"};
@@ -8870,8 +8742,8 @@ use feature 'say';
                 }
             }) && (do {
                 my $tmp = $MATCH;
-                $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                my $res = ((":" eq $str->[$MATCH->{"to"} + 0]) && (":" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2));
+                $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                my $res = ((":" eq $str->[($MATCH->{"to"}) + 0]) && (":" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
                 $MATCH = $tmp;
                 $res ? 1 : 0
             })) && ($last_match_null < 2)) {
@@ -8893,7 +8765,7 @@ use feature 'say';
     sub Perlito5::Grammar::optional_namespace_before_ident {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
@@ -8911,7 +8783,7 @@ use feature 'say';
                     my $last_match_null = 0;
                     my $m = $MATCH;
                     my $to = $MATCH->{"to"};
-                    while (((":" eq $str->[$MATCH->{"to"} + 0]) && (":" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && ($last_match_null < 2)) {
+                    while (((":" eq $str->[($MATCH->{"to"}) + 0]) && (":" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{"to"}) {;
                             $last_match_null = $last_match_null + 1
                         }
@@ -8930,7 +8802,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (((":" eq $str->[$MATCH->{"to"} + 0]) && (":" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2)) && (do {
+                (((":" eq $str->[($MATCH->{"to"}) + 0]) && (":" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2)) && (do {
                     my $m2 = Perlito5::Grammar::optional_namespace_before_ident($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -8959,7 +8831,7 @@ use feature 'say';
     sub Perlito5::Grammar::exp_stmts2 {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::exp_stmts($str, $MATCH->{"to"});
             if ($m2) {
@@ -8979,7 +8851,7 @@ use feature 'say';
     sub Perlito5::Grammar::exp {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Expression::exp_parse($str, $MATCH->{"to"});
             if ($m2) {
@@ -8999,7 +8871,7 @@ use feature 'say';
     sub Perlito5::Grammar::exp2 {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Expression::exp_parse($str, $MATCH->{"to"});
             if ($m2) {
@@ -9019,13 +8891,13 @@ use feature 'say';
     sub Perlito5::Grammar::opt_type {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
                 ((do {
                     my $m = $MATCH;
-                    if (!((":" eq $str->[$MATCH->{"to"} + 0]) && (":" eq $str->[$MATCH->{"to"} + 1]) && ($MATCH->{"to"} += 2))) {;
+                    if (!((":" eq $str->[($MATCH->{"to"}) + 0]) && (":" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2))) {;
                         $MATCH = $m
                     }
                     1
@@ -9056,23 +8928,23 @@ use feature 'say';
     sub Perlito5::Grammar::var_sigil {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("\$" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("\$" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("%" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("%" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("\@" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("\@" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("&" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("&" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("*" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("*" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             })
         }));
         $tmp ? $MATCH : undef
@@ -9080,7 +8952,7 @@ use feature 'say';
     sub Perlito5::Grammar::var_name {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
@@ -9115,7 +8987,7 @@ use feature 'say';
     sub Perlito5::Grammar::var_ident {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::var_sigil($str, $MATCH->{"to"});
             if ($m2) {
@@ -9199,12 +9071,689 @@ use feature 'say';
         }
         $Perlito5::PKG_NAME = pop(@PKG);
         $Perlito5::BLOCK_HAS_SEMICOLON ||= $has_semicolon;
-        return {"str", $str, "to", $pos, "capture", \@stmts}
+        return {"str" => $str, "to" => $pos, "capture" => \@stmts, }
     }
 }
 {
     package main;
     package Perlito5::Grammar::Expression;
+    sub Perlito5::Grammar::Expression::term_pos {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("p" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("s" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                ((do {
+                    my $tmp = $MATCH;
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("\$" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
+                    $MATCH = $tmp;
+                    $res ? 1 : 0
+                }) && (do {
+                    my $m2 = Perlito5::Grammar::Expression::argument_parse($str, $MATCH->{"to"});
+                    if ($m2) {
+                        $MATCH->{"to"} = $m2->{"to"};
+                        $MATCH->{"argument_parse"} = $m2;
+                        1
+                    }
+                    else {;
+                        0
+                    }
+                }) && (do {
+                    my $args = Perlito5::Match::flat($MATCH->{"argument_parse"});
+                    $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "pos", "arguments", $args eq "*undef*" ? [Perlito5::AST::Var::SCALAR_ARG()] : [$args])];
+                    1
+                }))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                ((do {
+                    my $tmp = $MATCH;
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
+                    $MATCH = $tmp;
+                    $res ? 0 : 1
+                }) && (do {
+                    $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "pos", "arguments", [Perlito5::AST::Var::SCALAR_ARG()], "bareword", 1)];
+                    1
+                }))
+            })
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::declarator {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = ((do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                (("m" eq $str->[($MATCH->{"to"}) + 0]) && ("y" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                (("s" eq $str->[($MATCH->{"to"}) + 0]) && ("t" eq $str->[($MATCH->{"to"}) + 1]) && ("a" eq $str->[($MATCH->{"to"}) + 2]) && ("t" eq $str->[($MATCH->{"to"}) + 3]) && ("e" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                (("o" eq $str->[($MATCH->{"to"}) + 0]) && ("u" eq $str->[($MATCH->{"to"}) + 1]) && ("r" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3))
+            })
+        }));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_declarator {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((do {
+            my $m2 = Perlito5::Grammar::Expression::declarator($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"declarator"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                ((do {
+                    my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
+                    if ($m2) {
+                        $MATCH->{"to"} = $m2->{"to"};
+                        1
+                    }
+                    else {;
+                        0
+                    }
+                }) && (do {
+                    my $pos1 = $MATCH->{"to"};
+                    (do {;
+                        ((do {
+                            my $m2 = Perlito5::Grammar::Block::named_sub($str, $MATCH->{"to"});
+                            if ($m2) {
+                                $MATCH->{"to"} = $m2->{"to"};
+                                $MATCH->{"Perlito5::Grammar::Block::named_sub"} = $m2;
+                                1
+                            }
+                            else {;
+                                0
+                            }
+                        }) && (do {
+                            my $sub = $MATCH->{"Perlito5::Grammar::Block::named_sub"}->{"capture"};
+                            $sub->{"decl"} = Perlito5::Match::flat($MATCH->{"declarator"});
+                            $MATCH->{"capture"} = ["term", $sub];
+                            return $MATCH;
+                            1
+                        }))
+                    }) || (do {
+                        $MATCH->{"to"} = $pos1;
+                        (do {
+                            my $m2 = Perlito5::Grammar::opt_type($str, $MATCH->{"to"});
+                            if ($m2) {
+                                $MATCH->{"to"} = $m2->{"to"};
+                                $MATCH->{"Perlito5::Grammar::opt_type"} = $m2;
+                                1
+                            }
+                            else {;
+                                0
+                            }
+                        })
+                    })
+                }))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                1
+            })
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::var_ident($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"Perlito5::Grammar::var_ident"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Attribute::opt_attribute($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $declarator = Perlito5::Match::flat($MATCH->{"declarator"});
+            my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::opt_type"});
+            $type && !$Perlito5::PACKAGES->{$type} && Perlito5::Compiler::error("No such class " . $type);
+            my $var = $MATCH->{"Perlito5::Grammar::var_ident"}->{"capture"};
+            $var->{"namespace"} && Perlito5::Compiler::error("No package name allowed for variable " . ($var->{"sigil"}) . ($var->{"name"}) . " in \"" . $declarator . "\"");
+            $var->{"_decl"} = $declarator;
+            $var->{"_id"} = $Perlito5::ID++;
+            $declarator eq "our" && ($var->{"_namespace"} = $Perlito5::PKG_NAME);
+            my $decl = Perlito5::AST::Decl::->new("decl", $declarator, "type", $type, "var", $var, "attributes", Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"}));
+            $MATCH->{"capture"} = ["term", $decl];
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::operator_with_paren {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = ((do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                (("c" eq $str->[($MATCH->{"to"}) + 0]) && ("h" eq $str->[($MATCH->{"to"}) + 1]) && ("o" eq $str->[($MATCH->{"to"}) + 2]) && ("m" eq $str->[($MATCH->{"to"}) + 3]) && ("p" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                (("c" eq $str->[($MATCH->{"to"}) + 0]) && ("h" eq $str->[($MATCH->{"to"}) + 1]) && ("o" eq $str->[($MATCH->{"to"}) + 2]) && ("p" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4))
+            })
+        }));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_operator_with_paren {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((do {
+            my $m2 = Perlito5::Grammar::Expression::operator_with_paren($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"operator_with_paren"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+            my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"paren_parse"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", Perlito5::Match::flat($MATCH->{"operator_with_paren"}), "arguments", Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($MATCH->{"paren_parse"})), "namespace", '')];
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_local {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("l" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("c" eq $str->[($MATCH->{"to"}) + 2]) && ("a" eq $str->[($MATCH->{"to"}) + 3]) && ("l" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5)) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Sigil::term_sigil($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"Perlito5::Grammar::Sigil::term_sigil"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $declarator = "local";
+            my $type = '';
+            $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil::term_sigil"})->[1];
+            $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
+            my $var = $MATCH->{"capture"};
+            my $look = Perlito5::Grammar::Scope::lookup_variable($var);
+            if ($look && ($look->{"_decl"} eq "my" || $look->{"_decl"} eq "state")) {;
+                Perlito5::Compiler::error("Can't localize lexical variable " . ($var->{"sigil"}) . ($var->{"name"}))
+            }
+            $var->{"_id"} = $Perlito5::ID++;
+            $var->{"_decl"} = $declarator;
+            !$var->{"namespace"} && !$var->{"_namespace"} && ($var->{"_namespace"} = $Perlito5::PKG_NAME);
+            my $decl = Perlito5::AST::Decl::->new("decl", $declarator, "type", $type, "var", $var);
+            $MATCH->{"capture"} = ["term", $decl];
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_return {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("r" eq $str->[($MATCH->{"to"}) + 0]) && ("e" eq $str->[($MATCH->{"to"}) + 1]) && ("t" eq $str->[($MATCH->{"to"}) + 2]) && ("u" eq $str->[($MATCH->{"to"}) + 3]) && ("r" eq $str->[($MATCH->{"to"}) + 4]) && ("n" eq $str->[($MATCH->{"to"}) + 5]) && ($MATCH->{"to"} += 6)) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Expression::list_parse($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"list_parse"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $args = Perlito5::Match::flat($MATCH->{"list_parse"});
+            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "return", "arguments", $args eq "*undef*" ? [] : [$args], "namespace", '', "bareword", $args eq "*undef*" ? 1 : 0)];
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_file_test {
+        (my($str), my($pos)) = @_;
+        my $code = ($str->[$pos]) . ($str->[$pos + 1]);
+        $pos += 2;
+        my $spc = Perlito5::Grammar::Space::ws($str, $pos);
+        if ($spc) {;
+            $pos = $spc->{"to"}
+        }
+        my $arg = Perlito5::Grammar::Expression::argument_parse($str, $pos);
+        if ($arg) {
+            my $argument = Perlito5::Match::flat($arg);
+            if (ref($argument) eq "Perlito5::AST::Apply" && ($argument->{"code"} =~ m/^prefix:<-\w>$/ || $argument->{"code"} eq "infix:<&&>")) {
+                my $op2 = $argument;
+                my $file = $op2->{"arguments"}->[0];
+                $arg->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "infix:<&&>", "namespace", '', "arguments", [$op2, Perlito5::AST::Apply::->new("code", "prefix:<" . $code . ">", "arguments", [Perlito5::AST::Var::->new("_decl", "global", "_namespace", "main", "name", "_", "namespace", '', "sigil", "*")], "namespace", '', "bareword", 0)])]
+            }
+            else {
+                if ($argument eq "*undef*") {
+                    if ($code eq "-t") {;
+                        $argument = Perlito5::AST::Var::->new("_decl", "global", "_namespace", "main", "name", "STDIN", "namespace", '', "sigil", "*")
+                    }
+                    else {;
+                        $argument = Perlito5::AST::Var::SCALAR_ARG()
+                    }
+                }
+                $arg->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "prefix:<" . $code . ">", "arguments", $argument eq "*undef*" ? [] : [$argument], "namespace", '', "bareword", 0)]
+            }
+        }
+        return $arg
+    }
+    sub Perlito5::Grammar::Expression::next_last_redo {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = ((do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                (("n" eq $str->[($MATCH->{"to"}) + 0]) && ("e" eq $str->[($MATCH->{"to"}) + 1]) && ("x" eq $str->[($MATCH->{"to"}) + 2]) && ("t" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                (("l" eq $str->[($MATCH->{"to"}) + 0]) && ("a" eq $str->[($MATCH->{"to"}) + 1]) && ("s" eq $str->[($MATCH->{"to"}) + 2]) && ("t" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                (("r" eq $str->[($MATCH->{"to"}) + 0]) && ("e" eq $str->[($MATCH->{"to"}) + 1]) && ("d" eq $str->[($MATCH->{"to"}) + 2]) && ("o" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4))
+            })
+        }));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_next_last_redo {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((do {
+            my $m2 = Perlito5::Grammar::Expression::next_last_redo($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"next_last_redo"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Expression::next_last_redo_parse($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"next_last_redo_parse"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $args = Perlito5::Match::flat($MATCH->{"next_last_redo_parse"});
+            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", Perlito5::Match::flat($MATCH->{"next_last_redo"}), "arguments", $args eq "*undef*" ? [] : [$args], "namespace", '', "bareword", $args eq "*undef*" ? 1 : 0)];
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_scalar {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("s" eq $str->[($MATCH->{"to"}) + 0]) && ("c" eq $str->[($MATCH->{"to"}) + 1]) && ("a" eq $str->[($MATCH->{"to"}) + 2]) && ("l" eq $str->[($MATCH->{"to"}) + 3]) && ("a" eq $str->[($MATCH->{"to"}) + 4]) && ("r" eq $str->[($MATCH->{"to"}) + 5]) && ($MATCH->{"to"} += 6)) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                ((("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                    my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
+                    if ($m2) {
+                        $MATCH->{"to"} = $m2->{"to"};
+                        $MATCH->{"paren_parse"} = $m2;
+                        1
+                    }
+                    else {;
+                        0
+                    }
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                    my $args = Perlito5::Match::flat($MATCH->{"paren_parse"});
+                    $args eq "*undef*" && Perlito5::Compiler::error("Not enough arguments for scalar");
+                    $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "scalar", "arguments", Perlito5::Grammar::Expression::expand_list($args), "namespace", '', "bareword", 0)];
+                    1
+                }))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                ((do {
+                    my $m2 = Perlito5::Grammar::Expression::argument_parse($str, $MATCH->{"to"});
+                    if ($m2) {
+                        $MATCH->{"to"} = $m2->{"to"};
+                        $MATCH->{"argument_parse"} = $m2;
+                        1
+                    }
+                    else {;
+                        0
+                    }
+                }) && (do {
+                    my $args = Perlito5::Match::flat($MATCH->{"argument_parse"});
+                    my $op = Perlito5::Match::flat($MATCH->{"unary_op"});
+                    $args eq "*undef*" && Perlito5::Compiler::error("Not enough arguments for scalar");
+                    $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "scalar", "arguments", $args eq "*undef*" ? [] : [$args], "namespace", '', "bareword", $args eq "*undef*" ? 1 : 0)];
+                    1
+                }))
+            })
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::unary_op {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = ((do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                (("s" eq $str->[($MATCH->{"to"}) + 0]) && ("h" eq $str->[($MATCH->{"to"}) + 1]) && ("i" eq $str->[($MATCH->{"to"}) + 2]) && ("f" eq $str->[($MATCH->{"to"}) + 3]) && ("t" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                (("p" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("p" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3))
+            })
+        }));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_unary {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((do {
+            my $m2 = Perlito5::Grammar::Expression::unary_op($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"unary_op"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            my $pos1 = $MATCH->{"to"};
+            (do {;
+                ((("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                    my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
+                    if ($m2) {
+                        $MATCH->{"to"} = $m2->{"to"};
+                        $MATCH->{"paren_parse"} = $m2;
+                        1
+                    }
+                    else {;
+                        0
+                    }
+                }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                    my $args = Perlito5::Match::flat($MATCH->{"paren_parse"});
+                    my $op = Perlito5::Match::flat($MATCH->{"unary_op"});
+                    $op eq "scalar" && $args eq "*undef*" && Perlito5::Compiler::error("Not enough arguments for " . $op);
+                    $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", $op, "arguments", Perlito5::Grammar::Expression::expand_list($args), "namespace", '', "bareword", 0)];
+                    1
+                }))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                ((do {
+                    my $tmp = $MATCH;
+                    $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                    my $res = (("-" eq $str->[($MATCH->{"to"}) + 0]) && (">" eq $str->[($MATCH->{"to"}) + 1]) && ($MATCH->{"to"} += 2));
+                    $MATCH = $tmp;
+                    $res ? 1 : 0
+                }) && (do {
+                    my $op = Perlito5::Match::flat($MATCH->{"unary_op"});
+                    $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", $op, "arguments", [], "namespace", '', "bareword", 1)];
+                    1
+                }))
+            }) || (do {
+                $MATCH->{"to"} = $pos1;
+                ((do {
+                    my $m2 = Perlito5::Grammar::Expression::argument_parse($str, $MATCH->{"to"});
+                    if ($m2) {
+                        $MATCH->{"to"} = $m2->{"to"};
+                        $MATCH->{"argument_parse"} = $m2;
+                        1
+                    }
+                    else {;
+                        0
+                    }
+                }) && (do {
+                    my $args = Perlito5::Match::flat($MATCH->{"argument_parse"});
+                    my $op = Perlito5::Match::flat($MATCH->{"unary_op"});
+                    $op eq "scalar" && $args eq "*undef*" && Perlito5::Compiler::error("Not enough arguments for " . $op);
+                    $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", $op, "arguments", $args eq "*undef*" ? [] : [$args], "namespace", '', "bareword", $args eq "*undef*" ? 1 : 0)];
+                    1
+                }))
+            })
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_eval {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("e" eq $str->[($MATCH->{"to"}) + 0]) && ("v" eq $str->[($MATCH->{"to"}) + 1]) && ("a" eq $str->[($MATCH->{"to"}) + 2]) && ("l" eq $str->[($MATCH->{"to"}) + 3]) && ($MATCH->{"to"} += 4)) && (do {
+            my $m2 = Perlito5::Grammar::block($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"Perlito5::Grammar::block"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && (do {
+            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "eval", "arguments", [Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::block"})], "namespace", '')];
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_not {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("n" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("t" eq $str->[($MATCH->{"to"}) + 2]) && ($MATCH->{"to"} += 3)) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                1
+            }
+            else {;
+                0
+            }
+        }) && (("(" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+            my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{"to"});
+            if ($m2) {
+                $MATCH->{"to"} = $m2->{"to"};
+                $MATCH->{"paren_parse"} = $m2;
+                1
+            }
+            else {;
+                0
+            }
+        }) && ((")" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
+            $MATCH->{"capture"} = ["term", Perlito5::AST::Apply::->new("code", "prefix:<not>", "arguments", Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($MATCH->{"paren_parse"})), "namespace", '')];
+            1
+        })));
+        $tmp ? $MATCH : undef
+    }
+    sub Perlito5::Grammar::Expression::term_core {
+        my $str = shift;
+        my $pos = shift;
+        my $tok = join('', @{$str}[$pos .. $pos + 20]);
+        length($tok) < 7 && return;
+        substr($tok, 0, 6) ne "CORE::" && return;
+        substr($tok, 6, 1) !~ m/\w/ && return;
+        $tok = substr($tok, 6);
+        $pos += 6;
+        package Perlito5::Grammar::Precedence;
+        for my $len (@Term_chars) {
+            my $term = substr($tok, 0, $len);
+            if (exists($Term{$term})) {
+                my $c1 = $str->[($pos + $len) - 1];
+                my $c2 = $str->[$pos + $len];
+                if (is_num($c1) || !Perlito5::Grammar::Precedence::is_ident_middle($c1) || !Perlito5::Grammar::Precedence::is_ident_middle($c2)) {
+                    my $m = $Term{$term}->($str, $pos);
+                    if ($m) {
+                        my $node = $m->{"capture"}->[1];
+                        $node->{"namespace"} = "CORE";
+                        return $m
+                    }
+                }
+            }
+        }
+        return
+    }
+    Perlito5::Grammar::Precedence::add_term("my", \&term_declarator);
+    Perlito5::Grammar::Precedence::add_term("our", \&term_declarator);
+    Perlito5::Grammar::Precedence::add_term("eval", \&term_eval);
+    Perlito5::Grammar::Precedence::add_term("state", \&term_declarator);
+    Perlito5::Grammar::Precedence::add_term("local", \&term_local);
+    Perlito5::Grammar::Precedence::add_term("return", \&term_return);
+    Perlito5::Grammar::Precedence::add_term("pos", \&term_pos);
+    Perlito5::Grammar::Precedence::add_term("chomp", \&term_operator_with_paren);
+    Perlito5::Grammar::Precedence::add_term("chop", \&term_operator_with_paren);
+    Perlito5::Grammar::Precedence::add_term("next", \&term_next_last_redo);
+    Perlito5::Grammar::Precedence::add_term("last", \&term_next_last_redo);
+    Perlito5::Grammar::Precedence::add_term("redo", \&term_next_last_redo);
+    Perlito5::Grammar::Precedence::add_term("shift", \&term_unary);
+    Perlito5::Grammar::Precedence::add_term("pop", \&term_unary);
+    Perlito5::Grammar::Precedence::add_term("scalar", \&term_scalar);
+    Perlito5::Grammar::Precedence::add_term("not", \&term_not);
+    Perlito5::Grammar::Precedence::add_term($_, \&term_file_test)
+        for "-r", "-w", "-x", "-o", "-R", "-W", "-X", "-O", "-e", "-z", "-s", "-f", "-d", "-l", "-p", "-S", "-b", "-c", "-t", "-u", "-g", "-k", "-T", "-B", "-M", "-A", "-C";
+    Perlito5::Grammar::Precedence::add_term("CORE", \&term_core);
+    1
+}
+{
+    package main;
+    package Perlito5::Regex;
+    sub Perlito5::Regex::expand_character_range {
+        my @range = split(m//, shift);
+        my @out;
+        while (@range) {
+            if (@range >= 2 && $range[0] eq "\\") {
+                push(@out, $range[1]);
+                shift(@range)
+                    for 1 .. 2;
+                next
+            }
+            if (@range >= 3 && $range[1] eq "-") {
+                if ($range[0] ge "A" && $range[0] le "Z" && $range[1] eq "-" && $range[2] ge "A" && $range[2] le "Z") {
+                    push(@out, ($range[0] .. $range[2]));
+                    shift(@range)
+                        for 1 .. 3;
+                    next
+                }
+                if ($range[0] ge "a" && $range[0] le "z" && $range[1] eq "-" && $range[2] ge "a" && $range[2] le "z") {
+                    push(@out, ($range[0] .. $range[2]));
+                    shift(@range)
+                        for 1 .. 3;
+                    next
+                }
+                if ($range[0] ge 0 && $range[0] le 9 && $range[1] eq "-" && $range[2] ge 0 && $range[2] le 9) {
+                    push(@out, ($range[0] .. $range[2]));
+                    shift(@range)
+                        for 1 .. 3;
+                    next
+                }
+            }
+            push(@out, shift(@range))
+        }
+        return join('', @out)
+    }
     1
 }
 {
@@ -9218,7 +9767,7 @@ use feature 'say';
     defined(${";"}) || (${";"} = chr(28));
     defined(${"?"}) || (${"?"} = 0);
     ${"]"} || (${"]"} = "5.026000");
-    defined(${^V}) || (${^V} = bless({"original", "v5.26.0", "qv", 1, "version", [5, 26, 0]}, "version"));
+    defined(${^V}) || (${^V} = bless({"original" => "v5.26.0", "qv" => 1, "version" => [5, 26, 0], }, "version"));
     ${^H} = 0;
     %{^H} = ();
     our $EXPAND_USE = 1;
@@ -9232,10 +9781,8 @@ use feature 'say';
     our $LINE_NUMBER = 0;
     our $FILE_NAME = '';
     our $GLOBAL = {};
-    our $BASE_SCOPE = Perlito5::Grammar::Scope::->new_base_scope();
-    our $CLOSURE_SCOPE = $BASE_SCOPE;
-    our $SCOPE = $BASE_SCOPE;
-    our $SCOPE_DEPTH = 0;
+    our @BASE_SCOPE = (Perlito5::Grammar::Scope::->new_base_scope());
+    our $CLOSURE_SCOPE = 0;
     our @SCOPE_STMT = ();
     our @END_BLOCK = ();
     our @INIT_BLOCK = ();
@@ -9253,13 +9800,16 @@ use feature 'say';
         }
     }
     our $ID = 100;
-    our $PACKAGES = {"STDERR", 1, "STDOUT", 1, "STDIN", 1, "main", 1, "strict", 1, "warnings", 1, "utf8", 1, "bytes", 1, "encoding", 1, "UNIVERSAL", 1, "CORE", 1, "CORE::GLOBAL", 1, "Perlito5::IO", 1};
+    our $PACKAGES = {"STDERR" => 1, "STDOUT" => 1, "STDIN" => 1, "main" => 1, "strict" => 1, "warnings" => 1, "utf8" => 1, "bytes" => 1, "encoding" => 1, "UNIVERSAL" => 1, "CORE" => 1, "CORE::GLOBAL" => 1, "Perlito5::IO" => 1, };
     push(@INC, $_)
         for split(":", ($ENV{"PERL5LIB"} || ''));
-    our $SPECIAL_VAR = {"\$_", "ARG", "\$&", "\$MATCH", "\$`", "\$PREMATCH", "\$'", "\$POSTMATCH", "\$+", "\$LAST_PAREN_MATCH", "\@+", "\@LAST_MATCH_END", "%+", "%LAST_PAREN_MATCH", "\@-", "\@LAST_MATCH_START", "\$|", "autoflush", "\$/", "\$RS", "\@_", "\@ARG", "< \$", "\$EUID", "\$.", "\$NR", "< \$< ", "\$UID", "\$(", "\$GID", "\$#", undef, "\$\@", "\$EVAL_ERROR", "\$=", "\$FORMAT_LINES_PER_PAGE", "\$,", "\$OFS", "\$?", "\$CHILD_ERROR", "\$*", undef, "\$[", undef, "\$\$", "\$PID", "%-", undef, "\$~", "\$FORMAT_NAME", "\$-", "\$FORMAT_LINES_LEFT", "\$&", "\$MATCH", "\$%", "\$FORMAT_PAGE_NUMBER", "\$)", "\$EGID", "\$]", undef, "\$!", "\$ERRNO", "\$;", "\$SUBSEP", "\$\\", "\$ORS", "%!", undef, "\$\"", "\$LIST_SEPARATOR", "\$_", "\$ARG", "\$:", "FORMAT_LINE_BREAK_CHARACTERS"};
-    our $CORE_OVERRIDABLE = {"__FILE__", 1, "__LINE__", 1, "__PACKAGE__", 1, "abs", 1, "accept", 1, "alarm", 1, "and", 1, "atan2", 1, "bind", 1, "binmode", 1, "bless", 1, "break", 1, "caller", 1, "chdir", 1, "chmod", 1, "chomp", 1, "chop", 1, "chown", 1, "chr", 1, "chroot", 1, "close", 1, "closedir", 1, "cmp", 1, "connect", 1, "continue", 1, "cos", 1, "crypt", 1, "dbmclose", 1, "dbmopen", 1, "default", 1, "die", 1, "do", 1, "dump", 1, "each", 1, "endgrent", 1, "endhostent", 1, "endnetent", 1, "endprotoent", 1, "endpwent", 1, "endservent", 1, "eof", 1, "exec", 1, "exit", 1, "exp", 1, "fc", 1, "fcntl", 1, "fileno", 1, "flock", 1, "fork", 1, "formline", 1, "getc", 1, "getgrent", 1, "getgrgid", 1, "getgrnam", 1, "gethostbyaddr", 1, "gethostbyname", 1, "gethostent", 1, "getlogin", 1, "getnetbyaddr", 1, "getnetbyname", 1, "getnetent", 1, "getpeername", 1, "getpgrp", 1, "getppid", 1, "getpriority", 1, "getprotobyname", 1, "getprotobynumber", 1, "getprotoent", 1, "getpwent", 1, "getpwnam", 1, "getpwuid", 1, "getservbyname", 1, "getservbyport", 1, "getservent", 1, "getsockname", 1, "getsockopt", 1, "given", 1, "glob", 1, "gmtime", 1, "hex", 1, "index", 1, "int", 1, "ioctl", 1, "join", 1, "keys", 1, "kill", 1, "lc", 1, "lcfirst", 1, "length", 1, "link", 1, "listen", 1, "localtime", 1, "lock", 1, "log", 1, "lstat", 1, "mkdir", 1, "msgctl", 1, "msgget", 1, "msgrcv", 1, "msgsnd", 1, "not", 1, "oct", 1, "open", 1, "opendir", 1, "or", 1, "ord", 1, "pack", 1, "pipe", 1, "pop", 1, "push", 1, "quotemeta", 1, "rand", 1, "read", 1, "readdir", 1, "readline", 1, "readlink", 1, "readpipe", 1, "recv", 1, "ref", 1, "rename", 1, "require", 1, "reset", 1, "reverse", 1, "rewinddir", 1, "rindex", 1, "rmdir", 1, "say", 1, "seek", 1, "seekdir", 1, "select", 1, "semctl", 1, "semget", 1, "semop", 1, "send", 1, "setgrent", 1, "sethostent", 1, "setnetent", 1, "setpgrp", 1, "setpriority", 1, "setprotoent", 1, "setpwent", 1, "setservent", 1, "setsockopt", 1, "shift", 1, "shmctl", 1, "shmget", 1, "shmread", 1, "shmwrite", 1, "shutdown", 1, "sin", 1, "sleep", 1, "socket", 1, "socketpair", 1, "splice", 1, "sprintf", 1, "sqrt", 1, "srand", 1, "stat", 1, "state", 1, "substr", 1, "symlink", 1, "syscall", 1, "sysopen", 1, "sysread", 1, "sysseek", 1, "system", 1, "syswrite", 1, "tell", 1, "telldir", 1, "tie", 1, "tied", 1, "time", 1, "times", 1, "truncate", 1, "uc", 1, "ucfirst", 1, "umask", 1, "unlink", 1, "unpack", 1, "unshift", 1, "untie", 1, "utime", 1, "values", 1, "vec", 1, "wait", 1, "waitpid", 1, "wantarray", 1, "warn", 1, "when", 1, "write", 1, "xor", 1};
-    our $CORE_GLOBAL_OVERRIDABLE = {"__FILE__", 1, "__LINE__", 1, "__PACKAGE__", 1, "abs", 1, "accept", 1, "alarm", 1, "and", 1, "atan2", 1, "bind", 1, "binmode", 1, "bless", 1, "caller", 1, "chdir", 1, "chmod", 1, "chomp", 1, "chop", 1, "chown", 1, "chr", 1, "chroot", 1, "close", 1, "closedir", 1, "cmp", 1, "connect", 1, "continue", 1, "cos", 1, "crypt", 1, "dbmclose", 1, "dbmopen", 1, "die", 1, "do", 1, "dump", 1, "each", 1, "endgrent", 1, "endhostent", 1, "endnetent", 1, "endprotoent", 1, "endpwent", 1, "endservent", 1, "eof", 1, "exec", 1, "exit", 1, "exp", 1, "fcntl", 1, "fileno", 1, "flock", 1, "fork", 1, "formline", 1, "getc", 1, "getgrent", 1, "getgrgid", 1, "getgrnam", 1, "gethostbyaddr", 1, "gethostbyname", 1, "gethostent", 1, "getlogin", 1, "getnetbyaddr", 1, "getnetbyname", 1, "getnetent", 1, "getpeername", 1, "getpgrp", 1, "getppid", 1, "getpriority", 1, "getprotobyname", 1, "getprotobynumber", 1, "getprotoent", 1, "getpwent", 1, "getpwnam", 1, "getpwuid", 1, "getservbyname", 1, "getservbyport", 1, "getservent", 1, "getsockname", 1, "getsockopt", 1, "glob", 1, "gmtime", 1, "hex", 1, "index", 1, "int", 1, "ioctl", 1, "join", 1, "keys", 1, "kill", 1, "lc", 1, "lcfirst", 1, "length", 1, "link", 1, "listen", 1, "localtime", 1, "lock", 1, "log", 1, "lstat", 1, "mkdir", 1, "msgctl", 1, "msgget", 1, "msgrcv", 1, "msgsnd", 1, "not", 1, "oct", 1, "open", 1, "opendir", 1, "or", 1, "ord", 1, "pack", 1, "pipe", 1, "pop", 1, "push", 1, "quotemeta", 1, "rand", 1, "read", 1, "readdir", 1, "readline", 1, "readlink", 1, "readpipe", 1, "recv", 1, "ref", 1, "rename", 1, "require", 1, "reset", 1, "reverse", 1, "rewinddir", 1, "rindex", 1, "rmdir", 1, "seek", 1, "seekdir", 1, "select", 1, "semctl", 1, "semget", 1, "semop", 1, "send", 1, "setgrent", 1, "sethostent", 1, "setnetent", 1, "setpgrp", 1, "setpriority", 1, "setprotoent", 1, "setpwent", 1, "setservent", 1, "setsockopt", 1, "shift", 1, "shmctl", 1, "shmget", 1, "shmread", 1, "shmwrite", 1, "shutdown", 1, "sin", 1, "sleep", 1, "socket", 1, "socketpair", 1, "splice", 1, "sprintf", 1, "sqrt", 1, "srand", 1, "stat", 1, "substr", 1, "symlink", 1, "syscall", 1, "sysopen", 1, "sysread", 1, "sysseek", 1, "system", 1, "syswrite", 1, "tell", 1, "telldir", 1, "tie", 1, "tied", 1, "time", 1, "times", 1, "truncate", 1, "uc", 1, "ucfirst", 1, "umask", 1, "unlink", 1, "unpack", 1, "unshift", 1, "untie", 1, "utime", 1, "values", 1, "vec", 1, "wait", 1, "waitpid", 1, "wantarray", 1, "warn", 1, "write", 1, "xor", 1};
-    our $CORE_PROTO = {"CORE::abs", "_", "CORE::accept", "**", "CORE::alarm", "_", "CORE::atan2", "\$\$", "CORE::bind", "*\$", "CORE::binmode", "*;\$", "CORE::bless", "\$;\$", "CORE::break", '', "CORE::caller", ";\$", "CORE::chdir", ";\$", "CORE::chmod", "\@", "CORE::chomp", "_", "CORE::chop", "_", "CORE::chown", "\@", "CORE::chr", "_", "CORE::chroot", "_", "CORE::close", ";*", "CORE::closedir", "*", "CORE::connect", "*\$", "CORE::continue", '', "CORE::cos", "_", "CORE::crypt", "\$\$", "CORE::dbmclose", "\\%", "CORE::dbmopen", "\\%\$\$", "CORE::default", undef, "CORE::defined", "_", "CORE::delete", "\$", "CORE::die", "\@", "CORE::do", undef, "CORE::dump", '', "CORE::each", "+", "CORE::endgrent", '', "CORE::endhostent", '', "CORE::endnetent", '', "CORE::endprotoent", '', "CORE::endpwent", '', "CORE::endservent", '', "CORE::eof", ";*", "CORE::eval", "_", "CORE::exec", undef, "CORE::exists", "\$", "CORE::exit", ";\$", "CORE::exp", "_", "CORE::fc", "_", "CORE::fcntl", "*\$\$", "CORE::fileno", "*", "CORE::flock", "*\$", "CORE::fork", '', "CORE::format", undef, "CORE::formline", "\$\@", "CORE::getc", ";*", "CORE::getgrent", '', "CORE::getgrgid", "\$", "CORE::getgrnam", "\$", "CORE::gethostbyaddr", "\$\$", "CORE::gethostbyname", "\$", "CORE::gethostent", '', "CORE::getlogin", '', "CORE::getnetbyaddr", "\$\$", "CORE::getnetbyname", "\$", "CORE::getnetent", '', "CORE::getpeername", "*", "CORE::getpgrp", ";\$", "CORE::getppid", '', "CORE::getpriority", "\$\$", "CORE::getprotobyname", "\$", "CORE::getprotobynumber", "\$", "CORE::getprotoent", '', "CORE::getpwent", '', "CORE::getpwnam", "\$", "CORE::getpwuid", "\$", "CORE::getservbyname", "\$\$", "CORE::getservbyport", "\$\$", "CORE::getservent", '', "CORE::getsockname", "*", "CORE::getsockopt", "*\$\$", "CORE::given", undef, "CORE::glob", undef, "CORE::gmtime", ";\$", "CORE::goto", undef, "CORE::grep", undef, "CORE::hex", "_", "CORE::index", "\$\$;\$", "CORE::int", "_", "CORE::ioctl", "*\$\$", "CORE::join", "\$\@", "CORE::keys", "+", "CORE::kill", "\@", "CORE::last", undef, "CORE::lc", "_", "CORE::lcfirst", "_", "CORE::length", "_", "CORE::link", "\$\$", "CORE::listen", "*\$", "CORE::local", undef, "CORE::localtime", ";\$", "CORE::lock", "\\\$", "CORE::log", "_", "CORE::lstat", "*", "CORE::map", undef, "CORE::mkdir", "_;\$", "CORE::msgctl", "\$\$\$", "CORE::msgget", "\$\$", "CORE::msgrcv", "\$\$\$\$\$", "CORE::msgsnd", "\$\$\$", "CORE::my", undef, "CORE::next", undef, "CORE::no", undef, "CORE::oct", "_", "CORE::open", "*;\$\@", "CORE::opendir", "*\$", "CORE::ord", "_", "CORE::our", undef, "CORE::pack", "\$\@", "CORE::pack", "\$\@", "CORE::package", undef, "CORE::pipe", "**", "CORE::pop", ";+", "CORE::pos", undef, "CORE::print", undef, "CORE::printf", "\$\@", "CORE::prototype", undef, "CORE::push", "+\@", "CORE::quotemeta", "_", "CORE::rand", ";\$", "CORE::read", "*\\\$\$;\$", "CORE::readdir", "*", "CORE::readline", ";*", "CORE::readlink", "_", "CORE::readpipe", "_", "CORE::recv", "*\\\$\$\$", "CORE::redo", undef, "CORE::ref", "_", "CORE::rename", "\$\$", "CORE::require", undef, "CORE::reset", ";\$", "CORE::return", undef, "CORE::reverse", "\@", "CORE::rewinddir", "*", "CORE::rindex", "\$\$;\$", "CORE::rmdir", "_", "CORE::say", undef, "CORE::scalar", undef, "CORE::seek", "*\$\$", "CORE::seekdir", "*\$", "CORE::select", ";*", "CORE::semctl", "\$\$\$\$", "CORE::semget", "\$\$\$", "CORE::semop", "\$\$", "CORE::send", "*\$\$;\$", "CORE::setgrent", '', "CORE::sethostent", "\$", "CORE::setnetent", "\$", "CORE::setpgrp", ";\$\$", "CORE::setpriority", "\$\$\$", "CORE::setprotoent", "\$", "CORE::setpwent", '', "CORE::setservent", "\$", "CORE::setsockopt", "*\$\$\$", "CORE::shift", ";+", "CORE::shmctl", "\$\$\$", "CORE::shmget", "\$\$\$", "CORE::shmread", "\$\$\$\$", "CORE::shmwrite", "\$\$\$\$", "CORE::shutdown", "*\$", "CORE::sin", "_", "CORE::sleep", ";\$", "CORE::socket", "*\$\$\$", "CORE::socketpair", "**\$\$\$", "CORE::sort", undef, "CORE::splice", "+;\$\$\@", "CORE::split", undef, "CORE::sprintf", "\$\@", "CORE::sqrt", "_", "CORE::srand", ";\$", "CORE::stat", "*", "CORE::state", undef, "CORE::study", undef, "CORE::sub", undef, "CORE::substr", "\$\$;\$\$", "CORE::symlink", "\$\$", "CORE::syscall", "\$\@", "CORE::sysopen", "*\$\$;\$", "CORE::sysread", "*\\\$\$;\$", "CORE::sysseek", "*\$\$", "CORE::system", undef, "CORE::syswrite", "*\$;\$\$", "CORE::tell", ";*", "CORE::telldir", "*", "CORE::tie", "\\[\$\@%]\$;\@", "CORE::tied", undef, "CORE::time", '', "CORE::times", '', "CORE::truncate", "\$\$", "CORE::uc", "_", "CORE::ucfirst", "_", "CORE::umask", ";\$", "CORE::undef", ";\$", "CORE::unlink", "\@", "CORE::unpack", "\$;\$", "CORE::unshift", "+\@", "CORE::untie", undef, "CORE::use", undef, "CORE::utime", "\@", "CORE::values", "+", "CORE::vec", "\$\$\$", "CORE::wait", '', "CORE::waitpid", "\$\$", "CORE::wantarray", '', "CORE::warn", "\@", "CORE::when", undef, "CORE::write", ";*", "CORE::m", undef, "CORE::q", undef, "CORE::qq", undef, "CORE::qw", undef, "CORE::qx", undef, "CORE::qr", undef, "CORE::s", undef, "CORE::tr", undef, "CORE::y", undef, "CORE::if", undef, "CORE::unless", undef, "CORE::when", undef, "CORE::for", undef, "CORE::foreach", undef, "CORE::while", undef, "CORE::given", undef, "CORE::and", undef, "CORE::or", undef, "CORE::xor", undef, "CORE::not", undef, "CORE::cmp", undef, "CORE::__FILE__", '', "CORE::__LINE__", '', "CORE::__PACKAGE__", ''};
+    $Perlito5::INTEGER = 1;
+    $Perlito5::HINT_NO_AMAGIC = 16777216;
+    %Perlito5::Integer = ("%", 1, ">>", 1, "<<", 1, "^", 1, "&", 1, "|", 1, "+", 1, "-", 1, "*", 1, "/", 1, "%=", 1, ">>=", 1, "<<=", 1, "^=", 1, "&=", 1, "|=", 1, "+=", 1, "-=", 1, "*=", 1, "/=", 1, "==", 1, "!=", 1, ">", 1, ">=", 1, "<", 1, "<=", 1, "<=>", 1);
+    our $SPECIAL_VAR = {"\$_" => "ARG", "\$&" => "\$MATCH", "\$`" => "\$PREMATCH", "\$'" => "\$POSTMATCH", "\$+" => "\$LAST_PAREN_MATCH", "\@+" => "\@LAST_MATCH_END", "%+" => "%LAST_PAREN_MATCH", "\@-" => "\@LAST_MATCH_START", "\$|" => "autoflush", "\$/" => "\$RS", "\@_" => "\@ARG", "< \$" => "\$EUID", "\$." => "\$NR", "< \$< " => "\$UID", "\$(" => "\$GID", "\$#" => undef, "\$\@" => "\$EVAL_ERROR", "\$=" => "\$FORMAT_LINES_PER_PAGE", "\$," => "\$OFS", "\$?" => "\$CHILD_ERROR", "\$*" => undef, "\$[" => undef, "\$\$" => "\$PID", "%-" => undef, "\$~" => "\$FORMAT_NAME", "\$-" => "\$FORMAT_LINES_LEFT", "\$&" => "\$MATCH", "\$%" => "\$FORMAT_PAGE_NUMBER", "\$)" => "\$EGID", "\$]" => undef, "\$!" => "\$ERRNO", "\$;" => "\$SUBSEP", "\$\\" => "\$ORS", "%!" => undef, "\$\"" => "\$LIST_SEPARATOR", "\$_" => "\$ARG", "\$:" => "FORMAT_LINE_BREAK_CHARACTERS", };
+    our $CORE_OVERRIDABLE = {"__FILE__" => 1, "__LINE__" => 1, "__PACKAGE__" => 1, "abs" => 1, "accept" => 1, "alarm" => 1, "and" => 1, "atan2" => 1, "bind" => 1, "binmode" => 1, "bless" => 1, "break" => 1, "caller" => 1, "chdir" => 1, "chmod" => 1, "chomp" => 1, "chop" => 1, "chown" => 1, "chr" => 1, "chroot" => 1, "close" => 1, "closedir" => 1, "cmp" => 1, "connect" => 1, "continue" => 1, "cos" => 1, "crypt" => 1, "dbmclose" => 1, "dbmopen" => 1, "default" => 1, "die" => 1, "do" => 1, "dump" => 1, "each" => 1, "endgrent" => 1, "endhostent" => 1, "endnetent" => 1, "endprotoent" => 1, "endpwent" => 1, "endservent" => 1, "eof" => 1, "exec" => 1, "exit" => 1, "exp" => 1, "fc" => 1, "fcntl" => 1, "fileno" => 1, "flock" => 1, "fork" => 1, "formline" => 1, "getc" => 1, "getgrent" => 1, "getgrgid" => 1, "getgrnam" => 1, "gethostbyaddr" => 1, "gethostbyname" => 1, "gethostent" => 1, "getlogin" => 1, "getnetbyaddr" => 1, "getnetbyname" => 1, "getnetent" => 1, "getpeername" => 1, "getpgrp" => 1, "getppid" => 1, "getpriority" => 1, "getprotobyname" => 1, "getprotobynumber" => 1, "getprotoent" => 1, "getpwent" => 1, "getpwnam" => 1, "getpwuid" => 1, "getservbyname" => 1, "getservbyport" => 1, "getservent" => 1, "getsockname" => 1, "getsockopt" => 1, "given" => 1, "glob" => 1, "gmtime" => 1, "hex" => 1, "index" => 1, "int" => 1, "ioctl" => 1, "join" => 1, "keys" => 1, "kill" => 1, "lc" => 1, "lcfirst" => 1, "length" => 1, "link" => 1, "listen" => 1, "localtime" => 1, "lock" => 1, "log" => 1, "lstat" => 1, "mkdir" => 1, "msgctl" => 1, "msgget" => 1, "msgrcv" => 1, "msgsnd" => 1, "not" => 1, "oct" => 1, "open" => 1, "opendir" => 1, "or" => 1, "ord" => 1, "pack" => 1, "pipe" => 1, "pop" => 1, "push" => 1, "quotemeta" => 1, "rand" => 1, "read" => 1, "readdir" => 1, "readline" => 1, "readlink" => 1, "readpipe" => 1, "recv" => 1, "ref" => 1, "rename" => 1, "require" => 1, "reset" => 1, "reverse" => 1, "rewinddir" => 1, "rindex" => 1, "rmdir" => 1, "say" => 1, "seek" => 1, "seekdir" => 1, "select" => 1, "semctl" => 1, "semget" => 1, "semop" => 1, "send" => 1, "setgrent" => 1, "sethostent" => 1, "setnetent" => 1, "setpgrp" => 1, "setpriority" => 1, "setprotoent" => 1, "setpwent" => 1, "setservent" => 1, "setsockopt" => 1, "shift" => 1, "shmctl" => 1, "shmget" => 1, "shmread" => 1, "shmwrite" => 1, "shutdown" => 1, "sin" => 1, "sleep" => 1, "socket" => 1, "socketpair" => 1, "splice" => 1, "sprintf" => 1, "sqrt" => 1, "srand" => 1, "stat" => 1, "state" => 1, "substr" => 1, "symlink" => 1, "syscall" => 1, "sysopen" => 1, "sysread" => 1, "sysseek" => 1, "system" => 1, "syswrite" => 1, "tell" => 1, "telldir" => 1, "tie" => 1, "tied" => 1, "time" => 1, "times" => 1, "truncate" => 1, "uc" => 1, "ucfirst" => 1, "umask" => 1, "unlink" => 1, "unpack" => 1, "unshift" => 1, "untie" => 1, "utime" => 1, "values" => 1, "vec" => 1, "wait" => 1, "waitpid" => 1, "wantarray" => 1, "warn" => 1, "when" => 1, "write" => 1, "xor" => 1, };
+    our $CORE_GLOBAL_OVERRIDABLE = {"__FILE__" => 1, "__LINE__" => 1, "__PACKAGE__" => 1, "abs" => 1, "accept" => 1, "alarm" => 1, "and" => 1, "atan2" => 1, "bind" => 1, "binmode" => 1, "bless" => 1, "caller" => 1, "chdir" => 1, "chmod" => 1, "chomp" => 1, "chop" => 1, "chown" => 1, "chr" => 1, "chroot" => 1, "close" => 1, "closedir" => 1, "cmp" => 1, "connect" => 1, "continue" => 1, "cos" => 1, "crypt" => 1, "dbmclose" => 1, "dbmopen" => 1, "die" => 1, "do" => 1, "dump" => 1, "each" => 1, "endgrent" => 1, "endhostent" => 1, "endnetent" => 1, "endprotoent" => 1, "endpwent" => 1, "endservent" => 1, "eof" => 1, "exec" => 1, "exit" => 1, "exp" => 1, "fcntl" => 1, "fileno" => 1, "flock" => 1, "fork" => 1, "formline" => 1, "getc" => 1, "getgrent" => 1, "getgrgid" => 1, "getgrnam" => 1, "gethostbyaddr" => 1, "gethostbyname" => 1, "gethostent" => 1, "getlogin" => 1, "getnetbyaddr" => 1, "getnetbyname" => 1, "getnetent" => 1, "getpeername" => 1, "getpgrp" => 1, "getppid" => 1, "getpriority" => 1, "getprotobyname" => 1, "getprotobynumber" => 1, "getprotoent" => 1, "getpwent" => 1, "getpwnam" => 1, "getpwuid" => 1, "getservbyname" => 1, "getservbyport" => 1, "getservent" => 1, "getsockname" => 1, "getsockopt" => 1, "glob" => 1, "gmtime" => 1, "hex" => 1, "index" => 1, "int" => 1, "ioctl" => 1, "join" => 1, "keys" => 1, "kill" => 1, "lc" => 1, "lcfirst" => 1, "length" => 1, "link" => 1, "listen" => 1, "localtime" => 1, "lock" => 1, "log" => 1, "lstat" => 1, "mkdir" => 1, "msgctl" => 1, "msgget" => 1, "msgrcv" => 1, "msgsnd" => 1, "not" => 1, "oct" => 1, "open" => 1, "opendir" => 1, "or" => 1, "ord" => 1, "pack" => 1, "pipe" => 1, "pop" => 1, "push" => 1, "quotemeta" => 1, "rand" => 1, "read" => 1, "readdir" => 1, "readline" => 1, "readlink" => 1, "readpipe" => 1, "recv" => 1, "ref" => 1, "rename" => 1, "require" => 1, "reset" => 1, "reverse" => 1, "rewinddir" => 1, "rindex" => 1, "rmdir" => 1, "seek" => 1, "seekdir" => 1, "select" => 1, "semctl" => 1, "semget" => 1, "semop" => 1, "send" => 1, "setgrent" => 1, "sethostent" => 1, "setnetent" => 1, "setpgrp" => 1, "setpriority" => 1, "setprotoent" => 1, "setpwent" => 1, "setservent" => 1, "setsockopt" => 1, "shift" => 1, "shmctl" => 1, "shmget" => 1, "shmread" => 1, "shmwrite" => 1, "shutdown" => 1, "sin" => 1, "sleep" => 1, "socket" => 1, "socketpair" => 1, "splice" => 1, "sprintf" => 1, "sqrt" => 1, "srand" => 1, "stat" => 1, "substr" => 1, "symlink" => 1, "syscall" => 1, "sysopen" => 1, "sysread" => 1, "sysseek" => 1, "system" => 1, "syswrite" => 1, "tell" => 1, "telldir" => 1, "tie" => 1, "tied" => 1, "time" => 1, "times" => 1, "truncate" => 1, "uc" => 1, "ucfirst" => 1, "umask" => 1, "unlink" => 1, "unpack" => 1, "unshift" => 1, "untie" => 1, "utime" => 1, "values" => 1, "vec" => 1, "wait" => 1, "waitpid" => 1, "wantarray" => 1, "warn" => 1, "write" => 1, "xor" => 1, };
+    our $CORE_PROTO = {"CORE::abs" => "_", "CORE::accept" => "**", "CORE::alarm" => "_", "CORE::atan2" => "\$\$", "CORE::bind" => "*\$", "CORE::binmode" => "*;\$", "CORE::bless" => "\$;\$", "CORE::break" => '', "CORE::caller" => ";\$", "CORE::chdir" => ";\$", "CORE::chmod" => "\@", "CORE::chomp" => "_", "CORE::chop" => "_", "CORE::chown" => "\@", "CORE::chr" => "_", "CORE::chroot" => "_", "CORE::close" => ";*", "CORE::closedir" => "*", "CORE::connect" => "*\$", "CORE::continue" => '', "CORE::cos" => "_", "CORE::crypt" => "\$\$", "CORE::dbmclose" => "\\%", "CORE::dbmopen" => "\\%\$\$", "CORE::default" => undef, "CORE::defined" => "_", "CORE::delete" => "\$", "CORE::die" => "\@", "CORE::do" => undef, "CORE::dump" => '', "CORE::each" => "+", "CORE::endgrent" => '', "CORE::endhostent" => '', "CORE::endnetent" => '', "CORE::endprotoent" => '', "CORE::endpwent" => '', "CORE::endservent" => '', "CORE::eof" => ";*", "CORE::eval" => "_", "CORE::exec" => undef, "CORE::exists" => "\$", "CORE::exit" => ";\$", "CORE::exp" => "_", "CORE::fc" => "_", "CORE::fcntl" => "*\$\$", "CORE::fileno" => "*", "CORE::flock" => "*\$", "CORE::fork" => '', "CORE::format" => undef, "CORE::formline" => "\$\@", "CORE::getc" => ";*", "CORE::getgrent" => '', "CORE::getgrgid" => "\$", "CORE::getgrnam" => "\$", "CORE::gethostbyaddr" => "\$\$", "CORE::gethostbyname" => "\$", "CORE::gethostent" => '', "CORE::getlogin" => '', "CORE::getnetbyaddr" => "\$\$", "CORE::getnetbyname" => "\$", "CORE::getnetent" => '', "CORE::getpeername" => "*", "CORE::getpgrp" => ";\$", "CORE::getppid" => '', "CORE::getpriority" => "\$\$", "CORE::getprotobyname" => "\$", "CORE::getprotobynumber" => "\$", "CORE::getprotoent" => '', "CORE::getpwent" => '', "CORE::getpwnam" => "\$", "CORE::getpwuid" => "\$", "CORE::getservbyname" => "\$\$", "CORE::getservbyport" => "\$\$", "CORE::getservent" => '', "CORE::getsockname" => "*", "CORE::getsockopt" => "*\$\$", "CORE::given" => undef, "CORE::glob" => undef, "CORE::gmtime" => ";\$", "CORE::goto" => undef, "CORE::grep" => undef, "CORE::hex" => "_", "CORE::index" => "\$\$;\$", "CORE::int" => "_", "CORE::ioctl" => "*\$\$", "CORE::join" => "\$\@", "CORE::keys" => "+", "CORE::kill" => "\@", "CORE::last" => undef, "CORE::lc" => "_", "CORE::lcfirst" => "_", "CORE::length" => "_", "CORE::link" => "\$\$", "CORE::listen" => "*\$", "CORE::local" => undef, "CORE::localtime" => ";\$", "CORE::lock" => "\\\$", "CORE::log" => "_", "CORE::lstat" => "*", "CORE::map" => undef, "CORE::mkdir" => "_;\$", "CORE::msgctl" => "\$\$\$", "CORE::msgget" => "\$\$", "CORE::msgrcv" => "\$\$\$\$\$", "CORE::msgsnd" => "\$\$\$", "CORE::my" => undef, "CORE::next" => undef, "CORE::no" => undef, "CORE::oct" => "_", "CORE::open" => "*;\$\@", "CORE::opendir" => "*\$", "CORE::ord" => "_", "CORE::our" => undef, "CORE::pack" => "\$\@", "CORE::pack" => "\$\@", "CORE::package" => undef, "CORE::pipe" => "**", "CORE::pop" => ";+", "CORE::pos" => undef, "CORE::print" => undef, "CORE::printf" => "\$\@", "CORE::prototype" => undef, "CORE::push" => "+\@", "CORE::quotemeta" => "_", "CORE::rand" => ";\$", "CORE::read" => "*\\\$\$;\$", "CORE::readdir" => "*", "CORE::readline" => ";*", "CORE::readlink" => "_", "CORE::readpipe" => "_", "CORE::recv" => "*\\\$\$\$", "CORE::redo" => undef, "CORE::ref" => "_", "CORE::rename" => "\$\$", "CORE::require" => undef, "CORE::reset" => ";\$", "CORE::return" => undef, "CORE::reverse" => "\@", "CORE::rewinddir" => "*", "CORE::rindex" => "\$\$;\$", "CORE::rmdir" => "_", "CORE::say" => undef, "CORE::scalar" => undef, "CORE::seek" => "*\$\$", "CORE::seekdir" => "*\$", "CORE::select" => ";*", "CORE::semctl" => "\$\$\$\$", "CORE::semget" => "\$\$\$", "CORE::semop" => "\$\$", "CORE::send" => "*\$\$;\$", "CORE::setgrent" => '', "CORE::sethostent" => "\$", "CORE::setnetent" => "\$", "CORE::setpgrp" => ";\$\$", "CORE::setpriority" => "\$\$\$", "CORE::setprotoent" => "\$", "CORE::setpwent" => '', "CORE::setservent" => "\$", "CORE::setsockopt" => "*\$\$\$", "CORE::shift" => ";+", "CORE::shmctl" => "\$\$\$", "CORE::shmget" => "\$\$\$", "CORE::shmread" => "\$\$\$\$", "CORE::shmwrite" => "\$\$\$\$", "CORE::shutdown" => "*\$", "CORE::sin" => "_", "CORE::sleep" => ";\$", "CORE::socket" => "*\$\$\$", "CORE::socketpair" => "**\$\$\$", "CORE::sort" => undef, "CORE::splice" => "+;\$\$\@", "CORE::split" => undef, "CORE::sprintf" => "\$\@", "CORE::sqrt" => "_", "CORE::srand" => ";\$", "CORE::stat" => "*", "CORE::state" => undef, "CORE::study" => undef, "CORE::sub" => undef, "CORE::substr" => "\$\$;\$\$", "CORE::symlink" => "\$\$", "CORE::syscall" => "\$\@", "CORE::sysopen" => "*\$\$;\$", "CORE::sysread" => "*\\\$\$;\$", "CORE::sysseek" => "*\$\$", "CORE::system" => undef, "CORE::syswrite" => "*\$;\$\$", "CORE::tell" => ";*", "CORE::telldir" => "*", "CORE::tie" => "\\[\$\@%]\$;\@", "CORE::tied" => undef, "CORE::time" => '', "CORE::times" => '', "CORE::truncate" => "\$\$", "CORE::uc" => "_", "CORE::ucfirst" => "_", "CORE::umask" => ";\$", "CORE::undef" => ";\$", "CORE::unlink" => "\@", "CORE::unpack" => "\$;\$", "CORE::unshift" => "+\@", "CORE::untie" => undef, "CORE::use" => undef, "CORE::utime" => "\@", "CORE::values" => "+", "CORE::vec" => "\$\$\$", "CORE::wait" => '', "CORE::waitpid" => "\$\$", "CORE::wantarray" => '', "CORE::warn" => "\@", "CORE::when" => undef, "CORE::write" => ";*", "CORE::m" => undef, "CORE::q" => undef, "CORE::qq" => undef, "CORE::qw" => undef, "CORE::qx" => undef, "CORE::qr" => undef, "CORE::s" => undef, "CORE::tr" => undef, "CORE::y" => undef, "CORE::if" => undef, "CORE::unless" => undef, "CORE::when" => undef, "CORE::for" => undef, "CORE::foreach" => undef, "CORE::while" => undef, "CORE::given" => undef, "CORE::and" => undef, "CORE::or" => undef, "CORE::xor" => undef, "CORE::not" => undef, "CORE::cmp" => undef, "CORE::__FILE__" => '', "CORE::__LINE__" => '', "CORE::__PACKAGE__" => '', };
     sub Perlito5::test_perl_version {
         my $version = shift;
         $version =~ s/^v//;
@@ -9282,7 +9832,22 @@ use feature 'say';
         }
     }
     sub Perlito5::get_label {;
-        "tmp" . $Perlito5::ID++
+        "tmp" . ($Perlito5::ID++)
+    }
+    sub Perlito5::overloading_flag {
+        my $no_overloading;
+        if (${^H} & $Perlito5::HINT_NO_AMAGIC) {;
+            $no_overloading = 1
+        }
+        return ($no_overloading ? ("_no_overloading", 1) : ())
+    }
+    sub Perlito5::integer_flag {
+        my $op = shift;
+        my $is_integer;
+        if ((${^H} & $Perlito5::INTEGER) && $Perlito5::Integer{$op}) {;
+            $is_integer = 1
+        }
+        return ($is_integer ? ("_integer", 1) : ())
     }
     1
 }
@@ -9409,7 +9974,7 @@ use feature 'say';
                     return Perlito5::AST::Apply::->new("code", "compile_time_glob_set", "namespace", "Perlito5::Grammar::Scope", "arguments", [$arg->{"arguments"}->[0]->emit_compile_time(), $self->{"arguments"}->[1]->emit_compile_time(), Perlito5::AST::Buf::->new("buf", $Perlito5::PKG_NAME)])
                 }
                 elsif (ref($arg) eq "Perlito5::AST::Var" && $arg->{"sigil"} eq "*") {;
-                    return Perlito5::AST::Apply::->new("code", "compile_time_glob_set", "namespace", "Perlito5::Grammar::Scope", "arguments", [Perlito5::AST::Buf::->new("buf", ($arg->{"namespace"} || $arg->{"_namespace"}) . "::" . $arg->{"name"}), $self->{"arguments"}->[1]->emit_compile_time(), Perlito5::AST::Buf::->new("buf", $Perlito5::PKG_NAME)])
+                    return Perlito5::AST::Apply::->new("code", "compile_time_glob_set", "namespace", "Perlito5::Grammar::Scope", "arguments", [Perlito5::AST::Buf::->new("buf", ($arg->{"namespace"} || $arg->{"_namespace"}) . "::" . ($arg->{"name"})), $self->{"arguments"}->[1]->emit_compile_time(), Perlito5::AST::Buf::->new("buf", $Perlito5::PKG_NAME)])
                 }
             }
             if ($self->{"code"} eq "eval") {
@@ -9528,7 +10093,7 @@ use feature 'say';
             }
             return Perlito5::AST::Buf::->new("buf", $obj)
         }
-        my $as_string = $obj;
+        my $as_string = '' . $obj;
         $seen->{$as_string} && return $seen->{$as_string};
         $seen->{$as_string} = $pos;
         if ($ref eq "ARRAY") {
@@ -9569,7 +10134,7 @@ use feature 'say';
                 if ($var_id eq "__SUB__") {
                     my $sub_id = $captures->{$var_id};
                     $ast = $Perlito5::BEGIN_SUBS{$sub_id};
-                    $ast->{"name"} && ($sub_name = $ast->{"namespace"} . "::" . $ast->{"name"});
+                    $ast->{"name"} && ($sub_name = ($ast->{"namespace"}) . "::" . ($ast->{"name"}));
                     $source = $ast
                 }
                 else {
@@ -9596,7 +10161,7 @@ use feature 'say';
             return Perlito5::AST::Apply::->new("code", "do", "arguments", [Perlito5::AST::Block::->new("stmts", [@vars, $source])])
         }
         elsif ($ref eq "Regexp") {
-            my $regex = $ref;
+            my $regex = '' . $ref;
             return Perlito5::AST::Apply::->new("code", "p5:qr", "arguments", [Perlito5::AST::Buf::->new("buf", $regex), Perlito5::AST::Buf::->new("buf", '')])
         }
         my @out;
@@ -9655,7 +10220,7 @@ use feature 'say';
         my $ast = $item->{"ast"};
         if (ref($ast) eq "Perlito5::AST::Var" && $ast->{"_decl"} eq "our") {
             $ast = Perlito5::AST::Var::->new(%{$ast}, "sigil", $ast->{"_real_sigil"} || $ast->{"sigil"}, "namespace", $ast->{"namespace"} || $ast->{"_namespace"}, "decl", "global");
-            $name = $ast->{"sigil"} . $ast->{"namespace"} . "::" . $ast->{"name"}
+            $name = ($ast->{"sigil"}) . ($ast->{"namespace"}) . "::" . ($ast->{"name"})
         }
         my $bareword = substr($name, 1);
         if (ref($ast) eq "Perlito5::AST::Var" && $sigil eq "\$") {
@@ -9705,32 +10270,32 @@ use feature 'say';
         local $_;
         for my $v ("\$main::0", "\$main::a", "\$main::b", "\$main::_") {
             (my($sigil), my($namespace), my($name)) = $v =~ m/^([$@%])(\w+)::(.*)$/;
-            $scope->{$v} //= {"ast", Perlito5::AST::Var::->new("name", $name, "sigil", $sigil, "_decl", "global", "namespace", $namespace)}
+            $scope->{$v} //= {"ast" => Perlito5::AST::Var::->new("name", $name, "sigil", $sigil, "_decl", "global", "namespace", $namespace), }
         }
         for my $pkg (keys(%{$Perlito5::PACKAGES})) {;
             if (@{$pkg . "::ISA"}) {;
-                $scope->{"\@" . $pkg . "::ISA"} //= {"ast", Perlito5::AST::Var::->new("name", "ISA", "sigil", "\@", "_decl", "global", "namespace", $pkg), "value", \@{$pkg . "::ISA"}}
+                $scope->{"\@" . $pkg . "::ISA"} //= {"ast" => Perlito5::AST::Var::->new("name", "ISA", "sigil", "\@", "_decl", "global", "namespace", $pkg), "value" => \@{$pkg . "::ISA"}, }
             }
         }
-        $scope->{"\@Perlito5::END_BLOCK"} //= {"ast", Perlito5::AST::Var::->new("namespace", "Perlito5", "name", "END_BLOCK", "sigil", "\@", "_decl", "global"), "value", \@Perlito5::END_BLOCK};
-        $scope->{"\@Perlito5::INIT_BLOCK"} //= {"ast", Perlito5::AST::Var::->new("namespace", "Perlito5", "name", "INIT_BLOCK", "sigil", "\@", "_decl", "global"), "value", \@Perlito5::INIT_BLOCK};
-        $scope->{"%Perlito5::DATA_SECTION"} //= {"ast", Perlito5::AST::Var::->new("namespace", "Perlito5", "name", "DATA_SECTION", "sigil", "%", "_decl", "global"), "value", \%Perlito5::DATA_SECTION};
+        $scope->{"\@Perlito5::END_BLOCK"} //= {"ast" => Perlito5::AST::Var::->new("namespace", "Perlito5", "name", "END_BLOCK", "sigil", "\@", "_decl", "global"), "value" => \@Perlito5::END_BLOCK, };
+        $scope->{"\@Perlito5::INIT_BLOCK"} //= {"ast" => Perlito5::AST::Var::->new("namespace", "Perlito5", "name", "INIT_BLOCK", "sigil", "\@", "_decl", "global"), "value" => \@Perlito5::INIT_BLOCK, };
+        $scope->{"%Perlito5::DATA_SECTION"} //= {"ast" => Perlito5::AST::Var::->new("namespace", "Perlito5", "name", "DATA_SECTION", "sigil", "%", "_decl", "global"), "value" => \%Perlito5::DATA_SECTION, };
         for my $id (keys(%Perlito5::BEGIN_SCRATCHPAD)) {
             my $ast = $Perlito5::BEGIN_SCRATCHPAD{$id};
             my $sigil = $ast->{"_real_sigil"} || $ast->{"sigil"};
             if (!$ast->{"namespace"}) {
                 $ast->{"namespace"} = "Perlito5::BEGIN";
-                $ast->{"name"} = "_" . $id . "_" . $ast->{"name"}
+                $ast->{"name"} = "_" . $id . "_" . ($ast->{"name"})
             }
-            my $fullname = $ast->{"namespace"} . "::" . $ast->{"name"};
+            my $fullname = ($ast->{"namespace"}) . "::" . ($ast->{"name"});
             if ($sigil eq "\$") {;
-                $scope->{$sigil . $fullname} //= {"ast", $ast, "value", \${$fullname}}
+                $scope->{$sigil . $fullname} //= {"ast" => $ast, "value" => \${$fullname}, }
             }
             elsif ($sigil eq "\@") {;
-                $scope->{$sigil . $fullname} //= {"ast", $ast, "value", \@{$fullname}}
+                $scope->{$sigil . $fullname} //= {"ast" => $ast, "value" => \@{$fullname}, }
             }
             elsif ($sigil eq "%") {;
-                $scope->{$sigil . $fullname} //= {"ast", $ast, "value", \%{$fullname}}
+                $scope->{$sigil . $fullname} //= {"ast" => $ast, "value" => \%{$fullname}, }
             }
         }
         my $vars = [];
@@ -9761,15 +10326,15 @@ use feature 'say';
     }
     sub Perlito5::Compiler::do_not_edit {
         my $prefix = shift;
-        return $prefix . " Do not edit this file - Generated by " . Perlito5::Compiler::compiler_name() . " " . $Perlito5::VERSION . "
-"
+        return $prefix . " Do not edit this file - Generated by " . Perlito5::Compiler::compiler_name() . (" " . $Perlito5::VERSION . "
+")
     }
     sub Perlito5::Compiler::error {;
         die(join('', @_) . " at " . $Perlito5::FILE_NAME . " line " . $Perlito5::LINE_NUMBER . "
 ")
     }
     sub Perlito5::Compiler::compiler_pos {;
-        return {"file", $Perlito5::FILE_NAME, "line", $Perlito5::LINE_NUMBER}
+        return {"file" => $Perlito5::FILE_NAME, "line" => $Perlito5::LINE_NUMBER, }
     }
     1
 }
@@ -9779,8 +10344,8 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::term_token {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
-        my $tmp = (((("t" eq $str->[$MATCH->{"to"} + 0]) && ("o" eq $str->[$MATCH->{"to"} + 1]) && ("k" eq $str->[$MATCH->{"to"} + 2]) && ("e" eq $str->[$MATCH->{"to"} + 3]) && ("n" eq $str->[$MATCH->{"to"} + 4]) && ($MATCH->{"to"} += 5)) && (do {
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
+        my $tmp = (((("t" eq $str->[($MATCH->{"to"}) + 0]) && ("o" eq $str->[($MATCH->{"to"}) + 1]) && ("k" eq $str->[($MATCH->{"to"}) + 2]) && ("e" eq $str->[($MATCH->{"to"}) + 3]) && ("n" eq $str->[($MATCH->{"to"}) + 4]) && ($MATCH->{"to"} += 5)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -9808,7 +10373,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (("{" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && (("{" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Regex6::rule($str, $MATCH->{"to"});
             if ($m2) {
                 $MATCH->{"to"} = $m2->{"to"};
@@ -9818,7 +10383,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (("}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+        }) && (("}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
             my $source = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}) . "{ " . "my \$str     = \$_[0]; " . "my \$pos     = \$_[1]; " . "my \$MATCH = { str => \$str, from => \$pos, to => \$pos }; " . "my \$tmp = ( " . Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex6::rule"})->emit_perl5() . "); " . "\$tmp ? \$MATCH : undef; " . "}";
             $source = [split(m//, $source)];
             my $ast = Perlito5::Grammar::Block::named_sub_def($source, 0);
@@ -9831,14 +10396,14 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::any {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}));
         $tmp ? $MATCH : undef
     }
     sub Perlito5::Grammar::Regex6::literal {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $last_match_null = 0;
             my $m = $MATCH;
@@ -9846,13 +10411,13 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{"to"};
                 (do {;
-                    ((("\\" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
+                    ((("\\" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
                     ((do {
                         my $tmp = $MATCH;
-                        $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                        my $res = (("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                        $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                        my $res = (("'" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                         $MATCH = $tmp;
                         $res ? 0 : 1
                     }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -9876,7 +10441,7 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::metasyntax_exp {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $last_match_null = 0;
             my $m = $MATCH;
@@ -9884,8 +10449,8 @@ use feature 'say';
             my $count = 0;
             while (((do {
                 my $tmp = $MATCH;
-                $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                my $res = ((">" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                my $res = ((">" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                 $MATCH = $tmp;
                 $res ? 0 : 1
             }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"})) && ($last_match_null < 2)) {
@@ -9908,7 +10473,7 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::string_code {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $last_match_null = 0;
             my $m = $MATCH;
@@ -9917,10 +10482,10 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{"to"};
                 (do {;
-                    ((("\\" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
+                    ((("\\" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    ((("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                    ((("'" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                         my $m2 = Perlito5::Grammar::Regex6::literal($str, $MATCH->{"to"});
                         if ($m2) {
                             $MATCH->{"to"} = $m2->{"to"};
@@ -9929,10 +10494,10 @@ use feature 'say';
                         else {;
                             0
                         }
-                    }) && (("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)))
+                    }) && (("'" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
-                    ((("{" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                    ((("{" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                         my $m2 = Perlito5::Grammar::Regex6::string_code($str, $MATCH->{"to"});
                         if ($m2) {
                             $MATCH->{"to"} = $m2->{"to"};
@@ -9941,13 +10506,13 @@ use feature 'say';
                         else {;
                             0
                         }
-                    }) && (("}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)))
+                    }) && (("}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)))
                 }) || (do {
                     $MATCH->{"to"} = $pos1;
                     ((do {
                         my $tmp = $MATCH;
-                        $MATCH = {"from", $tmp->{"to"}, "to", $tmp->{"to"}};
-                        my $res = (("}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1));
+                        $MATCH = {"from" => $tmp->{"to"}, "to" => $tmp->{"to"}, };
+                        my $res = (("}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1));
                         $MATCH = $tmp;
                         $res ? 0 : 1
                     }) && ('' ne $str->[$MATCH->{"to"}] && ++$MATCH->{"to"}))
@@ -9972,7 +10537,7 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::parsed_code {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Regex6::string_code($str, $MATCH->{"to"});
             if ($m2) {
@@ -9991,11 +10556,11 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::rule_term {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                ((("<" eq $str->[$MATCH->{"to"} + 0]) && ("b" eq $str->[$MATCH->{"to"} + 1]) && ("e" eq $str->[$MATCH->{"to"} + 2]) && ("f" eq $str->[$MATCH->{"to"} + 3]) && ("o" eq $str->[$MATCH->{"to"} + 4]) && ("r" eq $str->[$MATCH->{"to"} + 5]) && ("e" eq $str->[$MATCH->{"to"} + 6]) && ($MATCH->{"to"} += 7)) && (do {
+                ((("<" eq $str->[($MATCH->{"to"}) + 0]) && ("b" eq $str->[($MATCH->{"to"}) + 1]) && ("e" eq $str->[($MATCH->{"to"}) + 2]) && ("f" eq $str->[($MATCH->{"to"}) + 3]) && ("o" eq $str->[($MATCH->{"to"}) + 4]) && ("r" eq $str->[($MATCH->{"to"}) + 5]) && ("e" eq $str->[($MATCH->{"to"}) + 6]) && ($MATCH->{"to"} += 7)) && (do {
                     my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -10014,13 +10579,13 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ((">" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((">" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = Perlito5::Rul::Before::->new("rule_exp", Perlito5::Match::flat($MATCH->{"rule"}));
                     1
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("<" eq $str->[$MATCH->{"to"} + 0]) && ("!" eq $str->[$MATCH->{"to"} + 1]) && ("b" eq $str->[$MATCH->{"to"} + 2]) && ("e" eq $str->[$MATCH->{"to"} + 3]) && ("f" eq $str->[$MATCH->{"to"} + 4]) && ("o" eq $str->[$MATCH->{"to"} + 5]) && ("r" eq $str->[$MATCH->{"to"} + 6]) && ("e" eq $str->[$MATCH->{"to"} + 7]) && ($MATCH->{"to"} += 8)) && (do {
+                ((("<" eq $str->[($MATCH->{"to"}) + 0]) && ("!" eq $str->[($MATCH->{"to"}) + 1]) && ("b" eq $str->[($MATCH->{"to"}) + 2]) && ("e" eq $str->[($MATCH->{"to"}) + 3]) && ("f" eq $str->[($MATCH->{"to"}) + 4]) && ("o" eq $str->[($MATCH->{"to"}) + 5]) && ("r" eq $str->[($MATCH->{"to"}) + 6]) && ("e" eq $str->[($MATCH->{"to"}) + 7]) && ($MATCH->{"to"} += 8)) && (do {
                     my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -10039,13 +10604,13 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ((">" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && ((">" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = Perlito5::Rul::NotBefore::->new("rule_exp", Perlito5::Match::flat($MATCH->{"rule"}));
                     1
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("'" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Regex6::literal($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -10055,16 +10620,16 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("'" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("'" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = Perlito5::Rul::Constant::->new("constant", Perlito5::Match::flat($MATCH->{"literal"}));
                     1
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("<" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("<" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        ((("." eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        ((("." eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             my $m2 = Perlito5::Grammar::Regex6::metasyntax_exp($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -10074,7 +10639,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && ((">" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        }) && ((">" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             $MATCH->{"capture"} = Perlito5::Rul::Subrule::->new("metasyntax", Perlito5::Match::flat($MATCH->{"metasyntax_exp"}), "captures", 0);
                             1
                         }))
@@ -10090,7 +10655,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && ((">" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        }) && ((">" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             $MATCH->{"capture"} = Perlito5::Rul::Subrule::->new("metasyntax", Perlito5::Match::flat($MATCH->{"metasyntax_exp"}), "captures", 1);
                             1
                         }))
@@ -10098,7 +10663,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("{" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("{" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Regex6::parsed_code($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -10108,16 +10673,16 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("}" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("}" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = Perlito5::Rul::Block::->new("closure", Perlito5::Match::flat($MATCH->{"parsed_code"}));
                     1
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("\\" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("\\" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        ((("c" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        ((("c" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             my $m2 = Perlito5::Grammar::Number::digits($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -10151,13 +10716,13 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("." eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("." eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = Perlito5::Rul::Dot::->new();
                     1
                 }))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                ((("[" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                ((("[" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Regex6::rule($str, $MATCH->{"to"});
                     if ($m2) {
                         $MATCH->{"to"} = $m2->{"to"};
@@ -10167,7 +10732,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (("]" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                }) && (("]" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                     $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"rule"});
                     1
                 }))
@@ -10178,17 +10743,17 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::quant_exp {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
-                (("?" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("?" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("*" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("*" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
-                (("+" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1))
+                (("+" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1))
             })
         }));
         $tmp ? $MATCH : undef
@@ -10196,7 +10761,7 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::quantifier {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"});
             if ($m2) {
@@ -10267,7 +10832,7 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::concat_list {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
@@ -10319,7 +10884,7 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::concat_exp {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $m2 = Perlito5::Grammar::Regex6::concat_list($str, $MATCH->{"to"});
             if ($m2) {
@@ -10339,7 +10904,7 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::or_list_exp {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = ((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
@@ -10356,7 +10921,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{"to"};
                     (do {;
-                        ((("|" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)) && (do {
+                        ((("|" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)) && (do {
                             my $m2 = Perlito5::Grammar::Regex6::or_list_exp($str, $MATCH->{"to"});
                             if ($m2) {
                                 $MATCH->{"to"} = $m2->{"to"};
@@ -10391,7 +10956,7 @@ use feature 'say';
     sub Perlito5::Grammar::Regex6::rule {
         my $str = $_[0];
         my $pos = $_[1];
-        my $MATCH = {"str", $str, "from", $pos, "to", $pos};
+        my $MATCH = {"str" => $str, "from" => $pos, "to" => $pos, };
         my $tmp = (((do {
             my $pos1 = $MATCH->{"to"};
             (do {;
@@ -10410,7 +10975,7 @@ use feature 'say';
                         $MATCH = $m
                     }
                     1
-                }) && (("|" eq $str->[$MATCH->{"to"} + 0]) && ($MATCH->{"to"} += 1)))
+                }) && (("|" eq $str->[($MATCH->{"to"}) + 0]) && ($MATCH->{"to"} += 1)))
             }) || (do {
                 $MATCH->{"to"} = $pos1;
                 1
@@ -10549,10 +11114,10 @@ use feature 'say';
         my $meth = $self->{"metasyntax"};
         my $code;
         if ($self->{"captures"} == 1) {;
-            $code = "if (\$m2) { \$MATCH->{to} = \$m2->{to}; \$MATCH->{'" . $self->{"metasyntax"} . "'} = \$m2; 1 } else { 0 }; "
+            $code = "if (\$m2) { \$MATCH->{to} = \$m2->{to}; \$MATCH->{'" . ($self->{"metasyntax"}) . "'} = \$m2; 1 } else { 0 }; "
         }
         elsif ($self->{"captures"} > 1) {;
-            $code = "if (\$m2) { " . "\$MATCH->{to} = \$m2->{to}; " . "if (exists \$MATCH->{'" . $self->{"metasyntax"} . "'}) { " . "push \@{ \$MATCH->{'" . $self->{"metasyntax"} . "'} }, \$m2; " . "} " . "else { " . "\$MATCH->{'" . $self->{"metasyntax"} . "'} = [ \$m2 ]; " . "}; " . "1 " . "} else { 0 }; "
+            $code = "if (\$m2) { " . "\$MATCH->{to} = \$m2->{to}; " . "if (exists \$MATCH->{'" . ($self->{"metasyntax"}) . "'}) { " . "push \@{ \$MATCH->{'" . ($self->{"metasyntax"}) . "'} }, \$m2; " . "} " . "else { " . "\$MATCH->{'" . ($self->{"metasyntax"}) . "'} = [ \$m2 ]; " . "}; " . "1 " . "} else { 0 }; "
         }
         else {;
             $code = "if (\$m2) { \$MATCH->{to} = \$m2->{to}; 1 } else { 0 }; "
@@ -10562,7 +11127,7 @@ use feature 'say';
     sub Perlito5::Rul::Subrule::set_captures_to_array {
         my $self = $_[0];
         if ($self->{"captures"} > 0) {;
-            $self->{"captures"} = $self->{"captures"} + 1
+            $self->{"captures"} = ($self->{"captures"}) + 1
         }
     }
     package Perlito5::Rul::Constant;
@@ -10634,7 +11199,7 @@ use feature 'say';
     }
     sub Perlito5::Rul::Block::emit_perl5 {
         my $self = $_[0];
-        "(do { " . $self->{"closure"} . "; 1 })"
+        "(do { " . ($self->{"closure"}) . "; 1 })"
     }
     sub Perlito5::Rul::Block::set_captures_to_array {;
         my $self = $_[0]
@@ -10685,7 +11250,7 @@ use feature 'say';
         !defined($obj) && return "null";
         my $ref = ref($obj);
         !$ref && return Perlito5::JSON::escape_string($obj);
-        my $as_string = $obj;
+        my $as_string = '' . $obj;
         $seen->{$as_string} && return $seen->{$as_string};
         $seen->{$as_string} = $pos;
         my $tab1 = $tab . "  ";
@@ -10714,7 +11279,7 @@ use feature 'say';
             $a cmp $b
         } keys(%{$obj})) {
             my $here = $pos . "{" . $i . "}";
-            push(@out, $tab1 . "\"" . $i . "\": " . Perlito5::JSON::_dumper($obj->{$i}, $tab1, $seen, $here))
+            push(@out, $tab1 . ("\"" . $i . "\": ") . Perlito5::JSON::_dumper($obj->{$i}, $tab1, $seen, $here))
         }
         return "{
 " . join(",
@@ -10990,10 +11555,10 @@ use feature 'say';
                 }
                 if ($arg->sigil() eq "&") {
                     if ($arg->{"namespace"}) {;
-                        return "p5pkg[" . Perlito5::JavaScript2::escape_string($arg->{"namespace"}) . "]." . $arg->{"name"}
+                        return "p5pkg[" . Perlito5::JavaScript2::escape_string($arg->{"namespace"}) . "]." . ($arg->{"name"})
                     }
                     else {;
-                        return Perlito5::JavaScript2::pkg() . "." . $arg->{"name"}
+                        return Perlito5::JavaScript2::pkg() . "." . ($arg->{"name"})
                     }
                 }
             }
@@ -11173,11 +11738,11 @@ use feature 'say';
                         $vars{$var->{"_id"}} = $var
                     }
                 }
-                my $scope = Perlito5::DumpToAST::dump_to_ast({"block", [values(%vars)]}, {}, "s");
+                my $scope = Perlito5::DumpToAST::dump_to_ast({"block" => [values(%vars)], }, {}, "s");
                 my $scope_js = "(new p5ArrayRef(" . Perlito5::JavaScript2::to_list([$scope]) . "))";
                 my $hash_hints = Perlito5::DumpToAST::dump_to_ast($self->{"_hash_hints"}, {}, "s");
                 my $hash_hints_js = $hash_hints->emit_javascript2($level);
-                $eval = "eval(p5pkg[\"Perlito5::JavaScript2::Runtime\"].perl5_to_js([" . Perlito5::JavaScript2::to_str($arg) . ", " . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ", " . Perlito5::JavaScript2::escape_string($wantarray) . ", " . (0 + $self->{"_scalar_hints"}) . ", " . $hash_hints_js . ", " . $scope_js . "]))"
+                $eval = "eval(p5pkg[\"Perlito5::JavaScript2::Runtime\"].perl5_to_js([" . Perlito5::JavaScript2::to_str($arg) . ", " . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ", " . Perlito5::JavaScript2::escape_string($wantarray) . ", " . (0 + ($self->{"_scalar_hints"})) . ", " . $hash_hints_js . ", " . $scope_js . "]))"
             }
             my $context = Perlito5::JavaScript2::to_context($wantarray);
             Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, ($context eq "p5want" ? () : "var p5want = " . $context . ";"), "var r;", "p5pkg[\"main\"][\"v_\@\"] = \"\";", "try {", ["r = " . $eval . ''], "}", "catch(err) {", ["if (err instanceof p5_error && (err.type == 'last' || err.type == 'redo' || err.type == 'next')) {", ["throw(err)"], "}", "else if ( err instanceof p5_error || err instanceof Error ) {", ["p5pkg[\"main\"][\"v_\@\"] = err;", "if (p5str(p5pkg[\"main\"][\"v_\@\"]).substr(-1, 1) != \"\\n\") {", ["try {" . '', ["p5pkg[\"main\"][\"v_\@\"] = p5pkg[\"main\"][\"v_\@\"] + \"\\n\" + err.stack + \"\\n\";"], "}", "catch(err) { }"], "}"], "}", "else {", ["return(err);"], "}"], "}", "return r;")
@@ -11348,7 +11913,7 @@ use feature 'say';
         }, "readline", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{"arguments"}};
-            my $fun = shift(@in) || bless({"arguments", [], "bareword", 1, "code", "ARGV", "namespace", ''}, "Perlito5::AST::Apply");
+            my $fun = shift(@in) || bless({"arguments" => [], "bareword" => 1, "code" => "ARGV", "namespace" => '', }, "Perlito5::AST::Apply");
             return "CORE.readline([" . $fun->emit_javascript2($level) . "], " . Perlito5::JavaScript2::to_context($wantarray) . ")"
         }, "map", sub {
             (my($self), my($level), my($wantarray)) = @_;
@@ -11525,7 +12090,7 @@ use feature 'say';
             {
                 my $name = $self->{"code"};
                 my $namespace = $self->{"namespace"} || $Perlito5::PKG_NAME;
-                my $effective_name = $namespace . "::" . $self->{"code"};
+                my $effective_name = $namespace . "::" . ($self->{"code"});
                 if (exists($Perlito5::PROTO->{$effective_name})) {;
                     $sig = $Perlito5::PROTO->{$effective_name}
                 }
@@ -11538,7 +12103,7 @@ use feature 'say';
                 }
                 else {
                     if ($self->{"bareword"}) {;
-                        return Perlito5::JavaScript2::escape_string(($self->{"namespace"} ? $self->{"namespace"} . "::" : '') . $name)
+                        return Perlito5::JavaScript2::escape_string(($self->{"namespace"} ? ($self->{"namespace"}) . "::" : '') . $name)
                     }
                     $may_need_autoload = 1
                 }
@@ -11643,7 +12208,7 @@ use feature 'say';
                 } @{$self->{"arguments"}})
             }
             if ($code ne "do" && $code ne "eval") {;
-                $self->{"arguments"} && return (map(+($_->emit_javascript2_get_decl()), @{$self->{"arguments"}}))
+                $self->{"arguments"} && return (map(+$_->emit_javascript2_get_decl(), @{$self->{"arguments"}}))
             }
             return ()
         }
@@ -11667,7 +12232,7 @@ use feature 'say';
             "p5pkg[" . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . "]"
         }
         sub Perlito5::JavaScript2::get_label {;
-            "tmp" . $Perlito5::ID++
+            "tmp" . ($Perlito5::ID++)
         }
         sub Perlito5::JavaScript2::tab {
             my $level = shift;
@@ -12111,8 +12676,8 @@ use feature 'say';
             my $init = '';
             if ($self->{"name"} eq "INIT") {
                 my $tmp = "p5pkg.main." . Perlito5::JavaScript2::get_label();
-                $init = Perlito5::JavaScript2::tab($level + 2) . "if (" . $tmp . ") { return }; " . $tmp . " = 1;
-"
+                $init = Perlito5::JavaScript2::tab($level + 2) . ("if (" . $tmp . ") { return }; " . $tmp . " = 1;
+")
             }
             return ($wantarray ne "void" ? "return " : '') . "p5block(" . "function (v) {}, " . "function () {
 " . $init . Perlito5::JavaScript2::tab($level + 2) . $body->emit_javascript2($level + 2, $wantarray) . "
@@ -12265,7 +12830,7 @@ use feature 'say';
     }
     package Perlito5::AST::Var;
     {
-        my $table = {"\$", "v_", "\@", "List_", "%", "Hash_", "&", ''};
+        my $table = {"\$" => "v_", "\@" => "List_", "%" => "Hash_", "&" => '', };
         sub Perlito5::AST::Var::emit_javascript2_global {
             (my($self), my($level), my($wantarray)) = @_;
             my $str_name = $self->{"name"};
@@ -12285,14 +12850,14 @@ use feature 'say';
                 return $s
             }
             if ($sigil eq "\$" && $self->{"name"} > 0) {;
-                return "p5_regex_capture[" . ($self->{"name"} - 1) . "]"
+                return "p5_regex_capture[" . (($self->{"name"}) - 1) . "]"
             }
             if ($sigil eq "::") {
                 $self->{"namespace"} eq "__PACKAGE__" && return Perlito5::JavaScript2::pkg();
                 $self->{"namespace"} eq "__SUB__" && return $Perlito5::AST::Sub::SUB_REF // "__SUB__";
                 return Perlito5::JavaScript2::escape_string($namespace)
             }
-            my $s = "p5make_package(" . Perlito5::JavaScript2::escape_string($namespace) . ")[" . Perlito5::JavaScript2::escape_string($table->{$sigil} . $str_name) . "]";
+            my $s = "p5make_package(" . Perlito5::JavaScript2::escape_string($namespace) . ")[" . Perlito5::JavaScript2::escape_string(($table->{$sigil}) . $str_name) . "]";
             if ($sigil eq "*") {;
                 return $s
             }
@@ -12301,7 +12866,7 @@ use feature 'say';
             }
             if ($sigil eq "\@") {
                 $s = $s . " || (" . $s . " = [])";
-                $s = "p5pkg[" . $s . ", " . Perlito5::JavaScript2::escape_string($namespace) . "][" . Perlito5::JavaScript2::escape_string($table->{$sigil} . $str_name) . "]";
+                $s = "p5pkg[" . $s . ", " . Perlito5::JavaScript2::escape_string($namespace) . "][" . Perlito5::JavaScript2::escape_string(($table->{$sigil}) . $str_name) . "]";
                 if ($self->{"sigil"} eq "\$#") {;
                     return "(" . $s . ".length - 1)"
                 }
@@ -12311,7 +12876,7 @@ use feature 'say';
             }
             elsif ($sigil eq "%") {
                 $s = $s . " || (" . $s . " = {})";
-                $s = "p5pkg[" . $s . ", " . Perlito5::JavaScript2::escape_string($namespace) . "][" . Perlito5::JavaScript2::escape_string($table->{$sigil} . $str_name) . "]"
+                $s = "p5pkg[" . $s . ", " . Perlito5::JavaScript2::escape_string($namespace) . "][" . Perlito5::JavaScript2::escape_string(($table->{$sigil}) . $str_name) . "]"
             }
             return $s
         }
@@ -12322,7 +12887,7 @@ use feature 'say';
             if ($decl_type ne "my" && $decl_type ne "state") {;
                 return $self->emit_javascript2_global($level, $wantarray)
             }
-            my $str_name = $self->{"name"} . "_" . $self->{"_id"};
+            my $str_name = ($self->{"name"}) . "_" . ($self->{"_id"});
             if ($sigil eq "\@") {
                 if ($wantarray eq "scalar") {;
                     return $self->emit_javascript2($level, "list") . ".length"
@@ -12332,9 +12897,9 @@ use feature 'say';
                 }
             }
             if ($self->{"sigil"} eq "\$#") {;
-                return "(" . $table->{"\@"} . $str_name . ".length - 1)"
+                return "(" . ($table->{"\@"}) . $str_name . ".length - 1)"
             }
-            $table->{$sigil} . $str_name
+            ($table->{$sigil}) . $str_name
         }
         sub Perlito5::AST::Var::emit_javascript2_set {
             (my($self), my($arguments), my($level), my($wantarray)) = @_;
@@ -12432,7 +12997,7 @@ use feature 'say';
                 return "if (typeof " . $self->{"var"}->emit_javascript2() . " == \"undefined\" ) { " . $str . "}"
             }
             else {;
-                die("not implemented: Perlito5::AST::Decl '" . $self->{"decl"} . "'")
+                die("not implemented: Perlito5::AST::Decl '" . ($self->{"decl"}) . "'")
             }
         }
         sub Perlito5::AST::Decl::emit_javascript2_set {
@@ -12682,12 +13247,12 @@ use feature 'say';
                 my $s;
                 if ($decl eq "my" || $decl eq "state") {
                     my $sig = $v->emit_javascript2($level + 1);
-                    push(@str, "(function(){ " . "var " . $sig . "; " . "p5for_lex(" . "function (v) { " . $sig . " = v }, " . "function () {
+                    push(@str, "(function(){ " . ("var " . $sig . "; ") . "p5for_lex(" . ("function (v) { " . $sig . " = v }, ") . "function () {
 " . Perlito5::JavaScript2::tab($level + 2) . (Perlito5::JavaScript2::LexicalBlock::->new("block", $body))->emit_javascript2($level + 2, $wantarray) . "
 " . Perlito5::JavaScript2::tab($level + 1) . "}, " . $cond . ", " . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ", " . Perlito5::JavaScript2::escape_string($self->{"label"} || '') . ") " . "})()")
                 }
                 else {;
-                    push(@str, "p5for(" . "p5make_package(" . Perlito5::JavaScript2::escape_string($namespace) . "), " . "\"v_" . $v->{"name"} . "\", " . "function () {" . "
+                    push(@str, "p5for(" . "p5make_package(" . Perlito5::JavaScript2::escape_string($namespace) . "), " . "\"v_" . ($v->{"name"}) . "\", " . "function () {" . "
 " . Perlito5::JavaScript2::tab($level + 2) . (Perlito5::JavaScript2::LexicalBlock::->new("block", $body))->emit_javascript2($level + 2, $wantarray) . "
 " . Perlito5::JavaScript2::tab($level + 1) . "}, " . $cond . ", " . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ", " . Perlito5::JavaScript2::escape_string($self->{"label"} || '') . ")")
                 }
@@ -12764,11 +13329,9 @@ use feature 'say';
         local ${^GLOBAL_PHASE};
         local ${^H} = $scalar_hints;
         local %{^H} = %{$hash_hints};
-        local $Perlito5::BASE_SCOPE = $scope_js->[0];
+        local @Perlito5::BASE_SCOPE = ($scope_js->[0]);
         local @Perlito5::SCOPE_STMT;
-        local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;
-        local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
-        local $Perlito5::SCOPE_DEPTH = 0;
+        local $Perlito5::CLOSURE_SCOPE = 0;
         local $Perlito5::PKG_NAME = $namespace;
         local @Perlito5::UNITCHECK_BLOCK;
         my $match = Perlito5::Grammar::exp_stmts($source, 0);
@@ -12794,7 +13357,7 @@ use feature 'say';
         return JS::inline("eval(\"(function(){\" + p5pkg.main.v__ + \"})()\")")
     }
     sub Perlito5::JavaScript2::Runtime::emit_javascript2 {;
-        return "//
+        return ("//
 // lib/Perlito5/JavaScript2/Runtime.js
 //
 // Runtime for \"Perlito\" Perl5-in-JavaScript2
@@ -14289,7 +14852,7 @@ var p5sort = function(namespace, func, args) {
     return out;
 };
 
-"
+")
     }
     1
 }
@@ -14297,7 +14860,7 @@ var p5sort = function(namespace, func, args) {
     package main;
     package Perlito5::JavaScript2::Lib;
     sub Perlito5::JavaScript2::Lib::init {;
-        Perlito5::Grammar::Use::register_internal_module("MIME::Base64", "Perlito5X::JavaScript::MIME::Base64")
+        @Perlito5::Grammar::Use::Perlito_internal_lib_directory = ("Perlito5X/JavaScript", "Perlito5X", '')
     }
     1
 }
@@ -14305,7 +14868,7 @@ var p5sort = function(namespace, func, args) {
     package main;
     package Perlito5::JavaScript2::Array;
     sub Perlito5::JavaScript2::Array::emit_javascript2 {;
-        return "//
+        return ("//
 // lib/Perlito5/JavaScript2/Runtime.js
 //
 // Runtime for \"Perlito\" Perl5-in-JavaScript2
@@ -14658,7 +15221,7 @@ function p5ArrayOfAlias(o) {
 }
 
 
-"
+")
     }
     1
 }
@@ -14666,7 +15229,7 @@ function p5ArrayOfAlias(o) {
     package main;
     package Perlito5::JavaScript2::CORE;
     sub Perlito5::JavaScript2::CORE::emit_javascript2 {;
-        return "//
+        return ("//
 //
 // lib/Perlito5/JavaScript2/CORE.js
 //
@@ -14689,7 +15252,7 @@ var CORE = p5pkg.CORE;
 
 var isNode = typeof require != \"undefined\";
 
-" . "if (isNode) {
+") . (("if (isNode) {
     try {
         var sleep = require(\"sleep\");
         CORE.sleep = function(List__) {
@@ -14710,7 +15273,7 @@ if (!CORE.sleep) {
     }
 }
 
-" . "if (isNode) {
+")) . (("if (isNode) {
     try {
         var crypt = require(\"crypt3\");
         CORE.crypt = function(List__) {
@@ -14734,10 +15297,10 @@ if (!CORE.crypt) {
     }
 }
 
-" . "CORE.time = function(List__) {
+")) . (("CORE.time = function(List__) {
     return CORE.int([Date.now() / 1000]);
 }
-" . "var _fmt_date = function(date) {
+")) . (("var _fmt_date = function(date) {
     return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()] + ' ' +
         ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][date.getMonth()] + ' ' +
         date.getDate() + ' ' + 
@@ -15183,7 +15746,7 @@ CORE.split = function(List__, want) {
 };
 
 
-"
+"))
     }
     1
 }
@@ -15191,7 +15754,7 @@ CORE.split = function(List__, want) {
     package main;
     package Perlito5::JavaScript2::IO;
     sub Perlito5::JavaScript2::IO::emit_javascript2 {;
-        return "//
+        return ("//
 //
 // lib/Perlito5/JavaScript2/IO.js
 //
@@ -15803,7 +16366,7 @@ CORE.warn = function(List__) {
 };
 
 
-"
+")
     }
     1
 }
@@ -15811,7 +16374,7 @@ CORE.warn = function(List__) {
     package main;
     package Perlito5::JavaScript2::Sprintf;
     sub Perlito5::JavaScript2::Sprintf::emit_javascript2 {;
-        return "/**
+        return ("/**
  * Copyright (c) 2010 Jakob Westhoff
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -16015,7 +16578,7 @@ CORE.sprintf = function(List__) {
     return newString;
 };
 
-"
+")
     }
     1
 }
@@ -16132,23 +16695,23 @@ CORE.sprintf = function(List__) {
             my $self = $_[0];
             my $str_name = $self->{"name"};
             my $c = substr($str_name, 0, 1);
-            if ($c lt " " && $self->{"sigil"} ne "::") {;
-                return $self->{"sigil"} . "{^" . chr(ord($c) + ord("A") - 1) . substr($str_name, 1) . "}"
+            if ($c ne '' && $c lt " " && $self->{"sigil"} ne "::") {;
+                return ($self->{"sigil"}) . "{^" . chr((ord($c) + ord("A")) - 1) . substr($str_name, 1) . "}"
             }
             my $ns = '';
             if ($self->{"namespace"}) {
-                $self->{"sigil"} eq "::" && return $self->{"namespace"} . "::";
+                $self->{"sigil"} eq "::" && return ($self->{"namespace"}) . "::";
                 if ($self->{"namespace"} eq "main" && substr($str_name, 0, 1) eq "^") {;
-                    return $self->{"sigil"} . "{" . $str_name . "}"
+                    return ($self->{"sigil"}) . "{" . $str_name . "}"
                 }
                 else {;
-                    $ns = $self->{"namespace"} . "::"
+                    $ns = ($self->{"namespace"}) . "::"
                 }
             }
             if (($c ge "a" && $c le "z") || ($c ge "A" && $c le "Z") || ($c eq "_") || ($str_name eq "/" || $str_name eq "&") || ((0 + $str_name) eq $str_name)) {;
-                return $self->{"sigil"} . $ns . $str_name
+                return ($self->{"sigil"}) . $ns . $str_name
             }
-            return $self->{"sigil"} . "{" . Perlito5::Perl5::escape_string($ns . $str_name) . "}"
+            return ($self->{"sigil"}) . "{" . Perlito5::Perl5::escape_string($ns . $str_name) . "}"
         }
     }
     package Perlito5::AST::Call;
@@ -16254,9 +16817,9 @@ CORE.sprintf = function(List__) {
             }
             my $ns = '';
             if ($self->{"namespace"}) {;
-                $ns = $self->{"namespace"} . "::"
+                $ns = ($self->{"namespace"}) . "::"
             }
-            my $code = $ns . $self->{"code"};
+            my $code = $ns . ($self->{"code"});
             if ($code eq "circumfix:<{ }>" && @{$self->{"arguments"}} == 1) {;
                 return ["op", $code, $self->{"arguments"}->[0]->emit_perl5(), '']
             }
@@ -16282,23 +16845,23 @@ CORE.sprintf = function(List__) {
                 my $replace0 = Perlito5::AST::Apply::emit_perl5_regex_expression($self->{"arguments"}->[0]);
                 my $replace1 = Perlito5::AST::Apply::emit_perl5_regex_expression($self->{"arguments"}->[1]);
                 my $q = Perlito5::AST::Apply::emit_perl5_choose_regex_quote($replace0, $replace1, $self->{"arguments"}->[2]->{"buf"});
-                return "s" . $q . $replace0 . $q . $replace1 . $q . $self->{"arguments"}->[2]->{"buf"}
+                return "s" . $q . $replace0 . $q . $replace1 . $q . ($self->{"arguments"}->[2]->{"buf"})
             }
             if ($self->{"code"} eq "p5:m") {
                 my $replace0 = Perlito5::AST::Apply::emit_perl5_regex_expression($self->{"arguments"}->[0]);
                 my $q = Perlito5::AST::Apply::emit_perl5_choose_regex_quote($replace0, $self->{"arguments"}->[1]->{"buf"});
-                return "m" . $q . $replace0 . $q . $self->{"arguments"}->[1]->{"buf"}
+                return "m" . $q . $replace0 . $q . ($self->{"arguments"}->[1]->{"buf"})
             }
             if ($self->{"code"} eq "p5:tr") {
                 my $replace0 = Perlito5::AST::Apply::emit_perl5_regex_expression($self->{"arguments"}->[0]);
                 my $replace1 = Perlito5::AST::Apply::emit_perl5_regex_expression($self->{"arguments"}->[1]);
                 my $q = Perlito5::AST::Apply::emit_perl5_choose_regex_quote($replace0, $replace1, $self->{"arguments"}->[2]->{"buf"});
-                return "tr" . $q . $replace0 . $q . $replace1 . $q . $self->{"arguments"}->[2]->{"buf"}
+                return "tr" . $q . $replace0 . $q . $replace1 . $q . ($self->{"arguments"}->[2]->{"buf"})
             }
             if ($self->{"code"} eq "p5:qr") {
                 my $replace0 = Perlito5::AST::Apply::emit_perl5_regex_expression($self->{"arguments"}->[0]);
                 my $q = Perlito5::AST::Apply::emit_perl5_choose_regex_quote($replace0, $self->{"arguments"}->[1]->{"buf"});
-                return "qr" . $q . $replace0 . $q . $self->{"arguments"}->[1]->{"buf"}
+                return "qr" . $q . $replace0 . $q . ($self->{"arguments"}->[1]->{"buf"})
             }
             if ($self->{"code"} eq "package") {;
                 return ["stmt", "package", ["bareword", $self->{"namespace"}]]
@@ -16314,7 +16877,7 @@ CORE.sprintf = function(List__) {
             }
             $self->{"ignore_proto"} && ($code = "&" . $code);
             if ($self->{"bareword"} && !@{$self->{"arguments"}}) {
-                my $effective_name = ($self->{"namespace"} || $Perlito5::PKG_NAME) . "::" . $self->{"code"};
+                my $effective_name = ($self->{"namespace"} || $Perlito5::PKG_NAME) . "::" . ($self->{"code"});
                 if (exists($Perlito5::PROTO->{$effective_name})) {;
                     $code = $effective_name
                 }
@@ -16402,7 +16965,7 @@ CORE.sprintf = function(List__) {
     {;
         sub Perlito5::AST::Decl::emit_perl5 {
             my $self = $_[0];
-            return ["op", "prefix:<" . $self->{"decl"} . ">", ($self->{"type"} ? $self->{"type"} : ()), $self->{"var"}->emit_perl5()]
+            return ["op", "prefix:<" . ($self->{"decl"}) . ">", ($self->{"type"} ? $self->{"type"} : ()), $self->{"var"}->emit_perl5()]
         }
     }
     package Perlito5::AST::Sub;
@@ -16416,7 +16979,7 @@ CORE.sprintf = function(List__) {
                 push(@parts, Perlito5::Perl5::emit_perl5_block($self->{"block"}->{"stmts"}))
             }
             !$self->{"name"} && return ["op", "prefix:<sub>", @sig, @parts];
-            return ["stmt", ["keyword", "sub"], ["bareword", $self->{"namespace"} . "::" . $self->{"name"}], @sig, @parts]
+            return ["stmt", ["keyword", "sub"], ["bareword", ($self->{"namespace"}) . "::" . ($self->{"name"})], @sig, @parts]
         }
     }
     1
@@ -16452,10 +17015,10 @@ CORE.sprintf = function(List__) {
         Perlito5::Perl5::PrettyPrinter::label(@_)
     });
     my %pair = ("(", ")", "[", "]", "{", "}", "<", ">");
-    our %op = ("prefix:<\$>", {"fix", "deref", "prec", 0, "str", "\$"}, "prefix:<\@>", {"fix", "deref", "prec", 0, "str", "\@"}, "prefix:<%>", {"fix", "deref", "prec", 0, "str", "%"}, "prefix:<&>", {"fix", "deref", "prec", 0, "str", "&"}, "prefix:<*>", {"fix", "deref", "prec", 0, "str", "*"}, "prefix:<\$#>", {"fix", "deref", "prec", 0, "str", "\$#"}, "circumfix:<[ ]>", {"fix", "circumfix", "prec", 0, "str", "["}, "circumfix:<{ }>", {"fix", "circumfix", "prec", 0, "str", "{"}, "circumfix:<( )>", {"fix", "circumfix", "prec", 0, "str", "("}, "infix:<->>", {"fix", "infix", "prec", -1, "str", "->"}, "prefix:<-->", {"fix", "prefix", "prec", 1, "str", "--"}, "prefix:<++>", {"fix", "prefix", "prec", 1, "str", "++"}, "postfix:<-->", {"fix", "postfix", "prec", 1, "str", "--"}, "postfix:<++>", {"fix", "postfix", "prec", 1, "str", "++"}, "infix:<**>", {"fix", "infix", "prec", 2, "str", "**"}, "prefix:<\\>", {"fix", "prefix", "prec", 3, "str", "\\"}, "prefix:<+>", {"fix", "prefix", "prec", 3, "str", "+"}, "prefix:<->", {"fix", "prefix", "prec", 3, "str", "-"}, "prefix:<~>", {"fix", "prefix", "prec", 3, "str", "~"}, "prefix:<!>", {"fix", "prefix", "prec", 3, "str", "!"}, "infix:<=~>", {"fix", "infix", "prec", 4, "str", " =~ "}, "infix:<!~>", {"fix", "infix", "prec", 4, "str", " !~ "}, "infix:<*>", {"fix", "infix", "prec", 5, "str", " * "}, "infix:</>", {"fix", "infix", "prec", 5, "str", " / "}, "infix:<%>", {"fix", "infix", "prec", 5, "str", " % "}, "infix:<x>", {"fix", "infix", "prec", 5, "str", " x "}, "infix:<+>", {"fix", "infix", "prec", 6, "str", " + "}, "infix:<->", {"fix", "infix", "prec", 6, "str", " - "}, "list:<.>", {"fix", "list", "prec", 6, "str", " . "}, "infix:<<<>", {"fix", "infix", "prec", 7, "str", " << "}, "infix:<>>>", {"fix", "infix", "prec", 7, "str", " >> "}, "infix:<lt>", {"fix", "infix", "prec", 9, "str", " lt "}, "infix:<le>", {"fix", "infix", "prec", 9, "str", " le "}, "infix:<gt>", {"fix", "infix", "prec", 9, "str", " gt "}, "infix:<ge>", {"fix", "infix", "prec", 9, "str", " ge "}, "infix:<<=>", {"fix", "infix", "prec", 9, "str", " <= "}, "infix:<>=>", {"fix", "infix", "prec", 9, "str", " >= "}, "infix:<<>", {"fix", "infix", "prec", 9, "str", " < "}, "infix:<>>", {"fix", "infix", "prec", 9, "str", " > "}, "infix:<<=>>", {"fix", "infix", "prec", 10, "str", " <=> "}, "infix:<cmp>", {"fix", "infix", "prec", 10, "str", " cmp "}, "infix:<==>", {"fix", "infix", "prec", 10, "str", " == "}, "infix:<!=>", {"fix", "infix", "prec", 10, "str", " != "}, "infix:<ne>", {"fix", "infix", "prec", 10, "str", " ne "}, "infix:<eq>", {"fix", "infix", "prec", 10, "str", " eq "}, "infix:<&>", {"fix", "infix", "prec", 11, "str", " & "}, "infix:<|>", {"fix", "infix", "prec", 12, "str", " | "}, "infix:<^>", {"fix", "infix", "prec", 12, "str", " ^ "}, "infix:<..>", {"fix", "infix", "prec", 13, "str", " .. "}, "infix:<...>", {"fix", "infix", "prec", 13, "str", " ... "}, "infix:<~~>", {"fix", "infix", "prec", 13, "str", " ~~ "}, "infix:<&&>", {"fix", "infix", "prec", 14, "str", " && "}, "infix:<||>", {"fix", "infix", "prec", 15, "str", " || "}, "infix:<//>", {"fix", "infix", "prec", 15, "str", " // "}, "ternary:<? :>", {"fix", "ternary", "prec", 16}, "infix:<=>", {"fix", "infix", "prec", 17, "str", " = "}, "infix:<**=>", {"fix", "infix", "prec", 17, "str", " **= "}, "infix:<+=>", {"fix", "infix", "prec", 17, "str", " += "}, "infix:<-=>", {"fix", "infix", "prec", 17, "str", " -= "}, "infix:<*=>", {"fix", "infix", "prec", 17, "str", " *= "}, "infix:</=>", {"fix", "infix", "prec", 17, "str", " /= "}, "infix:<x=>", {"fix", "infix", "prec", 17, "str", " x= "}, "infix:<|=>", {"fix", "infix", "prec", 17, "str", " |= "}, "infix:<&=>", {"fix", "infix", "prec", 17, "str", " &= "}, "infix:<.=>", {"fix", "infix", "prec", 17, "str", " .= "}, "infix:<<<=>", {"fix", "infix", "prec", 17, "str", " <<= "}, "infix:<>>=>", {"fix", "infix", "prec", 17, "str", " >>= "}, "infix:<%=>", {"fix", "infix", "prec", 17, "str", " %= "}, "infix:<||=>", {"fix", "infix", "prec", 17, "str", " ||= "}, "infix:<&&=>", {"fix", "infix", "prec", 17, "str", " &&= "}, "infix:<^=>", {"fix", "infix", "prec", 17, "str", " ^= "}, "infix:<//=>", {"fix", "infix", "prec", 17, "str", " //= "}, "infix:<=>>", {"fix", "infix", "prec", 18, "str", " => "}, "list:<,>", {"fix", "list", "prec", 19, "str", ", "}, "prefix:<not>", {"fix", "prefix", "prec", 20, "str", "not "}, "infix:<and>", {"fix", "infix", "prec", 21, "str", " and "}, "infix:<or>", {"fix", "infix", "prec", 22, "str", " or "}, "infix:<xor>", {"fix", "infix", "prec", 22, "str", " xor "});
-    $op{"prefix:<" . $_ . ">"} = {"fix", "prefix", "prec", 8, "str", $_ . " "}
+    our %op = ("prefix:<\$>", {"fix" => "deref", "prec" => 0, "str" => "\$", }, "prefix:<\@>", {"fix" => "deref", "prec" => 0, "str" => "\@", }, "prefix:<%>", {"fix" => "deref", "prec" => 0, "str" => "%", }, "prefix:<&>", {"fix" => "deref", "prec" => 0, "str" => "&", }, "prefix:<*>", {"fix" => "deref", "prec" => 0, "str" => "*", }, "prefix:<\$#>", {"fix" => "deref", "prec" => 0, "str" => "\$#", }, "circumfix:<[ ]>", {"fix" => "circumfix", "prec" => 0, "str" => "[", }, "circumfix:<{ }>", {"fix" => "circumfix", "prec" => 0, "str" => "{", }, "circumfix:<( )>", {"fix" => "circumfix", "prec" => 0, "str" => "(", }, "infix:<->>", {"fix" => "infix", "prec" => -1, "str" => "->", }, "prefix:<-->", {"fix" => "prefix", "prec" => 1, "str" => "--", }, "prefix:<++>", {"fix" => "prefix", "prec" => 1, "str" => "++", }, "postfix:<-->", {"fix" => "postfix", "prec" => 1, "str" => "--", }, "postfix:<++>", {"fix" => "postfix", "prec" => 1, "str" => "++", }, "infix:<**>", {"fix" => "infix", "prec" => 2, "str" => "**", }, "prefix:<\\>", {"fix" => "prefix", "prec" => 3, "str" => "\\", }, "prefix:<+>", {"fix" => "prefix", "prec" => 3, "str" => "+", }, "prefix:<->", {"fix" => "prefix", "prec" => 3, "str" => "-", }, "prefix:<~>", {"fix" => "prefix", "prec" => 3, "str" => "~", }, "prefix:<!>", {"fix" => "prefix", "prec" => 3, "str" => "!", }, "infix:<=~>", {"fix" => "infix", "prec" => 4, "str" => " =~ ", }, "infix:<!~>", {"fix" => "infix", "prec" => 4, "str" => " !~ ", }, "infix:<*>", {"fix" => "infix", "prec" => 5, "str" => " * ", }, "infix:</>", {"fix" => "infix", "prec" => 5, "str" => " / ", }, "infix:<%>", {"fix" => "infix", "prec" => 5, "str" => " % ", }, "infix:<x>", {"fix" => "infix", "prec" => 5, "str" => " x ", }, "infix:<+>", {"fix" => "infix", "prec" => 6, "str" => " + ", }, "infix:<->", {"fix" => "infix", "prec" => 6, "str" => " - ", }, "list:<.>", {"fix" => "list", "prec" => 6, "str" => " . ", }, "infix:<<<>", {"fix" => "infix", "prec" => 7, "str" => " << ", }, "infix:<>>>", {"fix" => "infix", "prec" => 7, "str" => " >> ", }, "infix:<lt>", {"fix" => "infix", "prec" => 9, "str" => " lt ", }, "infix:<le>", {"fix" => "infix", "prec" => 9, "str" => " le ", }, "infix:<gt>", {"fix" => "infix", "prec" => 9, "str" => " gt ", }, "infix:<ge>", {"fix" => "infix", "prec" => 9, "str" => " ge ", }, "infix:<<=>", {"fix" => "infix", "prec" => 9, "str" => " <= ", }, "infix:<>=>", {"fix" => "infix", "prec" => 9, "str" => " >= ", }, "infix:<<>", {"fix" => "infix", "prec" => 9, "str" => " < ", }, "infix:<>>", {"fix" => "infix", "prec" => 9, "str" => " > ", }, "infix:<<=>>", {"fix" => "infix", "prec" => 10, "str" => " <=> ", }, "infix:<cmp>", {"fix" => "infix", "prec" => 10, "str" => " cmp ", }, "infix:<==>", {"fix" => "infix", "prec" => 10, "str" => " == ", }, "infix:<!=>", {"fix" => "infix", "prec" => 10, "str" => " != ", }, "infix:<ne>", {"fix" => "infix", "prec" => 10, "str" => " ne ", }, "infix:<eq>", {"fix" => "infix", "prec" => 10, "str" => " eq ", }, "infix:<&>", {"fix" => "infix", "prec" => 11, "str" => " & ", }, "infix:<|>", {"fix" => "infix", "prec" => 12, "str" => " | ", }, "infix:<^>", {"fix" => "infix", "prec" => 12, "str" => " ^ ", }, "infix:<..>", {"fix" => "infix", "prec" => 13, "str" => " .. ", }, "infix:<...>", {"fix" => "infix", "prec" => 13, "str" => " ... ", }, "infix:<~~>", {"fix" => "infix", "prec" => 13, "str" => " ~~ ", }, "infix:<&&>", {"fix" => "infix", "prec" => 14, "str" => " && ", }, "infix:<||>", {"fix" => "infix", "prec" => 15, "str" => " || ", }, "infix:<//>", {"fix" => "infix", "prec" => 15, "str" => " // ", }, "ternary:<? :>", {"fix" => "ternary", "prec" => 16, }, "infix:<=>", {"fix" => "infix", "prec" => 17, "str" => " = ", }, "infix:<**=>", {"fix" => "infix", "prec" => 17, "str" => " **= ", }, "infix:<+=>", {"fix" => "infix", "prec" => 17, "str" => " += ", }, "infix:<-=>", {"fix" => "infix", "prec" => 17, "str" => " -= ", }, "infix:<*=>", {"fix" => "infix", "prec" => 17, "str" => " *= ", }, "infix:</=>", {"fix" => "infix", "prec" => 17, "str" => " /= ", }, "infix:<x=>", {"fix" => "infix", "prec" => 17, "str" => " x= ", }, "infix:<|=>", {"fix" => "infix", "prec" => 17, "str" => " |= ", }, "infix:<&=>", {"fix" => "infix", "prec" => 17, "str" => " &= ", }, "infix:<.=>", {"fix" => "infix", "prec" => 17, "str" => " .= ", }, "infix:<<<=>", {"fix" => "infix", "prec" => 17, "str" => " <<= ", }, "infix:<>>=>", {"fix" => "infix", "prec" => 17, "str" => " >>= ", }, "infix:<%=>", {"fix" => "infix", "prec" => 17, "str" => " %= ", }, "infix:<||=>", {"fix" => "infix", "prec" => 17, "str" => " ||= ", }, "infix:<&&=>", {"fix" => "infix", "prec" => 17, "str" => " &&= ", }, "infix:<^=>", {"fix" => "infix", "prec" => 17, "str" => " ^= ", }, "infix:<//=>", {"fix" => "infix", "prec" => 17, "str" => " //= ", }, "infix:<=>>", {"fix" => "infix", "prec" => 18, "str" => " => ", }, "list:<,>", {"fix" => "list", "prec" => 19, "str" => ", ", }, "prefix:<not>", {"fix" => "prefix", "prec" => 20, "str" => "not ", }, "infix:<and>", {"fix" => "infix", "prec" => 21, "str" => " and ", }, "infix:<or>", {"fix" => "infix", "prec" => 22, "str" => " or ", }, "infix:<xor>", {"fix" => "infix", "prec" => 22, "str" => " xor ", });
+    $op{"prefix:<" . $_ . ">"} = {"fix" => "prefix", "prec" => 8, "str" => $_ . " ", }
         for "-r", "-w", "-x", "-o", "-R", "-W", "-X", "-O", "-e", "-z", "-s", "-f", "-d", "-l", "-p", "-S", "-b", "-c", "-t", "-u", "-g", "-k", "-T", "-B", "-M", "-A", "-C";
-    $op{"prefix:<" . $_ . ">"} = {"fix", "parsed", "prec", 15, "str", $_}
+    $op{"prefix:<" . $_ . ">"} = {"fix" => "parsed", "prec" => 15, "str" => '' . $_, }
         for "do", "sub", "my", "our", "state", "local", "eval", "map", "grep", "sort", "print", "use";
     my %tab;
     sub Perlito5::Perl5::PrettyPrinter::tab {
@@ -16495,9 +17058,10 @@ CORE.sprintf = function(List__) {
         (my($data), my($level), my($out), my($current_op)) = @_;
         if (ref($data)) {
             my $this_prec = Perlito5::Perl5::PrettyPrinter::op_precedence($data);
-            $this_prec && $current_op->{"prec"} && $current_op->{"prec"} < $this_prec && push(@{$out}, "(");
+            my $use_paren = $this_prec && $current_op->{"prec"} && ($current_op->{"prec"} < $this_prec || $current_op->{"prec"} == 6);
+            $use_paren && push(@{$out}, "(");
             Perlito5::Perl5::PrettyPrinter::render($data, $level, $out);
-            $this_prec && $current_op->{"prec"} && $current_op->{"prec"} < $this_prec && push(@{$out}, ")")
+            $use_paren && push(@{$out}, ")")
         }
         else {;
             push(@{$out}, $data)
@@ -16559,7 +17123,7 @@ CORE.sprintf = function(List__) {
             }
         }
         else {;
-            die("unknown fixity: " . $spec->{"fix"})
+            die("unknown fixity: " . ($spec->{"fix"}))
         }
         return
     }
@@ -16716,11 +17280,11 @@ CORE.sprintf = function(List__) {
         return eval($code)
     }
     sub Perlito5::Perl5::Runtime::emit_perl5 {;
-        return "
+        return ("
 use v5.10;
 use feature 'say';
 
-"
+")
     }
     1
 }
@@ -16835,14 +17399,14 @@ use feature 'say';
                 defined($_)
             } @{$self->{"body"}};
             my @out;
-            my $pkg = {"name", "main", "body", []};
+            my $pkg = {"name" => "main", "body" => [], };
             for my $stmt (@body) {
                 if (ref($stmt) eq "Perlito5::AST::Apply" && $stmt->{"code"} eq "package") {
                     $Perlito5::PKG_NAME = $stmt->{"namespace"};
                     @{$pkg->{"body"}} && push(@out, ["stmt", ["keyword", "class"], ["bareword", $pkg->{"name"}], ["block", map {;
                         $_->emit_perl6()
                     } @{$pkg->{"body"}}]]);
-                    $pkg = {"name", $stmt->{"namespace"}, "body", []}
+                    $pkg = {"name" => $stmt->{"namespace"}, "body" => [], }
                 }
                 else {;
                     push(@{$pkg->{"body"}}, $stmt)
@@ -16858,7 +17422,7 @@ use feature 'say';
             my @body = @{$comp_units};
             my @out;
             push(@out, ["comment", Perlito5::Compiler::do_not_edit("#")]);
-            my $pkg = {"name", "main", "body", []};
+            my $pkg = {"name" => "main", "body" => [], };
             for my $stmt (@body) {
                 if (ref($stmt) eq "Perlito5::AST::Apply" && $stmt->{"code"} eq "package") {
                     $Perlito5::PKG_NAME = $stmt->{"namespace"};
@@ -16874,7 +17438,7 @@ use feature 'say';
                             } @{$pkg->{"body"}}]])
                         }
                     }
-                    $pkg = {"name", $stmt->{"namespace"}, "body", []}
+                    $pkg = {"name" => $stmt->{"namespace"}, "body" => [], }
                 }
                 else {;
                     push(@{$pkg->{"body"}}, $stmt)
@@ -17000,17 +17564,17 @@ use feature 'say';
             my $ns = '';
             if ($self->{"namespace"}) {
                 if ($self->{"namespace"} eq "main" && substr($self->{"name"}, 0, 1) eq "^") {;
-                    return $self->{"sigil"} . "{" . $self->{"name"} . "}"
+                    return ($self->{"sigil"}) . "{" . ($self->{"name"}) . "}"
                 }
                 else {;
-                    $ns = $self->{"namespace"} . "::"
+                    $ns = ($self->{"namespace"}) . "::"
                 }
             }
             my $bareword = $ns . $str_name;
             my $c = substr($self->{"name"}, 0, 1);
             if (($c ge "a" && $c le "z") || ($c ge "A" && $c le "Z") || ($c eq "_")) {
                 $self->{"sigil"} eq "\@" && $bareword eq "ARGV" && return "\@*ARGS";
-                return $self->{"sigil"} . $bareword
+                return ($self->{"sigil"}) . $bareword
             }
             if ($self->{"sigil"} eq "\$") {
                 $bareword eq "/" && return "\"\\n\"";
@@ -17019,7 +17583,7 @@ use feature 'say';
                 $bareword eq "\@" && return "\$!";
                 $bareword >= 1 && return "\$" . ($bareword - 1)
             }
-            my $str = $self->{"sigil"} . "{'" . $bareword . "'}";
+            my $str = ($self->{"sigil"}) . "{'" . $bareword . "'}";
             return $str
         }
     }
@@ -17134,13 +17698,13 @@ use feature 'say';
             }
             my $ns = '';
             if ($self->{"namespace"}) {;
-                $ns = $self->{"namespace"} . "::"
+                $ns = ($self->{"namespace"}) . "::"
             }
             $code = $ns . $code;
             if ($self->{"code"} eq "p5:s") {
                 my $modifier = $self->{"arguments"}->[2]->{"buf"};
                 $modifier && ($modifier = ":" . $modifier);
-                return "s:P5" . $modifier . "!" . $self->{"arguments"}->[0]->{"buf"} . "!" . $self->{"arguments"}->[1]->{"buf"} . "!"
+                return "s:P5" . $modifier . "!" . ($self->{"arguments"}->[0]->{"buf"}) . "!" . ($self->{"arguments"}->[1]->{"buf"}) . "!"
             }
             if ($self->{"code"} eq "p5:m") {
                 my $s;
@@ -17162,7 +17726,7 @@ use feature 'say';
                 return "m:P5" . $modifier . "!" . $s . "!"
             }
             if ($self->{"code"} eq "p5:tr") {;
-                return "tr!" . $self->{"arguments"}->[0]->{"buf"} . "!" . $self->{"arguments"}->[1]->{"buf"} . "!"
+                return "tr!" . ($self->{"arguments"}->[0]->{"buf"}) . "!" . ($self->{"arguments"}->[1]->{"buf"}) . "!"
             }
             if ($self->{"code"} eq "package") {
                 $Perlito5::PKG_NAME = $self->{"namespace"};
@@ -17270,7 +17834,7 @@ use feature 'say';
     {;
         sub Perlito5::AST::Decl::emit_perl6 {
             my $self = $_[0];
-            return ["op", "prefix:<" . $self->{"decl"} . ">", ($self->{"type"} ? $self->{"type"} : ()), $self->{"var"}->emit_perl6()]
+            return ["op", "prefix:<" . ($self->{"decl"}) . ">", ($self->{"type"} ? $self->{"type"} : ()), $self->{"var"}->emit_perl6()]
         }
     }
     package Perlito5::AST::Sub;
@@ -17293,7 +17857,7 @@ use feature 'say';
             $self->{"decl"} eq "my" && ($is_our = 0);
             my $name = $self->{"name"};
             if ($Perlito5::PKG_NAME ne $self->{"namespace"}) {
-                $name = $self->{"namespace"} . "::" . $name;
+                $name = ($self->{"namespace"}) . "::" . $name;
                 $is_our = 0
             }
             if ($is_our) {;
@@ -17339,10 +17903,10 @@ use feature 'say';
         Perlito5::Perl6::PrettyPrinter::var(@_)
     });
     my %pair = ("(", ")", "[", "]", "{", "}");
-    our %op = ("prefix:<\$>", {"fix", "deref", "prec", 0, "str", "\$"}, "prefix:<\@>", {"fix", "deref", "prec", 0, "str", "\@"}, "prefix:<%>", {"fix", "deref", "prec", 0, "str", "%"}, "prefix:<&>", {"fix", "deref", "prec", 0, "str", "&"}, "prefix:<*>", {"fix", "deref", "prec", 0, "str", "*"}, "prefix:<\$#>", {"fix", "deref", "prec", 0, "str", "\$#"}, "circumfix:<[ ]>", {"fix", "circumfix", "prec", 0, "str", "["}, "circumfix:<{ }>", {"fix", "circumfix", "prec", 0, "str", "{"}, "circumfix:<( )>", {"fix", "circumfix", "prec", 0, "str", "("}, "infix:<.>", {"fix", "infix", "prec", -1, "str", "."}, "prefix:<-->", {"fix", "prefix", "prec", 1, "str", "--"}, "prefix:<++>", {"fix", "prefix", "prec", 1, "str", "++"}, "postfix:<-->", {"fix", "postfix", "prec", 1, "str", "--"}, "postfix:<++>", {"fix", "postfix", "prec", 1, "str", "++"}, "infix:<**>", {"fix", "infix", "prec", 2, "str", "**"}, "p6_prefix:<^>", {"fix", "prefix", "prec", 3, "str", "^"}, "prefix:<\\>", {"fix", "prefix", "prec", 3, "str", "\\"}, "prefix:<+>", {"fix", "prefix", "prec", 3, "str", "+"}, "prefix:<->", {"fix", "prefix", "prec", 3, "str", "-"}, "prefix:<~>", {"fix", "prefix", "prec", 3, "str", "~"}, "prefix:<!>", {"fix", "prefix", "prec", 3, "str", "!"}, "infix:<=~>", {"fix", "infix", "prec", 4, "str", " =~ "}, "infix:<!~>", {"fix", "infix", "prec", 4, "str", " !~ "}, "infix:<*>", {"fix", "infix", "prec", 5, "str", " * "}, "infix:</>", {"fix", "infix", "prec", 5, "str", " / "}, "infix:<%>", {"fix", "infix", "prec", 5, "str", " % "}, "infix:<+>", {"fix", "infix", "prec", 6, "str", " + "}, "infix:<->", {"fix", "infix", "prec", 6, "str", " - "}, "infix:<x>", {"fix", "infix", "prec", 8, "str", " x "}, "infix:<xx>", {"fix", "infix", "prec", 8, "str", " xx "}, "list:<~>", {"fix", "list", "prec", 10, "str", " ~ "}, "infix:<~>", {"fix", "infix", "prec", 10, "str", " ~ "}, "infix:<<<>", {"fix", "infix", "prec", 12, "str", " << "}, "infix:<>>>", {"fix", "infix", "prec", 12, "str", " >> "}, "infix:<lt>", {"fix", "infix", "prec", 90, "str", " lt "}, "infix:<le>", {"fix", "infix", "prec", 90, "str", " le "}, "infix:<gt>", {"fix", "infix", "prec", 90, "str", " gt "}, "infix:<ge>", {"fix", "infix", "prec", 90, "str", " ge "}, "infix:<<=>", {"fix", "infix", "prec", 90, "str", " <= "}, "infix:<>=>", {"fix", "infix", "prec", 90, "str", " >= "}, "infix:<<>", {"fix", "infix", "prec", 90, "str", " < "}, "infix:<>>", {"fix", "infix", "prec", 90, "str", " > "}, "infix:<<=>>", {"fix", "infix", "prec", 100, "str", " <=> "}, "infix:<cmp>", {"fix", "infix", "prec", 100, "str", " cmp "}, "infix:<leq>", {"fix", "infix", "prec", 100, "str", " leq "}, "infix:<==>", {"fix", "infix", "prec", 100, "str", " == "}, "infix:<!=>", {"fix", "infix", "prec", 100, "str", " != "}, "infix:<ne>", {"fix", "infix", "prec", 100, "str", " ne "}, "infix:<eq>", {"fix", "infix", "prec", 100, "str", " eq "}, "infix:<&>", {"fix", "infix", "prec", 110, "str", " & "}, "infix:<|>", {"fix", "infix", "prec", 120, "str", " | "}, "infix:<^>", {"fix", "infix", "prec", 120, "str", " ^ "}, "infix:<..>", {"fix", "infix", "prec", 130, "str", " .. "}, "infix:<...>", {"fix", "infix", "prec", 130, "str", " ... "}, "infix:<~~>", {"fix", "infix", "prec", 130, "str", " ~~ "}, "infix:<&&>", {"fix", "infix", "prec", 140, "str", " && "}, "infix:<||>", {"fix", "infix", "prec", 150, "str", " || "}, "infix:<//>", {"fix", "infix", "prec", 150, "str", " // "}, "ternary:<?? !!>", {"fix", "ternary", "prec", 160}, "infix:<=>", {"fix", "infix", "prec", 170, "str", " = "}, "infix:<**=>", {"fix", "infix", "prec", 170, "str", " **= "}, "infix:<+=>", {"fix", "infix", "prec", 170, "str", " += "}, "infix:<-=>", {"fix", "infix", "prec", 170, "str", " -= "}, "infix:<*=>", {"fix", "infix", "prec", 170, "str", " *= "}, "infix:</=>", {"fix", "infix", "prec", 170, "str", " /= "}, "infix:<x=>", {"fix", "infix", "prec", 170, "str", " x= "}, "infix:<|=>", {"fix", "infix", "prec", 170, "str", " |= "}, "infix:<&=>", {"fix", "infix", "prec", 170, "str", " &= "}, "infix:<.=>", {"fix", "infix", "prec", 170, "str", " .= "}, "infix:<<<=>", {"fix", "infix", "prec", 170, "str", " <<= "}, "infix:<>>=>", {"fix", "infix", "prec", 170, "str", " >>= "}, "infix:<%=>", {"fix", "infix", "prec", 170, "str", " %= "}, "infix:<||=>", {"fix", "infix", "prec", 170, "str", " ||= "}, "infix:<&&=>", {"fix", "infix", "prec", 170, "str", " &&= "}, "infix:<^=>", {"fix", "infix", "prec", 170, "str", " ^= "}, "infix:<//=>", {"fix", "infix", "prec", 170, "str", " //= "}, "infix:<~=>", {"fix", "infix", "prec", 170, "str", " ~= "}, "infix:<=>>", {"fix", "infix", "prec", 180, "str", " => "}, "list:<,>", {"fix", "list", "prec", 190, "str", ", "}, "infix:<:>", {"fix", "infix", "prec", 190, "str", ":"}, "prefix:<not>", {"fix", "prefix", "prec", 200, "str", " not "}, "infix:<and>", {"fix", "infix", "prec", 210, "str", " and "}, "infix:<or>", {"fix", "infix", "prec", 220, "str", " or "}, "infix:<xor>", {"fix", "infix", "prec", 220, "str", " xor "});
-    $op{"prefix:<" . $_ . ">"} = {"fix", "prefix", "prec", 8, "str", $_ . " "}
+    our %op = ("prefix:<\$>", {"fix" => "deref", "prec" => 0, "str" => "\$", }, "prefix:<\@>", {"fix" => "deref", "prec" => 0, "str" => "\@", }, "prefix:<%>", {"fix" => "deref", "prec" => 0, "str" => "%", }, "prefix:<&>", {"fix" => "deref", "prec" => 0, "str" => "&", }, "prefix:<*>", {"fix" => "deref", "prec" => 0, "str" => "*", }, "prefix:<\$#>", {"fix" => "deref", "prec" => 0, "str" => "\$#", }, "circumfix:<[ ]>", {"fix" => "circumfix", "prec" => 0, "str" => "[", }, "circumfix:<{ }>", {"fix" => "circumfix", "prec" => 0, "str" => "{", }, "circumfix:<( )>", {"fix" => "circumfix", "prec" => 0, "str" => "(", }, "infix:<.>", {"fix" => "infix", "prec" => -1, "str" => ".", }, "prefix:<-->", {"fix" => "prefix", "prec" => 1, "str" => "--", }, "prefix:<++>", {"fix" => "prefix", "prec" => 1, "str" => "++", }, "postfix:<-->", {"fix" => "postfix", "prec" => 1, "str" => "--", }, "postfix:<++>", {"fix" => "postfix", "prec" => 1, "str" => "++", }, "infix:<**>", {"fix" => "infix", "prec" => 2, "str" => "**", }, "p6_prefix:<^>", {"fix" => "prefix", "prec" => 3, "str" => "^", }, "prefix:<\\>", {"fix" => "prefix", "prec" => 3, "str" => "\\", }, "prefix:<+>", {"fix" => "prefix", "prec" => 3, "str" => "+", }, "prefix:<->", {"fix" => "prefix", "prec" => 3, "str" => "-", }, "prefix:<~>", {"fix" => "prefix", "prec" => 3, "str" => "~", }, "prefix:<!>", {"fix" => "prefix", "prec" => 3, "str" => "!", }, "infix:<=~>", {"fix" => "infix", "prec" => 4, "str" => " =~ ", }, "infix:<!~>", {"fix" => "infix", "prec" => 4, "str" => " !~ ", }, "infix:<*>", {"fix" => "infix", "prec" => 5, "str" => " * ", }, "infix:</>", {"fix" => "infix", "prec" => 5, "str" => " / ", }, "infix:<%>", {"fix" => "infix", "prec" => 5, "str" => " % ", }, "infix:<+>", {"fix" => "infix", "prec" => 6, "str" => " + ", }, "infix:<->", {"fix" => "infix", "prec" => 6, "str" => " - ", }, "infix:<x>", {"fix" => "infix", "prec" => 8, "str" => " x ", }, "infix:<xx>", {"fix" => "infix", "prec" => 8, "str" => " xx ", }, "list:<~>", {"fix" => "list", "prec" => 10, "str" => " ~ ", }, "infix:<~>", {"fix" => "infix", "prec" => 10, "str" => " ~ ", }, "infix:<<<>", {"fix" => "infix", "prec" => 12, "str" => " << ", }, "infix:<>>>", {"fix" => "infix", "prec" => 12, "str" => " >> ", }, "infix:<lt>", {"fix" => "infix", "prec" => 90, "str" => " lt ", }, "infix:<le>", {"fix" => "infix", "prec" => 90, "str" => " le ", }, "infix:<gt>", {"fix" => "infix", "prec" => 90, "str" => " gt ", }, "infix:<ge>", {"fix" => "infix", "prec" => 90, "str" => " ge ", }, "infix:<<=>", {"fix" => "infix", "prec" => 90, "str" => " <= ", }, "infix:<>=>", {"fix" => "infix", "prec" => 90, "str" => " >= ", }, "infix:<<>", {"fix" => "infix", "prec" => 90, "str" => " < ", }, "infix:<>>", {"fix" => "infix", "prec" => 90, "str" => " > ", }, "infix:<<=>>", {"fix" => "infix", "prec" => 100, "str" => " <=> ", }, "infix:<cmp>", {"fix" => "infix", "prec" => 100, "str" => " cmp ", }, "infix:<leq>", {"fix" => "infix", "prec" => 100, "str" => " leq ", }, "infix:<==>", {"fix" => "infix", "prec" => 100, "str" => " == ", }, "infix:<!=>", {"fix" => "infix", "prec" => 100, "str" => " != ", }, "infix:<ne>", {"fix" => "infix", "prec" => 100, "str" => " ne ", }, "infix:<eq>", {"fix" => "infix", "prec" => 100, "str" => " eq ", }, "infix:<&>", {"fix" => "infix", "prec" => 110, "str" => " & ", }, "infix:<|>", {"fix" => "infix", "prec" => 120, "str" => " | ", }, "infix:<^>", {"fix" => "infix", "prec" => 120, "str" => " ^ ", }, "infix:<..>", {"fix" => "infix", "prec" => 130, "str" => " .. ", }, "infix:<...>", {"fix" => "infix", "prec" => 130, "str" => " ... ", }, "infix:<~~>", {"fix" => "infix", "prec" => 130, "str" => " ~~ ", }, "infix:<&&>", {"fix" => "infix", "prec" => 140, "str" => " && ", }, "infix:<||>", {"fix" => "infix", "prec" => 150, "str" => " || ", }, "infix:<//>", {"fix" => "infix", "prec" => 150, "str" => " // ", }, "ternary:<?? !!>", {"fix" => "ternary", "prec" => 160, }, "infix:<=>", {"fix" => "infix", "prec" => 170, "str" => " = ", }, "infix:<**=>", {"fix" => "infix", "prec" => 170, "str" => " **= ", }, "infix:<+=>", {"fix" => "infix", "prec" => 170, "str" => " += ", }, "infix:<-=>", {"fix" => "infix", "prec" => 170, "str" => " -= ", }, "infix:<*=>", {"fix" => "infix", "prec" => 170, "str" => " *= ", }, "infix:</=>", {"fix" => "infix", "prec" => 170, "str" => " /= ", }, "infix:<x=>", {"fix" => "infix", "prec" => 170, "str" => " x= ", }, "infix:<|=>", {"fix" => "infix", "prec" => 170, "str" => " |= ", }, "infix:<&=>", {"fix" => "infix", "prec" => 170, "str" => " &= ", }, "infix:<.=>", {"fix" => "infix", "prec" => 170, "str" => " .= ", }, "infix:<<<=>", {"fix" => "infix", "prec" => 170, "str" => " <<= ", }, "infix:<>>=>", {"fix" => "infix", "prec" => 170, "str" => " >>= ", }, "infix:<%=>", {"fix" => "infix", "prec" => 170, "str" => " %= ", }, "infix:<||=>", {"fix" => "infix", "prec" => 170, "str" => " ||= ", }, "infix:<&&=>", {"fix" => "infix", "prec" => 170, "str" => " &&= ", }, "infix:<^=>", {"fix" => "infix", "prec" => 170, "str" => " ^= ", }, "infix:<//=>", {"fix" => "infix", "prec" => 170, "str" => " //= ", }, "infix:<~=>", {"fix" => "infix", "prec" => 170, "str" => " ~= ", }, "infix:<=>>", {"fix" => "infix", "prec" => 180, "str" => " => ", }, "list:<,>", {"fix" => "list", "prec" => 190, "str" => ", ", }, "infix:<:>", {"fix" => "infix", "prec" => 190, "str" => ":", }, "prefix:<not>", {"fix" => "prefix", "prec" => 200, "str" => " not ", }, "infix:<and>", {"fix" => "infix", "prec" => 210, "str" => " and ", }, "infix:<or>", {"fix" => "infix", "prec" => 220, "str" => " or ", }, "infix:<xor>", {"fix" => "infix", "prec" => 220, "str" => " xor ", });
+    $op{"prefix:<" . $_ . ">"} = {"fix" => "prefix", "prec" => 8, "str" => $_ . " ", }
         for "-r", "-w", "-x", "-o", "-R", "-W", "-X", "-O", "-e", "-z", "-s", "-f", "-d", "-l", "-p", "-S", "-b", "-c", "-t", "-u", "-g", "-k", "-T", "-B", "-M", "-A", "-C";
-    $op{"prefix:<" . $_ . ">"} = {"fix", "parsed", "prec", 8, "str", $_}
+    $op{"prefix:<" . $_ . ">"} = {"fix" => "parsed", "prec" => 8, "str" => '' . $_, }
         for "do", "sub", "my", "our", "state", "local", "map", "grep", "sort";
     my %tab;
     sub Perlito5::Perl6::PrettyPrinter::tab {
@@ -17442,7 +18006,7 @@ use feature 'say';
             }
         }
         else {;
-            die("unknown fixity: " . $spec->{"fix"})
+            die("unknown fixity: " . ($spec->{"fix"}))
         }
         return
     }
@@ -17635,7 +18199,7 @@ use feature 'say';
                     $modifier_global = "true";
                     $modifier =~ s/g//g
                 }
-                $str = "PerlOp.replace(" . $var->emit_java($level) . ", " . Perlito5::AST::Apply::emit_qr_java($regex_args->[0], $modifier, $level) . ", " . $replace_java . ", " . Perlito5::Java::to_context($wantarray) . ", " . $modifier_global . ")"
+                $str = "PerlOp.replace(" . $var->emit_java($level, "scalar") . ", " . Perlito5::AST::Apply::emit_qr_java($regex_args->[0], $modifier, $level) . ", " . $replace_java . ", " . Perlito5::Java::to_context($wantarray) . ", " . $modifier_global . ")"
             }
             elsif ($code eq "p5:m") {
                 my $modifier = $regex_args->[1]->{"buf"};
@@ -17650,7 +18214,14 @@ use feature 'say';
                 }
                 $str = "PerlOp.match(" . $var->emit_java($level) . ", " . Perlito5::AST::Apply::emit_qr_java($regex_args->[0], $modifier, $level) . ", " . Perlito5::Java::to_context($wantarray) . ", " . $modifier_global . ", " . $modifier_c . ")"
             }
-            elsif ($code eq "p5:tr") {;
+            elsif ($code eq "p5:tr") {
+                my $search = $regex_args->[0];
+                my $replace = $regex_args->[1];
+                for my $node ($search, $replace) {;
+                    if (ref($node) eq "Perlito5::AST::Buf") {;
+                        $node->{"buf"} = Perlito5::Regex::expand_character_range($node->{"buf"})
+                    }
+                }
                 $str = "PerlOp.tr(" . $var->emit_java($level) . ", " . $regex_args->[0]->emit_java($level) . ", " . $regex_args->[1]->emit_java($level) . ", " . Perlito5::Java::escape_string($regex_args->[2]->{"buf"}) . ", " . Perlito5::Java::to_context($wantarray) . ")"
             }
             else {;
@@ -17667,6 +18238,9 @@ use feature 'say';
         sub Perlito5::AST::Apply::emit_java_set {
             (my($self), my($arguments), my($level), my($wantarray)) = @_;
             my $code = $self->{"code"};
+            if ($code eq "vec") {;
+                return $self->{"arguments"}->[0]->emit_java($level, "scalar", "lvalue") . ".vecSet(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ", " . $self->{"arguments"}->[2]->emit_java($level, "scalar") . ", " . $arguments->emit_java($level, "scalar") . ")"
+            }
             if ($code eq "my" || $code eq "state" || $code eq "local" || $code eq "circumfix:<( )>") {;
                 return "PlArray.static_list_set(" . join(", ", Perlito5::Java::to_context($wantarray), Perlito5::Java::to_list([$arguments], $level), map($_->emit_java($level, "list", "lvalue"), @{$self->{"arguments"}})) . ")"
             }
@@ -17678,7 +18252,7 @@ use feature 'say';
                 return "PerlOp.set_pos(" . $lvalue[0]->emit_java($level, "scalar") . ", " . $arguments->emit_java($level, "scalar") . ")"
             }
             if ($code eq "prefix:<\$#>") {;
-                return Perlito5::Java::emit_java_autovivify($self->{"arguments"}->[0], $level + 1, "array") . ".array_deref().set_end_of_array_index(" . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
+                return Perlito5::Java::emit_java_autovivify($self->{"arguments"}->[0], $level + 1, "array") . ".array_deref(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ").set_end_of_array_index(" . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
             }
             if ($code eq "prefix:<\$>") {;
                 return Perlito5::Java::emit_java_autovivify($self->{"arguments"}->[0], $level + 1, "scalar") . ".scalar_deref_set(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
@@ -17694,6 +18268,9 @@ use feature 'say';
             }
             if ($code eq "ternary:<? :>") {;
                 return $self->emit_java($level + 1) . ".set(" . $arguments->emit_java($level + 1) . ")"
+            }
+            if ($code eq "substr") {;
+                return $self->emit_java($level + 1, "scalar", "lvalue") . ".set(" . $arguments->emit_java($level + 1) . ")"
             }
             my $open = $wantarray eq "void" ? '' : "(";
             my $close = $wantarray eq "void" ? '' : ")";
@@ -17719,7 +18296,7 @@ use feature 'say';
             return Perlito5::AST::Apply::emit_qr_java($self->{"arguments"}->[0], $self->{"arguments"}->[1]->{"buf"}, $level)
         }, "__PACKAGE__", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "new PlString(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")"
+            return Perlito5::AST::Buf::->new("buf", $Perlito5::PKG_NAME)->emit_java($level, "scalar")
         }, "__SUB__", sub {
             (my($self), my($level), my($wantarray)) = @_;
             "this.getCurrentSub()"
@@ -17754,6 +18331,9 @@ use feature 'say';
         }, "chr", sub {
             (my($self), my($level), my($wantarray)) = @_;
             "new PlString(new String(Character.toChars(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".to_int())))"
+        }, "vec", sub {
+            (my($self), my($level), my($wantarray)) = @_;
+            $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".vec(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ", " . $self->{"arguments"}->[2]->emit_java($level, "scalar") . ")"
         }, "rand", sub {
             (my($self), my($level), my($wantarray)) = @_;
             "PerlOp.rand(" . ($self->{"arguments"}->[0] ? $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".to_double()" : "1.0") . ")"
@@ -17773,12 +18353,29 @@ use feature 'say';
                 $self->{"arguments"}->[0]->emit_java($level, "scalar") . ".op_" . $op . "()"
             })
         } "int"), (map {
-            my($op, $java_op) = @{$_};
+            my($op, $java_op, $native_op) = @{$_};
             ($op, sub {
                 my($self, $level, $wantarray) = @_;
-                $self->{"arguments"}->[0]->emit_java($level, "scalar") . "." . $java_op . "(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
+                my $op1 = $self->{"arguments"}->[0]->emit_java($level, "scalar");
+                my $op2 = $self->{"arguments"}->[1]->emit_java($level, "scalar");
+                if ($self->{"_integer"} && $native_op) {;
+                    return "new PlInt(" . "(" . $op1 . ".to_long() " . $native_op . " " . $op2 . ".to_long()" . ")" . " & 4294967295L" . ")"
+                }
+                $op1 . "." . $java_op . "(" . $op2 . ")"
             })
-        } (["infix:<%>", "mod"], ["infix:<>>>", "int_shr"], ["infix:<<<>", "int_shl"], ["infix:<^>", "int_xor"], ["infix:<&>", "int_and"], ["infix:<|>", "int_or"], ["infix:<+>", "add"], ["infix:<->", "sub"], ["infix:<*>", "mul"], ["infix:</>", "div"], ["infix:<==>", "num_eq"], ["infix:<!=>", "num_ne"], ["infix:<>>", "num_gt"], ["infix:<>=>", "num_ge"], ["infix:<<>", "num_lt"], ["infix:<<=>", "num_le"], ["infix:<eq>", "str_eq"], ["infix:<ne>", "str_ne"], ["infix:<gt>", "str_gt"], ["infix:<ge>", "str_ge"], ["infix:<lt>", "str_lt"], ["infix:<le>", "str_le"], ["infix:<cmp>", "str_cmp"], ["infix:<<=>>", "num_cmp"], ["infix:<**>", "pow"], ["atan2", "atan2"])), "infix:<~~>", sub {
+        } (["infix:<%>", "mod", "%"], ["infix:<>>>", "int_shr"], ["infix:<<<>", "int_shl"], ["infix:<^>", "int_xor"], ["infix:<&>", "int_and"], ["infix:<|>", "int_or"], ["infix:<+>", "add", "+"], ["infix:<->", "sub", "-"], ["infix:<*>", "mul", "*"], ["infix:</>", "div", "/"], ["infix:<==>", "num_eq", "=="], ["infix:<!=>", "num_ne", "!="], ["infix:<>>", "num_gt", ">"], ["infix:<>=>", "num_ge", ">="], ["infix:<<>", "num_lt", "<"], ["infix:<<=>", "num_le", "<="], ["infix:<eq>", "str_eq"], ["infix:<ne>", "str_ne"], ["infix:<gt>", "str_gt"], ["infix:<ge>", "str_ge"], ["infix:<lt>", "str_lt"], ["infix:<le>", "str_le"], ["infix:<cmp>", "str_cmp"], ["infix:<<=>>", "num_cmp"], ["infix:<**>", "pow"], ["atan2", "atan2"], ["infix:<^.>", "str_xor"], ["infix:<&.>", "str_and"], ["infix:<|.>", "str_or"])), (map {
+            my($op, $java_op, $native_op) = @{$_};
+            ($op, sub {
+                my($self, $level, $wantarray) = @_;
+                my $op = $self->{"arguments"}->[0]->emit_java($level, "scalar", "lvalue");
+                my $op1 = $self->{"arguments"}->[0]->emit_java($level, "scalar");
+                my $op2 = $self->{"arguments"}->[1]->emit_java($level, "scalar");
+                if ($self->{"_integer"} && $native_op) {;
+                    return $op . ".set(" . "new PlInt(" . "(" . $op1 . ".to_long() " . $native_op . " " . $op2 . ".to_long()" . ")" . " & 4294967295L" . ")" . ")"
+                }
+                $op . "." . $java_op . "(" . $op2 . ")"
+            })
+        } (["infix:<%=>", "self_assign_mod", "%"], ["infix:<>>=>", "self_assign_int_shr"], ["infix:<<<=>", "self_assign_int_shl"], ["infix:<^=>", "self_assign_int_xor"], ["infix:<&=>", "self_assign_int_and"], ["infix:<|=>", "self_assign_int_or"], ["infix:<+=>", "self_assign_add", "+"], ["infix:<-=>", "self_assign_sub", "-"], ["infix:<*=>", "self_assign_mul", "*"], ["infix:</=>", "self_assign_div", "/"], ["infix:<**=>", "self_assign_pow"], ["infix:<x=>", "self_assign_string_replicate"], ["infix:<||=>", "self_assign_or"], ["infix:<&&=>", "self_assign_and"], ["infix:<^.=>", "self_assign_str_xor"], ["infix:<&.=>", "self_assign_str_and"], ["infix:<|.=>", "self_assign_str_or"])), "infix:<~~>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg0 = $self->{"arguments"}->[0];
             my $arg1 = $self->{"arguments"}->[1];
@@ -17786,27 +18383,30 @@ use feature 'say';
         }, "infix:<&&>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($wantarray eq "void") {;
-                return "(" . Perlito5::Java::to_boolean($self->{"arguments"}->[0], $level) . " ? " . $self->{"arguments"}->[1]->emit_java($level, $wantarray) . " : PlCx.UNDEF)"
+                return Perlito5::AST::If::->new("cond", $self->{"arguments"}->[0], "body", Perlito5::AST::Block::->new("stmts", [$self->{"arguments"}->[1]]), "otherwise", Perlito5::AST::Block::->new("stmts", []))->emit_java($level, $wantarray)
             }
             "(PerlOp.and1(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ") ? " . $self->{"arguments"}->[1]->emit_java($level, $wantarray) . " : PerlOp.and3())"
         }, "infix:<and>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($wantarray eq "void") {;
-                return "(" . Perlito5::Java::to_boolean($self->{"arguments"}->[0], $level) . " ? " . $self->{"arguments"}->[1]->emit_java($level, $wantarray) . " : PlCx.UNDEF)"
+                return Perlito5::AST::If::->new("cond", $self->{"arguments"}->[0], "body", Perlito5::AST::Block::->new("stmts", [$self->{"arguments"}->[1]]), "otherwise", Perlito5::AST::Block::->new("stmts", []))->emit_java($level, $wantarray)
             }
             "(PerlOp.and1(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ") ? " . $self->{"arguments"}->[1]->emit_java($level, $wantarray) . " : PerlOp.and3())"
         }, "infix:<||>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($wantarray eq "void") {;
-                return "(" . Perlito5::Java::to_boolean($self->{"arguments"}->[0], $level) . " ? " . " PlCx.UNDEF : " . $self->{"arguments"}->[1]->emit_java($level, $wantarray) . ")"
+                return Perlito5::AST::If::->new("cond", $self->{"arguments"}->[0], "body", Perlito5::AST::Block::->new("stmts", []), "otherwise", Perlito5::AST::Block::->new("stmts", [$self->{"arguments"}->[1]]))->emit_java($level, $wantarray)
             }
             "(PerlOp.or1(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ") ? PerlOp.or2() : " . $self->{"arguments"}->[1]->emit_java($level, $wantarray) . ")"
         }, "infix:<or>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($wantarray eq "void") {;
-                return "(" . Perlito5::Java::to_boolean($self->{"arguments"}->[0], $level) . " ? " . " PlCx.UNDEF : " . $self->{"arguments"}->[1]->emit_java($level, $wantarray) . ")"
+                return Perlito5::AST::If::->new("cond", $self->{"arguments"}->[0], "body", Perlito5::AST::Block::->new("stmts", []), "otherwise", Perlito5::AST::Block::->new("stmts", [$self->{"arguments"}->[1]]))->emit_java($level, $wantarray)
             }
             "(PerlOp.or1(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ") ? PerlOp.or2() : " . $self->{"arguments"}->[1]->emit_java($level, $wantarray) . ")"
+        }, "infix:<//>", sub {
+            (my($self), my($level), my($wantarray)) = @_;
+            "(PerlOp.defined_or1(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ") ? PerlOp.defined_or2() : " . $self->{"arguments"}->[1]->emit_java($level, $wantarray) . ")"
         }, "infix:<xor>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             "( " . Perlito5::Java::to_boolean($self->{"arguments"}->[0], $level) . " ? new PlBool(!" . Perlito5::Java::to_boolean($self->{"arguments"}->[1], $level) . ") : " . ($self->{"arguments"}->[1])->emit_java($level, $wantarray) . ")"
@@ -17830,6 +18430,11 @@ use feature 'say';
             my $level = shift;
             my $arg = $self->{"arguments"}->[0];
             $arg->emit_java($level, "scalar") . ".complement()"
+        }, "prefix:<~.>", sub {
+            my $self = shift;
+            my $level = shift;
+            my $arg = $self->{"arguments"}->[0];
+            $arg->emit_java($level, "scalar") . ".str_complement()"
         }, "prefix:<->", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{"arguments"}->[0];
@@ -17851,8 +18456,9 @@ use feature 'say';
         }, "require", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{"arguments"}->[0];
-            if ($arg->{"is_version_string"}) {;
-                return "PlV.apply(\"Perlito5::test_perl_version\", PlCx.VOID, new PlArray(" . $arg->emit_java($level, "scalar") . "))"
+            if ($arg->{"is_version_string"}) {
+                $code = Perlito5::AST::Buf::->new("buf", "Perlito5::test_perl_version")->emit_java($level, "scalar");
+                return $code . ".apply(PlCx.VOID, new PlArray(" . $arg->emit_java($level, "scalar") . "))"
             }
             "PlCORE.require(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_str($self->{"arguments"}->[0]) . ", " . ($self->{"arguments"}->[0]->{"bareword"} ? "true" : "false") . ")"
         }, "prefix:<\$>", sub {
@@ -17890,7 +18496,7 @@ use feature 'say';
             (my($self), my($level), my($wantarray), my($autovivification_type)) = @_;
             my $arg = $self->{"arguments"}->[0];
             if ($autovivification_type eq "lvalue") {;
-                return Perlito5::Java::emit_java_autovivify($arg, $level, "hash") . ".hash_deref()"
+                return Perlito5::Java::emit_java_autovivify($arg, $level, "hash") . ".hash_deref(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")"
             }
             elsif ($self->{"_strict_refs"}) {;
                 return Perlito5::Java::emit_java_autovivify($arg, $level, "hash") . ".hash_deref_strict()"
@@ -17909,10 +18515,10 @@ use feature 'say';
             return Perlito5::Java::to_filehandle($arg, $level + 1)
         }, "circumfix:<[ ]>", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "new PlArrayRef(new PlArray(" . Perlito5::Java::to_list($self->{"arguments"}, $level) . "))"
+            return "new PlArrayRef(new PlArray(" . Perlito5::Java::to_list_for_push($self->{"arguments"}, $level) . "))"
         }, "circumfix:<{ }>", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "(new PlHashRef(new PlHash(" . Perlito5::Java::to_list($self->{"arguments"}, $level) . ")))"
+            "new PlHashRef(new PlHash(" . Perlito5::Java::to_list_for_push($self->{"arguments"}, $level) . "))"
         }, "prefix:<\\>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{"arguments"}->[0];
@@ -17935,14 +18541,14 @@ use feature 'say';
                     return "new PlArrayRef(" . $arg->emit_java($level) . ")"
                 }
                 if ($arg->sigil() eq "%") {;
-                    return "(new PlHashRef(" . $arg->emit_java($level) . "))"
+                    return "new PlHashRef(" . $arg->emit_java($level) . ")"
                 }
                 if ($arg->sigil() eq "*") {;
-                    return "(new PlGlobRef(" . $arg->emit_java($level) . "))"
+                    return "new PlGlobRef(" . $arg->emit_java($level) . ")"
                 }
                 if ($arg->sigil() eq "&") {
                     my $namespace = $arg->{"namespace"} || $Perlito5::PKG_NAME;
-                    return "PlV.cget(" . Perlito5::Java::escape_string($namespace . "::" . $arg->{"name"}) . ")"
+                    return "PlV.cget(" . Perlito5::Java::escape_string($namespace . "::" . ($arg->{"name"})) . ")"
                 }
             }
             return "PlV.make_reference(" . $arg->emit_java($level) . ")"
@@ -18000,7 +18606,7 @@ use feature 'say';
             if (ref($arg) eq "Perlito5::AST::Apply" && ($arg->{"code"} eq "circumfix:<( )>" || $arg->{"code"} eq "list:<,>")) {;
                 return "PerlOp.list_replicate(" . Perlito5::Java::to_list([$self->{"arguments"}->[0]], $level) . ", " . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ", " . Perlito5::Java::to_context($wantarray) . ")"
             }
-            "PerlOp.string_replicate(" . Perlito5::Java::to_str($self->{"arguments"}->[0], $level) . "," . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
+            Perlito5::Java::to_str($self->{"arguments"}->[0], $level) . ".string_replicate(" . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
         }, "list:<.>", sub {
             (my($self), my($level), my($wantarray)) = @_;
             "new PlString(" . join(" + ", map(Perlito5::Java::to_native_str($_, $level, "scalar"), @{$self->{"arguments"}})) . ")"
@@ -18021,7 +18627,7 @@ use feature 'say';
                 if ($v->isa("Perlito5::AST::Var") && $v->{"_real_sigil"} eq "%") {
                     $v = Perlito5::AST::Var::->new(%{$v}, "sigil", "%");
                     if (!defined($v->{"name"})) {
-                        my $index = Perlito5::Java::escape_string($v->{"namespace"} . "::");
+                        my $index = Perlito5::Java::escape_string(($v->{"namespace"}) . "::");
                         return "PerlOp.deleteSymbolTable(" . $index . ", " . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
                     }
                     return $v->emit_java($level) . ".hdelete(" . Perlito5::Java::to_context($wantarray) . ", " . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
@@ -18068,6 +18674,9 @@ use feature 'say';
             Perlito5::Java::to_scalar($self->{"arguments"}, $level + 1)
         }, "ternary:<? :>", sub {
             (my($self), my($level), my($wantarray)) = @_;
+            if ($wantarray eq "void") {;
+                return Perlito5::AST::If::->new("cond", $self->{"arguments"}->[0], "body", Perlito5::AST::Block::->new("stmts", [$self->{"arguments"}->[1]]), "otherwise", Perlito5::AST::Block::->new("stmts", [$self->{"arguments"}->[2]]))->emit_java($level, $wantarray)
+            }
             "( " . Perlito5::Java::to_boolean($self->{"arguments"}->[0], $level) . " ? " . ($self->{"arguments"}->[1])->emit_java($level, $wantarray) . " : " . ($self->{"arguments"}->[2])->emit_java($level, $wantarray) . ")"
         }, "my", sub {
             (my($self), my($level), my($wantarray)) = @_;
@@ -18083,6 +18692,9 @@ use feature 'say';
             "PerlOp.context(" . join(", ", Perlito5::Java::to_context($wantarray), map($_->emit_java($level, $wantarray), @{$self->{"arguments"}})) . ")"
         }, "circumfix:<( )>", sub {
             (my($self), my($level), my($wantarray)) = @_;
+            if ($wantarray eq "scalar" && @{$self->{"arguments"}} == 1) {;
+                return $self->{"arguments"}->[0]->emit_java($level, $wantarray)
+            }
             "PerlOp.context(" . join(", ", Perlito5::Java::to_context($wantarray), map($_->emit_java($level, $wantarray), @{$self->{"arguments"}})) . ")"
         }, "infix:<=>", sub {
             (my($self), my($level), my($wantarray)) = @_;
@@ -18125,6 +18737,16 @@ use feature 'say';
             "PerlOp.redo(" . $label . ")"
         }, "return", sub {
             (my($self), my($level), my($wantarray)) = @_;
+            if ($wantarray eq "void" && $Perlito5::JAVA_CAN_RETURN) {
+                my $has_local = $Perlito5::JAVA_HAS_LOCAL;
+                my $local_label = $Perlito5::JAVA_LOCAL_LABEL;
+                if (!@{$self->{"arguments"}}) {;
+                    return Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, "PerlOp.context(want)")
+                }
+                else {;
+                    return Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, Perlito5::Java::to_runtime_context($self->{"arguments"}, $level + 1, "return"))
+                }
+            }
             $Perlito5::THROW_RETURN = 1;
             $wantarray = '';
             if (!$self->{"_return_from_block"}) {;
@@ -18133,18 +18755,18 @@ use feature 'say';
             if (!@{$self->{"arguments"}}) {;
                 return "PerlOp.ret(PerlOp.context(" . Perlito5::Java::to_context($wantarray) . "))"
             }
-            "PerlOp.ret(" . Perlito5::Java::to_runtime_context($self->{"arguments"}, $level + 1, $wantarray) . ")"
+            return "PerlOp.ret(" . Perlito5::Java::to_runtime_context($self->{"arguments"}, $level + 1, $wantarray) . ")"
         }, "goto", sub {
             (my($self), my($level), my($wantarray)) = @_;
             $Perlito5::THROW_RETURN = 1;
             my $arg = $self->{"arguments"}->[0];
-            if (ref($arg) eq "Perlito5::AST::Var" && $arg->{"sigil"} eq "&") {;
+            if ((ref($arg) eq "Perlito5::AST::Var" && $arg->{"sigil"} eq "&") || (ref($arg) eq "Perlito5::AST::Apply" && $arg->{"code"} eq "prefix:<&>")) {;
                 return "PerlOp.ret(" . $arg->emit_java($level) . ")"
             }
             return "PerlOp.gotoOp(" . Perlito5::Java::to_context($wantarray) . ", " . $arg->emit_java($level) . ", " . "List__" . ")"
         }, "caller", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            return "PerlOp.caller(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}, $level) . ")"
+            return "PlCORE.caller(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}, $level) . ")"
         }, "do", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{"arguments"}->[0];
@@ -18191,15 +18813,17 @@ use feature 'say';
                     push(@out, "new " . $type{$sigil} . "[]{" . join(", ", @val) . "}")
                 }
             }
-            return "PlJavaCompiler.eval_perl_string(" . $arg->emit_java($level, $wantarray) . ".toString(), " . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ", " . Perlito5::Java::escape_string($wantarray) . ", " . "new PlInt(" . (0 + $self->{"_scalar_hints"}) . "L), " . $hash_hints . ", " . $scope . ", " . join(", ", @out) . ", " . Perlito5::Java::to_context($wantarray) . ", " . "List__" . ")"
+            return "PlJavaCompiler.eval_perl_string(" . $arg->emit_java($level, $wantarray) . ".toString(), " . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ", " . Perlito5::Java::escape_string($wantarray) . ", " . "new PlInt(" . (0 + ($self->{"_scalar_hints"})) . "L), " . $hash_hints . ", " . $scope . ", " . join(", ", @out) . ", " . Perlito5::Java::to_context($wantarray) . ", " . "List__" . ")"
         }, "length", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = shift(@{$self->{"arguments"}});
-            return Perlito5::Java::to_str($arg) . ".length(" . ")"
+            $arg->emit_java($level, "scalar") . ".length()"
         }, "substr", sub {
-            (my($self), my($level), my($wantarray)) = @_;
+            (my($self), my($level), my($wantarray), my($autovivification_type)) = @_;
+            my $meth = "substr";
+            $autovivification_type eq "lvalue" && ($meth = "lvalue_substr");
             my $arg = shift(@{$self->{"arguments"}});
-            return Perlito5::Java::to_str($arg) . ".substr(" . join(", ", map($_->emit_java($level, "scalar"), @{$self->{"arguments"}})) . ")"
+            return $arg->emit_java($level, "scalar") . "." . $meth . "(" . join(", ", map($_->emit_java($level, "scalar"), @{$self->{"arguments"}})) . ")"
         }, "undef", sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($self->{"arguments"} && @{$self->{"arguments"}}) {
@@ -18255,7 +18879,7 @@ use feature 'say';
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{"arguments"}};
             my $v = shift(@arguments);
-            return $v->emit_java($level) . ".unshift(" . Perlito5::Java::to_list(\@arguments, $level) . ")"
+            return $v->emit_java($level) . ".unshift(" . Perlito5::Java::to_list_for_push(\@arguments, $level) . ")"
         }, "push", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{"arguments"}};
@@ -18263,7 +18887,7 @@ use feature 'say';
             if (@arguments == 1 && ref($arguments[0]) eq "Perlito5::AST::Var" && $arguments[0]->{"sigil"} eq "\$") {;
                 return $v->emit_java($level) . ".push(" . $arguments[0]->emit_java($level) . ")"
             }
-            return $v->emit_java($level) . ".push(" . Perlito5::Java::to_list(\@arguments, $level) . ")"
+            return $v->emit_java($level) . ".push(" . Perlito5::Java::to_list_for_push(\@arguments, $level) . ")"
         }, "splice", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{"arguments"}};
@@ -18387,9 +19011,14 @@ use feature 'say';
         }, "readline", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{"arguments"}};
-            my $fun = shift(@in) || bless({"arguments", [], "bareword", 1, "code", "ARGV", "namespace", "main"}, "Perlito5::AST::Apply");
+            my $fun = shift(@in) || bless({"arguments" => [], "bareword" => 1, "code" => "ARGV", "namespace" => "main", }, "Perlito5::AST::Apply");
             my $list = Perlito5::Java::to_list(\@in, $level);
             "PlCORE.readline(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_filehandle($fun, $level + 1) . ", " . $list . ")"
+        }, "stat", sub {
+            (my($self), my($level), my($wantarray)) = @_;
+            my @in = @{$self->{"arguments"}};
+            !@in && (@in = Perlito5::AST::Var::SCALAR_ARG());
+            "PlCORE.stat(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list(\@in, $level) . ")"
         }, "map", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{"arguments"}};
@@ -18461,22 +19090,23 @@ use feature 'say';
             $list = Perlito5::Java::to_list(\@in, $level);
             my $sub = Perlito5::AST::Sub::->new("block", Perlito5::AST::Block::->new("stmts", $fun));
             "PerlOp.sort(" . $sub->emit_java($level + 1) . ", " . $list . ", " . "List__, " . Perlito5::Java::to_context($wantarray) . ")"
-        }, "infix:<//>", sub {
+        }, "ref", sub {
             (my($self), my($level), my($wantarray)) = @_;
-            "(PerlOp.defined_or1(" . $self->{"arguments"}->[0]->emit_java($level, "scalar") . ") ? PerlOp.defined_or2() : " . $self->{"arguments"}->[1]->emit_java($level, "scalar") . ")"
+            my $arg = $self->{"arguments"}->[0];
+            return $arg->emit_java($level, "scalar") . ".ref()"
         }, "exists", sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{"arguments"}->[0];
             if ($arg->isa("Perlito5::AST::Lookup")) {
                 my $v = $arg->obj();
                 if ($v->isa("Perlito5::AST::Var") && $v->sigil() eq "\$") {;
-                    return $v->emit_java($level, $wantarray) . ".hexists(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
+                    return $v->emit_java($level, $wantarray) . ".hexists(" . Perlito5::Java::to_native_str($arg->autoquote($arg->{"index_exp"}), $level) . ")"
                 }
                 if ($v->isa("Perlito5::AST::Apply") && $v->{"code"} eq "prefix:<\$>") {;
                     $arg = Perlito5::AST::Call::->new("method", "postcircumfix:<{ }>", "invocant", $v->{"arguments"}->[0], "arguments", $arg->{"index_exp"})
                 }
                 else {;
-                    return $v->emit_java($level, $wantarray, "hash") . ".hexists(" . $arg->autoquote($arg->{"index_exp"})->emit_java($level) . ")"
+                    return $v->emit_java($level, $wantarray, "hash") . ".hexists(" . Perlito5::Java::to_native_str($arg->autoquote($arg->{"index_exp"}), $level) . ")"
                 }
             }
             if ($arg->isa("Perlito5::AST::Index")) {
@@ -18493,7 +19123,7 @@ use feature 'say';
             }
             if ($arg->isa("Perlito5::AST::Call")) {
                 if ($arg->method() eq "postcircumfix:<{ }>") {;
-                    return $arg->invocant()->emit_java($level, $wantarray, "hash") . ".hexists(" . Perlito5::AST::Lookup::->autoquote($arg->{"arguments"})->emit_java($level) . ")"
+                    return $arg->invocant()->emit_java($level, $wantarray, "hash") . ".hexists(" . Perlito5::Java::to_native_str(Perlito5::AST::Lookup::->autoquote($arg->{"arguments"}), $level) . ")"
                 }
                 if ($arg->method() eq "postcircumfix:<[ ]>") {;
                     return $arg->invocant()->emit_java($level, $wantarray, "array") . ".aexists(" . $arg->{"arguments"}->emit_java($level) . ")"
@@ -18551,19 +19181,13 @@ use feature 'say';
         for my $op ("hex", "oct", "fc", "values", "keys", "each") {;
             $emit_js{$op} = sub {
                 (my($self), my($level), my($wantarray)) = @_;
-                "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level) . ")"
+                "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . $self->{"arguments"}->[0]->emit_java($level + 1) . ")"
             }
         }
-        for my $op ("sleep", "ref", "exit", "warn", "die", "system", "qx", "pack", "unpack", "sprintf", "crypt", "join", "reverse") {;
+        for my $op ("sleep", "exit", "warn", "die", "system", "qx", "pack", "unpack", "sprintf", "crypt", "join", "reverse", "gmtime", "localtime", "time", "times") {;
             $emit_js{$op} = sub {
                 (my($self), my($level), my($wantarray)) = @_;
-                "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}, $level) . ")"
-            }
-        }
-        for my $op ("time") {;
-            $emit_js{$op} = sub {
-                (my($self), my($level), my($wantarray)) = @_;
-                "PlV.apply_maybe_core(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME . "::" . $op) . ", " . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}, $level) . ")"
+                "PlCORE." . $op . "(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}, $level + 1) . ")"
             }
         }
         sub Perlito5::AST::Apply::emit_java_op_table {;
@@ -18571,14 +19195,6 @@ use feature 'say';
         }
         sub Perlito5::AST::Apply::emit_java {
             (my($self), my($level), my($wantarray), my($autovivification_type)) = @_;
-            my $apply = $self->op_assign();
-            if ($apply) {;
-                return $apply->emit_java($level)
-            }
-            my $apply = $self->op_auto();
-            if ($apply) {;
-                return $apply->emit_java($level)
-            }
             my $code = $self->{"code"};
             if (ref($code) ne '') {
                 my $items = Perlito5::Java::to_list_preprocess($self->{"arguments"});
@@ -18590,6 +19206,16 @@ use feature 'say';
                     return $invocant . ".apply(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_param_list($items, $level + 1) . ")"
                 }
                 return $self->{"code"}->emit_java($level) . ".apply(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_param_list($items, $level + 1) . ")"
+            }
+            if (!exists($emit_js{$code})) {
+                my $apply = $self->op_assign();
+                if ($apply) {;
+                    return $apply->emit_java($level)
+                }
+                my $apply = $self->op_auto();
+                if ($apply) {;
+                    return $apply->emit_java($level)
+                }
             }
             $code eq "package" && return '';
             exists($emit_js{$code}) && ($self->{"namespace"} eq '' || $self->{"namespace"} eq "CORE") && return $emit_js{$code}->($self, $level, $wantarray, $autovivification_type);
@@ -18620,7 +19246,7 @@ use feature 'say';
                         $self->{"namespace"} = "Perlito5::Java::Runtime"
                     }
                 }
-                $code = $self->{"namespace"} . "::" . $code
+                $code = ($self->{"namespace"}) . "::" . $code
             }
             else {;
                 $code = $Perlito5::PKG_NAME . "::" . $code
@@ -18630,7 +19256,7 @@ use feature 'say';
             {
                 my $name = $self->{"code"};
                 my $namespace = $self->{"namespace"} || $Perlito5::PKG_NAME;
-                my $effective_name = $namespace . "::" . $self->{"code"};
+                my $effective_name = $namespace . "::" . ($self->{"code"});
                 if (exists($Perlito5::PROTO->{$effective_name})) {;
                     $sig = $Perlito5::PROTO->{$effective_name}
                 }
@@ -18640,7 +19266,7 @@ use feature 'say';
                 }
                 else {
                     if ($self->{"bareword"}) {;
-                        return Perlito5::AST::Buf::->new("buf", ($self->{"namespace"} ? $self->{"namespace"} . "::" : '') . $name)->emit_java($level + 1, "scalar")
+                        return Perlito5::AST::Buf::->new("buf", ($self->{"namespace"} ? ($self->{"namespace"}) . "::" : '') . $name)->emit_java($level + 1, "scalar")
                     }
                     $may_need_autoload = 1
                 }
@@ -18697,10 +19323,12 @@ use feature 'say';
                     }
                     $sig = substr($sig, 1)
                 }
-                return "PlV.apply(" . Perlito5::Java::escape_string($code) . ", " . Perlito5::Java::to_context($wantarray) . ", PlArray.construct_list_of_aliases(" . join(", ", @out) . ")" . ")"
+                $code = Perlito5::AST::Buf::->new("buf", $code)->emit_java($level, "scalar");
+                return $code . ".apply(" . Perlito5::Java::to_context($wantarray) . ", PlArray.construct_list_of_aliases(" . join(", ", @out) . ")" . ")"
             }
             my $items = Perlito5::Java::to_list_preprocess($self->{"arguments"});
-            "PlV.apply(" . Perlito5::Java::escape_string($code) . ", " . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_param_list($items, $level + 1) . ")"
+            $code = Perlito5::AST::Buf::->new("buf", $code)->emit_java($level, "scalar");
+            return $code . ".apply(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_param_list($items, $level + 1) . ")"
         }
         sub Perlito5::AST::Apply::emit_java_get_decl {
             my $self = shift;
@@ -18711,7 +19339,7 @@ use feature 'say';
                 } @{$self->{"arguments"}})
             }
             if ($code ne "do" && $code ne "eval") {;
-                $self->{"arguments"} && return (map(+($_->emit_java_get_decl()), @{$self->{"arguments"}}))
+                $self->{"arguments"} && return (map(+$_->emit_java_get_decl(), @{$self->{"arguments"}}))
             }
             return ()
         }
@@ -18740,7 +19368,7 @@ use feature 'say';
             Perlito5::Java::escape_string($Perlito5::PKG_NAME)
         }
         sub Perlito5::Java::get_label {;
-            "tmp" . $Perlito5::ID++
+            "tmp" . ($Perlito5::ID++)
         }
         sub Perlito5::Java::tab {
             my $level = shift;
@@ -18757,7 +19385,7 @@ use feature 'say';
             my $Java_class = Perlito5::Java::get_java_class_info();
             my @parts = split(m/\./, $java_import);
             $Java_class->{$perl_package}->{"java_type"} //= $parts[-1];
-            $Java_class->{$perl_package}->{"java_native_to_perl"} //= "p" . $Java_class->{$perl_package}->{"java_type"};
+            $Java_class->{$perl_package}->{"java_native_to_perl"} //= "p" . ($Java_class->{$perl_package}->{"java_type"});
             $Java_class->{$perl_package}->{"java_native_to_perl"} =~ s/[<>]/_/g;
             my $perl_to_java = $perl_package;
             $perl_to_java =~ s/:://g;
@@ -18766,23 +19394,23 @@ use feature 'say';
         }
         sub Perlito5::Java::init_java_class {
             my $Java_class = Perlito5::Java::get_java_class_info();
-            $Java_class->{"String"} = {"java_type", "String", "java_native_to_perl", "PlString", "perl_to_java", "toString", "perl_package", "String"};
-            $Java_class->{"Long"} = {"java_type", "Long", "java_native_to_perl", "PlInt", "perl_to_java", "to_long", "perl_package", "Long"};
-            $Java_class->{"Integer"} = {"java_type", "Integer", "java_native_to_perl", "PlInt", "perl_to_java", "to_int", "perl_package", "Integer"};
-            $Java_class->{"Boolean"} = {"java_type", "Boolean", "java_native_to_perl", "PlBool", "perl_to_java", "to_boolean", "perl_package", "Boolean"};
-            $Java_class->{"Double"} = {"java_type", "Double", "java_native_to_perl", "PlDouble", "perl_to_java", "to_double", "perl_package", "Double"};
-            $Java_class->{"Byte"} = {"java_type", "Byte", "java_native_to_perl", "PlInt", "perl_to_java", "to_byte", "perl_package", "Byte"};
-            $Java_class->{"Short"} = {"java_type", "Short", "java_native_to_perl", "PlInt", "perl_to_java", "to_short", "perl_package", "Short"};
-            $Java_class->{"Float"} = {"java_type", "Float", "java_native_to_perl", "PlDouble", "perl_to_java", "to_float", "perl_package", "Float"};
-            $Java_class->{"Character"} = {"java_type", "Character", "java_native_to_perl", "PlString", "perl_to_java", "to_char", "perl_package", "Character"};
-            $Java_class->{"long"} = {"java_type", "long", "java_native_to_perl", "PlInt", "perl_to_java", "to_long", "perl_package", "long"};
-            $Java_class->{"int"} = {"java_type", "int", "java_native_to_perl", "PlInt", "perl_to_java", "to_int", "perl_package", "int"};
-            $Java_class->{"short"} = {"java_type", "short", "java_native_to_perl", "PlInt", "perl_to_java", "to_long", "perl_package", "short"};
-            $Java_class->{"byte"} = {"java_type", "byte", "java_native_to_perl", "PlInt", "perl_to_java", "to_long", "perl_package", "byte"};
-            $Java_class->{"boolean"} = {"java_type", "boolean", "java_native_to_perl", "PlBool", "perl_to_java", "to_boolean", "perl_package", "boolean"};
-            $Java_class->{"double"} = {"java_type", "double", "java_native_to_perl", "PlDouble", "perl_to_java", "to_double", "perl_package", "double"};
-            $Java_class->{"float"} = {"java_type", "float", "java_native_to_perl", "PlDouble", "perl_to_java", "to_float", "perl_package", "float"};
-            $Java_class->{"char"} = {"java_type", "char", "java_native_to_perl", "PlString", "perl_to_java", "to_char", "perl_package", "char"}
+            $Java_class->{"String"} = {"java_type" => "String", "java_native_to_perl" => "PlString", "perl_to_java" => "toString", "perl_package" => "String", };
+            $Java_class->{"Long"} = {"java_type" => "Long", "java_native_to_perl" => "PlInt", "perl_to_java" => "to_long", "perl_package" => "Long", };
+            $Java_class->{"Integer"} = {"java_type" => "Integer", "java_native_to_perl" => "PlInt", "perl_to_java" => "to_int", "perl_package" => "Integer", };
+            $Java_class->{"Boolean"} = {"java_type" => "Boolean", "java_native_to_perl" => "PlBool", "perl_to_java" => "to_boolean", "perl_package" => "Boolean", };
+            $Java_class->{"Double"} = {"java_type" => "Double", "java_native_to_perl" => "PlDouble", "perl_to_java" => "to_double", "perl_package" => "Double", };
+            $Java_class->{"Byte"} = {"java_type" => "Byte", "java_native_to_perl" => "PlInt", "perl_to_java" => "to_byte", "perl_package" => "Byte", };
+            $Java_class->{"Short"} = {"java_type" => "Short", "java_native_to_perl" => "PlInt", "perl_to_java" => "to_short", "perl_package" => "Short", };
+            $Java_class->{"Float"} = {"java_type" => "Float", "java_native_to_perl" => "PlDouble", "perl_to_java" => "to_float", "perl_package" => "Float", };
+            $Java_class->{"Character"} = {"java_type" => "Character", "java_native_to_perl" => "PlString", "perl_to_java" => "to_char", "perl_package" => "Character", };
+            $Java_class->{"long"} = {"java_type" => "long", "java_native_to_perl" => "PlInt", "perl_to_java" => "to_long", "perl_package" => "long", };
+            $Java_class->{"int"} = {"java_type" => "int", "java_native_to_perl" => "PlInt", "perl_to_java" => "to_int", "perl_package" => "int", };
+            $Java_class->{"short"} = {"java_type" => "short", "java_native_to_perl" => "PlInt", "perl_to_java" => "to_long", "perl_package" => "short", };
+            $Java_class->{"byte"} = {"java_type" => "byte", "java_native_to_perl" => "PlInt", "perl_to_java" => "to_long", "perl_package" => "byte", };
+            $Java_class->{"boolean"} = {"java_type" => "boolean", "java_native_to_perl" => "PlBool", "perl_to_java" => "to_boolean", "perl_package" => "boolean", };
+            $Java_class->{"double"} = {"java_type" => "double", "java_native_to_perl" => "PlDouble", "perl_to_java" => "to_double", "perl_package" => "double", };
+            $Java_class->{"float"} = {"java_type" => "float", "java_native_to_perl" => "PlDouble", "perl_to_java" => "to_float", "perl_package" => "float", };
+            $Java_class->{"char"} = {"java_type" => "char", "java_native_to_perl" => "PlString", "perl_to_java" => "to_char", "perl_package" => "char", }
         }
         our %Java_loop_label;
         sub Perlito5::Java::get_java_loop_label {
@@ -18793,6 +19421,17 @@ use feature 'say';
             $Java_loop_label{$s} = $label;
             return $label
         }
+        our %Java_constant_seen;
+        sub Perlito5::Java::get_constant {
+            (my($type), my($create)) = @_;
+            if (exists($Java_constant_seen{$create})) {;
+                return $Java_constant_seen{$create}
+            }
+            my $label = Perlito5::Java::get_label();
+            push(@Perlito5::Java::Java_constants, "public static final " . $type . " " . $label . " = " . $create . ";");
+            $Java_constant_seen{$create} = $label;
+            return $label
+        }
         our %op_prefix_js_str = ("prefix:<-A>", "PerlOp.p5atime", "prefix:<-C>", "PerlOp.p5ctime", "prefix:<-M>", "PerlOp.p5mtime", "prefix:<-d>", "PerlOp.p5is_directory", "prefix:<-e>", "PerlOp.p5file_exists", "prefix:<-f>", "PerlOp.p5is_file", "prefix:<-s>", "PerlOp.p5size");
         our %op_infix_js_str = ("infix:<eq>", " == ", "infix:<ne>", " != ", "infix:<le>", " <= ", "infix:<ge>", " >= ", "infix:<lt>", " < ", "infix:<gt>", " > ");
         our %op_to_boolean = map(+($_, 1), "prefix:<!>", "infix:<!=>", "infix:<==>", "infix:<<=>", "infix:<>=>", "infix:<>>", "infix:<<>", "infix:<eq>", "infix:<ne>", "infix:<ge>", "infix:<le>", "infix:<gt>", "infix:<lt>", "prefix:<not>", "exists", "defined");
@@ -18801,7 +19440,7 @@ use feature 'say';
         our %native_op = ("infix:<->", "-", "infix:<+>", "+", "infix:<*>", "*", "infix:</>", "/", "infix:<!=>", "!=", "infix:<==>", "==", "infix:<<=>", "<=", "infix:<>=>", ">=", "infix:<>>", ">", "infix:<<>", "<");
         our %native_op_unary = ("postfix:<++>", 1, "postfix:<-->", 1, "prefix:<++>", 1, "prefix:<-->", 1);
         our %native_op_to_boolean = ("infix:<!=>", "!=", "infix:<==>", "==", "infix:<<=>", "<=", "infix:<>=>", ">=", "infix:<>>", ">", "infix:<<>", "<");
-        our %valid_java_statement = ("print", 1, "say", 1, "printf", 1, "return", 1, "push", 1, "infix:<=>", 1, "postfix:<++>", 1, "postfix:<-->", 1, "prefix:<++>", 1, "prefix:<-->", 1, "tie", 1, "untie", 1);
+        our %valid_java_statement = ("delete", 1, "die", 1, "do", 1, "infix:<=>", 1, "last", 1, "next", 1, "postfix:<++>", 1, "postfix:<-->", 1, "prefix:<++>", 1, "prefix:<-->", 1, "print", 1, "printf", 1, "push", 1, "redo", 1, "return", 1, "say", 1, "shift", 1, "tie", 1, "unshift", 1, "untie", 1, "warn", 1);
         my %safe_char = (" ", 1, "!", 1, "#", 1, "\$", 1, "%", 1, "&", 1, "(", 1, ")", 1, "*", 1, "+", 1, ",", 1, "-", 1, ".", 1, "/", 1, ":", 1, ";", 1, "<", 1, "=", 1, ">", 1, "?", 1, "\@", 1, "[", 1, "]", 1, "^", 1, "_", 1, "`", 1, "{", 1, "|", 1, "}", 1, "~", 1);
         sub Perlito5::Java::escape_string {
             my $s = shift;
@@ -18956,10 +19595,13 @@ use feature 'say';
                 if ($cond->{"int"} == 0) {;
                     return "false"
                 }
-                return "(" . $cond->{"int"} . " != 0)"
+                return "(" . ($cond->{"int"}) . " != 0)"
             }
-            elsif ($cond->isa("Perlito5::AST::Num")) {;
-                return "(" . $cond->{"num"} . " != 0.0)"
+            elsif ($cond->isa("Perlito5::AST::Num")) {
+                if ($cond->{"num"} == 0.0) {;
+                    return "false"
+                }
+                return "(" . ($cond->{"num"}) . " != 0.0)"
             }
             else {;
                 return Perlito5::Java::to_native_args([$cond], $level)
@@ -19000,6 +19642,26 @@ use feature 'say';
             }
             else {;
                 return $cond->emit_java($level, $wantarray) . ".toString()"
+            }
+        }
+        sub Perlito5::Java::to_array_index {
+            my $cond = shift;
+            my $level = shift;
+            my $wantarray = shift;
+            if ($cond->isa("Perlito5::AST::Apply") && $cond->code() eq "circumfix:<( )>" && $cond->{"arguments"} && @{$cond->{"arguments"}}) {;
+                return Perlito5::Java::to_array_index($cond->{"arguments"}->[0], $level, $wantarray)
+            }
+            if ($cond->isa("Perlito5::AST::Buf")) {;
+                return int(0 + ($cond->{"buf"}))
+            }
+            elsif ($cond->isa("Perlito5::AST::Int")) {;
+                return int(0 + ($cond->{"int"}))
+            }
+            elsif ($cond->isa("Perlito5::AST::Num")) {;
+                return int(0 + ($cond->{"num"}))
+            }
+            else {;
+                return $cond->emit_java($level, $wantarray)
             }
         }
         sub Perlito5::Java::to_str {
@@ -19077,6 +19739,14 @@ use feature 'say';
             }
             return "PerlOp.get_filehandle(" . $item->emit_java($level) . ", " . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")"
         }
+        sub Perlito5::Java::to_method_call_param_list {
+            (my($this), my($items), my($level)) = @_;
+            my $items = Perlito5::Java::to_list_preprocess($items);
+            if ($this->isa("Perlito5::AST::Var") && $this->{"sigil"} eq "::") {;
+                $this = Perlito5::AST::Buf::->new("buf", $this->{"namespace"})
+            }
+            "PlArray.construct_list_of_aliases(" . join(", ", $this->emit_java($level, "scalar", "lvalue"), map($_->emit_java($level, "list", "lvalue"), @{$items})) . ")"
+        }
         sub Perlito5::Java::to_param_list {
             my $items = Perlito5::Java::to_list_preprocess($_[0]);
             my $level = $_[1];
@@ -19088,6 +19758,18 @@ use feature 'say';
                 return "(PlArray)(" . $item->emit_java($level, "list") . ")"
             }
             "PlArray.construct_list_of_aliases(" . join(", ", map($_->emit_java($level, "list", "lvalue"), @{$items})) . ")"
+        }
+        sub Perlito5::Java::to_list_for_push {
+            my $items = Perlito5::Java::to_list_preprocess($_[0]);
+            my $level = $_[1];
+            if (@{$items} == 0) {;
+                return ''
+            }
+            my $item = $items->[0];
+            if (@{$items} == 1 && $item->isa("Perlito5::AST::Var") && ($item->sigil() eq "\@")) {;
+                return $item->emit_java($level, "list")
+            }
+            return join(", ", map($_->emit_java($level, "list"), @{$items}))
         }
         sub Perlito5::Java::to_list {
             my $items = Perlito5::Java::to_list_preprocess($_[0]);
@@ -19145,8 +19827,12 @@ use feature 'say';
             my $items = Perlito5::Java::to_scalar_preprocess($_[0]);
             my $level = $_[1];
             my $wantarray = $_[2];
-            @{$items} == 1 && Perlito5::Java::is_scalar($items->[0]) && return $items->[0]->emit_java($level, $wantarray);
-            "PerlOp.context(" . Perlito5::Java::to_context($wantarray) . ", " . join(", ", map($_->emit_java($level, $wantarray), @{$items})) . ")"
+            my @s = grep {;
+                $_ ne ''
+            } map($_->emit_java($level, $wantarray), @{$items});
+            @s == 0 && return "PerlOp.context(want)";
+            @s == 1 && Perlito5::Java::is_scalar($items->[0]) && return $s[0];
+            "PerlOp.context(" . Perlito5::Java::to_context($wantarray) . ", " . join(", ", @s) . ")"
         }
         sub Perlito5::Java::to_context {
             my $wantarray = shift;
@@ -19224,17 +19910,88 @@ use feature 'say';
             (my($has_local), my($local_label), my($value)) = @_;
             $has_local ? "return PerlOp.cleanup_local(" . $local_label . ", " . $value . ")" : "return " . $value
         }
+        sub Perlito5::Java::LexicalBlock::looks_like_statement {
+            (my($decl)) = @_;
+            if (($decl->isa("Perlito5::AST::Int")) || ($decl->isa("Perlito5::AST::Num")) || ($decl->isa("Perlito5::AST::Buf")) || ($decl->isa("Perlito5::AST::Var") && $decl->{"sigil"} ne "&") || ($decl->isa("Perlito5::AST::Apply") && $decl->code() eq "undef" && !@{$decl->{"arguments"}})) {;
+                return 0
+            }
+            return 1
+        }
+        sub Perlito5::Java::LexicalBlock::emit_body_statement {
+            (my($decl), my($level), my($wantarray)) = @_;
+            my @str;
+            if (ref($decl) eq "Perlito5::AST::Apply" && $decl->code() eq "package") {;
+                $Perlito5::PKG_NAME = $decl->{"namespace"}
+            }
+            my @var_decl = $decl->emit_java_get_decl();
+            for my $arg (@var_decl) {;
+                push(@str, $arg->emit_java_init($level, $wantarray))
+            }
+            if (!($decl->isa("Perlito5::AST::Decl") && ($decl->decl() eq "my" || $decl->decl() eq "our"))) {
+                if (!Perlito5::Java::LexicalBlock::looks_like_statement($decl)) {}
+                elsif ($decl->isa("Perlito5::AST::Apply") && !($decl->{"namespace"} eq "Java" && $decl->{"code"} eq "inline") && !$Perlito5::Java::valid_java_statement{$decl->{"code"}} && !($decl->{"namespace"} ne '' && $decl->{"namespace"} ne "CORE") && !($decl->{"code"} eq "infix:<&&>") && !($decl->{"code"} eq "infix:<||>") && !($decl->{"code"} eq "infix:<and>") && !($decl->{"code"} eq "infix:<or>") && !($decl->{"code"} eq "ternary:<? :>")) {;
+                    push(@str, "PerlOp.statement(" . $decl->emit_java($level + 1, "void") . ");")
+                }
+                elsif ($decl->isa("Perlito5::AST::CompUnit") || $decl->isa("Perlito5::AST::For") || $decl->isa("Perlito5::AST::While") || $decl->isa("Perlito5::AST::If") || $decl->isa("Perlito5::AST::Block")) {;
+                    push(@str, $decl->emit_java($level, "void"))
+                }
+                else {;
+                    push(@str, $decl->emit_java($level, "void") . ";")
+                }
+            }
+            return @str
+        }
+        sub Perlito5::Java::LexicalBlock::emit_last_statement {
+            (my($last_statement), my($level), my($wantarray), my($has_local), my($local_label)) = @_;
+            my @str;
+            my @var_decl = $last_statement->emit_java_get_decl();
+            for my $arg (@var_decl) {;
+                push(@str, $arg->emit_java_init($level, $wantarray))
+            }
+            my @stmt = Perlito5::Macro::insert_return($last_statement);
+            $last_statement = pop(@stmt);
+            for $_ (@stmt) {;
+                push(@str, $_->emit_java($level, "void") . ";")
+            }
+            if ($last_statement->isa("Perlito5::AST::Apply") && $last_statement->code() eq "return") {
+                if ($self->{"top_level"} || $last_statement->{"_return_from_block"} || $Perlito5::JAVA_CAN_RETURN) {
+                    if (!@{$last_statement->{"arguments"}}) {;
+                        push(@str, Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, "PerlOp.context(want)") . ";")
+                    }
+                    else {;
+                        push(@str, Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, Perlito5::Java::to_runtime_context([$last_statement->{"arguments"}->[0]], $level + 1, "runtime")) . ";")
+                    }
+                }
+                elsif (!@{$last_statement->{"arguments"}}) {
+                    $Perlito5::THROW_RETURN = 1;
+                    push(@str, "return PerlOp.ret(PerlOp.context(return_context));")
+                }
+                else {
+                    $Perlito5::THROW_RETURN = 1;
+                    push(@str, "return PerlOp.ret(" . Perlito5::Java::to_runtime_context([$last_statement->{"arguments"}->[0]], $level + 1, "return") . ");")
+                }
+            }
+            else {
+                my $s = $last_statement->emit_java($level, "runtime");
+                $last_statement->isa("Perlito5::AST::If") || $last_statement->isa("Perlito5::AST::While") || $last_statement->isa("Perlito5::AST::Block") || ($s .= ";");
+                push(@str, $s)
+            }
+            return @str
+        }
         sub Perlito5::Java::LexicalBlock::emit_java {
             (my($self), my($level), my($wantarray)) = @_;
-            my $original_level = $level;
+            local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;
             my $block_label = Perlito5::Java::get_java_loop_label($self->{"block_label"});
             $block_label && ($Perlito5::THROW = 1);
             my @block;
-            for my $stmt (@{$self->{"block"}}) {;
+            my $block_last = $#{$self->{"block"}};
+            STMT:
+            for my $i (0 .. $block_last) {
+                my $stmt = $self->{"block"}->[$i];
                 if (defined($stmt)) {
-                    if (ref($stmt) eq "Perlito5::AST::Apply" && $stmt->code() eq "undef" && !@{$stmt->{"arguments"}}) {}
-                    else {;
-                        push(@block, $stmt)
+                    push(@block, $stmt);
+                    if ($stmt->isa("Perlito5::AST::Apply") && $stmt->code() eq "return") {;
+                        last(STMT)
                     }
                 }
             }
@@ -19252,90 +20009,52 @@ use feature 'say';
                 $has_regex = 1
             }
             my $local_label = Perlito5::Java::get_label();
+            local $Perlito5::JAVA_HAS_LOCAL = $has_local;
+            local $Perlito5::JAVA_LOCAL_LABEL = $local_label;
+            $has_local && ($Perlito5::JAVA_CAN_RETURN = 0);
             if ($has_local) {
                 push(@pre, "int " . $local_label . " = PerlOp.local_length();");
                 if ($has_regex) {;
                     push(@pre, "PerlOp.push_local_regex_result();")
                 }
             }
-            my $create_context = $self->{"create_context"} && $self->has_decl("my");
-            my $outer_pkg = $Perlito5::PKG_NAME;
-            if ($self->{"top_level"} || $create_context) {;
-                $level++
-            }
             my $last_statement;
             if ($wantarray ne "void") {;
                 $last_statement = pop(@block)
             }
-            for my $decl (@block) {
-                if (ref($decl) eq "Perlito5::AST::Apply" && $decl->code() eq "package") {;
-                    $Perlito5::PKG_NAME = $decl->{"namespace"}
-                }
-                my @var_decl = $decl->emit_java_get_decl();
-                for my $arg (@var_decl) {;
-                    push(@str, $arg->emit_java_init($level, $wantarray))
-                }
-                if (!($decl->isa("Perlito5::AST::Decl") && ($decl->decl() eq "my" || $decl->decl() eq "our"))) {
-                    if (($decl->isa("Perlito5::AST::Int")) || ($decl->isa("Perlito5::AST::Num")) || ($decl->isa("Perlito5::AST::Buf")) || ($decl->isa("Perlito5::AST::Var") && $decl->{"sigil"} ne "&")) {}
-                    elsif ($decl->isa("Perlito5::AST::Apply") && !($decl->{"namespace"} eq "Java" && $decl->{"code"} eq "inline") && !($Perlito5::Java::valid_java_statement{$decl->{"code"}})) {;
-                        push(@str, "PerlOp.statement(" . $decl->emit_java($level + 1, "void") . ");")
-                    }
-                    elsif ($decl->isa("Perlito5::AST::CompUnit") || $decl->isa("Perlito5::AST::For") || $decl->isa("Perlito5::AST::While") || $decl->isa("Perlito5::AST::If") || $decl->isa("Perlito5::AST::Block")) {;
-                        push(@str, $decl->emit_java($level, "void"))
-                    }
-                    else {;
-                        push(@str, $decl->emit_java($level, "void") . ";")
-                    }
-                }
+            for my $decl (@block) {;
+                push(@str, Perlito5::Java::LexicalBlock::emit_body_statement($decl, $level, "void"))
             }
-            if ($last_statement) {
-                my @var_decl = $last_statement->emit_java_get_decl();
-                for my $arg (@var_decl) {;
-                    push(@str, $arg->emit_java_init($level, $wantarray))
-                }
-                my @stmt = Perlito5::Macro::insert_return($last_statement);
-                $last_statement = pop(@stmt);
-                for $_ (@stmt) {;
-                    push(@str, $_->emit_java($level, "void") . ";")
-                }
-                if ($last_statement->isa("Perlito5::AST::Apply") && $last_statement->code() eq "return") {
-                    if ($self->{"top_level"} || $last_statement->{"_return_from_block"}) {
-                        if (!@{$last_statement->{"arguments"}}) {;
-                            push(@str, Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, "PerlOp.context(want)") . ";")
-                        }
-                        else {;
-                            push(@str, Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, Perlito5::Java::to_runtime_context([$last_statement->{"arguments"}->[0]], $level + 1, "runtime")) . ";")
-                        }
-                    }
-                    elsif (!@{$last_statement->{"arguments"}}) {
-                        $Perlito5::THROW_RETURN = 1;
-                        push(@str, "return PerlOp.ret(PerlOp.context(return_context));")
-                    }
-                    else {
-                        $Perlito5::THROW_RETURN = 1;
-                        push(@str, "return PerlOp.ret(" . Perlito5::Java::to_runtime_context([$last_statement->{"arguments"}->[0]], $level + 1, "return") . ");")
-                    }
-                }
-                else {
-                    my $s = $last_statement->emit_java($level, "runtime");
-                    $last_statement->isa("Perlito5::AST::If") || $last_statement->isa("Perlito5::AST::While") || $last_statement->isa("Perlito5::AST::Block") || ($s .= ";");
-                    push(@str, $s)
-                }
+            if ($last_statement) {;
+                push(@str, Perlito5::Java::LexicalBlock::emit_last_statement($last_statement, $level, $wantarray, $has_local, $local_label))
             }
-            my $out;
             if ($self->{"eval_block"}) {;
-                return (@pre, "try {", \@str, "}", "catch(PlReturnException e) {", [Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, "e.ret") . ";"], "}", "catch(PlNextException e) {", ["throw e;"], "}", "catch(PlLastException e) {", ["throw e;"], "}", "catch(PlRedoException e) {", ["throw e;"], "}", "catch(PlDieException e) {", ["PlV.sset(\"main::\@\", e.ret);", "return PlCx.UNDEF;"], "}", "catch(Exception e) {", ["PlV.sset(\"main::\@\", new PlString(e.getMessage()));", "return PlCx.UNDEF;"], "}")
+                return (@pre, "try {", \@str, "}", "catch(PlReturnException e) {", [Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, "e.ret") . ";"], "}", "catch(PlNextException e) {", ["throw e;"], "}", "catch(PlLastException e) {", ["throw e;"], "}", "catch(PlRedoException e) {", ["throw e;"], "}", "catch(PlDieException e) {", ["PlV.sset(\"main::\@\", e.ret);", "return PlCx.UNDEF;"], "}", "catch(Exception e) {", ["PlV.sset(\"main::\@\", new PlStringLazyError(e));", "return PlCx.UNDEF;"], "}")
             }
-            elsif ($self->{"top_level"} && $Perlito5::THROW_RETURN) {
-                push(@pre, "try {", [@str], "}", "catch(PlReturnException e) {", [Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, "e.ret") . ";"], "}");
-                @str = ()
+            if ($self->{"top_level"}) {
+                if ($Perlito5::THROW_RETURN) {;
+                    return (@pre, "try {", [@str], "}", "catch(PlReturnException e) {", [Perlito5::Java::LexicalBlock::emit_return($has_local, $local_label, "e.ret") . ";"], "}")
+                }
+                else {;
+                    return (@pre, @str)
+                }
             }
-            elsif (($Perlito5::THROW || ($self->{"continue"} && @{$self->{"continue"}->{"stmts"}} > 0)) && !$self->{"not_a_loop"}) {
+            if ($self->{"not_a_loop"}) {
+                if ($has_local && !$last_statement) {
+                    if (@block && $block[-1]->isa("Perlito5::AST::Apply") && $block[-1]->code() eq "return") {}
+                    else {;
+                        push(@str, "PerlOp.cleanup_local(" . $local_label . ", PlCx.UNDEF);")
+                    }
+                }
+                return (@pre, @str)
+            }
+            if ($Perlito5::THROW || ($self->{"continue"} && @{$self->{"continue"}->{"stmts"}} > 0)) {
                 my $redo_label = Perlito5::Java::get_label();
                 my $test_label = "e.label_id != 0";
                 $block_label && ($test_label = "e.label_id != " . $block_label . " && e.label_id != 0");
                 my @continue;
-                if ($self->{"continue"}) {;
+                if ($self->{"continue"}) {
+                    local $Perlito5::JAVA_CAN_RETURN = 0;
                     push(@continue, "if (!" . $redo_label . ") {", ["try {", [Perlito5::Java::LexicalBlock::->new("block", $self->{"continue"}->{"stmts"}, "not_a_loop", 1)->emit_java($level + 2, $wantarray)], "}", "catch(PlNextException e) {", ["if (" . $test_label . ") {", ["throw e;"], "}"], "}", "catch(PlRedoException e) {", ["if (" . $test_label . ") {", ["throw e;"], "}", $redo_label . " = true;"], "}"], "}")
                 }
                 push(@pre, "boolean " . $redo_label . ";", "do {", [$redo_label . " = false;", "try {", [@str], "}", "catch(PlNextException e) {", ["if (" . $test_label . ") {", ["throw e;"], "}"], "}", "catch(PlRedoException e) {", ["if (" . $test_label . ") {", ["throw e;"], "}", $redo_label . " = true;"], "}", @continue], "} while (" . $redo_label . ");");
@@ -19344,7 +20063,6 @@ use feature 'say';
             elsif ($has_local && !$last_statement) {;
                 push(@str, "PerlOp.cleanup_local(" . $local_label . ", PlCx.UNDEF);")
             }
-            $Perlito5::PKG_NAME = $outer_pkg;
             return (@pre, @str)
         }
         sub Perlito5::Java::LexicalBlock::emit_java_has_regex {;
@@ -19355,6 +20073,7 @@ use feature 'say';
     {
         sub Perlito5::AST::CompUnit::emit_java {
             (my($self), my($level), my($wantarray)) = @_;
+            local $Perlito5::JAVA_CAN_RETURN = 0;
             return Perlito5::Java::LexicalBlock::->new("block", $self->{"body"}, "not_a_loop", 1)->emit_java($level + 1, $wantarray)
         }
         sub Perlito5::AST::CompUnit::process_java_import_statement {
@@ -19370,7 +20089,7 @@ use feature 'say';
 " . ${"\@"} . "
 " . $args_perl5);
             if ($Java_class->{$class}->{"java_path"}) {;
-                $str .= "package " . $Java_class->{$class}->{"java_path"} . ";
+                $str .= "package " . ($Java_class->{$class}->{"java_path"}) . ";
 "
             }
             elsif ($Java_class->{$class}->{"import"}) {;
@@ -19382,7 +20101,7 @@ use feature 'say';
                     $Java_class->{$class}->{"extends_java_type"} = $extended->{"java_type"}
                 }
                 else {;
-                    die("cannot extend class '" . $Java_class->{$class}->{"extends"} . "' because it was not declared")
+                    die("cannot extend class '" . ($Java_class->{$class}->{"extends"}) . "' because it was not declared")
                 }
                 my $perl_to_java = $class;
                 $perl_to_java =~ s/:://g;
@@ -19394,7 +20113,7 @@ use feature 'say';
                     $Java_class->{$class}->{"implements_java_type"} = $implemented->{"java_type"}
                 }
                 else {;
-                    die("cannot implement class '" . $Java_class->{$class}->{"implements"} . "' because it was not declared")
+                    die("cannot implement class '" . ($Java_class->{$class}->{"implements"}) . "' because it was not declared")
                 }
                 my $perl_to_java = $class;
                 $perl_to_java =~ s/:://g;
@@ -19431,7 +20150,7 @@ use feature 'say';
             }
             my $main_class = "Main";
             $Perlito5::BOOTSTRAP_JAVA_EVAL && ($main_class = "LibPerl");
-            $str .= Perlito5::Java::emit_wrap_java(-1, "class " . $main_class . " {", [@Perlito5::Java::Java_constants, "public static void main(String[] args) {", [($Perlito5::JAVA_EVAL ? "org.perlito.Perlito5.LibPerl.main( new String[]{} );" : ()), "PlV.init(args);", "int want = PlCx.VOID;", "int return_context = PlCx.VOID;", "PlArray List__ = new PlArray();", "Exception ee = null;", "try {", [@Perlito5::Java::Java_init, @main], "}", "catch(PlReturnException e) {", "}", "catch(PlNextException e) {", ["ee = new PlDieException(new PlString(\"Can't \\\"next\\\" outside a loop block\"));"], "}", "catch(PlLastException e) {", ["ee = new PlDieException(new PlString(\"Can't \\\"last\\\" outside a loop block\"));"], "}", "catch(PlRedoException e) {", ["ee = new PlDieException(new PlString(\"Can't \\\"redo\\\" outside a loop block\"));"], "}", "catch(Exception e) {", ["ee = e;"], "}", "if (ee != null) {", ["ee.printStackTrace(System.err);"], "}", "for (PlObject code : PlV.array_get(\"Perlito5::END_BLOCK\")) {", ["code.apply(PlCx.VOID, new PlArray());"], "}", "if (ee != null) {", ["System.exit(1);"], "}"], "}"], ["public static void init() {", ["main(new String[]{});"], "}"], ["public static PlObject[] apply(String functionName, String... args) {", ["PlArray list = new PlArray(args);", "PlObject result = PlV.apply(functionName, PlCx.LIST, list);", "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);", "PlObject[] out = new PlObject[res.to_int()];", "int i = 0;", "for (PlObject s : res) {", ["out[i++] = s;"], "}", "return out;"], "}"], ["public static PlObject[] apply(String functionName, PlObject... args) {", ["PlArray list = new PlArray(args);", "PlObject result = PlV.apply(functionName, PlCx.LIST, list);", "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);", "PlObject[] out = new PlObject[res.to_int()];", "int i = 0;", "for (PlObject s : res) {", ["out[i++] = s;"], "}", "return out;"], "}"], "}") . "
+            $str .= Perlito5::Java::emit_wrap_java(-1, "class " . $main_class . " {", [@Perlito5::Java::Java_constants, "public static void main(String[] args) {", [($Perlito5::JAVA_EVAL ? "org.perlito.Perlito5.LibPerl.main( new String[]{} );" : ()), "PlV.init(args);", "int want = PlCx.VOID;", "int return_context = PlCx.VOID;", "PlArray List__ = new PlArray();", "Exception ee = null;", "try {", [@Perlito5::Java::Java_init, @main], "}", "catch(PlReturnException e) {", "}", "catch(PlNextException e) {", ["ee = new PlDieException(new PlString(\"Can't \\\"next\\\" outside a loop block\"));"], "}", "catch(PlLastException e) {", ["ee = new PlDieException(new PlString(\"Can't \\\"last\\\" outside a loop block\"));"], "}", "catch(PlRedoException e) {", ["ee = new PlDieException(new PlString(\"Can't \\\"redo\\\" outside a loop block\"));"], "}", "catch(Exception e) {", ["ee = e;"], "}", "if (ee != null) {", ["ee.printStackTrace(System.err);"], "}", "for (PlObject code : PlV.array_get(\"Perlito5::END_BLOCK\")) {", ["code.apply(PlCx.VOID, new PlArray());"], "}", "if (ee != null) {", ["System.exit(1);"], "}"], "}"], ["public static void init() {", ["main(new String[]{});"], "}"], ["public static PlObject[] apply(String functionName, String... args) {", ["PlArray list = new PlArray(args);", "PlObject result = new PlString(functionName).apply(PlCx.LIST, list);", "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);", "PlObject[] out = new PlObject[res.to_int()];", "int i = 0;", "for (PlObject s : res) {", ["out[i++] = s;"], "}", "return out;"], "}"], ["public static PlObject[] apply(String functionName, PlObject... args) {", ["PlArray list = new PlArray(args);", "PlObject result = new PlString(functionName).apply(PlCx.LIST, list);", "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);", "PlObject[] out = new PlObject[res.to_int()];", "int i = 0;", "for (PlObject s : res) {", ["out[i++] = s;"], "}", "return out;"], "}"], "}") . "
 ";
             return $str
         }
@@ -19459,7 +20178,8 @@ use feature 'say';
             if ($v >= 0 && $v <= 2) {;
                 return "PlCx.INT" . abs($v)
             }
-            "new PlInt(" . $v . "L)"
+            my $s = "new PlInt(" . $v . "L)";
+            return Perlito5::Java::get_constant("PlInt", $s)
         }
         sub Perlito5::AST::Int::emit_java_set {;
             die("Can't modify constant item in scalar assignment")
@@ -19475,7 +20195,8 @@ use feature 'say';
     {
         sub Perlito5::AST::Num::emit_java {
             (my($self), my($level), my($wantarray)) = @_;
-            "new PlDouble(" . $self->{"num"} . "d)"
+            my $s = "new PlDouble(" . ($self->{"num"}) . "d)";
+            return Perlito5::Java::get_constant("PlDouble", $s)
         }
         sub Perlito5::AST::Num::emit_java_set {;
             die("Can't modify constant item in scalar assignment")
@@ -19491,7 +20212,8 @@ use feature 'say';
     {
         sub Perlito5::AST::Buf::emit_java {
             (my($self), my($level), my($wantarray)) = @_;
-            "new PlString(" . Perlito5::Java::escape_string($self->{"buf"}) . ")"
+            my $s = "new PlStringConstant(" . Perlito5::Java::escape_string($self->{"buf"}) . ")";
+            return Perlito5::Java::get_constant("PlStringConstant", $s)
         }
         sub Perlito5::AST::Buf::emit_java_set {;
             die("Can't modify constant item in scalar assignment")
@@ -19508,18 +20230,13 @@ use feature 'say';
         sub Perlito5::AST::Block::emit_java {
             (my($self), my($level), my($wantarray)) = @_;
             local $Perlito5::THROW = 0;
-            my $body;
-            if ($wantarray ne "void") {;
-                $body = Perlito5::Java::LexicalBlock::->new("block", $self->{"stmts"}, "block_label", $self->{"label"}, "continue", $self->{"continue"})
-            }
-            else {;
-                $body = Perlito5::Java::LexicalBlock::->new("block", $self->{"stmts"}, "block_label", $self->{"label"}, "continue", $self->{"continue"})
-            }
+            local $Perlito5::JAVA_CAN_RETURN = 0;
+            my $body = Perlito5::Java::LexicalBlock::->new("block", $self->{"stmts"}, "block_label", $self->{"label"}, "continue", $self->{"continue"});
             my $init = '';
             if ($self->{"name"} eq "INIT") {
                 my $tmp = "p5pkg.main." . Perlito5::Java::get_label();
-                $init = Perlito5::Java::tab($level + 2) . "if (" . $tmp . ") { return }; " . $tmp . " = 1;
-"
+                $init = Perlito5::Java::tab($level + 2) . ("if (" . $tmp . ") { return }; " . $tmp . " = 1;
+")
             }
             my @str = $body->emit_java($level + 1, $wantarray);
             if ($Perlito5::THROW) {;
@@ -19577,14 +20294,7 @@ use feature 'say';
             if ($localize) {;
                 return $self->emit_java_container($level) . ".aget_lvalue_local(" . Perlito5::Java::autoquote($self->{"index_exp"}, $level) . ").set(" . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
             }
-            my $arg = $self->{"index_exp"};
-            my $s;
-            if ($arg->isa("Perlito5::AST::Int")) {;
-                $s = $arg->{"int"}
-            }
-            else {;
-                $s = $arg->emit_java($level, "scalar")
-            }
+            my $s = Perlito5::Java::to_array_index($self->{"index_exp"}, $level + 1, "scalar");
             if ($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\$>") {
                 my $obj = Perlito5::Java::emit_java_autovivify($self->{"obj"}->{"arguments"}->[0], $level + 1, "array");
                 return $obj . ".aset(" . $s . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
@@ -19646,6 +20356,9 @@ use feature 'say';
                 return Perlito5::AST::Call::->new("method", "postcircumfix:<{ }>", "invocant", $self->{"obj"}->{"arguments"}->[0], "arguments", $self->{"index_exp"})->emit_java($level, $wantarray, $autovivification_type)
             }
             my $index = Perlito5::AST::Lookup::->autoquote($self->{"index_exp"});
+            if ($self->{"obj"}->isa("Perlito5::AST::Var") && $self->{"obj"}->{"name"} eq "+" && $self->{"obj"}->{"_namespace"} eq "main" && $self->{"obj"}->{"sigil"} eq "\$") {;
+                return "PerlOp.regex_named_capture(" . Perlito5::Java::to_native_str($index, $level) . ")"
+            }
             return $self->emit_java_container($level) . "." . $method . "(" . Perlito5::Java::to_native_str($index, $level) . ")"
         }
         sub Perlito5::AST::Lookup::emit_java_set {
@@ -19690,7 +20403,7 @@ use feature 'say';
     }
     package Perlito5::AST::Var;
     {
-        my $table = {"\$", '', "\@", '', "%", '', "&", ''};
+        my $table = {"\$" => '', "\@" => '', "%" => '', "&" => '', };
         sub Perlito5::AST::Var::emit_java_global {
             (my($self), my($level), my($wantarray), my($localize)) = @_;
             my $local = $localize ? "_local" : '';
@@ -19712,7 +20425,7 @@ use feature 'say';
             }
             if ($sigil eq "\$") {
                 if ($self->{"name"} > 0) {;
-                    return "PerlOp.regex_var(" . (0 + $self->{"name"}) . ")"
+                    return "PerlOp.regex_var(" . (0 + ($self->{"name"})) . ")"
                 }
                 if ($self->{"name"} eq "&" || $self->{"name"} eq "`" || $self->{"name"} eq "'") {;
                     return "PerlOp.regex_var(" . Perlito5::Java::escape_string($self->{"name"}) . ")"
@@ -19724,7 +20437,7 @@ use feature 'say';
             if ($sigil eq "::") {;
                 return Perlito5::Java::escape_string($namespace)
             }
-            my $index = Perlito5::Java::escape_string($namespace . "::" . $table->{$sigil} . $str_name);
+            my $index = Perlito5::Java::escape_string($namespace . "::" . ($table->{$sigil}) . $str_name);
             if ($sigil eq "\$") {;
                 return "PlV.sget" . $local . "(" . $index . ")"
             }
@@ -19733,7 +20446,8 @@ use feature 'say';
             }
             if ($sigil eq "&") {
                 my $namespace = $self->{"namespace"} || $Perlito5::PKG_NAME;
-                return "PlV.apply(" . Perlito5::Java::escape_string($namespace . "::" . $str_name) . ", " . Perlito5::Java::to_context($wantarray) . ", List__)"
+                my $sub = Perlito5::AST::Buf::->new("buf", $namespace . "::" . $str_name)->emit_java($level, "scalar");
+                return $sub . ".apply(" . Perlito5::Java::to_context($wantarray) . ", List__)"
             }
             if ($sigil eq "\@") {
                 if ($self->{"sigil"} eq "\$#") {;
@@ -19770,12 +20484,12 @@ use feature 'say';
                 return $s . ".set(" . Perlito5::Java::to_list([$arguments], $level + 1) . ")"
             }
             if ($sigil eq "\$" && $self->{"name"} > 0) {;
-                return "p5_regex_capture[" . ($self->{"name"} - 1) . "]"
+                return "p5_regex_capture[" . (($self->{"name"}) - 1) . "]"
             }
             if ($sigil eq "::") {;
                 return Perlito5::Java::escape_string($namespace)
             }
-            my $index = Perlito5::Java::escape_string($namespace . "::" . $table->{$sigil} . $str_name);
+            my $index = Perlito5::Java::escape_string($namespace . "::" . ($table->{$sigil}) . $str_name);
             if ($sigil eq "\$") {;
                 return "PlV.sset" . $local . "(" . $index . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
             }
@@ -19804,7 +20518,7 @@ use feature 'say';
             if ($sigil eq "\$" && $self->{"name"} > 0) {;
                 die("not implemented emit_java_global_set_alias() for regex capture")
             }
-            my $index = Perlito5::Java::escape_string($namespace . "::" . $table->{$sigil} . $str_name);
+            my $index = Perlito5::Java::escape_string($namespace . "::" . ($table->{$sigil}) . $str_name);
             ref($arguments) && ($arguments = Perlito5::Java::to_scalar([$arguments], $level + 1));
             $sigil eq "\$" && return "PlV.sset_alias(" . $index . ", " . $arguments . ")";
             $sigil eq "\@" && return "PlV.aset_alias(" . $index . ", " . $arguments . ")";
@@ -19818,7 +20532,7 @@ use feature 'say';
             if ($decl_type ne "my" && $decl_type ne "state") {;
                 return $self->emit_java_global($level, $wantarray)
             }
-            my $str_name = $table->{$sigil} . $self->{"name"} . "_" . $self->{"_id"};
+            my $str_name = ($table->{$sigil}) . ($self->{"name"}) . "_" . ($self->{"_id"});
             exists($Perlito5::Java::Java_var_name{$self->{"_id"}}) && ($str_name = $Perlito5::Java::Java_var_name{$self->{"_id"}});
             if ($sigil eq "\@") {
                 if ($wantarray eq "scalar") {;
@@ -19859,7 +20573,7 @@ use feature 'say';
                 return $self->emit_java($level) . ".set(" . Perlito5::Java::to_list([$arguments], $level + 1) . ")"
             }
             if ($sigil eq "%") {;
-                return $self->emit_java($level) . ".set(" . Perlito5::Java::to_list([$arguments], $level + 1, "hash") . ")"
+                return $self->emit_java($level) . ".set(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list([$arguments], $level + 1, "hash") . ")"
             }
             if ($sigil eq "*") {
                 my $namespace = $self->{"namespace"} || $self->{"_namespace"};
@@ -19894,8 +20608,9 @@ use feature 'say';
             my $Java_var = Perlito5::Java::get_java_var_info();
             my $type = $self->{"type"} || "PlLvalue";
             my $id = $self->{"var"}->{"_id"};
-            if ($id) {;
-                $Java_var->{$id} = {"id", $id, "type", $type}
+            if ($id) {
+                $Java_var->{$id} && return;
+                $Java_var->{$id} = {"id" => $id, "type" => $type, }
             }
             if ($self->{"decl"} eq "our") {;
                 return ''
@@ -19914,7 +20629,7 @@ use feature 'say';
                     my $Java_class = Perlito5::Java::get_java_class_info();
                     my $java_type = $Java_class->{$type}->{"java_type"} || "PlLvalue";
                     if ($java_type eq "PlLvalue") {;
-                        return $java_type . " " . $self->{"var"}->emit_java($level) . " = new " . $java_type . "();"
+                        return $java_type . " " . $self->{"var"}->emit_java($level) . (" = new " . $java_type . "();")
                     }
                     else {;
                         return $java_type . " " . $self->{"var"}->emit_java($level) . ";"
@@ -19922,7 +20637,7 @@ use feature 'say';
                 }
             }
             else {;
-                die("not implemented: Perlito5::AST::Decl '" . $self->{"decl"} . "'")
+                die("not implemented: Perlito5::AST::Decl '" . ($self->{"decl"}) . "'")
             }
         }
         sub Perlito5::AST::Decl::emit_java_set {
@@ -19956,7 +20671,7 @@ use feature 'say';
                 $autovivification_type eq "array" && ($method = "aget_arrayref");
                 $autovivification_type eq "hash" && ($method = "aget_hashref");
                 $autovivification_type eq "lvalue" && ($method = "aget_lvalue");
-                return Perlito5::Java::emit_java_autovivify($self->{"invocant"}, $level, "array") . "." . $method . "(" . Perlito5::Java::to_scalar([$self->{"arguments"}], $level + 1) . ")"
+                return Perlito5::Java::emit_java_autovivify($self->{"invocant"}, $level, "array") . "." . $method . "(" . Perlito5::Java::to_array_index($self->{"arguments"}, $level + 1, "scalar") . ")"
             }
             if ($meth eq "postcircumfix:<{ }>") {
                 my $method = $autovivification_type || "hget";
@@ -19964,7 +20679,7 @@ use feature 'say';
                 $autovivification_type eq "array" && ($method = "hget_arrayref");
                 $autovivification_type eq "hash" && ($method = "hget_hashref");
                 $autovivification_type eq "lvalue" && ($method = "hget_lvalue");
-                return Perlito5::Java::emit_java_autovivify($self->{"invocant"}, $level, "hash") . "." . $method . "(" . Perlito5::Java::autoquote($self->{"arguments"}, $level + 1, "list") . ")"
+                return Perlito5::Java::emit_java_autovivify($self->{"invocant"}, $level, "hash") . "." . $method . "(" . Perlito5::Java::to_native_str(Perlito5::AST::Lookup::->autoquote($self->{"arguments"}), $level + 1, "list") . ")"
             }
             if ($meth eq "postcircumfix:<( )>") {
                 my $invocant;
@@ -19976,18 +20691,25 @@ use feature 'say';
                 }
                 return $invocant . ".apply(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}) . ")"
             }
+            if (substr($meth, 0, 7) eq "SUPER::") {
+                my $method = substr($meth, 7);
+                if ($method) {
+                    $method = Perlito5::Java::escape_string($method);
+                    return "PerlOp.callSuper(" . $method . ", " . Perlito5::Java::pkg() . ", " . Perlito5::Java::to_method_call_param_list($self->{"invocant"}, $self->{"arguments"}, $level + 1) . ", " . Perlito5::Java::to_context($wantarray) . ")"
+                }
+            }
             if (ref($self->{"invocant"}) eq "Perlito5::AST::Var" && $self->{"invocant"}->{"sigil"} eq "::") {
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 if (exists($Java_class->{$self->{"invocant"}->{"namespace"}})) {
                     my $info = $Java_class->{$self->{"invocant"}->{"namespace"}};
                     if ($meth eq "new") {;
-                        return "new " . $info->{"java_type"} . "(" . Perlito5::Java::to_native_args($self->{"arguments"}) . ")"
+                        return "new " . ($info->{"java_type"}) . "(" . Perlito5::Java::to_native_args($self->{"arguments"}) . ")"
                     }
                     if ($self->{"_no_params"}) {;
-                        return $info->{"java_type"} . "." . $meth
+                        return ($info->{"java_type"}) . "." . $meth
                     }
                     else {;
-                        return $info->{"java_type"} . "." . $meth . "(" . Perlito5::Java::to_native_args($self->{"arguments"}) . ")"
+                        return ($info->{"java_type"}) . "." . $meth . "(" . Perlito5::Java::to_native_args($self->{"arguments"}) . ")"
                     }
                 }
             }
@@ -20025,9 +20747,9 @@ use feature 'say';
                 $meth = $meth->emit_java($level, "scalar")
             }
             else {;
-                $meth = Perlito5::Java::escape_string($meth)
+                $meth = Perlito5::AST::Buf::->new("buf", $meth)->emit_java($level, "scalar")
             }
-            return "PerlOp.call(" . $invocant . ", " . $meth . ", " . Perlito5::Java::to_list($self->{"arguments"}) . ", " . Perlito5::Java::to_context($wantarray) . ")"
+            return "PerlOp.call(" . $meth . ", " . Perlito5::Java::to_method_call_param_list($self->{"invocant"}, $self->{"arguments"}, $level + 1) . ", " . Perlito5::Java::to_context($wantarray) . ")"
         }
         sub Perlito5::AST::Call::emit_java_set {
             (my($self), my($arguments), my($level), my($wantarray)) = @_;
@@ -20035,7 +20757,7 @@ use feature 'say';
                 return Perlito5::Java::emit_java_autovivify($self->{"invocant"}, $level, "array") . ".aset(" . Perlito5::Java::to_num($self->{"arguments"}, $level + 1) . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
             }
             if ($self->{"method"} eq "postcircumfix:<{ }>") {;
-                return Perlito5::Java::emit_java_autovivify($self->{"invocant"}, $level, "hash") . ".hset(" . Perlito5::Java::autoquote($self->{"arguments"}, $level + 1, "list") . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
+                return Perlito5::Java::emit_java_autovivify($self->{"invocant"}, $level, "hash") . ".hset(" . Perlito5::Java::to_native_str(Perlito5::AST::Lookup::->autoquote($self->{"arguments"}), $level + 1, "list") . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
             }
             die("don't know how to assign to method ", $self->{"method"})
         }
@@ -20060,8 +20782,8 @@ use feature 'say';
                     push(@str, $arg->emit_java_init($level, $wantarray))
                 }
             }
-            my $body = ref($self->{"body"}) ne "Perlito5::AST::Block" ? $self->{"body"} : (!@{$self->{"body"}->stmts()}) ? undef : $wantarray ne "void" ? Perlito5::Java::LexicalBlock::->new("block", $self->{"body"}->stmts(), "not_a_loop", 1) : Perlito5::Java::LexicalBlock::->new("block", $self->{"body"}->stmts(), "create_context", 1, "not_a_loop", 1);
-            my $otherwise = ref($self->{"otherwise"}) ne "Perlito5::AST::Block" ? $self->{"otherwise"} : (!@{$self->{"otherwise"}->stmts()}) ? undef : $wantarray ne "void" ? Perlito5::Java::LexicalBlock::->new("block", $self->{"otherwise"}->stmts(), "not_a_loop", 1) : Perlito5::Java::LexicalBlock::->new("block", $self->{"otherwise"}->stmts(), "create_context", 1, "not_a_loop", 1);
+            my $body = ref($self->{"body"}) ne "Perlito5::AST::Block" ? $self->{"body"} : (!@{$self->{"body"}->stmts()}) ? undef : Perlito5::Java::LexicalBlock::->new("block", $self->{"body"}->stmts(), "not_a_loop", 1);
+            my $otherwise = ref($self->{"otherwise"}) ne "Perlito5::AST::Block" ? $self->{"otherwise"} : (!@{$self->{"otherwise"}->stmts()}) ? undef : Perlito5::Java::LexicalBlock::->new("block", $self->{"otherwise"}->stmts(), "not_a_loop", 1);
             push(@str, "if (" . Perlito5::Java::to_boolean($cond, $level + 1) . ") {");
             if ($body) {;
                 push(@str, [$body->emit_java($level + 1, $wantarray)])
@@ -20069,7 +20791,7 @@ use feature 'say';
             push(@str, "}");
             if ($otherwise) {
                 if (@{$otherwise->{"block"}} == 1 && ref($otherwise->{"block"}->[0]) eq "Perlito5::AST::If") {;
-                    push(@str, "else", [$otherwise->{"block"}->[0]->emit_java($level, $wantarray)])
+                    push(@str, ("else", $otherwise->{"block"}->[0]->emit_java($level, $wantarray)))
                 }
                 else {;
                     push(@str, "else {", [$otherwise->emit_java($level + 1, $wantarray)], "}")
@@ -20100,7 +20822,7 @@ use feature 'say';
             }
             $cond = Perlito5::AST::Apply::->new("arguments", [Perlito5::AST::Var::SCALAR_ARG(), $cond], "code", "infix:<~~>", "namespace", '');
             my $next = Perlito5::AST::Apply::->new("arguments", [], "bareword", 1, "code", "next", "namespace", '');
-            my $body = ref($self->{"body"}) ne "Perlito5::AST::Block" ? Perlito5::Java::LexicalBlock::->new("block", [$self->{"body"}], "not_a_loop", 1) : (!@{$self->{"body"}->stmts()}) ? undef : $wantarray ne "void" ? Perlito5::Java::LexicalBlock::->new("block", $self->{"body"}->stmts(), "not_a_loop", 1) : Perlito5::Java::LexicalBlock::->new("block", $self->{"body"}->stmts(), "create_context", 1, "not_a_loop", 1);
+            my $body = ref($self->{"body"}) ne "Perlito5::AST::Block" ? Perlito5::Java::LexicalBlock::->new("block", [$self->{"body"}], "not_a_loop", 1) : (!@{$self->{"body"}->stmts()}) ? undef : Perlito5::Java::LexicalBlock::->new("block", $self->{"body"}->stmts(), "not_a_loop", 1);
             push(@{$body->{"block"}}, $next);
             push(@str, "if (" . Perlito5::Java::to_boolean($cond, $level + 1) . ") {");
             if ($body) {;
@@ -20201,7 +20923,7 @@ use feature 'say';
                 my $namespace = $v->{"namespace"} || $v->{"_namespace"} || $Perlito5::PKG_NAME;
                 my $s;
                 if ($decl eq "my" || $decl eq "state") {;
-                    push(@str, "for (PlObject " . $local_label . " : " . $cond . ") {", ["PlLvalue " . $v->emit_java($level + 1) . " = (PlLvalue)" . $local_label . ";", Perlito5::Java::LexicalBlock::->new("block", $body, "block_label", $self->{"label"}, "continue", $self->{"continue"})->emit_java($level + 2, $wantarray)], "}")
+                    push(@str, "for (PlObject " . $local_label . " : " . $cond . ") {", ["PlLvalue " . $v->emit_java($level + 1) . (" = (PlLvalue)" . $local_label . ";"), Perlito5::Java::LexicalBlock::->new("block", $body, "block_label", $self->{"label"}, "continue", $self->{"continue"})->emit_java($level + 2, $wantarray)], "}")
                 }
                 else {
                     my $local_label2 = Perlito5::Java::get_label();
@@ -20233,6 +20955,15 @@ use feature 'say';
             local $Perlito5::THROW;
             !$self->{"_do_block"} && (local $Perlito5::THROW_RETURN);
             my $prototype = defined($self->{"sig"}) ? "new PlString(" . Perlito5::Java::escape_string($self->{"sig"}) . ")" : "PlCx.UNDEF";
+            my $attributes = $self->{"attributes"} || [];
+            my $is_lvalue;
+            for $_ (@{$attributes}) {;
+                $_->[0] eq "lvalue" && ($is_lvalue = 1)
+            }
+            my $is_defined = "true";
+            if (!defined($self->{"block"})) {;
+                $is_defined = "false"
+            }
             my $outer_sub;
             $Perlito5::Java::is_inside_subroutine && ($outer_sub = "this.getCurrentSub()");
             my $sub_ref = Perlito5::Java::get_label();
@@ -20284,35 +21015,31 @@ use feature 'say';
                 $i++
             }
             my @js_block;
-            if ($self->{"_do_block"}) {;
+            if ($self->{"_do_block"}) {
+                local $Perlito5::JAVA_CAN_RETURN = 0;
                 @js_block = $block->emit_java($level + 3, "runtime")
             }
             elsif ($self->{"_eval_block"}) {
                 $block->{"top_level"} = 1;
                 $block->{"eval_block"} = 1;
-                my $outer_throw = $Perlito5::THROW_RETURN;
-                $Perlito5::THROW_RETURN = 0;
-                @js_block = $block->emit_java($level + 3, "runtime"), $Perlito5::THROW_RETURN = $outer_throw
+                local $Perlito5::JAVA_CAN_RETURN = 1;
+                @js_block = $block->emit_java($level + 3, "runtime")
             }
             else {
+                local $Perlito5::JAVA_CAN_RETURN = 1;
                 $block->{"top_level"} = 1;
-                my $outer_throw = $Perlito5::THROW_RETURN;
-                $Perlito5::THROW_RETURN = 0;
-                @js_block = $block->emit_java($level + 3, "runtime");
-                $Perlito5::THROW_RETURN = $outer_throw
+                @js_block = $block->emit_java($level + 3, "runtime")
             }
             if (!@js_block) {;
-                push(@js_block, "return PerlOp.context(want, PerlOp.context(want));")
+                push(@js_block, "return PerlOp.context(want);")
             }
-            my @closure_args = ($prototype, "new PlObject[]{ " . join(", ", @captures_java) . " }", Perlito5::Java::pkg());
+            my @closure_args = ($prototype, "new PlObject[]{ " . join(", ", @captures_java) . " }", Perlito5::Java::pkg(), $is_defined);
             if (($self->{"_do_block"} || $self->{"_eval_block"}) && $outer_sub) {;
                 push(@closure_args, $outer_sub)
             }
-            my $perlFileName = "null";
-            my $perlLineNumber = "null";
-            if ($self->{"pos"}) {
-                $perlFileName = Perlito5::Java::escape_string($self->{"pos"}->{"file"});
-                $perlLineNumber = 0 + $self->{"pos"}->{"line"}
+            my @perl_pos;
+            if ($self->{"pos"}) {;
+                @perl_pos = ("public String perlFileName() {", ["return " . Perlito5::Java::escape_string($self->{"pos"}->{"file"}) . ";"], "}", "public Integer perlLineNumber() {", ["return " . (0 + ($self->{"pos"}->{"line"})) . ";"], "}")
             }
             my $method_decl;
             if ($self->{"_do_block"}) {;
@@ -20322,9 +21049,9 @@ use feature 'say';
                 $method_decl = "public PlObject apply(int want, PlArray List__)";
                 unshift(@js_block, "int return_context = want;")
             }
-            my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", ["public String perlFileName() {", ["return " . $perlFileName . ";"], "}", "public Integer perlLineNumber() {", ["return " . $perlLineNumber . ";"], "}", "public StackTraceElement firstLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}", $method_decl . " {", [@js_block], "}", "public StackTraceElement lastLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}"], "}");
+            my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", [@perl_pos, "public StackTraceElement firstLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}", $method_decl . " {", [@js_block], "}", "public StackTraceElement lastLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}"], "}");
             if ($self->{"name"}) {;
-                return Perlito5::Java::emit_wrap_java($level, "PlV.cset(", [Perlito5::Java::escape_string($self->{"namespace"} . "::" . $self->{"name"}) . ",", @s], ");")
+                return Perlito5::Java::emit_wrap_java($level, "PlV.cset(", [Perlito5::Java::escape_string(($self->{"namespace"}) . "::" . ($self->{"name"})) . ",", @s], ");")
             }
             else {;
                 return '' . Perlito5::Java::emit_wrap_java($level, @s)
@@ -20342,7 +21069,7 @@ use feature 'say';
 {
     package main;
     package Perlito5::Java::CORE;
-    my %FileFunc = ("open", "        int argCount = List__.to_int();
+    my %FileFunc = ("open", ("        int argCount = List__.to_int();
         Path path = null; 
         String mode = \"\";
         String s = \"\";
@@ -20377,7 +21104,7 @@ use feature 'say';
                     mode = mode + s.substring(0, 1);
                     s = s.substring(1);
                 }
-                if (s.length() > 1 && s.substring(0, 2) == \">>\") {
+                if (s.length() > 1 && s.substring(0, 2).equals(\">>\")) {
                     mode = mode + s.substring(0, 2);
                     s = s.substring(2);
                 }
@@ -20416,6 +21143,16 @@ use feature 'say';
                 }
                 else {
                     mode = ( mode.substring(0, pos) + mode.substring(pos + 4) ).trim();
+                }
+            }
+            pos = mode.indexOf(\":bytes\");
+            if (pos > 0) {
+                charset = \"ISO-8859-1\";
+                if ((pos + 6) > mode.length()) {
+                    mode = mode.substring(0, pos).trim();
+                }
+                else {
+                    mode = ( mode.substring(0, pos) + mode.substring(pos + 6) ).trim();
                 }
             }
             pos = mode.indexOf(\":encoding(\");
@@ -20459,6 +21196,7 @@ use feature 'say';
             // save the info for binmode()
             fh.path = path;     // filename
             fh.mode = mode;     // \">\", \"+<\"
+            fh.charset = charset;   // \"UTF-8\"
 
             // PlCORE.say(\"path \" + mode + \" \" + path.toString());
             if (mode.equals(\"<\") || mode.equals(\"\")) {
@@ -20467,15 +21205,11 @@ use feature 'say';
             }
             else if (mode.equals(\">\")) {
                 fh.reader = null;
-                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE),
-                    true,
-                    charset);
+                fh.outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
             }
             else if (mode.equals(\">>\")) {
                 fh.reader = null;
-                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE),
-                    true,
-                    charset);
+                fh.outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
             }
             else if (mode.equals(\"+<\")) {
                 // read/write
@@ -20522,16 +21256,18 @@ use feature 'say';
             }
             path = path.toRealPath();
             // PlCORE.say(\"path \" + mode + \" \" + path.toString());
+
+            // success
+            return PlCx.INT1;
         }
         catch(NoSuchFileException e) {
             PlV.sset(\"main::!\", new PlString(\"No such file or directory\"));
         }
         catch(Exception e) {
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
-            return PlCx.UNDEF;
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
         }
-        return PlCx.INT1;
-", "close", "        try {
+        return PlCx.UNDEF;
+"), "close", ("        try {
             fh.readlineBuffer = new StringBuilder();
             fh.eof = true;
             if (fh.outputStream != null) {
@@ -20540,16 +21276,20 @@ use feature 'say';
             if (fh.reader != null) {
                 fh.reader.close();
             }
+
+            // success
+            return PlCx.INT1;
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
-            return PlCx.UNDEF;
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
         }
-        return PlCx.INT1;
-", "binmode", "        String layer;
+        return PlCx.UNDEF;
+"), "binmode", ("        String layer;
         int arg_count = List__.length_of_array_int();
         if (arg_count == 0) {
-            layer = \":raw\";
+            // layer = \":raw\";
+            fh.binmode = true;
+            return PlCx.INT1;
         }
         else {
             layer = List__.aget(0).toString();
@@ -20558,25 +21298,29 @@ use feature 'say';
             new PlString(fh.mode + layer),
             new PlString(fh.path.toString()) 
         ));
-", "opendir", "        try {
+"), "opendir", ("        try {
             String s = List__.aget(0).toString();
             Path path = PlV.path.resolve(s).toRealPath();
 
             fh.directoryStream = Files.newDirectoryStream(path);
             fh.directoryIterator = fh.directoryStream.iterator();
+
+            // success
+            return PlCx.INT1;
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
-            return PlCx.UNDEF;
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
         }
-        return PlCx.INT1;
-", "readdir", "        Iterator<Path> iter = fh.directoryIterator;
+        return PlCx.UNDEF;
+"), "readdir", ("        Iterator<Path> iter = fh.directoryIterator;
         if (want == PlCx.LIST) {
             // read all lines
             PlArray res = new PlArray();
             while (iter.hasNext()) {
                 res.push(new PlString(iter.next().getFileName().toString()));
             }
+            res.push(new PlString(\".\"));
+            res.push(new PlString(\"..\"));
             return res;
         }
         if (!iter.hasNext()) {
@@ -20584,7 +21328,7 @@ use feature 'say';
         }
         Path entry = iter.next();
         return new PlString(entry.getFileName().toString());
-", "closedir", "        try {
+"), "closedir", ("        try {
             fh.readlineBuffer = new StringBuilder();
             fh.eof = true;
             if (fh.directoryStream != null) {
@@ -20592,24 +21336,36 @@ use feature 'say';
             }
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
-", "print", "        for (int i = 0; i < List__.to_int(); i++) {
-            fh.outputStream.print(List__.aget(i).toString());
+"), "print", ("        try {
+            String s = List__.toString();
+            PlObject plsep = PlV.sget(\"main::\\\\\");
+            if (!plsep.is_undef()) {
+                s = s + plsep.toString();
+            }
+
+            if (fh.binmode) {
+                for (int i = 0; i < s.length(); i++) {
+                    fh.outputStream.write(s.charAt(i));
+                }
+            }
+            else {
+                byte[] bytes = s.getBytes(fh.charset);
+                fh.outputStream.write(bytes);
+            }
+            fh.outputStream.flush();
+            return PlCx.INT1;
         }
-        PlObject plsep = PlV.sget(\"main::\\\\\");
-        if (!plsep.is_undef()) {
-            fh.outputStream.print(plsep.toString());
+        catch(Exception e) {
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
+            return PlCx.UNDEF;
         }
-        return PlCx.INT1;
-", "say", "        for (int i = 0; i < List__.to_int(); i++) {
-            fh.outputStream.print(List__.aget(i).toString());
-        }
-        fh.outputStream.println(\"\");
-        return PlCx.INT1;
-", "readline", "        if (want == PlCx.LIST) {
+"), "say", ("        List__.push( new PlString(\"\\n\") );
+        return PlCORE.print(want, fh, List__);
+"), "readline", ("        if (want == PlCx.LIST) {
             // read all lines
             PlArray res = new PlArray();
             PlObject s;
@@ -20664,7 +21420,7 @@ use feature 'say';
                 }
             }
             catch(IOException e) {
-                PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
+                PlV.sset(\"main::!\", new PlStringLazyError(e));
                 return PlCx.UNDEF;
             }
             if (num_chars > 0) {
@@ -20692,11 +21448,11 @@ use feature 'say';
             fh.readlineBuffer = new StringBuilder(buf.substring(pos));
         }
         return new PlString(s);
-", "getc", "        PlLvalue buf = new PlLvalue();
+"), "getc", ("        PlLvalue buf = new PlLvalue();
         PlCORE.sysread(want, fh, PlArray.construct_list_of_aliases(buf, PlCx.INT1));
         return buf;
-", "read", "        return PlCORE.sysread(want, fh, List__);
-", "sysread", "        int leng = List__.aget(1).to_int();
+"), "read", ("        return PlCORE.sysread(want, fh, List__);
+"), "sysread", ("        int leng = List__.aget(1).to_int();
         int ofs = List__.aget(2).to_int();
 
         if (fh.eof) {
@@ -20719,7 +21475,7 @@ use feature 'say';
                 }
             }
             catch(IOException e) {
-                PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
+                PlV.sset(\"main::!\", new PlStringLazyError(e));
                 return PlCx.UNDEF;
             }
             if (num_chars > 0) {
@@ -20752,7 +21508,7 @@ use feature 'say';
             die(\"TODO: sysread with OFFSET\");
         }
         return new PlInt(leng);
-", "seek", "        int position = List__.aget(0).to_int();
+"), "seek", ("        int position = List__.aget(0).to_int();
         int whence   = List__.aget(1).to_int();
         try {
 
@@ -20774,27 +21530,35 @@ use feature 'say';
 
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
-");
+"));
     sub Perlito5::Java::CORE::emit_java {;
-        return "
+        return ("
 class PlCORE {
-" . join('', map {;
+") . join('', map {;
             "    public static final PlObject " . $_ . "(int want, PlFileHandle fh, PlArray List__) {
 " . $FileFunc{$_} . "    }
 "
         } sort {;
             $a cmp $b
-        } keys(%FileFunc)) . "    public static final PlObject say(String s) {
-        // say() shortcut for internal use
+        } keys(%FileFunc)) . (("
+    // shortcut functions for internal use: say, warn, die
+    public static final PlObject say(String s) {
         return PlCORE.say(PlCx.VOID, PlV.STDOUT, new PlArray(new PlString(s)));
     }
+    public static final PlObject warn(String s) {
+        return PlCORE.warn(PlCx.VOID, new PlArray(new PlString(s)));
+    }
+    public static final PlObject die(String s) {
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));
+    }
+
     public static final PlObject mkdir(int want, PlArray List__) {
         try {
-            Path path = PlV.path.resolve(List__.aget(0).toString()).toRealPath();
+            Path path = PlV.path.resolve(List__.aget(0).toString());
             int mask = List__.aget(1).to_int();
             Set<PosixFilePermission> perms = PerlOp.MaskToPermissions(mask);
             FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
@@ -20802,16 +21566,16 @@ class PlCORE {
             return PlCx.INT1;
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
         }
         return PlCx.UNDEF;
     }
     public static final PlObject require(int want, PlObject file, boolean is_bareword) {
         // TODO - require-version
         if (is_bareword) {
-            file = PlV.apply(\"Perlito5::Grammar::Use::modulename_to_filename\", PlCx.SCALAR, new PlArray(file));
+            file = new PlString(\"Perlito5::Grammar::Use::modulename_to_filename\").apply(PlCx.SCALAR, new PlArray(file));
         }
-        return PlV.apply(\"Perlito5::Grammar::Use::require\", want, new PlArray(file));
+        return new PlString(\"Perlito5::Grammar::Use::require\").apply(want, new PlArray(file));
     }
     public static final PlObject rmdir(int want, PlArray List__) {
         try {
@@ -20826,7 +21590,7 @@ class PlCORE {
             PlV.sset(\"main::!\", new PlString(\"Directory not empty\"));
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
         }
         return PlCx.UNDEF;
     }
@@ -20844,7 +21608,7 @@ class PlCORE {
             PlV.sset(\"main::!\", new PlString(\"Directory not empty\"));
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
         }
         return PlCx.UNDEF;
     }
@@ -20863,9 +21627,44 @@ class PlCORE {
             PlV.sset(\"main::!\", new PlString(\"Directory not empty\"));
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
         }
         return PlCx.UNDEF;
+    }
+    public static final PlObject stat(int want, PlArray List__) {
+        // TODO - \"_\" filehandle
+        PlArray res = new PlArray();
+        PlObject arg = List__.aget(0);
+        try {
+            //     0 dev      device number of filesystem
+            //     1 ino      inode number
+            //     2 mode     file mode  (type and permissions)
+            //     3 nlink    number of (hard) links to the file
+            //     4 uid      numeric user ID of file's owner
+            //     5 gid      numeric group ID of file's owner
+            //     6 rdev     the device identifier (special files only)
+            //     7 size     total size of file, in bytes
+            //     8 atime    last access time in seconds since the epoch
+            //     9 mtime    last modify time in seconds since the epoch
+            //    10 ctime    inode change time in seconds since the epoch (*)
+            //    11 blksize  preferred I/O size in bytes for interacting with the
+            //                file (may vary from file to file)
+            //    12 blocks   actual number of system-specific blocks allocated
+            //                on disk (often, but not always, 512 bytes each)
+            res.aset(7, PerlOp.p5size(arg));
+            res.aset(9, PerlOp.p5mtime(arg));
+            if (want == PlCx.SCALAR) {
+                return PlCx.TRUE;
+            }
+            return res;
+        }
+        catch(Exception e) {
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
+        }
+        if (want == PlCx.SCALAR) {
+            return PlCx.FALSE;
+        }
+        return res;
     }
     public static final PlObject select(PlFileHandle fh) {
         // select FILEHANDLE
@@ -20894,36 +21693,44 @@ class PlCORE {
         return PlCx.UNDEF;
     }
     public static final PlObject warn(int want, PlArray List__) {
-        int arg_count = List__.length_of_array_int();
-        if (arg_count == 0) {
-            List__.push(\"Warning: something's wrong\");
-        }
-        if (arg_count != 1 || !List__.aget(0).is_ref()) {
-            String s = List__.toString();
-            int s_length = s.length();
-            if (s_length > 0 && (s.charAt(s_length-1) == '\\n' || s.charAt(s_length-1) == '\\r')) {
-                // don't add file+line
+        try {
+            int arg_count = List__.length_of_array_int();
+            if (arg_count == 0) {
+                List__.push(\"Warning: something's wrong\");
+            }
+            if (arg_count != 1 || !List__.aget(0).is_ref()) {
+                String s = List__.toString();
+                int s_length = s.length();
+                if (s_length > 0 && (s.charAt(s_length-1) == '\\n' || s.charAt(s_length-1) == '\\r')) {
+                    // don't add file+line
+                }
+                else {
+                    // TODO - add module name, line number
+                    s = s + \" at \" + PlV.sget(\"main::0\") + \"\\n\";
+                }
+                List__.set(new PlArray(new PlString(s)));
+            }
+            if (PlV.hash_get(\"main::SIG\").hget(\"__WARN__\").is_coderef()) {
+                // execute \$SIG{__WARN__}
+                // localize \$SIG{__WARN__} during the call
+                int tmp = PerlOp.local_length();
+                PlObject c = PlV.hash_get(\"main::SIG\").hget(\"__WARN__\");
+                PlV.hash_get(\"main::SIG\").hget_lvalue_local(\"__WARN__\");
+                c.apply(want, List__);
+                PerlOp.cleanup_local(tmp, PlCx.UNDEF);
             }
             else {
-                // TODO - add module name, line number
-                s = s + \" at \" + PlV.sget(\"main::0\") + \"\\n\";
+                String s = List__.toString() + \"\\n\";
+                byte[] bytes = s.getBytes(PlV.STDERR.charset);
+                PlV.STDERR.outputStream.write(bytes);
+                PlV.STDERR.outputStream.flush();
             }
-            List__.set(new PlArray(new PlString(s)));
+            return PlCx.INT1;
         }
-        if (PlV.hash_get(\"main::SIG\").hget(\"__WARN__\").is_coderef()) {
-            // execute \$SIG{__WARN__}
-            // localize \$SIG{__WARN__} during the call
-            int tmp = PerlOp.local_length();
-            PlObject c = PlV.hash_get(\"main::SIG\").hget(\"__WARN__\");
-            PlV.hash_get(\"main::SIG\").hget_lvalue_local(\"__WARN__\");
-            c.apply(want, List__);
-            PerlOp.cleanup_local(tmp, PlCx.UNDEF);
+        catch(Exception e) {
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
+            return PlCx.UNDEF;
         }
-        else {
-            String s = List__.toString();
-            PlV.STDERR.outputStream.println(s);
-        }
-        return PlCx.INT1;
     }
     public static final PlObject die(int want, PlArray List__) {
         int arg_count = List__.length_of_array_int();
@@ -20956,13 +21763,9 @@ class PlCORE {
         PlObject arg = List__.aget(0);
         throw new PlDieException(arg);
     }
-    public static final PlObject die(String s) {
-        // die() shortcut
-        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));
-    }
-    public static final PlString ref(int want, PlArray List__) {
-        return List__.aget(0).ref();
-    }
+    // public static final PlString ref(int want, PlArray List__) {
+    //     return List__.aget(0).ref();
+    // }
     public static final PlObject values(int want, PlObject List__) {
         return want == PlCx.LIST ? List__.values() : List__.values().scalar();
     }
@@ -21292,12 +22095,15 @@ class PlCORE {
         int args_max = List__.to_int();
         int args_index = 0;
         Object args[] = new Object[args_max];
+        String detail = \"\";
+        int start_detail = -1;
         for ( ; offset < length; ) {
             int c = format.codePointAt(offset);
             switch (c) {
                 case '%':
                     offset++;
                     boolean scanning = true;
+                    start_detail = offset;
                     for ( ; offset < length && scanning ; ) {
                         c = format.codePointAt(offset);
                         switch (c) {
@@ -21318,10 +22124,35 @@ class PlCORE {
                                     case 'd': case 'o': case 'x': case 'X':
                                     case 'u': case 'b': case 'B': case 'p':
                                     case 'c':
-                                        args[args_index] = List__.aget(args_index+1).to_int();
+                                        args[args_index] = List__.aget(args_index+1).to_long();
+
+                                        if (c == 'u') {
+                                            long arg = (long)(args[args_index]);
+                                            arg = arg & 4294967295L; // 0xFFFFFFFF;
+                                            args[args_index] = arg;
+                                            StringBuilder sb = new StringBuilder();
+                                            if (offset > 0) {
+                                                sb.append(format.substring(0, offset));
+                                            }
+                                            sb.append(\"d\");
+                                            if (offset + 1 < format.length()) {
+                                                sb.append(format.substring(offset + 1));
+                                            }
+                                            format = sb.toString();
+                                            //PlCORE.say(\"format [\" + format + \"]\");
+                                        }
+
                                         break;
                                     case 'f': case 'e': case 'g':
                                     case 'E': case 'G':
+                                        detail = format.substring(start_detail, offset);
+                                        if (detail.equals(\".\") || detail.equals(\"+.\")) {
+                                            StringBuilder sb = new StringBuilder();
+                                            sb.append(format.substring(0, offset));
+                                            sb.append(\"0\");
+                                            sb.append(format.substring(offset));
+                                            format = sb.toString();
+                                        }
                                         args[args_index] = List__.aget(args_index+1).to_double();
                                         break;
                                     default:
@@ -21379,7 +22210,7 @@ class PlCORE {
     }
     public static final PlObject reverse(int want, PlArray List__) {
         if (want == PlCx.LIST) {
-            PlArray ret = new PlArray(List__);
+            PlArray ret = PlArray.construct_list_of_aliases(List__);
             Collections.reverse(ret.a);
             return ret;
         }
@@ -21398,238 +22229,245 @@ class PlCORE {
         return new PlString(Object__.toString().toLowerCase());
     }
     public static final PlObject pack(int want, PlArray List__) {
-        String template = List__.aget(0).toString();
+        String template = List__.shift().toString();
         StringBuilder result = new StringBuilder();
-        int index = 1;
+
+        // Character mode is the default unless the format string starts with \"U\"
+        boolean characterMode = true;
+        if (template.length() > 0 && template.charAt(0) == 'U') {
+            characterMode = false;
+        }
+
         for(int i = 0; i < template.length(); ++i) {
+            int size;
+            if (template.length() > (i+1) && template.charAt(i+1) == '*') {
+                size = List__.to_int();
+            }
+            else {
+                size = pack_size(template, i);
+            }
+
             switch(template.charAt(i)) {
             case 'a':
             {
-                int size = pack_size(template, i);
-                result.append(pack_a(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_a(List__.shift().toString(), size));
                 break;
             }
             case 'A':
             {    
-                int size = pack_size(template, i);
-                result.append(pack_A(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_A(List__.shift().toString(), size));
                 break;
             }
             case 'Z':
             {
-                int size = pack_size(template, i);
-                result.append(pack_Z(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_Z(List__.shift().toString(), size));
                 break;
             }
             case 'b':
             {
-                int size = pack_size(template, i);
-                result.append(pack_b(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_b(List__.shift().toString(), size));
                 break;
             }
             case 'B':
             {
-                int size = pack_size(template, i);
-                result.append(pack_B(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_B(List__.shift().toString(), size));
                 break;
             }
             case 'h':
             {
-                int size = pack_size(template, i);
-                result.append(pack_h(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_h(List__.shift().toString(), size));
                 break;
             }
             case 'H':
             {
-                int size = pack_size(template, i);
-                result.append(pack_H(List__.aget(index).toString(), size));
-                ++index;
+                result.append(pack_H(List__.shift().toString(), size));
                 break;        
             }
             case 'c':
             {
-                result.append(pack_c(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_c(List__.shift().toString()));
                 break;        
             }
             case 'C':
             {
-                result.append(pack_C(List__.aget(index).toString()));
-                ++index;
+                if (size == 0) {
+                    // C0
+                    characterMode = true;
+                }
+                for (int j = 0; j < size; j++) {
+                    result.append(pack_C(List__.shift().toString()));
+                }
                 break;        
             }
             case 'W':
             {
-                result.append(pack_W(List__.aget(index).toString()));
-                ++index;
+                for (int j = 0; j < size; j++) {
+                    result.appendCodePoint( List__.shift().to_int() );
+                }
+                break;        
+            }
+            case 'U':
+            {
+                if (size == 0) {
+                    // U0
+                    characterMode = false;
+                }
+                if (characterMode) {
+                    // character mode C0
+                    StringBuilder sb = new StringBuilder();
+                    for (int j = 0; j < size; j++) {
+                        sb.appendCodePoint( List__.shift().to_int() );
+                    }
+                    byte[] bytes = sb.toString().getBytes(PlCx.UTF8);
+                    for (byte b : bytes) {
+                        int ub = b < 0 ? 256 + b : b;
+                        result.appendCodePoint(ub);
+                    }
+                }
+                else {
+                    // U0 mode
+                    for (int j = 0; j < size; j++) {
+                        result.appendCodePoint( List__.shift().to_int() );
+                    }
+                }
                 break;        
             }
             case 's':
             {
-                result.append(pack_s(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_s(List__.shift().to_int()));
                 break;        
             }
             case 'S':
             {
-                result.append(pack_S(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_S(List__.shift().to_int()));
                 break;        
             }
             case 'l':
             {
-                result.append(pack_l(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_l(List__.shift().to_int()));
                 break;        
             }
             case 'L':
             {
-                result.append(pack_L(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_L(List__.shift().to_int()));
                 break;        
             }
             case 'q':
             {
-                result.append(pack_q(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_q(List__.shift().to_int()));
                 break;        
             }
             case 'Q':
             {
-                result.append(pack_Q(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_Q(List__.shift().to_int()));
                 break;        
             }
             case 'i':
             {
-                result.append(pack_i(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_i(List__.shift().to_int()));
                 break;        
             }
             case 'I':
             {
-                result.append(pack_I(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_I(List__.shift().to_int()));
                 break;        
             }
             case 'n':
             {
-                result.append(pack_n(List__.aget(index).toString()));
-                ++index;
+                for (int j = 0; j < size; j++) {
+                    result.append(pack_n(List__.shift().to_int()));
+                }
                 break;        
             }
             case 'N':
             {
-                result.append(pack_N(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_N(List__.shift().to_int()));
                 break;        
             }
             case 'v':   
             {
-                result.append(pack_v(List__.aget(index).toString()));
-                ++index;
+                for (int j = 0; j < size; j++) {
+                    result.append(pack_v(List__.shift().to_int()));
+                }
                 break;        
             }
             case 'V':   
             {
-                result.append(pack_V(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_V(List__.shift().to_int()));
                 break;        
             }
             case 'j':   
             {
-                result.append(pack_j(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_j(List__.shift().to_int()));
                 break;        
             }
             case 'J':   
             {
-                result.append(pack_J(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_J(List__.shift().to_int()));
                 break;        
             }
             case 'f':
             {
-                result.append(pack_f(List__.aget(index).to_double()));
-                ++index;
+                result.append(pack_f(List__.shift().to_double()));
                 break;        
             }
             case 'd':
             case 'F':
             {
-                result.append(pack_d(List__.aget(index).to_double()));
-                ++index;
+                result.append(pack_d(List__.shift().to_double()));
                 break;        
             }
             case 'p':
             {
-                int size = pack_size(template, i);
                 for(int k = 0; k < size; ++k) {
-                    if(List__.aget(index + k).is_undef()) {
-                        result.append(pack_q(\"0\"));
+                    PlObject o = List__.shift();
+                    if(o.is_undef()) {
+                        result.append(pack_q(0));
                     
                     } else {
-                        result.append(pack_p(List__.aget(index + k).toString()));
+                        result.append(pack_p(o.toString()));
                     }
                 }
-                index += i;
             }
             case 'u':
             {
-                result.append(pack_u(List__.aget(index).toString()));
-                ++index;
+                result.append(pack_u(List__.shift().toString()));
                 break;
             }
             case 'w':
             {
-                int size = pack_size(template, i);
                 String[] input = new String[size];
                 for(int j = 0; j < size; ++j) {
-                    input[j] = List__.aget(index + j).toString();
+                    input[j] = List__.shift().toString();
                 }
                 result.append(pack_w(input, size));
-                index += size;
                 break;        
             }
             case 'x':
             {
-                int size = pack_size(template, i);
                 result.append(pack_x(size));
-                ++index;                
                 break;        
             }
             case 'X':
             {
-                int size = pack_size(template, i);
                 int length = result.length();
                 result.delete(Math.max(0,length - size), length);
-                ++index;                
                 break;        
             }
             case '\@':
             {
-                int size = pack_size(template, i);
                 int length = result.length();
                 if(size > length) {
                     result.append(new char[size - length]);
                 }
-                ++index;                
                 break;        
             }
             case '.':
             {
-               int size = List__.aget(index).to_int();
                 int length = result.length();
                 if(size > length) {
                     result.append(new char[size - length]);
                 }
-                ++index;                
                 break;        
             }
             default:
@@ -21640,42 +22478,150 @@ class PlCORE {
     }
     public static final PlObject unpack(int want, PlArray List__) {
         String template = List__.aget(0).toString();
-        StringBuilder result = new StringBuilder();
-        int index = 1;
+        String input = List__.aget(1).toString();
+        PlArray result = new PlArray();
+        int inputIndex = 0;
+
+        // Character mode is the default unless the format string starts with \"U\"
+        boolean characterMode = true;
+        if (template.length() > 0 && template.charAt(0) == 'U') {
+            characterMode = false;
+        }
+
         for(int i = 0; i < template.length(); ++i) {
+            int size;
+            if (template.length() > (i+1) && template.charAt(i+1) == '*') {
+                size = -1;
+            }
+            else {
+                size = pack_size(template, i);
+            }
+
             switch(template.charAt(i)) {
             case 'a':
             {
-                int size = pack_size(template, i);
-                result.append(unpack_a(List__.aget(index).toString(), size));
-                ++index;
+                // TODO
+                // result.push(unpack_a(List__.shift().toString(), size));
                 break;
             }
             case 'A':
             {
-                int size = pack_size(template, i);
-                result.append(unpack_A(List__.aget(index).toString(), size));
-                ++index;
+                // TODO
+                // result.push(unpack_A(List__.shift().toString(), size));
                 break;
             }
             case 'Z':
             {
-                int size = pack_size(template, i);
-                result.append(unpack_Z(List__.aget(index).toString(), size));
-                ++index;
+                // TODO
+                // result.push(unpack_Z(List__.shift().toString(), size));
                 break;
             }
             case 'b':
             {
-                int size = pack_size(template, i);
-                result.append(unpack_b(List__.aget(index).toString(), size));
-                ++index;
+                // TODO
+                // result.push(unpack_b(List__.shift().toString(), size));
                 break;
             }
+
+            case 'C':
+            {
+                if (size == 0) {
+                    // C0
+                    characterMode = true;
+                }
+                if (size < 0) {
+                        while (inputIndex < input.length()) {
+                            result.push( new PlInt( input.charAt(inputIndex++) & 0xFF ) );
+                        }
+                }
+                else {
+                    for (int j = 0; j < size; j++) {
+                        if (inputIndex < input.length()) {
+                            result.push( new PlInt( input.charAt(inputIndex++) & 0xFF ) );
+                        }
+                    }
+                }
+                break;        
+            }
+            case 'W':
+            {
+                // TODO
+                // for (int j = 0; j < size; j++) {
+                //     result.pushCodePoint( List__.shift().to_int() );
+                // }
+                break;        
+            }
+            case 'U':
+            {
+                if (size == 0) {
+                    // U0
+                    characterMode = false;
+                    break;
+                }
+                if (characterMode) {
+                    // character mode C0
+
+                    if (inputIndex >= input.length()) {
+                        break;
+                    }
+
+                    // decode from UTF-8 (\"bytes\") to internal representation
+                    String s = input.substring(inputIndex);
+                    char[] chars = s.toCharArray();
+                    byte[] bytes = new byte[chars.length];
+                    for (int j = 0; j < bytes.length; j++){
+                        bytes[j] = (byte)(chars[j]);
+                    }
+                    String internal = new String(bytes, PlCx.UTF8);
+                    int internalIndex = 0;
+ 
+                    // unpack
+                    StringBuilder sb = new StringBuilder();
+                    if (size < 0) {
+                            while (internalIndex < internal.length()) {
+                                int ichar = internal.charAt(internalIndex++);
+                                sb.appendCodePoint(ichar);
+                                result.push( new PlInt(ichar) );
+                            }
+                    }
+                    else {
+                        for (int j = 0; j < size; j++) {
+                            if (internalIndex < internal.length()) {
+                                int ichar = internal.charAt(internalIndex++);
+                                sb.appendCodePoint(ichar);
+                                result.push( new PlInt(ichar) );
+                            }
+                        }
+                    }
+
+                    // move the input pointer by the number of \"bytes\" consumed (not chars)
+                    byte[] bytesUsed = sb.toString().getBytes(PlCx.UTF8);
+                    inputIndex += bytesUsed.length;
+
+                    break;        
+                }
+                else {
+                    // U0 mode
+                    if (size < 0) {
+                            while (inputIndex < input.length()) {
+                                result.push( new PlInt( input.charAt(inputIndex++) ) );
+                            }
+                    }
+                    else {
+                        for (int j = 0; j < size; j++) {
+                            if (inputIndex < input.length()) {
+                                result.push( new PlInt( input.charAt(inputIndex++) ) );
+                            }
+                        }
+                    }
+                    break;        
+                }
+            }
+
             default:
             }
         }
-        return new PlString(result.toString());
+        return result;
     }
     private static final int pack_size(String s, int pos) {
         int howMany = 0;
@@ -21831,72 +22777,53 @@ class PlCORE {
             return \"\";
         }
     }
-    private static String pack_W(String s) {
-        for(int i = 0; i < s.length(); ++i) {
-            if(!java.lang.Character.isDigit(s.charAt(i))) {
-                s = s.substring(0, i);
-                break;
-            }
-        }
-        int value = java.lang.Integer.parseInt(s);
-        StringBuilder sb = new StringBuilder();
-        sb.appendCodePoint(value);
-        return sb.toString();
-    }
-    private static String pack_number_2_string(String s, int size, boolean signed) {
-        for(int i = 0; i < s.length(); ++i) {
-            if(!java.lang.Character.isDigit(s.charAt(i)) && !(s.charAt(i) == '-')) {
-                s = s.substring(0, i);
-                break;
-            }
-        }
-        long value = java.lang.Long.parseLong(s);
+    private static String pack_number_2_string(long value, int size, boolean signed) {
         StringBuilder result = new StringBuilder();
         for(int i = 0; i < size; ++i) {
             result.append((char)((value / (int)Math.pow(2,8*i)) % 256));
         }
         return result.toString();        
     }
-    private static String pack_s(String s) {
+    private static String pack_s(long s) {
         return pack_number_2_string(s, 2, true);
     }
-    private static String pack_S(String s) {
+    private static String pack_S(long s) {
         return pack_number_2_string(s, 2, false);
     }
-    public static final String pack_l(String s) {
+    public static final String pack_l(long s) {
         return pack_number_2_string(s, 4, true);
     }
-    public static final String pack_L(String s) {
+    public static final String pack_L(long s) {
         return pack_number_2_string(s, 4, false);
     }
-    public static final String pack_q(String s) {
+    public static final String pack_q(long s) {
         return pack_number_2_string(s, 8, true);
     }
-    public static final String pack_Q(String s) {
+    public static final String pack_Q(long s) {
         return pack_number_2_string(s, 8, false);
     }
-    public static final String pack_i(String s) {
+    public static final String pack_i(long s) {
         return pack_number_2_string(s, 4, true);
     }
-    public static final String pack_I(String s) {
+    public static final String pack_I(long s) {
         return pack_number_2_string(s, 4, false);
     }
-    public static final String pack_n(String s) {
+    public static final String pack_n(long s) {
         return new StringBuilder(pack_number_2_string(s, 2, false)).reverse().toString();
     }
-    public static final String pack_N(String s) {
+    public static final String pack_N(long s) {
         return new StringBuilder(pack_number_2_string(s, 4, false)).reverse().toString();
     }
-    public static final String pack_v(String s) {
+    public static final String pack_v(long s) {
         return pack_number_2_string(s, 2, false);
     }
-    public static final String pack_V(String s) {
+    public static final String pack_V(long s) {
         return pack_number_2_string(s, 4, false);
     }
-    public static final String pack_j(String s) {
+    public static final String pack_j(long s) {
         return pack_number_2_string(s, 8, true);
     }
-    public static final String pack_J(String s) {
+    public static final String pack_J(long s) {
         return pack_number_2_string(s, 8, false);
     }
     public static final String pack_f(double d) {
@@ -21942,7 +22869,7 @@ class PlCORE {
         pack_pointers.append(s);
 
         pack_pointers_size.put(pointer, s.length());
-        return pack_q(((Long)(pointer)).toString());
+        return pack_q((long)(pointer));
     }
     public static final String pack_u(String s) {
         int index = 0;
@@ -22003,6 +22930,76 @@ class PlCORE {
     public static final String pack_x(int size) {
         return new String(new char[size]);
     }
+    public static final PlObject times(int want, PlArray List__) {
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean( );
+        long cpu = bean.isCurrentThreadCpuTimeSupported( ) ?
+            bean.getCurrentThreadCpuTime( ) : 0L;
+        long user = bean.isCurrentThreadCpuTimeSupported( ) ?
+            bean.getCurrentThreadUserTime( ) : 0L;
+        long system = cpu - user;
+        return new PlArray(
+            new PlDouble( user / 1000000000.0 ),
+            new PlDouble( system / 1000000000.0 ),
+            new PlDouble( 0.0 ),
+            new PlDouble( 0.0 )
+        );
+    }
+    public static final PlObject localtime(int want, PlArray List__) {
+        PlArray res = new PlArray();
+\x{9}\x{9}ZonedDateTime date;
+        if (List__.to_boolean()) {
+        \x{9}long arg = List__.aget(0).to_long();
+            date = Instant.ofEpochSecond(arg).atZone(ZoneId.systemDefault());
+        }
+        else {
+\x{9}\x{9}\x{9}date = ZonedDateTime.now();
+        }
+        if (want == PlCx.SCALAR) {
+            return new PlString(date.format( DateTimeFormatter.RFC_1123_DATE_TIME ));
+        }
+        //      0    1    2     3     4    5     6     7     8
+        //   (\$sec,\$min,\$hour,\$mday,\$mon,\$year,\$wday,\$yday,\$isdst)
+\x{9}\x{9}res.push(date.getSecond());
+\x{9}\x{9}res.push(date.getMinute());
+\x{9}\x{9}res.push(date.getHour());
+\x{9}\x{9}res.push(date.getDayOfMonth());
+\x{9}\x{9}res.push(date.getMonth().getValue() - 1);
+\x{9}\x{9}res.push(date.getYear() - 1900);
+\x{9}\x{9}res.push(date.getDayOfWeek().getValue());
+\x{9}\x{9}res.push(date.getDayOfYear() - 1);
+\x{9}\x{9}res.push(
+            date.getZone().getRules().isDaylightSavings(date.toInstant()) ? PlCx.INT1 : PlCx.INT0
+        );
+        return res;
+    }
+    public static final PlObject gmtime(int want, PlArray List__) {
+        PlArray res = new PlArray();
+\x{9}\x{9}ZonedDateTime date;
+        if (List__.to_boolean()) {
+        \x{9}long arg = List__.aget(0).to_long();
+            date = Instant.ofEpochSecond(arg).atZone(ZoneId.of(\"UTC\"));
+        }
+        else {
+\x{9}\x{9}\x{9}date = ZonedDateTime.now(ZoneOffset.UTC);
+        }
+        if (want == PlCx.SCALAR) {
+            return new PlString(date.format( DateTimeFormatter.RFC_1123_DATE_TIME ));
+        }
+        //      0    1    2     3     4    5     6     7     8
+        //   (\$sec,\$min,\$hour,\$mday,\$mon,\$year,\$wday,\$yday,\$isdst)
+\x{9}\x{9}res.push(date.getSecond());
+\x{9}\x{9}res.push(date.getMinute());
+\x{9}\x{9}res.push(date.getHour());
+\x{9}\x{9}res.push(date.getDayOfMonth());
+\x{9}\x{9}res.push(date.getMonth().getValue() - 1);
+\x{9}\x{9}res.push(date.getYear() - 1900);
+\x{9}\x{9}res.push(date.getDayOfWeek().getValue());
+\x{9}\x{9}res.push(date.getDayOfYear() - 1);
+\x{9}\x{9}res.push(
+            date.getZone().getRules().isDaylightSavings(date.toInstant()) ? PlCx.INT1 : PlCx.INT0
+        );
+        return res;
+    }
     public static final PlObject time(int want, PlArray List__) {
         return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
     }
@@ -22052,7 +23049,7 @@ class PlCORE {
         catch (IOException e) {
             // System.out.println(\"IOexception: \");
             // e.printStackTrace();
-            PlV.sset(\"main::!\", new PlString(e.getClass().getSimpleName() + \": \" + e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.MIN1;
         }
     }
@@ -22091,9 +23088,120 @@ class PlCORE {
             return PlCx.UNDEF;
         }
     }
+    public static final PlObject caller(int wantarray, PlArray List__) {
+        PlObject arg = List__.aget(0);
+        boolean argDefined = !arg.is_undef();
+        int item = arg.to_int();
+
+        PlArray caller = PlV.array_get(\"Perlito5::CALLER\");
+        if (caller.length_of_array().to_boolean()) {
+            // maybe we are inside an import() subroutine
+
+            PlObject arr = caller.aget(0);  // XXX this should be \"item\"
+                                            // XXX FIXME TODO - workaround for \"export to level\"
+            if (arr.is_arrayref()) {
+                if (wantarray == PlCx.LIST) {
+                    return arr.array_deref_strict();
+                }
+                return arr.aget(0);
+            }
+            // fallback to normal caller()
+        };
+
+        String fullName = \"\";
+
+        // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
+        // The last element of the array represents the bottom of the stack,
+        // which is the least recent method invocation in the sequence.
+        caller = new PlArray();
+        PlArray coderef = new PlArray();
+        Thread t = Thread.currentThread();
+        StackTraceElement[] stackTraceElements = t.getStackTrace();
+        for (StackTraceElement elem : stackTraceElements) {
+            // PlCORE.say(
+            //     elem.getClassName()  + \" \\t\" +
+            //     elem.getMethodName() + \" \\t\" +
+            //     elem.getFileName()   + \" \\t\" +
+            //     elem.getLineNumber()
+            // );
+            if (elem.getMethodName().equals(\"apply\")) {
+                // stack trace element comes from PlClosure.apply()
+                // TODO - move this inner loop outside, this is very expensive
+                // TODO - this code doesn't account for inner-subs - it might match an outer sub instead
+                // TODO - this code doesn't account for package name changes inside a sub
+                // TODO - this code skips anonymous subroutines
+                // this loop does a symbol table scan - PlV.cvar
+                for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
+                    fullName = perlSubName.toString();
+                    PlObject value = PlV.cget_no_autoload(fullName);
+                    if (value.is_lvalue()) {
+                        value = value.get();
+                    }
+                    if (value.is_coderef()) {
+                        PlClosure code = (PlClosure)value;
+                        if ( code.javaClassName() != null &&
+                             elem.getClassName().equals(code.javaClassName()) &&
+                             elem.getLineNumber() > code.firstLineNumber() &&
+                             elem.getLineNumber() < code.lastLineNumber()
+                        ) {
+                            // PlCORE.say(\" Perl sub &\" + fullName);
+                            caller.push(perlSubName);
+                            coderef.push(value);
+                        }
+                    }
+                }
+            }
+        }
+
+        PlObject plCoderef;
+        PlObject packageName = PlCx.UNDEF;
+        plCoderef = coderef.aget(item + 1);
+        if (plCoderef.is_coderef()) {
+            packageName = new PlString(((PlClosure)plCoderef).pkg_name);
+        }
+
+        if (wantarray != PlCx.LIST) {
+\x{9}\x{9}\x{9}// caller() in scalar or void context
+            return packageName;
+        }
+
+        // PlObject plFullName = caller.aget(item + 1);    // \"package\" comes from the next level
+        // fullName = plFullName.toString();
+        // int pos = fullName.lastIndexOf(\"::\");
+        // if (pos != -1) {
+        //     packageName = new PlString(fullName.substring(0, pos));
+        // }
+        // if (wantarray != PlCx.LIST) {
+\x{9}\x{9}// \x{9}// caller() in scalar or void context
+        //     return packageName;
+        // }
+
+        PlObject plFullName = caller.aget(item);    // \"subroutine\" comes from the current level
+        plCoderef = coderef.aget(item);
+        PlObject lineNumber = PlCx.UNDEF;
+        String fileName = \"\";
+        if (plCoderef.is_coderef()) {
+            lineNumber = new PlInt(((PlClosure)plCoderef).perlLineNumber());
+            fileName   = ((PlClosure)plCoderef).perlFileName();
+        }
+
+
+        if (!argDefined) {
+\x{9}\x{9}\x{9}// caller() in list context, without args
+            return new PlArray( packageName, new PlString(fileName), lineNumber );
+        }
+
+\x{9}\x{9}// caller(EXPR) in list context, with args
+        // TODO - add other components
+        //   #  0         1          2      3            4
+        //   (\$package, \$filename, \$line, \$subroutine, \$hasargs,
+        //   #  5          6          7            8       9         10
+        //   \$wantarray, \$evaltext, \$is_require, \$hints, \$bitmask, \$hinthash)
+        return new PlArray( packageName, new PlString(fileName), lineNumber, plFullName );
+    }
 }
 
-"
+"))
     }
     1
 }
@@ -22101,7 +23209,7 @@ class PlCORE {
     package main;
     package Perlito5::Java::Crypt;
     sub Perlito5::Java::Crypt::emit_java {;
-        return "
+        return ("
 /****************************************************************************
  * Java-based implementation of the unix crypt(3) command
  *
@@ -22662,7 +23770,7 @@ class PlCrypt {
     return new String(buffer);
   }
 }
-"
+")
     }
     1
 }
@@ -22670,7 +23778,7 @@ class PlCrypt {
     package main;
     package Perlito5::Java::JavaCompiler;
     sub Perlito5::Java::JavaCompiler::emit_java_imports {;
-        return "import java.io.ByteArrayOutputStream;
+        return ("import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22692,10 +23800,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import org.perlito.Perlito5.*;
 
-"
+")
     }
     sub Perlito5::Java::JavaCompiler::emit_java {;
-        return "
+        return ("
 /****************************************************************************/
 // Credits for the PlJavaCompiler idea:
 //
@@ -22788,7 +23896,10 @@ class PlJavaCompiler {
             source5.append(\"    }\\n\");
             source5.append(\"}\\n\");
             String cls5 = source5.toString();
-            // System.out.println(\"\\neval_ast:\\n\" + cls5 + \"\\n\");
+
+            if ( PlV.sget(\"Perlito5::Java::DEBUG\").get().to_boolean() ) {
+                System.out.println(\"\\neval_ast:\\n\" + cls5 + \"\\n\");
+            }
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -22935,7 +24046,10 @@ class PlJavaCompiler {
             source5.append(\"    }\\n\");
             source5.append(\"}\\n\");
             String cls5 = source5.toString();
-            // System.out.println(\"\\neval_perl_string:\\n\" + cls5 + \"\\n\");
+
+            if ( PlV.sget(\"Perlito5::Java::DEBUG\").get().to_boolean() ) {
+                System.out.println(\"\\neval_perl_string:\\n\" + cls5 + \"\\n\");
+            }
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
@@ -23101,7 +24215,7 @@ class SourceCode extends SimpleJavaFileObject {
     }
 }
 
-"
+")
     }
     1
 }
@@ -23112,20 +24226,19 @@ class SourceCode extends SimpleJavaFileObject {
         (my($source), my($namespace), my($want), my($scope_java)) = @_;
         local $_;
         local ${^GLOBAL_PHASE};
-        local $Perlito5::BASE_SCOPE = $scope_java;
+        local @Perlito5::BASE_SCOPE = ($scope_java);
         local @Perlito5::SCOPE_STMT;
-        local $Perlito5::CLOSURE_SCOPE = $Perlito5::BASE_SCOPE;
-        local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
-        local $Perlito5::SCOPE_DEPTH = 0;
+        local $Perlito5::CLOSURE_SCOPE = 0;
         local $Perlito5::PKG_NAME = $namespace;
         local @Perlito5::UNITCHECK_BLOCK;
         local @Perlito5::Java::Java_constants;
+        local %Perlito5::Java::Java_constant_seen;
         ${"\@"} = '';
         my $match = Perlito5::Grammar::exp_stmts($source, 0);
         if (!$match || $match->{"to"} != length($source)) {;
             die("Syntax error in eval near pos ", $match->{"to"})
         }
-        my $ast = Perlito5::AST::Apply::->new("code", "do", "arguments", [Perlito5::AST::Block::->new("stmts", $match->{"capture"})]);
+        my $ast = Perlito5::AST::Call::->new("method", "postcircumfix:<( )>", "arguments", [], "invocant", Perlito5::AST::Sub::->new("block", Perlito5::AST::Block::->new("stmts", $match->{"capture"})));
         $ast = $ast->emit_begin_scratchpad();
         my $java_code = $ast->emit_java(0, $want);
         my $constants = '';
@@ -23158,10 +24271,10 @@ class SourceCode extends SimpleJavaFileObject {
         my @out;
         my $java_decl = $class->{"decl"} // [];
         if ($class->{"extends"}) {;
-            push(@out, join(${"\""}, @{$java_decl}) . " class " . $class->{"java_type"} . " extends " . $class->{"extends_java_type"} . " {")
+            push(@out, join(${"\""}, @{$java_decl}) . " class " . ($class->{"java_type"}) . " extends " . ($class->{"extends_java_type"}) . " {")
         }
         else {;
-            push(@out, join(${"\""}, @{$java_decl}) . " class " . $class->{"java_type"} . " implements " . $class->{"implements_java_type"} . " {")
+            push(@out, join(${"\""}, @{$java_decl}) . " class " . ($class->{"java_type"}) . " implements " . ($class->{"implements_java_type"}) . " {")
         }
         $class->{"Java::inline"} && push(@out, $class->{"Java::inline"});
         while (@{$class->{"variables"}}) {
@@ -23178,7 +24291,7 @@ class SourceCode extends SimpleJavaFileObject {
             my $var = 0;
             for my $arg (@{$data->{"args"}}) {
                 my $type = $java_classes->{$arg};
-                push(@args, $type->{"java_type"} . " param" . $var);
+                push(@args, ($type->{"java_type"}) . " param" . $var);
                 $var++
             }
             my @java_decl = @{$decl};
@@ -23191,20 +24304,20 @@ class SourceCode extends SimpleJavaFileObject {
             if ($data->{"throws"}) {;
                 $throws = "throws " . join(${"\""}, @{$data->{"throws"}})
             }
-            push(@out, "    " . join(${"\""}, @java_decl) . " " . $return_type . " " . $method . "(" . join(", ", @args) . ") " . $throws . " {");
+            push(@out, "    " . join(${"\""}, @java_decl) . " " . $return_type . " " . $method . "(" . join(", ", @args) . (") " . $throws . " {"));
             @args = ();
             if (grep {;
                 $_ eq "static"
             } @{$decl}) {;
-                push(@args, "new PlString(\"" . $class->{"perl_package"} . "\")")
+                push(@args, "new PlString(\"" . ($class->{"perl_package"}) . "\")")
             }
             else {;
-                push(@args, "new " . $class->{"java_native_to_perl"} . "(this)")
+                push(@args, "new " . ($class->{"java_native_to_perl"}) . "(this)")
             }
             $var = 0;
             for my $arg (@{$data->{"args"}}) {
                 my $type = $java_classes->{$arg};
-                push(@args, "new " . $type->{"java_native_to_perl"} . "(param" . $var . ")");
+                push(@args, "new " . ($type->{"java_native_to_perl"}) . "(param" . $var . ")");
                 $var++
             }
             push(@out, "        PlObject[] res = Main.apply(\"" . $code . "\", " . join(", ", @args) . ");");
@@ -23213,7 +24326,7 @@ class SourceCode extends SimpleJavaFileObject {
             }
             else {
                 my $type = $java_classes->{$return} or die("Java class '" . $return . "' is not imported");
-                push(@out, "        return res[0]." . $type->{"perl_to_java"} . "();")
+                push(@out, "        return res[0]." . ($type->{"perl_to_java"}) . "();")
             }
             push(@out, "    }")
         }
@@ -23225,42 +24338,49 @@ class SourceCode extends SimpleJavaFileObject {
     sub Perlito5::Java::Runtime::emit_java {
         (my($self), my(%args)) = @_;
         if ($Perlito5::JAVA_EVAL) {;
-            return ("
+            return (("
 // use perlito5-lib.jar
 import org.perlito.Perlito5.*;
 import java.util.regex.Pattern;
+import java.time.*;
+import java.time.format.*;
+import java.lang.management.*;
 
-")
+"))
         }
         my %java_classes = %{$args{"java_classes"} // {}};
         my @number_unary = ("op_int", "neg", "complement", "abs", "sqrt", "cos", "sin", "exp", "log");
         my @boolean_unary = ("is_int", "is_num", "is_string", "is_bool", "is_undef", "is_regex", "is_filehandle", "is_ref", "is_arrayref", "is_coderef", "is_hashref", "is_scalarref", "is_typeglobref");
-        my %number_binop = ("add", {"op", "+", "returns", "PlInt", "num_returns", "PlDouble"}, "sub", {"op", "-", "returns", "PlInt", "num_returns", "PlDouble"}, "mul", {"op", "*", "returns", "PlInt", "num_returns", "PlDouble"}, "div", {"op", "/", "returns", "PlDouble", "num_returns", "PlDouble"}, "num_eq", {"op", "==", "returns", "PlBool", "num_returns", "PlBool"}, "num_ne", {"op", "!=", "returns", "PlBool", "num_returns", "PlBool"}, "num_lt", {"op", "<", "returns", "PlBool", "num_returns", "PlBool"}, "num_le", {"op", "<=", "returns", "PlBool", "num_returns", "PlBool"}, "num_gt", {"op", ">", "returns", "PlBool", "num_returns", "PlBool"}, "num_ge", {"op", ">=", "returns", "PlBool", "num_returns", "PlBool"}, "int_and", {"op", "&", "returns", "PlInt", "num_returns", "PlInt"}, "int_or", {"op", "|", "returns", "PlInt", "num_returns", "PlInt"}, "int_xor", {"op", "^", "returns", "PlInt", "num_returns", "PlInt"}, "int_shr", {"op", ">>>", "returns", "PlInt", "num_returns", "PlInt"}, "int_shl", {"op", "<<", "returns", "PlInt", "num_returns", "PlInt"});
-        my %string_binop = ("str_eq", {"op", "==", "str_op", "eq", "returns", "PlBool"}, "str_ne", {"op", "!=", "str_op", "ne", "returns", "PlBool"}, "str_lt", {"op", "<", "str_op", "lt", "returns", "PlBool"}, "str_le", {"op", "<=", "str_op", "le", "returns", "PlBool"}, "str_gt", {"op", ">", "str_op", "gt", "returns", "PlBool"}, "str_ge", {"op", ">=", "str_op", "ge", "returns", "PlBool"});
+        my %number_binop = ("add", {"op" => "+", "returns" => "PlInt", "num_returns" => "PlDouble", }, "sub", {"op" => "-", "returns" => "PlInt", "num_returns" => "PlDouble", }, "mul", {"op" => "*", "returns" => "PlInt", "num_returns" => "PlDouble", }, "div", {"op" => "/", "returns" => "PlDouble", "num_returns" => "PlDouble", }, "num_eq", {"op" => "==", "returns" => "PlBool", "num_returns" => "PlBool", }, "num_ne", {"op" => "!=", "returns" => "PlBool", "num_returns" => "PlBool", }, "num_lt", {"op" => "<", "returns" => "PlBool", "num_returns" => "PlBool", }, "num_le", {"op" => "<=", "returns" => "PlBool", "num_returns" => "PlBool", }, "num_gt", {"op" => ">", "returns" => "PlBool", "num_returns" => "PlBool", }, "num_ge", {"op" => ">=", "returns" => "PlBool", "num_returns" => "PlBool", }, "int_and", {"op" => "&", "returns" => "PlInt", "num_returns" => "PlInt", }, "int_or", {"op" => "|", "returns" => "PlInt", "num_returns" => "PlInt", }, "int_xor", {"op" => "^", "returns" => "PlInt", "num_returns" => "PlInt", }, "int_shr", {"op" => ">>>", "returns" => "PlInt", "num_returns" => "PlInt", }, "int_shl", {"op" => "<<", "returns" => "PlInt", "num_returns" => "PlInt", });
+        my %string_binop = ("str_eq", {"op" => "==", "str_op" => "eq", "returns" => "PlBool", }, "str_ne", {"op" => "!=", "str_op" => "ne", "returns" => "PlBool", }, "str_lt", {"op" => "<", "str_op" => "lt", "returns" => "PlBool", }, "str_le", {"op" => "<=", "str_op" => "le", "returns" => "PlBool", }, "str_gt", {"op" => ">", "str_op" => "gt", "returns" => "PlBool", }, "str_ge", {"op" => ">=", "str_op" => "ge", "returns" => "PlBool", });
         my %native_to_perl = ("long", "PlInt", "double", "PlDouble", "boolean", "PlBool", "String", "PlString");
         for $_ (values(%java_classes)) {;
             if ($_->{"import"} || $_->{"extends"} || $_->{"implements"}) {;
                 $native_to_perl{$_->{"java_type"}} = $_->{"java_native_to_perl"}
             }
         }
-        return ("// start Perl-Java runtime
+        my %self_assign_number_binop = ("add", {"op" => "+=", }, "sub", {"op" => "-=", }, "mul", {"op" => "*=", }, "div", {"op" => "/=", }, "mod", {"op" => "%=", }, "int_or", {"op" => "|=", }, "int_and", {"op" => "&=", }, "int_xor", {"op" => "^=", }, "int_shr", {"op" => ">>=", }, "int_shl", {"op" => "<<=", }, "pow", {"op" => "**=", });
+        return (("// start Perl-Java runtime
 // this is generated code - see: lib/Perlito5/Java/Runtime.pm
 
 import java.lang.Math;
 import java.lang.System;
 import java.util.*;
 import java.io.*;
+import java.lang.management.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.nio.charset.*;
 import java.nio.ByteBuffer;
 import static java.nio.file.attribute.PosixFilePermission.*;
+import java.time.*;
+import java.time.format.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
-", ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java_imports() : ()), ((map {
+"), ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java_imports() : ()), ((map {
             my $class = $java_classes{$_};
-            $class->{"import"} ? "import " . $class->{"import"} . ";
+            $class->{"import"} ? "import " . ($class->{"import"}) . ";
 " : ()
         } sort {;
             $a cmp $b
@@ -23269,7 +24389,7 @@ import java.util.concurrent.TimeUnit;
             $class->{"extends"} || $class->{"implements"} ? Perlito5::Java::Runtime::emit_java_extends($class, \%java_classes) : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))), Perlito5::Java::CORE::->emit_java(), "class PlControlException extends RuntimeException {
+        } keys(%java_classes))), Perlito5::Java::CORE::->emit_java(), ("class PlControlException extends RuntimeException {
 }
 class PlNextException    extends PlControlException {
     public int label_id;
@@ -23324,15 +24444,16 @@ class PlCx {
     public static final String OVERLOAD_STRING   = \"(\\\"\\\"\";  // (\"\"
     public static final String OVERLOAD_NUM      = \"(0+\";
     public static final String OVERLOAD_BOOL     = \"(bool\";
+    public static final String OVERLOAD_NOMETHOD = \"(nomethod\";
     public static final PlRegex SPLIT_SPACE      = new PlRegex(\"\\\\s+\", Pattern.MULTILINE, false);
-", "    " . join("
+"), "    " . join("
     ", map {;
-            "public static final PlInt " . ($_ < 0 ? "MIN" : "INT") . abs($_) . " = new PlInt(" . $_ . ");"
+            "public static final PlInt " . ($_ < 0 ? "MIN" : "INT") . abs($_) . (" = new PlInt(" . $_ . ");")
         } (-2 .. 2)) . "
 ", "    " . join("
     ", @{$args{"java_constants"} // []}) . "
-", "}
-", Perlito5::Java::Crypt::->emit_java(), ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java() : ()), "class PerlCompare implements Comparator<PlObject> {
+", ("}
+"), Perlito5::Java::Crypt::->emit_java(), ($Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler::->emit_java() : ()), ("class PerlCompare implements Comparator<PlObject> {
     public PlClosure sorter;
     public PlLvalue v_a;
     public PlLvalue v_b;
@@ -23649,100 +24770,90 @@ class PerlOp {
     }
 
     // objects
+
+    public static final PlObject callSuper( String method, String packageName, PlArray args, int context ) {
+        // SUPER calls:  \$v->SUPER::x;
+        PlObject methodCode = PlCx.UNDEF;
+      ISA:
+        for (PlObject className : PlV.array_get(packageName + \"::ISA\")) {
+            methodCode = PlClass.getInstance(className).method_lookup(method, 0);
+            if (!methodCode.is_undef()) {
+                break ISA;
+            }
+        }
+        if (methodCode.is_undef()) {
+            PlCORE.die( \"Can't locate object method \\\"\" + method
+                + \"\\\" via package \\\"\" + packageName + \"\\\"\");
+        }
+        return PerlOp.call(methodCode, args, context);
+    }
+
     // coderef methods can be called on ANY invocant
     //  \$m = sub {...};
     //  \$a->\$m
-    public static final PlObject call( PlObject invocant, PlObject method, PlArray args, int context ) {
+    public static final PlObject call( PlObject method, PlArray args, int context ) {
         if ( method.is_coderef() ) {
-            args.unshift(invocant);
             return method.apply(context, args);
         }
         else if ( method.is_lvalue() ) {
-            return call( invocant, method.get(), args, context );
+            return call( method.get(), args, context );
         }
         else {
-            return call( invocant, method.toString(), args, context );
+            return call( method.toString(), args, context );
         }
     }
-    public static final PlObject call( String invocant, PlObject method, PlArray args, int context ) {
-        if ( method.is_coderef() ) {
-            args.unshift( new PlString(invocant) );
-            return method.apply(context, args);
-        }
-        else if ( method.is_lvalue() ) {
-            return call( invocant, method.get(), args, context );
-        }
-        else {
-            return call( invocant, method.toString(), args, context );
-        }
-    }
-    // Intermediate calls, which have to be dispatched properly
-    public static final PlObject call( PlObject invocant, String method, PlArray args, int context ) {
-        if ( invocant.is_undef() ) {
-            PlCORE.die( \"Can't call method \\\"\" + method
-                + \"\\\" on an undefined value\" );
-            return PlCx.UNDEF;
+    public static final PlObject call( String method, PlArray args, int context ) {
+        PlObject invocant = args.aget(0);
+
+        PlClass pClass = invocant.blessed_class();
+
+        if ( pClass != null ) {
+            PlObject methodCode = pClass.method_lookup(method, 0);
+            if (methodCode.is_undef()) {
+                String className = pClass.className();
+                return PlCORE.die( \"Can't locate object method \\\"\" + method
+                    + \"\\\" via package \\\"\" + className
+                    + \"\\\" (perhaps you forgot to load \\\"\" + className + \"\\\"?\" );
+            }
+            return methodCode.apply(context, args);
         }
 
         if ( invocant.is_lvalue() ) {
             invocant = invocant.get();
         }
+        if ( invocant.is_undef() ) {
+            return PlCORE.die( \"Can't call method \\\"\" + method + \"\\\" on an undefined value\" );
+        }
+        if (invocant.is_typeglobref()) {
+            // \\*FILE
+            invocant = ((PlGlobRef)invocant).filehandle;
+        }
 
-        PlClass pClass = invocant.blessed_class();
+        if (invocant.is_ref()) {
+            return PlCORE.die( \"Can't call method \\\"\" + method + \"\\\" on unblessed reference\" );
+        }
 
-        if ( pClass == null ) {
-            if (invocant.is_typeglobref()) {
-                // \\*FILE
-                invocant = ((PlGlobRef)invocant).filehandle;
+        if (invocant.is_filehandle()) {
+            // invocant can be a nonref-typeglob
+            // *FILE
+            // \$fh->print() is allowed, even if \$fh is unblessed
+            if (method.equals(\"print\")) {
+                args.shift();   // TODO - keep filehandle in arg list
+                return PlCORE.print(context, (PlFileHandle)invocant, args);
             }
-
-            if (!invocant.is_ref()) {
-                // invocant can be a package name or a nonref-typeglob
-                if (invocant.is_filehandle()) {
-                    // *FILE
-                    // \$fh->print() is allowed, even if \$fh is unblessed
-                    if (method.equals(\"print\")) {
-                        return PlCORE.print(context, (PlFileHandle)invocant, args);
-                    }
-                }
-                return call( invocant.toString(), method, args, context );
-            }
-
-            PlCORE.die( \"Can't call method \\\"\" + method
-                + \"\\\" on unblessed reference\" );
-            return PlCx.UNDEF;
         }
 
-        PlObject methodCode = pClass.method_lookup(method, 0);
-
+        // invocant can be a package name
+        String invocant_str = invocant.toString();
+        if ( invocant_str.equals(\"\") ) {
+            return PlCORE.die( \"Can't call method \\\"\" + method + \"\\\" on an undefined value\" );
+        }
+        PlObject methodCode = PlClass.getInstance(invocant_str).method_lookup(method, 0);
         if (methodCode.is_undef()) {
-            String className = pClass.className();
-            PlCORE.die( \"Can't locate object method \\\"\" + method
-                + \"\\\" via package \\\"\" + className
-                + \"\\\" (perhaps you forgot to load \\\"\" + className + \"\\\"?\" );
-            return PlCx.UNDEF;
+            return PlCORE.die( \"Can't locate object method \\\"\" + method
+                + \"\\\" via package \\\"\" + invocant_str
+                + \"\\\" (perhaps you forgot to load \\\"\" + invocant_str + \"\\\"?\" );
         }
-
-        args.unshift( invocant );
-        return methodCode.apply(context, args);
-    }
-    public static final PlObject call( String invocant, String method, PlArray args, int context ) {
-        if ( invocant.equals(\"\") ) {
-            PlCORE.die( \"Can't call method \\\"\" + method
-                + \"\\\" on an undefined value\" );
-            return PlCx.UNDEF;
-        }
-
-        PlObject methodCode = PlClass.getInstance(invocant).method_lookup(method, 0);
-
-        if (methodCode.is_undef()) {
-            PlCORE.die( \"Can't locate object method \\\"\" + method
-                + \"\\\" via package \\\"\" + invocant
-                + \"\\\" (perhaps you forgot to load \\\"\" + invocant + \"\\\"?\" );
-            return PlCx.UNDEF;
-        }
-
-        args.unshift( new PlString(invocant) );
         return methodCode.apply(context, args);
     }
 
@@ -23864,102 +24975,7 @@ class PerlOp {
         return PlCORE.die(\"goto() not implemented\");
     }
 
-    public static final PlObject caller(int wantarray, PlArray List__) {
-        PlObject arg = List__.aget(0);
-        boolean argDefined = !arg.is_undef();
-        int item = arg.to_int();
-
-        PlArray caller = PlV.array_get(\"Perlito5::CALLER\");
-        if (caller.length_of_array().to_boolean()) {
-            // maybe we are inside an import() subroutine
-            if (wantarray == PlCx.LIST) {
-                return caller.aget(item).array_deref_strict();
-            }
-            return caller.aget(item).aget(0);
-        };
-
-        String fullName = \"\";
-
-        // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
-        // The last element of the array represents the bottom of the stack,
-        // which is the least recent method invocation in the sequence.
-        caller = new PlArray();
-        PlArray coderef = new PlArray();
-        Thread t = Thread.currentThread();
-        StackTraceElement[] stackTraceElements = t.getStackTrace();
-        for (StackTraceElement elem : stackTraceElements) {
-            // PlCORE.say(
-            //     elem.getClassName()  + \" \\t\" +
-            //     elem.getMethodName() + \" \\t\" +
-            //     elem.getFileName()   + \" \\t\" +
-            //     elem.getLineNumber()
-            // );
-            if (elem.getMethodName().equals(\"apply\")) {
-                // stack trace element comes from PlClosure.apply()
-                // TODO - move this inner loop outside, this is very expensive
-                // TODO - this code doesn't account for inner-subs - it might match an outer sub instead
-                // TODO - this code doesn't account for package name changes inside a sub
-                // TODO - this code skips anonymous subroutines
-                // this loop does a symbol table scan - PlV.cvar
-                for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
-                    fullName = perlSubName.toString();
-                    PlObject value = PlV.cget_no_autoload(fullName);
-                    if (value.is_lvalue()) {
-                        value = value.get();
-                    }
-                    if (value.is_coderef()) {
-                        PlClosure code = (PlClosure)value;
-                        // PlCORE.say(\"sub \" + fullName + \" \" + firstStack.getLineNumber() + \" \" + lastStack.getLineNumber() );
-                        if ( code.javaClassName != null &&
-                             elem.getClassName().equals(code.javaClassName) &&
-                             elem.getLineNumber() > code.firstLineNumber &&
-                             elem.getLineNumber() < code.lastLineNumber
-                        ) {
-                            // PlCORE.say(\" Perl sub &\" + fullName);
-                            caller.push(perlSubName);
-                            coderef.push(value);
-                        }
-                    }
-                }
-            }
-        }
-        PlObject plFullName = caller.aget(item + 1);    // \"package\" comes from the next level
-        fullName = plFullName.toString();
-
-        PlObject packageName = PlCx.UNDEF;
-        int pos = fullName.lastIndexOf(\"::\");
-        if (pos != -1) {
-            packageName = new PlString(fullName.substring(0, pos));
-        }
-
-        if (wantarray != PlCx.LIST) {
-\x{9}\x{9}\x{9}// caller() in scalar or void context
-            return packageName;
-        }
-
-        plFullName = caller.aget(item);    // \"subroutine\" comes from the current level
-\x{9}\x{9}PlObject plCoderef = coderef.aget(item);
-        PlObject lineNumber = PlCx.UNDEF;
-        String fileName = \"\";
-        if (plCoderef.is_coderef()) {
-            lineNumber = new PlInt(((PlClosure)plCoderef).perlLineNumber());
-            fileName   = ((PlClosure)plCoderef).perlFileName();
-        }
-
-        if (!argDefined) {
-\x{9}\x{9}\x{9}// caller() in list context, without args
-            return new PlArray( packageName, new PlString(fileName), lineNumber );
-        }
-
-\x{9}\x{9}// caller(EXPR) in list context, with args
-        // TODO - add other components
-        //   #  0         1          2      3            4
-        //   (\$package, \$filename, \$line, \$subroutine, \$hasargs,
-        //   #  5          6          7            8       9         10
-        //   \$wantarray, \$evaltext, \$is_require, \$hints, \$bitmask, \$hinthash)
-        return new PlArray( packageName, new PlString(fileName), lineNumber, plFullName );
-    }
-
+"), ("
     public static final PlObject mod(PlInt aa, PlObject bb) {
         long a = aa.to_long();
         long b = bb.to_long();
@@ -24026,7 +25042,7 @@ class PerlOp {
         if (arg1.is_num() || arg1.is_int()) {
             return arg0.num_eq(arg1);
         }
-        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(\"Not implemented: smartmatch operator with argument type '\"), PlCORE.ref(PlCx.SCALAR, new PlArray(arg1)), new PlString(\"'\")));
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(\"Not implemented: smartmatch operator with argument type '\"), arg1.ref(), new PlString(\"'\")));
     }
 
     // and1(x) ? y : and3()
@@ -24107,11 +25123,11 @@ class PerlOp {
             return new PlDouble(new File(resolve_file(s).toString()).lastModified() / 86400.0);
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
     }
@@ -24120,11 +25136,11 @@ class PerlOp {
             return new PlBool(new File(resolve_file(s).toString()).isDirectory());
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
     }
@@ -24133,11 +25149,11 @@ class PerlOp {
             return new PlBool(new File(resolve_file(s).toString()).exists());
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
     }
@@ -24146,11 +25162,11 @@ class PerlOp {
             return new PlBool(new File(resolve_file(s).toString()).isFile());
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
     }
@@ -24159,41 +25175,32 @@ class PerlOp {
             return new PlInt(new File(resolve_file(s).toString()).length());
         }
         catch(IOException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
         catch(RuntimeException e) {
-            PlV.sset(\"main::!\", new PlString(e.getMessage()));
+            PlV.sset(\"main::!\", new PlStringLazyError(e));
             return PlCx.UNDEF;
         }
     }
 
-    public static final PlString string_replicate(PlObject s, PlObject c) {
-        int count = c.to_int();
-        if ( count < 1 ) {
-            return new PlString(\"\");
-        }
-        else {
-            String raw_s = s.toString();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < count; i++) {
-                sb.append(raw_s);
-            }
-            return new PlString(sb.toString());
-        }
-    }
     public static final PlObject list_replicate(PlArray o, PlObject c, int wantarray) {
         if (wantarray == PlCx.SCALAR) {
-            return PerlOp.string_replicate(o.aget(-1), c);
+            return o.aget(-1).string_replicate(c);
         }
         int count = c.to_int();
-        PlArray a = new PlArray();
+        PlArray arr = new PlArray();
+        int olength = o.to_int();
         if (count > 0) {
-            for (int i = 0; i < count; i++) {
-                a.push( o );
+            for (int ci = 0; ci < count; ci++) {
+                for (int oi = 0; oi < olength; oi++) {
+                    // this pushes an alias to the original value, as discussed in
+                    // https://beta.nntp.perl.org/group/perl.perl5.porters/2013/06/msg203177.html
+                    arr.a.add( o.aget_lvalue(oi) );
+                }
             }
         }
-        return a;
+        return arr;
     }
     public static final PlObject grep(PlClosure c, PlArray a, PlArray list__, int wantarray) {
         PlArray ret = new PlArray();
@@ -24275,31 +25282,49 @@ class PerlOp {
     }
 
     private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length, boolean flag_xx) {
-        // [ ... ]
+        // inside [ ... ]
+        //      space    becomes: \"\\ \" unless the /xx flag is used (flag_xx)
+        //      \\120     becomes: \\0120 - Java requires octal sequences to start with zero
+        //      \\0       becomes: \\00 - Java requires the extra zero
         for ( ; offset < length; ) {
-            final int c3 = s.codePointAt(offset);
-            switch (c3) {
+            final int c = s.codePointAt(offset);
+            switch (c) {
                 case ']':
-                    sb.append(Character.toChars(c3));
+                    sb.append(Character.toChars(c));
                     return offset;
-                case '\\\\':
-                    sb.append(Character.toChars(c3));
+                case '\\\\':  // escape - \\[ \\120
+                    sb.append(Character.toChars(c));
                     if (offset < length) {
                         offset++;
                         int c2 = s.codePointAt(offset);
+                        if (c2 >= '1' && c2 <= '3') {
+                            if (offset < length+1) {
+                                int off = offset;
+                                int c3 = s.codePointAt(off++);
+                                int c4 = s.codePointAt(off++);
+                                if ((c3 >= '0' && c3 <= '7') && (c4 >= '0' && c4 <= '7')) {
+                                    // a \\000 octal sequence
+                                    sb.append('0');
+                                }
+                            }
+                        }
+                        else if (c2 == '0') {
+                            // rewrite \\0 to \\00
+                            sb.append('0');
+                        }
                         sb.append(Character.toChars(c2));
                     }
                     break;
                 case ' ':
                     if (flag_xx) {
-                        sb.append(Character.toChars(c3));
+                        sb.append(Character.toChars(c));
                     }
                     else {
                         sb.append(\"\\\\ \");   // make this space a \"token\", even inside /x
                     }
                     break;
                 default:
-                    sb.append(Character.toChars(c3));
+                    sb.append(Character.toChars(c));
                     break;
             }
             offset++;
@@ -24368,18 +25393,37 @@ class PerlOp {
                             offset++;
                             offset = _regex_character_class_escape(offset, s, sb, length, flag_xx);
                             break;
-                case '(':   // comment (?# ... )
-                            if (offset < length - 2) {
+                case '(':   
+                            boolean append = true;
+                            if (offset < length - 3) {
                                 int c2 = s.codePointAt(offset+1);
                                 int c3 = s.codePointAt(offset+2);
+                                int c4 = s.codePointAt(offset+3);
                                 if (c2 == '?' && c3 == '#') {
+                                    // comment (?# ... )
                                     offset = _regex_skip_comment(offset, s, length);
+                                    append = false;
                                 }
-                                else {
-                                    sb.append(Character.toChars(c));
+                                else if (c2 == '?' && c3 == '<' &&
+                                        ((c4 >= 'A' && c4 <= 'F') || (c4 >= 'a' && c4 <= 'f') || (c4 == '_'))
+                                        )
+                                {
+                                    // named capture (?<one> ... )
+                                    // TODO - replace underscore in name
+                                    int endName = s.indexOf(\">\", offset+3);
+                                    if (endName > offset) {
+                                        String name = s.substring(offset+3, endName);
+                                        // PlCORE.say(\"name [\" + name + \"]\");
+                                        name = name.replace(\"_\", \"UnderScore\"); // See: regex_named_capture()
+                                        sb.append(\"(?<\");
+                                        sb.append(name);
+                                        sb.append(\">\");
+                                        offset = endName;
+                                        append = false;
+                                    }
                                 }
                             }
-                            else {
+                            if (append) {
                                 sb.append(Character.toChars(c));
                             }
                             break;
@@ -24571,6 +25615,25 @@ class PerlOp {
         }
         if (var_name.equals(\"'\")) {    // \$'
             return new PlString( str.substring(matcher.end()) );
+        }
+        return PlCx.UNDEF;
+    }
+    public static final PlObject regex_named_capture(String var_name) {
+        if (var_name == null) {
+            return PlCx.UNDEF;
+        }
+        Matcher matcher = PlV.regex_result.matcher;
+        if (matcher == null) {
+            return PlCx.UNDEF;
+        }
+        try {
+            var_name = var_name.replace(\"_\", \"UnderScore\"); // See: regex_escape()
+            String cap = matcher.group(var_name);
+            if (cap == null) {
+                return PlCx.UNDEF;
+            }
+            return new PlString(cap);
+        } catch (Exception e) {
         }
         return PlCx.UNDEF;
     }
@@ -24822,22 +25885,42 @@ class PerlOp {
         String str          = pstr.toString();
         String searchChars  = tr_escape(psearchChars.toString());
         String replaceChars = tr_escape(preplaceChars.toString());
+        boolean complement = modifier.indexOf(\"c\") < 0 ? false : true;  // c = complement
         int modified = 0;
         final int replaceCharsLength = replaceChars.length();
         final int strLength = str.length();
         final StringBuilder buf = new StringBuilder(strLength);
-        for (int i = 0; i < strLength; i++) {
-            final char ch = str.charAt(i);
-            final int index = searchChars.indexOf(ch);
-            if (index >= 0) {
-                modified++;
-                if (index < replaceCharsLength) {
-                    buf.append(replaceChars.charAt(index));
+
+        if (complement) {
+            for (int i = 0; i < strLength; i++) {
+                final char ch = str.charAt(i);
+                final int index = searchChars.indexOf(ch);
+                if (index < 0) {
+                    // not found
+                    modified++;
+                    if (replaceCharsLength > 0) {
+                        buf.append(replaceChars.charAt(replaceCharsLength - 1));
+                    }
+                } else {
+                    buf.append(ch);
                 }
-            } else {
-                buf.append(ch);
             }
         }
+        else {
+            for (int i = 0; i < strLength; i++) {
+                final char ch = str.charAt(i);
+                final int index = searchChars.indexOf(ch);
+                if (index >= 0) {
+                    modified++;
+                    if (index < replaceCharsLength) {
+                        buf.append(replaceChars.charAt(index));
+                    }
+                } else {
+                    buf.append(ch);
+                }
+            }
+        }
+
         if (modified > 0) {
             pstr.set(new PlString(buf.toString()));
         }
@@ -25067,7 +26150,7 @@ class PerlOp {
 
 }
 
-", "
+"), ("
 class PlV {
     // PlV implements namespaces and global variables
     //
@@ -25089,19 +26172,26 @@ class PlV {
     public static final void init(String[] args) {
         PlV.array_set(\"main::ARGV\", new PlArray(args));               // args is String[]
         PlV.hash_set(\"main::ENV\",   new PlArray(System.getenv()));    // env  is Map<String, String>
-        PlV.sset(\"main::\" + (char)34, new PlString(\" \"));         // \$\" = \" \"
-        PlV.sset(\"main::/\", new PlString( System.getProperty(\"line.separator\") ));                  // \$/ = \"\\n\"
+        // \$\" = \" \"
+        PlV.sset(\"main::\" + (char)34, new PlString(\" \"));
+        // \$^O = \"Unix\"; default = \"perlito5\"
+        PlV.sset(\"main::\" + (char)15, new PlString( System.getProperty(\"os.name\", \"perlito5\") ));
+        // \$/ = \"\\n\"
+        PlV.sset(\"main::/\", new PlString( System.getProperty(\"line.separator\", \"\\n\") ));
 
         PlV.STDIN.inputStream   = System.in;
         PlV.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
         PlV.STDIN.eof           = false;
         PlV.STDIN.typeglob_name = \"main::STDIN\";
+        PlV.STDIN.charset       = \"UTF-8\";
 
         PlV.STDOUT.outputStream = System.out;
         PlV.STDOUT.typeglob_name = \"main::STDOUT\";
+        PlV.STDOUT.charset       = \"UTF-8\";
 
         PlV.STDERR.outputStream = System.err;
         PlV.STDERR.typeglob_name = \"main::STDERR\";
+        PlV.STDERR.charset       = \"UTF-8\";
 
         try {
             PlV.path = Paths.get(\".\").toRealPath();
@@ -25114,7 +26204,7 @@ class PlV {
         PlV.fset(\"main::STDOUT\", PlV.STDOUT);
         PlV.fset(\"main::STDERR\", PlV.STDERR);
 
-        PlV.cset(\"UNIVERSAL::can\", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, \"UNIVERSAL\") {
+        PlV.cset(\"UNIVERSAL::can\", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, \"UNIVERSAL\", true) {
             public PlObject apply(int want, PlArray List__) {
                 PlObject self = List__.shift();
                 String method_name = List__.shift().toString();
@@ -25136,7 +26226,7 @@ class PlV {
                 return PlCx.UNDEF;
             }
         });
-        PlV.cset(\"UNIVERSAL::isa\", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, \"UNIVERSAL\") {
+        PlV.cset(\"UNIVERSAL::isa\", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, \"UNIVERSAL\", true) {
             public PlObject apply(int want, PlArray List__) {
                 PlObject self = List__.shift();
                 String class_name = List__.shift().toString();
@@ -25159,6 +26249,7 @@ class PlV {
                 return PlCx.UNDEF;
             }
         });
+
         PerlOp.reset_match();
     }
 
@@ -25170,47 +26261,13 @@ class PlV {
         return (PlLvalue)svar.hget_lvalue_local(name);
     }
     public static final PlObject sset(String name, PlObject v) {
-        return svar.hset(name, v);
+        return (PlLvalue)svar.hget_lvalue(name).set(v);
     }
     public static final PlObject sset_local(String name, PlObject v) {
         return svar.hget_lvalue_local(name).set(v);
     }
     public static final void sset_alias(String name, PlLvalue v) {
         svar.hset_alias(name, v);
-    }
-
-    // code
-    public static final PlObject apply(String name, int want, PlArray List__) {
-        PlObject code = cvar.hget(name);
-        if ( code.is_coderef() ) {
-            return code.apply(want, List__);
-        }
-        int pos = name.lastIndexOf(\"::\");
-        if (pos != -1) {
-            String namespace = name.substring(0, pos);
-            PlLvalue autoload = PlV.cget_no_autoload(namespace + \"::AUTOLOAD\");
-            if ( autoload.is_coderef() ) {
-                PlV.sset(namespace + \"::AUTOLOAD\", new PlString(name));
-                return autoload.apply(want, List__);
-            }
-        }
-        return PlCORE.die(\"Undefined subroutine &\" + name + \" called\");
-    }
-
-    public static final PlObject apply_maybe_core(String name, int want, PlArray List__) {
-        // time() is a CORE function that can be redefined
-        PlObject code = cvar.hget(name);
-        if ( code.is_coderef() ) {
-            return code.apply(want, List__);
-        }
-        int pos = name.lastIndexOf(\"::\");
-        if (pos != -1) {
-            String shortname = name.substring(pos + 2);
-            if ( shortname.equals(\"time\") ) {
-                return PlCORE.time(want, List__);
-            }
-        }
-        return PlCORE.die(\"Undefined subroutine &\" + name + \" called\");
     }
 
     public static final PlLvalue cget(String name) {
@@ -25350,6 +26407,11 @@ class PlV {
         if (name.is_coderef()) {
             return name;
         }
+        if (name.is_bool() && name.to_boolean()) {
+            // RT #63790:  calling PL_sv_yes as a sub is special-cased to silently
+            // return (so Foo->import() silently fails if import() doesn't exist),
+            return name;
+        }
         String s = name.toString();
         if (s.indexOf(\"::\") == -1) {
             s = nameSpace + \"::\" + s;
@@ -25481,23 +26543,23 @@ class PlV {
     }
 
 }
-class PlObject {
+class PlObject implements Cloneable {
     public static final PlString REF = new PlString(\"\");
 
     public PlObject() {
     }
-", ((map {
+"), ((map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{"java_type"};
             my $perl_to_java = $class->{"perl_to_java"};
             $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? "    public " . $java_class_name . " " . $perl_to_java . "() {
-" . "        PlCORE.die(\"error ." . $perl_to_java . "!\");
-" . "        return null;
+" . ("        PlCORE.die(\"error ." . $perl_to_java . "!\");
+") . "        return null;
 " . "    }
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))), "    // public String toString() {
+        } keys(%java_classes))), ("    // public String toString() {
     //     return this.toString();
     // }
     public int to_int() {
@@ -25552,8 +26614,21 @@ class PlObject {
     public PlObject apply(int want, PlArray List__) {
         // \$ perl -e ' \$a = 5; \$a->() '
         // Undefined subroutine &main::5 called
-        PlCORE.die(\"subroutine call error\");
-        return this;
+        String name = this.toString();
+        PlObject code = PlV.cvar.hget(name);
+        if ( code.is_coderef() ) {
+            return code.apply(want, List__);
+        }
+        int pos = name.lastIndexOf(\"::\");
+        if (pos != -1) {
+            String namespace = name.substring(0, pos);
+            PlLvalue autoload = PlV.cget_no_autoload(namespace + \"::AUTOLOAD\");
+            if ( autoload.is_coderef() ) {
+                PlV.sset(namespace + \"::AUTOLOAD\", new PlString(name));
+                return autoload.apply(want, List__);
+            }
+        }
+        return PlCORE.die(\"Undefined subroutine &\" + name + \" called\");
     }
 
     public PlObject length() {
@@ -25742,9 +26817,12 @@ class PlObject {
         PlCORE.die(\"exists argument is not a HASH or ARRAY element or a subroutine\");
         return this;
     }
-    public PlObject hexists(PlObject i) {
+    public PlObject hexists(String i) {
         PlCORE.die(\"exists argument is not a HASH or ARRAY element or a subroutine\");
         return this;
+    }
+    public PlObject hexists(PlObject i) {
+        return this.hexists(i.toString());
     }
     public PlObject adelete(int want, PlObject i) {
         PlCORE.die(\"delete argument is not a HASH or ARRAY element or slice\");
@@ -25758,6 +26836,85 @@ class PlObject {
         PlCORE.die(\"Modification of a read-only value attempted\");
         return this;
     }
+    public PlObject vecSet(PlObject pOffset, PlObject pBits, PlObject pValue) {
+        PlCORE.die(\"Can't modify constant item in scalar assignment\");
+        return this;
+    }
+    public PlObject vec(PlObject pOffset, PlObject pBits) {
+        // vec(\$i,  0, 32)
+        String sb  = this.toString();
+        int offset = pOffset.to_int();
+        if (offset < 0) {
+            return PlCORE.die(\"Negative offset to vec in lvalue context: \" + offset);
+        }
+        int bits   = pBits.to_int();
+        if (bits == 1) {
+            int byteOfs = offset / 8;
+            int bitOfs  = offset - 8 * byteOfs;
+            long mask = 0b0001;
+            if (byteOfs < sb.length()) {
+                return new PlInt((sb.charAt(byteOfs) >> bitOfs) & mask);
+            }
+            else {
+                return PlCx.INT0;
+            }
+        }
+        if (bits == 2) {
+            int byteOfs = offset / 4;
+            int bitOfs  = 2 * (offset - 4 * byteOfs);
+            long mask = 0b0011;
+            if (byteOfs < sb.length()) {
+                return new PlInt((sb.charAt(byteOfs) >> bitOfs) & mask);
+            }
+            else {
+                return PlCx.INT0;
+            }
+        }
+        if (bits == 4) {
+            int byteOfs = offset / 2;
+            int bitOfs  = 4 * (offset - 2 * byteOfs);
+            long mask = 0b1111;
+            if (byteOfs < sb.length()) {
+                return new PlInt((sb.charAt(byteOfs) >> bitOfs) & mask);
+            }
+            else {
+                return PlCx.INT0;
+            }
+        }
+        if (bits == 8) {
+            if (offset < sb.length()) {
+                return new PlInt(sb.charAt(offset) & 0xFF);
+            }
+            else {
+                return PlCx.INT0;
+            }
+        }
+        if (bits == 16) {
+            long b0 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 8 : 0;
+            offset++;
+            long b1 = offset < sb.length() ? sb.charAt(offset) & 0xFF : 0;
+            long res = b0 + b1;
+            if (res < 0) {
+                res = 4294967296L + res;
+            }
+            return new PlInt(res);
+        }
+        if (bits == 32) {
+            long b0 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 24 : 0;
+            offset++;
+            long b1 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 16 : 0;
+            offset++;
+            long b2 = offset < sb.length() ? (sb.charAt(offset) & 0xFF) << 8  : 0;
+            offset++;
+            long b3 = offset < sb.length() ? sb.charAt(offset) & 0xFF : 0;
+            long res = b0 + b1 + b2 + b3;
+            if (res < 0) {
+                res = 4294967296L + res;
+            }
+            return new PlInt(res);
+        }
+        return PlCORE.die(\"Illegal number of bits in vec: \" + bits);
+    }
     public PlObject get() {
         return PlCORE.die(\"error .get!\");
     }
@@ -25765,7 +26922,7 @@ class PlObject {
         return this.to_num().mod(o);
     }
 
-", ((map {
+"), ((map {
             my $op = $_;
             "    public boolean " . $op . "() {
         return false;
@@ -25773,7 +26930,7 @@ class PlObject {
 "
         } sort {;
             $a cmp $b
-        } @boolean_unary)), "
+        } @boolean_unary)), ("
     public boolean is_hash() {
         return false;
     }
@@ -25853,6 +27010,9 @@ class PlObject {
     public PlObject complement() {
         long v = this.to_long();
         return new PlInt(v < 0 ? ~v : 4294967295L - v);
+    }
+    public PlObject str_complement() {
+        return PlCORE.die(\"~. not implemented\");
     }
     public PlObject abs() {
         long c = this.to_long();
@@ -26004,8 +27164,54 @@ class PlObject {
     }
     public PlObject substr(PlObject offset, PlObject length, PlObject replacement) {
         // substr EXPR,OFFSET,LENGTH,REPLACEMENT
-        PlCORE.die(\"TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT\");
-        return this;
+        String s = this.toString();
+        int ofs = offset.to_int();
+        int len = length.to_int();
+        if (ofs < 0) {
+            ofs = s.length() + ofs;
+        }
+        if (ofs >= s.length()) {
+            return PlCORE.die(\"substr outside of string\");
+        }
+
+        if (len < 0) {
+            len = s.length() + len;
+        }
+        else {
+            len = ofs + len;
+        }
+
+        if (len >= s.length()) {
+            len = s.length();
+        }
+        if (len <= 0) {
+            return PlCx.UNDEF;
+        }
+        if (ofs < 0) {
+            ofs = 0;
+        }
+
+        PlObject ret = new PlString(s.substring(ofs, len));
+        String start = \"\";
+        String end = \"\";
+        
+        if (ofs > 0) {
+            start = s.substring(0, ofs);
+        }
+        if (len < s.length()) {
+            end = s.substring(len);
+        }
+        this.set( new PlString( start + replacement.toString() + end ) );
+        return ret;
+    }
+    public PlObject lvalue_substr(PlObject offset) {
+        return this.lvalue_substr(offset, new PlInt(this.toString().length()));
+    }
+    public PlObject lvalue_substr(PlObject offset, PlObject length) {
+        if (this.is_lvalue()) {
+            return new PlLvalueSubstring(this, offset, length);
+        }
+        return this.substr(offset, length);
     }
     public PlObject bless(String className) {
         PlCORE.die(\"Can't bless non-reference value\");
@@ -26016,6 +27222,23 @@ class PlObject {
     }
     public PlObject scalar() {
         return this;
+    }
+    public PlObject clone() throws CloneNotSupportedException {
+        return this;
+    }
+    public PlObject string_replicate(PlObject c) {
+        int count = c.to_int();
+        if ( count < 1 ) {
+            return new PlString(\"\");
+        }
+        else {
+            String raw_s = this.toString();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < count; i++) {
+                sb.append(raw_s);
+            }
+            return new PlString(sb.toString());
+        }
     }
     public PlObject str_cmp(PlObject b) {
         int c = this.toString().compareTo(b.toString());
@@ -26029,7 +27252,16 @@ class PlObject {
         int c = blong.compareTo(this.to_long());
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
-", ((map {
+    public PlObject str_xor(PlObject b) {
+        return PlCORE.die(\"^. not implemented\");
+    }
+    public PlObject str_and(PlObject b) {
+        return PlCORE.die(\"&. not implemented\");
+    }
+    public PlObject str_or(PlObject b) {
+        return PlCORE.die(\"|. not implemented\");
+    }
+"), ((map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{"op"};
             my $returns = $number_binop{$perl}->{"returns"};
@@ -26055,7 +27287,23 @@ class PlObject {
 "
         } sort {;
             $a cmp $b
-        } keys(%string_binop))), "}
+        } keys(%string_binop))), ((map {
+            my $perl = $_;
+            "    public PlObject self_assign_" . $perl . "(PlObject s) {
+        return PlCORE.die(\"Can't modify constant item\");
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("string_replicate", "and", "or", "str_and", "str_or", "str_xor", keys(%self_assign_number_binop)))), ((map {
+            my $perl = $_;
+            "    public PlObject _self_" . $perl . "(PlObject s) {
+        return this." . $perl . "(s);
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("string_replicate", keys(%self_assign_number_binop)))), ("}
 class PlReference extends PlObject {
     public static final PlString REF = new PlString(\"REF\");
     public PlClass bless;
@@ -26111,7 +27359,7 @@ class PlReference extends PlObject {
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-", ((map {
+"), ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "2(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.INT1);
@@ -26127,7 +27375,7 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } @number_unary)), ((map {
+        } ("_decr", "_incr", @number_unary))), ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
         return PlClass.overload_" . $perl . "(this, s, PlCx.UNDEF);
@@ -26135,7 +27383,9 @@ class PlReference extends PlObject {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", keys(%string_binop), keys(%number_binop)))), "}
+        } ("str_cmp", "pow", "atan2", "mod", "num_cmp", "string_replicate", keys(%string_binop), keys(%number_binop), (map {;
+            "_self_" . $_
+        } keys(%self_assign_number_binop))))), ("}
 class PlGlobRef extends PlReference {
     public static final PlString REF = new PlString(\"GLOB\");
     public PlFileHandle filehandle;
@@ -26216,7 +27466,7 @@ class PlStringReader extends Reader{
 class PlFileHandle extends PlObject {
     // public static final PlString REF = new PlString(\"GLOB\");
     public String  typeglob_name;
-    public PrintStream outputStream;    // System.out, System.err
+    public OutputStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
     public Iterator<Path> directoryIterator;
     public DirectoryStream<Path> directoryStream;
@@ -26226,11 +27476,14 @@ class PlFileHandle extends PlObject {
     public boolean is_argv;
     public Path    path;     // filename
     public String  mode;     // \">\", \"+<\"
+    public String  charset;  // \"UTF-8\"
+    public boolean binmode;
 
     public PlFileHandle() {
         this.readlineBuffer = new StringBuilder();
         this.eof = true;
         this.is_argv = false;
+        this.binmode = false;
     }
     public boolean is_filehandle() {
         return true;
@@ -26243,7 +27496,7 @@ class PlFileHandle extends PlObject {
     }
     public PlObject setUndef() {
         // undef *{\$foo}
-        PlCORE.say( \"PlFileHandle.setUndef \" + typeglob_name);
+        // PlCORE.say( \"PlFileHandle.setUndef \" + typeglob_name);
 
         PlString name = new PlString(typeglob_name);
         PlV.cvar.hdelete(PlCx.VOID, name);
@@ -26309,9 +27562,12 @@ class PlFileHandle extends PlObject {
     public PlObject hget_scalarref(String i) {
         return this.hget(i);
     }
+    public PlObject scalar_deref_set(String namespace, PlObject v) {
+        return PlV.sset(typeglob_name, v);
+    }
 }
 
-", "
+"), ("
 class PlRegex extends PlReference {
     public Pattern p;
     public String  original_string;
@@ -26334,6 +27590,17 @@ class PlRegex extends PlReference {
             this.flag_xx = flag_xx;
             this.p = Pattern.compile(PerlOp.regex_escape(p.toString(), flag_xx), flags);
         }
+    }
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.plClassName();
+        }
+    }
+    public PlObject reftype() {
+        return REF;
     }
     public String toString() {
         if (original_string == null) {
@@ -26397,32 +27664,56 @@ class PlClosure extends PlReference implements Runnable {
     public String pkg_name;      // 'main'
     public static final PlString REF = new PlString(\"CODE\");
     public PlClosure currentSub;
+    public boolean is_defined;
     // metadata for caller()
-    public String  javaClassName;
-    public Integer firstLineNumber;
-    public Integer lastLineNumber;
+    public String  _javaClassName;
+    public Integer _firstLineNumber;
+    public Integer _lastLineNumber;
 
-    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name) {
+    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
         this.prototype = prototype;
         this.env = env;
         this.pkg_name = pkg_name;
         this.currentSub = this;
-
-        // initialize metadata for caller()
-        StackTraceElement firstStack = this.firstLine();
-        StackTraceElement lastStack = this.lastLine();
-        if ( firstStack != null ) {
-             javaClassName = firstStack.getClassName();
-             firstLineNumber = firstStack.getLineNumber();
-             lastLineNumber = lastStack.getLineNumber();
-        }
+        this.is_defined = is_defined;
     }
-    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, PlClosure currentSub) {
+    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined, PlClosure currentSub) {
         // this is the constructor for do-BLOCK; currentSub points to the \"sub\" outside
         this.prototype = prototype;
         this.env = env;
         this.pkg_name = pkg_name;
         this.currentSub = currentSub;
+        this.is_defined = is_defined;
+    }
+
+    public String javaClassName() {
+        if (_javaClassName == null) {
+            StackTraceElement firstStack = this.firstLine();
+            if ( firstStack != null ) {
+                _javaClassName = firstStack.getClassName();
+            }
+        }
+        return _javaClassName;
+    }
+
+    public Integer firstLineNumber() {
+        if (_firstLineNumber == null) {
+            StackTraceElement firstStack = this.firstLine();
+            if ( firstStack != null ) {
+                _firstLineNumber = firstStack.getLineNumber();
+            }
+        }
+        return _firstLineNumber;
+    }
+
+    public Integer lastLineNumber() {
+        if (_lastLineNumber == null) {
+            StackTraceElement lastStack = this.lastLine();
+            if ( lastStack != null ) {
+                _lastLineNumber = lastStack.getLineNumber();
+            }
+        }
+        return _lastLineNumber;
     }
 
     public PlClosure getCurrentSub() {
@@ -26471,6 +27762,9 @@ class PlClosure extends PlReference implements Runnable {
     }
     public boolean is_coderef() {
         return true;
+    }
+    public boolean is_undef() {
+        return !is_defined;
     }
     public PlObject prototype() {
         return this.prototype;
@@ -26534,6 +27828,11 @@ class PlArrayRef extends PlReference {
     }
     public PlArrayRef(PlObject o) {
         this.ar = (PlArray)o;
+    }
+    public PlInt refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.ar);
+        return new PlInt(id);
     }
     public PlObject set(PlArray o) {
         this.ar = o;
@@ -26625,6 +27924,11 @@ class PlHashRef extends PlReference {
     public PlHashRef(PlObject o) {
         this.ha = (PlHash)o;
     }
+    public PlInt refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.ha);
+        return new PlInt(id);
+    }
     public boolean is_hashref() {
         return true;
     }
@@ -26651,7 +27955,7 @@ class PlHashRef extends PlReference {
         return this.ha;
     }
     public PlObject hash_deref_set(PlObject v) {
-        this.ha.set(v);
+        this.ha.set(PlCx.VOID, v);
         return v;
     }
 
@@ -26705,6 +28009,9 @@ class PlHashRef extends PlReference {
     public PlObject hset_alias(String i, PlObject v) {
         return this.ha.hset_alias(i, v);
     }
+    public PlObject hexists(String i) {
+        return this.ha.hexists(i);
+    }
     public PlObject hexists(PlObject i) {
         return this.ha.hexists(i);
     }
@@ -26736,23 +28043,25 @@ class PlClass {
     public PlString plClassName;
     public Boolean overload_flag;
     public Boolean overload_fallback_flag;
+    public HashMap<String, PlObject> methodCache;
 
     protected PlClass(String s) {
         this.className = s;
         this.plClassName = new PlString(s);
         this.overload_flag = null;
         this.overload_fallback_flag = null;
+        this.methodCache = new HashMap<String, PlObject>();
     }
     public static PlClass getInstance(PlObject s) {
         return PlClass.getInstance(s.toString());
     }
     public static PlClass getInstance(String s) {
-        if (!classes.containsKey(s)) {
-            PlClass c = new PlClass(s);
+        PlClass c = classes.get(s);
+        if (c == null) {
+            c = new PlClass(s);
             classes.put(s, c);
-            return c;
         }
-        return classes.get(s);
+        return c;
     }
     public String className() {
         return this.className;
@@ -26779,10 +28088,57 @@ class PlClass {
         return this.overload_fallback_flag;
     }
 
-    public PlObject method_lookup(String method, int level) {
+    public PlObject overload_lookup(String method, int level) {
+        // method is like (*=
         PlObject methodCode;
-        if (method.indexOf(\"::\") != -1) {
+        String methodName = className + \"::\" + method;
+        methodCode = PlV.cget_no_autoload(methodName);
+        if (methodCode.is_undef()) {
+            // method not found
+            // \"overload\" methods have no AUTOLOAD
+            // lookup in \@ISA
+          search:
+            for (PlObject className : PlV.array_get(className + \"::ISA\")) {
+                // prevent infinite loop
+                if (level >= 100) {
+                    PlCORE.die(\"Recursive inheritance detected in package '\" + className + \"'\");
+                }
+                methodCode = PlClass.getInstance(className).overload_lookup(method, level+1);
+                if (!methodCode.is_undef()) {
+                    return methodCode;
+                }
+            }
+        }
+        if (methodCode.is_undef()) {
+            // overload does lookup in UNIVERSAL
+            methodCode = PlV.cget_no_autoload(\"UNIVERSAL::\" + method);
+        }
+        // method found
+
+        PlObject nameLookup = PlV.sget(methodName);
+        if (!nameLookup.is_undef()) {
+            // PlCORE.say(\"overload_lookup \" + methodName + \" scalar [\" + nameLookup.toString() + \"]\");
+            return nameLookup;
+        }
+
+        return methodCode;
+    }
+
+    public PlObject method_lookup(String method, int level) {
+        if (this.methodCache.containsKey(method)) {
+            // retrieve from method cache
+            // PlCORE.warn(\"match \" + method);
+            return this.methodCache.get(method);
+        }
+        // PlCORE.warn(\"miss \" + method);
+
+        PlObject methodCode;
+        int pos = method.indexOf(\"::\");
+        if (pos != -1) {
             // fully qualified method name
+            if (method.startsWith(\"SUPER::\")) {
+                PlCORE.die(\"not implemented: \" + method); 
+            }
             return PlV.cget(method);
         }
         methodCode = PlV.cget_no_autoload(className + \"::\" + method);
@@ -26802,6 +28158,7 @@ class PlClass {
                 }
                 else {
                     PlV.sset(className + \"::AUTOLOAD\", new PlString(className + \"::\" + method));
+                    // this.methodCache.put(method, methodCode);
                     return methodCode;
                 }
             }
@@ -26815,6 +28172,7 @@ class PlClass {
                 methodCode = PlClass.getInstance(className).method_lookup(method, level+1);
                 if (!methodCode.is_undef()) {
                     // found
+                    this.methodCache.put(method, methodCode);
                     return methodCode;
                 }
             }
@@ -26822,6 +28180,7 @@ class PlClass {
             // lookup in UNIVERSAL
             methodCode = PlV.cget_no_autoload(\"UNIVERSAL::\" + method);
         }
+        this.methodCache.put(method, methodCode);
         return methodCode;
     }
     public PlObject isa(String s, int level) {
@@ -26848,52 +28207,74 @@ class PlClass {
         }
         return PlCx.UNDEF;
     }
-", "    public static PlObject overload_to_string(PlObject o) {
+"), ("    public static PlObject overload_to_string(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
+            // PlCORE.say(\"PlReference toString() \" + bless.className);
             for (String ovl : new String[] { PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_BOOL }) {
-                PlObject methodCode = bless.method_lookup(ovl, 0);
-                if (methodCode.is_coderef()) {
-                    return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                PlObject methodCode = bless.overload_lookup(ovl, 0);
+                if (!methodCode.is_undef()) {
+                    return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
                 }
                 if (!bless.is_overload_fallback()) {
                     break;
                 }
             }
+
+            // nomethod
+            PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(methodCode, new PlArray( o, PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
+            }
         }
+
         return o.refstring();
     }
     public static PlObject overload_to_number(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
             for (String ovl : new String[] { PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_BOOL }) {
-                PlObject methodCode = bless.method_lookup(ovl, 0);
-                if (methodCode.is_coderef()) {
-                    return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                PlObject methodCode = bless.overload_lookup(ovl, 0);
+                if (!methodCode.is_undef()) {
+                    return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
                 }
                 if (!bless.is_overload_fallback()) {
                     break;
                 }
             }
+
+            // nomethod
+            PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(methodCode, new PlArray( o, PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
+            }
         }
+
         return o.refaddr();
     }
     public static PlObject overload_to_boolean(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
             for (String ovl : new String[] { PlCx.OVERLOAD_BOOL, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING }) {
-                PlObject methodCode = bless.method_lookup(ovl, 0);
-                if (methodCode.is_coderef()) {
-                    return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                PlObject methodCode = bless.overload_lookup(ovl, 0);
+                if (!methodCode.is_undef()) {
+                    return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
                 }
                 if (!bless.is_overload_fallback()) {
                     break;
                 }
             }
+
+            // nomethod
+            PlObject methodCode = bless.overload_lookup(PlCx.OVERLOAD_NOMETHOD, 0);
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(methodCode, new PlArray( o, PlCx.UNDEF, PlCx.UNDEF, new PlString(PlCx.OVERLOAD_STRING) ), PlCx.SCALAR);
+            }
         }
+
         return PlCx.TRUE;
     }
-", ((map {
+"), ((map {
             my $perl = $_;
             my $native;
             exists($number_binop{$perl}) && ($native = $number_binop{$perl}->{"op"});
@@ -26905,15 +28286,15 @@ class PlClass {
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
-            PlObject methodCode = bless.method_lookup(\"(" . $native . "\", 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            PlObject methodCode = bless.overload_lookup(\"(" . $native . "\", 0);
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(methodCode, new PlArray(o, other, swap), PlCx.SCALAR);
             }
             if (bless.is_overload_fallback()) {
                 o = PlClass.overload_to_number(o);
             }
             else {
-                o = o.refaddr();
+                PlCORE.die(\"Operation " . $native . ": no method found\");
             }
         }
         else {
@@ -26930,41 +28311,113 @@ class PlClass {
         } ("num_cmp", "pow", "atan2", "mod", keys(%number_binop)))), ((map {
             my $perl = $_;
             $native = $perl;
-            $perl eq "op_int" && ($native = "int");
-            $perl eq "complement" && ($native = "~");
+            $perl eq "_incr" && ($native = "++");
+            $perl eq "_decr" && ($native = "--");
             "    public static PlObject overload_" . $perl . "(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
-            PlObject methodCode = bless.method_lookup(\"(" . $native . "\", 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+            PlObject methodCode = bless.overload_lookup(\"(" . $native . "\", 0);
+            PlObject copyConstructorCode = bless.overload_lookup(\"(=\", 0);
+            if (!methodCode.is_undef()) {
+
+                if (!copyConstructorCode.is_undef()) {
+                    o = PerlOp.call(copyConstructorCode, new PlArray(o), PlCx.SCALAR);
+                }
+                else if (o.is_scalarref()) {
+                    // mutator: copy the reference
+                    PlObject v = o.scalar_deref(\"main\");
+                    if (v.is_lvalue()) {
+                        v = new PlLvalue(v.get());
+                    }
+                    o = new PlLvalueRef(v);
+                    o.bless( bless.className() );
+                }
+
+                return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
             }
-            if (bless.is_overload_fallback()) {
-                o = PlClass.overload_to_number(o);
+            // if (bless.is_overload_fallback()) {
+            PlObject v = PlClass.overload_to_number(o)." . $perl . "();
+            if (o.is_scalarref()) {
+                // auto generated mutator: copy the reference
+                PlLvalueRef ret = new PlLvalueRef(v);
+                ret.bless( bless.className() );
+                return ret;
             }
-            else {
-                o = o.refaddr();
-            }
+            // TODO - call the 'Copy constructor'
+            return v;
         }
-        else {
-            o = o.refaddr();
-        }
-        return o." . $perl . "();
+        return o.refaddr()." . $perl . "();
     }
 "
         } sort {;
             $a cmp $b
-        } @number_unary)), ((map {
+        } ("_decr", "_incr"))), ((map {
+            my $perl = $_;
+            $native = $perl;
+            $perl eq "op_int" && ($native = "int");
+            $perl eq "complement" && ($native = "~");
+            "    public static PlObject overload_" . $perl . "(PlObject o) {
+        PlClass bless = o.blessed_class();
+        // PlCORE.say(\"overload_" . $perl . "\");
+        if ( bless != null && bless.is_overloaded() ) {
+            PlObject methodCode = bless.overload_lookup(\"(" . $native . "\", 0);
+            if (!methodCode.is_undef()) {
+                // PlCORE.say(\"overload_" . $perl . " hit \");
+                return PerlOp.call(methodCode, new PlArray(o), PlCx.SCALAR);
+            }
+" . ($perl eq "neg" ? "
+            // neg falls back to (0-v)
+            methodCode = bless.overload_lookup(\"(-\", 0);
+            if (!methodCode.is_undef()) {
+                // PlCORE.say(\"overload_" . $perl . " fallback (- \");
+                return PerlOp.call(methodCode, new PlArray(o, PlCx.INT0, PlCx.TRUE), PlCx.SCALAR);
+            }
+" : ()) . ($perl eq "abs" ? "
+            // abs falls back to (v < 0 ? 0-v : v)
+            methodCode = bless.overload_lookup(\"(<\", 0);
+            if (!methodCode.is_undef()) {
+                // PlCORE.say(\"overload_" . $perl . " fallback (< \");
+                int cmp = PerlOp.call(methodCode, new PlArray(o, PlCx.INT0, PlCx.FALSE), PlCx.SCALAR).to_int();
+                if (cmp > 0) {
+                    return o.neg();
+                }
+                return o;
+            }
+
+            methodCode = bless.overload_lookup(\"(<=>\", 0);
+            if (!methodCode.is_undef()) {
+                // PlCORE.say(\"overload_" . $perl . " fallback (<=> \");
+                int cmp = PerlOp.call(methodCode, new PlArray(o, PlCx.INT0, PlCx.FALSE), PlCx.SCALAR).to_int();
+                if (cmp >= 0) {
+                    return o;
+                }
+                return o.neg();
+            }
+" : ()) . ("
+            if (bless.is_overload_fallback()) {
+                // PlCORE.say(\"overload_" . $perl . " plain fallback \");
+                return PlClass.overload_to_number(o)." . $perl . "();
+            }
+            // PlCORE.say(\"overload_" . $perl . " fall through \");
+            PlCORE.die(\"Operation " . $native . ": no method found\");
+        }
+        return o.refaddr()." . $perl . "();
+    }
+")
+        } sort {;
+            $a cmp $b
+        } (@number_unary))), ((map {
             my $perl = $_;
             my $native;
             exists($string_binop{$perl}) && ($native = $string_binop{$perl}->{"str_op"});
             $perl eq "str_cmp" && ($native = "cmp");
+            $perl eq "string_replicate" && ($native = "x");
             "    public static PlObject overload_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
-            PlObject methodCode = bless.method_lookup(\"(" . $native . "\", 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            PlObject methodCode = bless.overload_lookup(\"(" . $native . "\", 0);
+            if (!methodCode.is_undef()) {
+                return PerlOp.call(methodCode, new PlArray(o, other, swap), PlCx.SCALAR);
             }
             if (bless.is_overload_fallback()) {
                 o = PlClass.overload_to_string(o);
@@ -26984,7 +28437,72 @@ class PlClass {
 "
         } sort {;
             $a cmp $b
-        } ("str_cmp", keys(%string_binop)))), "}
+        } ("str_cmp", "string_replicate", keys(%string_binop)))), ((map {
+            my $perl = $_;
+            my $native;
+            exists($self_assign_number_binop{$perl}) && ($native = $self_assign_number_binop{$perl}->{"op"});
+            $perl eq "string_replicate" && ($native = "x=");
+            "    public static PlObject overload__self_" . $perl . "(PlObject o, PlObject other, PlObject swap) {
+        PlClass bless = o.blessed_class();
+        // PlCORE.say(\"in self_assign " . $native . " \");
+        if ( bless != null && bless.is_overloaded() ) {
+            PlObject methodCode = bless.overload_lookup(\"(" . $native . "\", 0);
+            PlObject copyConstructorCode = bless.overload_lookup(\"(=\", 0);
+            if (!methodCode.is_undef()) {
+                // PlCORE.say(\"self_assign (" . $native . " \" + other.toString());
+
+                if (!copyConstructorCode.is_undef()) {
+                    o = PerlOp.call(copyConstructorCode, new PlArray(o), PlCx.SCALAR);
+                }
+                else if (o.is_scalarref()) {
+                    // mutator: copy the reference
+                    PlObject v = o.scalar_deref(\"main\");
+                    if (v.is_lvalue()) {
+                        v = new PlLvalue(v.get());
+                    }
+                    o = new PlLvalueRef(v);
+                    o.bless( bless.className() );
+                }
+
+                return PerlOp.call(methodCode, new PlArray(o, other, swap), PlCx.SCALAR);
+            }
+            // TODO - overload_self_assign_" . $perl . "
+            //if (bless.is_overload_fallback()) {
+                // PlCORE.say(\"self_assign generated (" . $native . " \" + other.toString());
+
+                PlObject v;
+                if (swap.to_boolean()) {
+                    v = other." . $perl . "(PlClass.overload_to_number(o));
+                }
+                else {
+                    v = PlClass.overload_to_number(o)." . $perl . "(other);
+                }
+                if (o.is_scalarref()) {
+                    // auto generated mutator: copy the reference
+                    PlLvalueRef ret = new PlLvalueRef(v);
+                    ret.bless( bless.className() );
+                    return ret;
+                }
+                // TODO - call the 'Copy constructor'
+                return v;
+
+            //}
+            //else {
+            //    o = o.refstring();
+            //}
+        }
+        else {
+            o = o.refstring();
+        }
+        if (swap.to_boolean()) {
+            return other." . $perl . "(o);
+        }
+        return o." . $perl . "(other);
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("string_replicate", keys(%self_assign_number_binop)))), ("}
 class PlLazyIndex extends PlLazyLvalue {
     private PlArray la;    // \@la
     private int i;         // \$la[\$i]
@@ -27003,35 +28521,22 @@ class PlLazyIndex extends PlLazyLvalue {
     }
 
 }
+
 class PlLvalueSubstring extends PlLazyLvalue {
-    private PlLvalue lv;
-    private PlObject offset;
-    private PlObject length;
+    private PlObject lv;
+    private String start;
+    private String end;
+    private String replacement;
 
-    public PlLvalueSubstring(PlLvalue lv, PlObject offset, PlObject length) {
+    public PlLvalueSubstring(PlObject lv, PlObject offset, PlObject length) {
         this.lv = lv;
-        this.offset = offset;
-        this.length = length;
-    }
+        this.replacement = lv.get().substr(offset, length).toString();
 
-    // PlObjecternal lazy api
-    public PlLvalue create_scalar() {
-        return this.lv;
-    }
-
-    public PlObject get() {
-        return this.lv.substr(this.offset, this.length);
-    }
-
-    public PlObject set(PlObject o) {
         String s = lv.toString();
         int ofs = offset.to_int();
         int len = length.to_int();
         if (ofs < 0) {
             ofs = s.length() + ofs;
-        }
-        if (ofs >= s.length()) {
-            return o;
         }
 
         if (len < 0) {
@@ -27044,22 +28549,35 @@ class PlLvalueSubstring extends PlLazyLvalue {
         if (len >= s.length()) {
             len = s.length();
         }
-        if (len < 0) {
-            return o;
-        }
         if (ofs < 0) {
             ofs = 0;
         }
 
-        StringBuilder sb = new StringBuilder();
-        if ( ofs > 0 ) {
-            sb.append(lv.toString().substring(0, ofs - 1));
+        PlObject ret = new PlString(s.substring(ofs, len));
+        this.start = \"\";
+        this.end = \"\";
+        
+        if (ofs > 0) {
+            this.start = s.substring(0, ofs);
         }
-        sb.append( o.toString() );
-        if ( len > 0 ) {
-            sb.append(lv.toString().substring(0, this.offset.to_int() - 1));
+        if (len < s.length()) {
+            this.end = s.substring(len);
         }
-        return new PlString(sb.toString());
+    }
+
+    // internal lazy api
+    public PlLvalue create_scalar() {
+        return (PlLvalue)this.lv;
+    }
+
+    public PlObject get() {
+        return new PlString( replacement );
+    }
+
+    public PlObject set(PlObject o) {
+        this.replacement = o.toString();
+        lv.set( new PlString( start + replacement + end ) );
+        return this;
     }
 
     public PlObject pre_decr() {
@@ -27183,21 +28701,21 @@ class PlTieScalar extends PlObject {
     }
 
     public PlObject get() {
-        PlObject v = PerlOp.call(tied, \"FETCH\", new PlArray(), PlCx.VOID);
+        PlObject v = PerlOp.call(\"FETCH\", new PlArray(tied), PlCx.VOID);
         old_var = v;
         return v;
     }
 
     public PlObject set(PlObject o) {
-        PerlOp.call(tied, \"STORE\", new PlArray(o), PlCx.VOID);
+        PerlOp.call(\"STORE\", new PlArray(tied, o), PlCx.VOID);
         return this;
     }
     public PlObject set(PlString o) {
-        PerlOp.call(tied, \"STORE\", new PlArray(o), PlCx.VOID);
+        PerlOp.call(\"STORE\", new PlArray(tied, o), PlCx.VOID);
         return this;
     }
     public PlObject set(PlInt o) {
-        PerlOp.call(tied, \"STORE\", new PlArray(o), PlCx.VOID);
+        PerlOp.call(\"STORE\", new PlArray(tied, o), PlCx.VOID);
         return this;
     }
 }
@@ -27268,8 +28786,7 @@ class PlLvalue extends PlObject {
             this.untie();
         }
         PlTieScalar v = new PlTieScalar();
-        PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name.toString(), \"TIESCALAR\", args, PlCx.VOID);
+        PlObject self = PerlOp.call(\"TIESCALAR\", args, PlCx.VOID);
         v.tied = self;
         v.old_var = this.o;
         this.o = v;
@@ -27279,7 +28796,7 @@ class PlLvalue extends PlObject {
     public PlObject untie() {
         if (this.o.is_tiedScalar()) {
             PlObject tied = this.o.tied();
-            PlObject untie = PerlOp.call(tied, \"can\", new PlArray(new PlString(\"UNTIE\")), PlCx.SCALAR);
+            PlObject untie = PerlOp.call(\"can\", new PlArray(tied, new PlString(\"UNTIE\")), PlCx.SCALAR);
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };
@@ -27543,7 +29060,8 @@ class PlLvalue extends PlObject {
         // \@\$x = ...
         PlObject o = this.get();
         if (o.is_undef()) {
-            this.set(new PlArrayRef());
+            o = new PlArrayRef();
+            this.set(o);
             return o.array_deref_set(v);
         }
         else if (o.is_arrayref()) {
@@ -27572,7 +29090,8 @@ class PlLvalue extends PlObject {
         // %\$x = ...
         PlObject o = this.get();
         if (o.is_undef()) {
-            this.set(new PlHashRef());
+            o = new PlHashRef();
+            this.set(o);
             return o.hash_deref_set(v);
         }
         else if (o.is_hashref()) {
@@ -27624,7 +29143,7 @@ class PlLvalue extends PlObject {
         // \$a = %x
         return this.set(o.scalar());
     }
-", ((map {
+"), ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlObject set(" . $native . " s) {
@@ -27634,8 +29153,15 @@ class PlLvalue extends PlObject {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))), "    public PlObject apply(int want, PlArray List__) {
+        } keys(%native_to_perl))), ("    public PlObject length() {
+        return this.get().length();
+    }
+    public PlObject apply(int want, PlArray List__) {
         return this.get().apply(want, List__);
+    }
+    public PlObject hexists(String a) {
+        // exists \$v->{\$a}
+        return this.get().hexists(a);
     }
     public PlObject hexists(PlObject a) {
         // exists \$v->{\$a}
@@ -27653,6 +29179,81 @@ class PlLvalue extends PlObject {
         // delete \$v->[\$a]
         return this.get().adelete(want, a);
     }
+
+    public PlObject vecSet(PlObject pOffset, PlObject pBits, PlObject pValue) {
+        // vec(\$i,  0, 32) = 0x5065726C
+        String vv  = this.toString();
+        int offset = pOffset.to_int();
+        if (offset < 0) {
+            return PlCORE.die(\"Negative offset to vec in lvalue context: \" + offset);
+        }
+        int bits   = pBits.to_int();
+        long value = pValue.to_long();
+        StringBuilder sb = new StringBuilder(vv);
+        if (bits == 1) {
+            int byteOfs = offset / 8;
+            int bitOfs  = offset - 8 * byteOfs;
+            value = (value & 0b0001) << bitOfs;
+            long mask = 0b0001 << bitOfs;
+            if (byteOfs < sb.length()) {
+                value = (sb.charAt(byteOfs) & ~mask) | value;
+            }
+            // fallback to 8bit
+            offset = byteOfs;
+            bits = 8;
+        }
+        if (bits == 2) {
+            int byteOfs = offset / 4;
+            int bitOfs  = 2 * (offset - 4 * byteOfs);
+            value = (value & 0b0011) << bitOfs;
+            long mask = 0b0011 << bitOfs;
+            if (byteOfs < sb.length()) {
+                value = (sb.charAt(byteOfs) & ~mask) | value;
+            }
+            // fallback to 8bit
+            offset = byteOfs;
+            bits = 8;
+        }
+        if (bits == 4) {
+            int byteOfs = offset / 2;
+            int bitOfs  = 4 * (offset - 2 * byteOfs);
+            value = (value & 0b1111) << bitOfs;
+            long mask = 0b1111 << bitOfs;
+            if (byteOfs < sb.length()) {
+                value = (sb.charAt(byteOfs) & ~mask) | value;
+            }
+            // fallback to 8bit
+            offset = byteOfs;
+            bits = 8;
+        }
+        if (bits == 8) {
+            if (offset >= sb.length()) {
+                sb.setLength(offset + 1);
+            }
+            sb.setCharAt(offset, (char)(value & 0xFF));
+            return this.set(new PlString(sb.toString()));
+        }
+        if (bits == 16) {
+            if ((offset + 1) >= sb.length()) {
+                sb.setLength(offset + 2);
+            }
+            sb.setCharAt(offset,     (char)((value >> 8) & 0xFF));
+            sb.setCharAt(offset + 1, (char)(value & 0xFF));
+            return this.set(new PlString(sb.toString()));
+        }
+        if (bits == 32) {
+            if ((offset + 3) >= sb.length()) {
+                sb.setLength(offset + 4);
+            }
+            sb.setCharAt(offset,     (char)((value >> 24) & 0xFF));
+            sb.setCharAt(offset + 1, (char)((value >> 16) & 0xFF));
+            sb.setCharAt(offset + 2, (char)((value >>  8) & 0xFF));
+            sb.setCharAt(offset + 3, (char)(value & 0xFF));
+            return this.set(new PlString(sb.toString()));
+        }
+        return PlCORE.die(\"Illegal number of bits in vec: \" + bits);
+    }
+
     public boolean is_lvalue() {
         return true;
     }
@@ -27660,34 +29261,22 @@ class PlLvalue extends PlObject {
     public PlObject pre_decr() {
         // --\$x
         PlObject res = this.get();
-        if (res.is_ref()) {
-            // TODO - check if overload \"--\"
-        }
         return this.set(res._decr());
     }
     public PlObject post_decr() {
         // \$x--
         PlObject res = this.get();
-        if (res.is_ref()) {
-            // TODO - check if overload \"--\"
-        }
         this.set(res._decr());
         return res;
     }
     public PlObject pre_incr() {
         // ++\$x
         PlObject res = this.get();
-        if (res.is_ref()) {
-            // TODO - check if overload \"++\"
-        }
         return this.set(res._incr());
     }
     public PlObject post_incr() {
         // \$x++
         PlObject res = this.get();
-        if (res.is_ref()) {
-            // TODO - check if overload \"++\"
-        }
         if (res.is_undef()) {
             res = PlCx.INT0;
         }
@@ -27698,14 +29287,23 @@ class PlLvalue extends PlObject {
         return this.get().bless(className);
     }
 
-    // accessors
     public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
     public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
 
     public PlObject scalar() {
         return this.get();
     }
-", ((map {
+    public PlObject clone() throws CloneNotSupportedException {
+        return this.get().clone();
+    }
+
+    public PlObject self_assign_or(PlObject s) {
+        return (this.to_boolean() ? this : this.set(s));
+    }
+    public PlObject self_assign_and(PlObject s) {
+        return (this.to_boolean() ? this.set(s) : this);
+    }
+"), ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
         return this.get()." . $perl . "(s);
@@ -27717,6 +29315,22 @@ class PlLvalue extends PlObject {
         } sort {;
             $a cmp $b
         } ("num_cmp", "mod", keys(%number_binop)))), ((map {
+            my $perl = $_;
+            "    public PlObject self_assign_" . $perl . "(PlObject s) {
+        return this.set(this.get()._self_" . $perl . "(s));
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("string_replicate", keys(%self_assign_number_binop)))), ((map {
+            my $perl = $_;
+            "    public PlObject self_assign_" . $perl . "(PlObject s) {
+        return PlCORE.die(\"not implemented\");
+    }
+"
+        } sort {;
+            $a cmp $b
+        } ("str_and", "str_or", "str_xor"))), ((map {
             my($op, $type) = @{$_};
             "    public " . $type . " " . $op . "() {
         return this.get()." . $op . "();
@@ -27727,9 +29341,9 @@ class PlLvalue extends PlObject {
             $class->{"import"} || $class->{"extends"} || $class->{"implements"} ? [$class->{"perl_to_java"}, $class->{"java_type"}] : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes)))), "}
+        } keys(%java_classes)))), ("}
 
-", "
+"), ("
 class PlROvalue extends PlLvalue {
 
     // Note: several versions of PlROvalue()
@@ -27777,6 +29391,11 @@ class PlROvalue extends PlLvalue {
 
 }
 class PlSlice extends PlArray {
+    public PlSlice( PlArrayList a ) {
+        this.each_iterator = 0;
+        this.a = a;
+    }
+
     public boolean is_slice() {
         return true;
     }
@@ -27790,10 +29409,10 @@ class PlTieArrayIterator implements Iterator<PlObject> {
         this.tied = tied;
     }
     public PlObject next() {
-        return PerlOp.call(this.tied, \"FETCH\", new PlArray(new PlInt(this.key)), PlCx.SCALAR);
+        return PerlOp.call(\"FETCH\", new PlArray(this.tied, new PlInt(this.key)), PlCx.SCALAR);
     }
     public boolean hasNext() {
-        return this.key < PerlOp.call(tied, \"FETCHSIZE\", new PlArray(), PlCx.SCALAR).to_int();
+        return this.key < PerlOp.call(\"FETCHSIZE\", new PlArray(this.tied), PlCx.SCALAR).to_int();
     }
 }
 class PlTieArrayList extends PlArrayList {
@@ -27812,34 +29431,34 @@ class PlTieArrayList extends PlArrayList {
     // iterator()
 
     public boolean add(PlObject v) {
-        PerlOp.call(tied, \"PUSH\", new PlArray(v), PlCx.SCALAR);
+        PerlOp.call(\"PUSH\", new PlArray(this.tied, v), PlCx.SCALAR);
         return true;
     }
     public void add(int i, PlObject v) {
         if (i == 0) {
-            PerlOp.call(tied, \"UNSHIFT\", new PlArray(v), PlCx.SCALAR);
+            PerlOp.call(\"UNSHIFT\", new PlArray(tied, v), PlCx.SCALAR);
         }
         else {
-            PerlOp.call(tied, \"PUSH\", new PlArray(v), PlCx.SCALAR);
+            PerlOp.call(\"PUSH\", new PlArray(tied, v), PlCx.SCALAR);
         }
     }
     public PlObject get(int i) {
-        return PerlOp.call(tied, \"FETCH\", new PlArray(new PlInt(i)), PlCx.SCALAR);
+        return PerlOp.call(\"FETCH\", new PlArray(tied, new PlInt(i)), PlCx.SCALAR);
     }
     public PlObject remove(int i) {
         if (i == 0) {
-            return PerlOp.call(tied, \"SHIFT\", new PlArray(), PlCx.SCALAR);
+            return PerlOp.call(\"SHIFT\", new PlArray(tied), PlCx.SCALAR);
         }
-        return PerlOp.call(tied, \"POP\", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call(\"POP\", new PlArray(tied), PlCx.SCALAR);
     }
     public PlObject set(int i, PlObject v) {
-        return PerlOp.call(tied, \"STORE\", new PlArray(new PlInt(i), v), PlCx.SCALAR);
+        return PerlOp.call(\"STORE\", new PlArray(tied, new PlInt(i), v), PlCx.SCALAR);
     }
     public int size() {
-        return PerlOp.call(tied, \"FETCHSIZE\", new PlArray(), PlCx.SCALAR).to_int();
+        return PerlOp.call(\"FETCHSIZE\", new PlArray(tied), PlCx.SCALAR).to_int();
     }
     public void clear() {
-        PerlOp.call(tied, \"STORESIZE\", new PlArray(PlCx.INT0), PlCx.SCALAR);
+        PerlOp.call(\"STORESIZE\", new PlArray(tied, PlCx.INT0), PlCx.SCALAR);
     }
     public Iterator<PlObject> iterator() {
         return new PlTieArrayIterator(this.tied);
@@ -27850,14 +29469,14 @@ class PlTieArrayList extends PlArrayList {
     // add(0, v) == UNSHIFT
 
     public PlObject aexists(PlObject i) {
-        return PerlOp.call(tied, \"EXISTS\", new PlArray(i), PlCx.SCALAR);
+        return PerlOp.call(\"EXISTS\", new PlArray(tied, i), PlCx.SCALAR);
     }
     public PlObject adelete(int want, PlObject i) {
-        return PerlOp.call(tied, \"DELETE\", new PlArray(i), want);
+        return PerlOp.call(\"DELETE\", new PlArray(tied, i), want);
     }
 
     public PlObject set_end_of_array_index(int i) {
-        return PerlOp.call(tied, \"STORESIZE\", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call(\"STORESIZE\", new PlArray(tied), PlCx.SCALAR);
     }
     public PlObject aset(int i, PlObject v) {
         this.set(i, v);
@@ -27867,14 +29486,14 @@ class PlTieArrayList extends PlArrayList {
         return this.get(i);
     }
     public PlObject shift() {
-        return PerlOp.call(tied, \"SHIFT\", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call(\"SHIFT\", new PlArray(tied), PlCx.SCALAR);
     }
     public PlObject pop() {
-        return PerlOp.call(tied, \"POP\", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call(\"POP\", new PlArray(tied), PlCx.SCALAR);
     }
 
     public PlObject scalar() {
-        return PerlOp.call(this.tied, \"SCALAR\", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call(\"SCALAR\", new PlArray(this.tied), PlCx.SCALAR);
     }
     public boolean is_tiedArray() {
         return true;
@@ -28045,8 +29664,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
             this.untie();
         }
         PlTieArrayList v = new PlTieArrayList();
-        PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name.toString(), \"TIEARRAY\", args, PlCx.VOID);
+        PlObject self = PerlOp.call(\"TIEARRAY\", args, PlCx.VOID);
         v.tied = self;
         v.old_var = this.a;
         this.a = v;
@@ -28056,7 +29674,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     public PlObject untie() {
         if (this.a.is_tiedArray()) {
             PlObject tied = this.a.tied();
-            PlObject untie = PerlOp.call(tied, \"can\", new PlArray(new PlString(\"UNTIE\")), PlCx.SCALAR);
+            PlObject untie = PerlOp.call(\"can\", new PlArray(tied, new PlString(\"UNTIE\")), PlCx.SCALAR);
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };
@@ -28097,10 +29715,36 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return (PlLvalue)PlCORE.die(\"Not a SCALAR reference\");
     }
 
+    public static PlArray construct_list_of_aliases(PlObject s) {
+        PlArrayList aa = new PlArrayList();
+        if (s.is_lvalue()) {
+            aa.add(s);  // store lvalue as-is
+        }
+        else if (s.is_hash()) {
+            // ( %x );
+            s = ((PlHash)s).to_list_of_aliases();
+            for (int i = 0; i < s.to_long(); i++) {
+                aa.add(s.aget_lvalue(i));
+            }
+        }
+        else if (s.is_array()) {
+            // ( \@x, \@y );
+            for (int i = 0; i < s.to_long(); i++) {
+                aa.add(s.aget_lvalue(i));
+            }
+        }
+        else {
+            aa.add(new PlROvalue(s));  // store \"read only\"
+        }
+        return new PlArray(aa);
+    }
     public static PlArray construct_list_of_aliases(PlObject... args) {
         PlArrayList aa = new PlArrayList();
         for (PlObject s : args) {
-            if (s.is_hash()) {
+            if (s.is_lvalue()) {
+                aa.add(s);  // store lvalue as-is
+            }
+            else if (s.is_hash()) {
                 // ( %x );
                 s = ((PlHash)s).to_list_of_aliases();
                 for (int i = 0; i < s.to_long(); i++) {
@@ -28113,16 +29757,11 @@ class PlArray extends PlObject implements Iterable<PlObject> {
                     aa.add(s.aget_lvalue(i));
                 }
             }
-            else if (s.is_lvalue()) {
-                aa.add(s);  // store lvalue as-is
-            }
             else {
                 aa.add(new PlROvalue(s));  // store \"read only\"
             }
         }
-        PlArray result = new PlArray();
-        result.a = aa;
-        return result;
+        return new PlArray(aa);
     }
     public static PlArray construct_list_of_references(PlObject... args) {
         PlArray aa = PlArray.construct_list_of_aliases(args);
@@ -28138,7 +29777,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         for (PlObject s : args) {
             if (s.is_hash()) {
                 // ( %x );
-                s.set(src);
+                ((PlHash)s).set(PlCx.VOID, src);
                 src = new PlArray();
             }
             else if (s.is_slice()) {
@@ -28223,7 +29862,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         this.a = arr.a;
     }
 
-", ((map {
+"), ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlObject set(" . $native . "[] stuffs) {
@@ -28244,7 +29883,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))), "    public PlObject aget(PlObject i) {
+        } keys(%native_to_perl))), ("    public PlObject aget(PlObject i) {
         return this.a.aget(i.to_int());
     }
     public PlObject aget(int i) {
@@ -28289,8 +29928,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         for (PlObject i : a) {
             aa.add( this.aget_lvalue(i) );
         }
-        PlSlice result = new PlSlice();
-        result.a = aa;
+        PlSlice result = new PlSlice(aa);
         if (want == PlCx.LIST) {
             return result;
         }
@@ -28303,8 +29941,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
             aa.add( i );
             aa.add( this.aget_lvalue(i) );
         }
-        PlSlice result = new PlSlice();
-        result.a = aa;
+        PlSlice result = new PlSlice(aa);
         if (want == PlCx.LIST) {
             return result;
         }
@@ -28389,7 +30026,21 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     public PlObject aset(int i, PlLvalue v) {
         return this.a.aset(i, v.get());
     }
-", ((map {
+
+    public PlObject push(PlObject... args) {
+        for (int i = 0; i < args.length; i++) {
+            this.push(args[i]);
+        }
+        return this.length_of_array();
+    }
+    public PlObject unshift(PlObject... args) {
+        for (int i = args.length-1; i >= 0; i--) {
+            this.unshift(args[i]);
+        }
+        return this.length_of_array();
+    }
+
+"), ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlObject aset(PlObject i, " . $native . " s) {
@@ -28407,7 +30058,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))), "    public PlObject aset_alias(int i, PlLvalue lvalue) {
+        } keys(%native_to_perl))), ("    public PlObject aset_alias(int i, PlLvalue lvalue) {
         return this.a.set(i, lvalue);
     }
 
@@ -28565,15 +30216,15 @@ class PlTieHashIterator implements Iterator<Map.Entry<String, PlObject>> {
     public Map.Entry<String, PlObject> next() {
         return new AbstractMap.SimpleEntry<String, PlObject>(
                     this.key.toString(),
-                    PerlOp.call(this.tied, \"FETCH\", new PlArray(this.key), PlCx.SCALAR)
+                    PerlOp.call(\"FETCH\", new PlArray(this.tied, this.key), PlCx.SCALAR)
                );
     }
     public boolean hasNext() {
         if (this.key == null) {
-            this.key = PerlOp.call(this.tied, \"FIRSTKEY\", new PlArray(), PlCx.SCALAR);
+            this.key = PerlOp.call(\"FIRSTKEY\", new PlArray(this.tied), PlCx.SCALAR);
         }
         else {
-            this.key = PerlOp.call(this.tied, \"NEXTKEY\", new PlArray(), PlCx.SCALAR);
+            this.key = PerlOp.call(\"NEXTKEY\", new PlArray(this.tied), PlCx.SCALAR);
         }
         return !this.key.is_undef();
     }
@@ -28592,25 +30243,25 @@ class PlTieHashMap extends PlHashMap {
     // entrySet().iterator() == iterator()
 
     public PlObject get(Object i) {
-        return PerlOp.call(this.tied, \"FETCH\", new PlArray(new PlString((String)i)), PlCx.SCALAR);
+        return PerlOp.call(\"FETCH\", new PlArray(this.tied, new PlString((String)i)), PlCx.SCALAR);
     }
     public PlObject put(String i, PlObject v) {
-        return PerlOp.call(this.tied, \"STORE\", new PlArray(new PlString(i), v), PlCx.SCALAR);
+        return PerlOp.call(\"STORE\", new PlArray(this.tied, new PlString(i), v), PlCx.SCALAR);
     }
     public boolean containsKey(Object i) {
-        return PerlOp.call(this.tied, \"EXISTS\", new PlArray(new PlString((String)i)), PlCx.SCALAR).to_boolean();
+        return PerlOp.call(\"EXISTS\", new PlArray(this.tied, new PlString((String)i)), PlCx.SCALAR).to_boolean();
     }
     public PlObject remove(Object i) {
-        return PerlOp.call(this.tied, \"DELETE\", new PlArray(new PlString((String)i)), PlCx.SCALAR);
+        return PerlOp.call(\"DELETE\", new PlArray(this.tied, new PlString((String)i)), PlCx.SCALAR);
     }
     public void clear() {
-        PerlOp.call(this.tied, \"CLEAR\", new PlArray(), PlCx.SCALAR);
+        PerlOp.call(\"CLEAR\", new PlArray(this.tied), PlCx.SCALAR);
     }
     public Iterator<Map.Entry<String, PlObject>> iterator() {
         return new PlTieHashIterator(this.tied);
     }
     public PlObject scalar() {
-        return PerlOp.call(this.tied, \"SCALAR\", new PlArray(), PlCx.SCALAR);
+        return PerlOp.call(\"SCALAR\", new PlArray(this.tied), PlCx.SCALAR);
     }
     public boolean is_tiedHash() {
         return true;
@@ -28663,7 +30314,8 @@ class PlHash extends PlObject {
         this.each_iterator.reset();
     }
     public PlHash(PlObject... args) {
-        PlHash hh = new PlHash();
+        this.each_iterator = new PlHashIterator();
+        this.h = new PlHashMap();
         int args_size = args.length;
         for (int i = 0; i < args_size; i++) {
             PlObject s = args[i];
@@ -28685,7 +30337,7 @@ class PlHash extends PlObject {
                     else {
                         value = s.aget(j);
                     }
-                    hh.hset(key, value);
+                    this.hset(key, value);
                 }
             }
             else {
@@ -28698,11 +30350,9 @@ class PlHash extends PlObject {
                 else {
                     value = args[i];
                 }
-                hh.hset(s, value);
+                this.hset(s, value);
             }
         }
-        this.h = hh.h;
-        this.each_iterator = hh.each_iterator;
         this.each_iterator.reset();
     }
 
@@ -28713,8 +30363,7 @@ class PlHash extends PlObject {
             this.untie();
         }
         PlTieHashMap v = new PlTieHashMap();
-        PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name.toString(), \"TIEHASH\", args, PlCx.VOID);
+        PlObject self = PerlOp.call(\"TIEHASH\", args, PlCx.VOID);
         v.tied = self;
         v.old_var = this.h;
         this.h = v;
@@ -28724,7 +30373,7 @@ class PlHash extends PlObject {
     public PlObject untie() {
         if (this.h.is_tiedHash()) {
             PlObject tied = this.h.tied();
-            PlObject untie = PerlOp.call(tied, \"can\", new PlArray(new PlString(\"UNTIE\")), PlCx.SCALAR);
+            PlObject untie = PerlOp.call(\"can\", new PlArray(tied, new PlString(\"UNTIE\")), PlCx.SCALAR);
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };
@@ -28757,7 +30406,7 @@ class PlHash extends PlObject {
         return (PlLvalue)PlCORE.die(\"Not a SCALAR reference\");
     }
 
-    public PlObject set(PlObject s) {
+    public PlObject set(int want, PlObject s) {
         this.h.clear();
         if (s.is_hash()) {
             // \@x = %x;
@@ -28785,7 +30434,10 @@ class PlHash extends PlObject {
             this.hset(s, PlCx.UNDEF);
         }
         this.each_iterator.reset();
-        return this;
+        if (want == PlCx.LIST) {
+            return this.to_list_of_aliases();
+        }
+        return s.scalar();
     }
 
     public PlObject to_array() {
@@ -28807,8 +30459,7 @@ class PlHash extends PlObject {
             PlObject value = this.hget_lvalue(key);
             aa.add(value);
         }
-        PlSlice result = new PlSlice();
-        result.a = aa;
+        PlSlice result = new PlSlice(aa);
         return result;
     }
 
@@ -28834,8 +30485,7 @@ class PlHash extends PlObject {
             PlObject value = this.hget_lvalue(key);
             aa.add(value);
         }
-        PlSlice result = new PlSlice();
-        result.a = aa;
+        PlSlice result = new PlSlice(aa);
         if (want == PlCx.LIST) {
             return result;
         }
@@ -28850,8 +30500,7 @@ class PlHash extends PlObject {
             PlObject value = this.hget_lvalue(key);
             aa.add(value);
         }
-        PlArray result = new PlArray();
-        result.a = aa;
+        PlArray result = new PlArray(aa);
         if (want == PlCx.LIST) {
             return result;
         }
@@ -29011,6 +30660,9 @@ class PlHash extends PlObject {
     public PlObject hset_alias(String s, PlObject lvalue) {
         return this.h.put(s, lvalue);
     }
+    public PlObject hexists(String i) {
+        return this.h.containsKey(i) ? PlCx.TRUE : PlCx.FALSE;
+    }
     public PlObject hexists(PlObject i) {
         return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
     }
@@ -29077,7 +30729,7 @@ class PlHash extends PlObject {
         }
         return aa;
     }
-", ((map {
+"), ((map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
             $native && $perl ? "    public PlObject hset(PlObject s, " . $native . " v) {
@@ -29089,7 +30741,7 @@ class PlHash extends PlObject {
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%native_to_perl))), "
+        } keys(%native_to_perl))), ("
     public String toString() {
         // TODO
         return \"\" + this.hashCode();
@@ -29227,6 +30879,16 @@ class PlBool extends PlObject {
             return PlCx.INT0;
         }
     }
+    public PlObject apply(int want, PlArray List__) {
+        if (i) {
+            // RT #63790:  calling PL_sv_yes as a sub is special-cased to silently
+            // return (so Foo->import() silently fails if import() doesn't exist),
+            return PerlOp.context(want);
+        }
+        else {
+            return PlCORE.die(\"Undefined subroutine\");
+        }
+    }
 }
 class PlInt extends PlObject {
     private long i;
@@ -29301,7 +30963,7 @@ class PlDouble extends PlObject {
             // use scientific notation
             s = String.format(\"%20.20e\", v);
             s = s.replaceAll(\"\\\\.?0*e\", \"e\");
-            if (s.equals(\"0e+00\")) {
+            if (s.equals(\"0e+00\") || s.equals(\"-0e+00\")) {
                 s = \"0\";
             }
         }
@@ -29339,7 +31001,7 @@ class PlDouble extends PlObject {
         int c = ((Double)b.to_double()).compareTo(this.i);
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
-", ((map {
+"), ((map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{"op"};
             my $returns = $number_binop{$perl}->{"num_returns"};
@@ -29367,7 +31029,7 @@ class PlDouble extends PlObject {
             }
         } sort {;
             $a cmp $b
-        } keys(%number_binop))), "    public PlObject mod(PlObject o) {
+        } keys(%number_binop))), ("    public PlObject mod(PlObject o) {
         return PerlOp.mod(this, o);
     }
     public boolean is_num() {
@@ -29377,10 +31039,65 @@ class PlDouble extends PlObject {
         return !Double.isNaN(i) && i <= Long.MAX_VALUE && i >= Long.MIN_VALUE;
     }
 }
+class PlStringLazyError extends PlString {
+    private Exception e;
+
+    public PlStringLazyError(Exception e) {
+        this.e = e;
+    }
+    public String toString() {
+        if (this.s == null) {
+            this.s = e.getClass().getSimpleName() + \": \" + e.getMessage() + \"\\n\" + java.util.Arrays.toString(e.getStackTrace());
+        }
+        return this.s;
+    }
+    public boolean to_boolean() {
+        return true;
+    }
+}
+class PlStringConstant extends PlString {
+    private PlClass cls;
+    private PlObject codeRef;
+
+    public PlStringConstant(String s) {
+        super(s);
+    }
+
+    public PlClass blessed_class() {
+        if (cls == null) {
+            cls = PlClass.getInstance(s);
+        }
+        return cls;
+    }
+    public PlObject apply(int want, PlArray List__) {
+        if (this.codeRef == null) {
+            String name = this.toString();
+            PlObject code = PlV.cvar.hget(name);
+            if ( code.is_coderef() ) {
+                this.codeRef = code;
+            }
+            else {
+                int pos = name.lastIndexOf(\"::\");
+                if (pos != -1) {
+                    String namespace = name.substring(0, pos);
+                    PlLvalue autoload = PlV.cget_no_autoload(namespace + \"::AUTOLOAD\");
+                    if ( autoload.is_coderef() ) {
+                        PlV.sset(namespace + \"::AUTOLOAD\", new PlString(name));
+                        return autoload.apply(want, List__);
+                    }
+                }
+                return PlCORE.die(\"Undefined subroutine &\" + name + \" called\");
+            }
+        }
+        return this.codeRef.apply(want, List__);
+    }
+}
 class PlString extends PlObject {
-    private java.lang.String s;
+    public java.lang.String s;
     private PlObject numericValue;
 
+    public PlString() {
+    }
     public PlString(String s) {
         // if (s == null) {
         //     s = \"\";
@@ -29437,6 +31154,9 @@ class PlString extends PlObject {
         // TODO - concatenate current namespace if needed
         return PlV.aset(s, v);
     }
+    public PlObject hget(String i) {
+        return this.hash_deref(\"\").hget(i);
+    }
     public PlObject hash_deref(String namespace) {
         int pos = s.lastIndexOf(\"::\");
         if (pos == -1) {
@@ -29467,6 +31187,9 @@ class PlString extends PlObject {
             return PerlOp.deleteSymbolTable(this.s, a);
         }
         return PlV.hash_get(s).hdelete(want, a);
+    }
+    public PlClass blessed_class() {
+        return PlClass.getInstance(s);
     }
 
     public PlObject parse() {
@@ -29770,7 +31493,7 @@ class PlString extends PlObject {
     public boolean is_integer_range() {
         return this.parse().is_integer_range();
     }
-", ((map {
+"), ((map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{"op"};
             my $returns = $number_binop{$perl}->{"returns"};
@@ -29799,8 +31522,8 @@ class PlString extends PlObject {
             }
         } sort {;
             $a cmp $b
-        } keys(%number_binop))), "}
-", ((map {
+        } keys(%number_binop))), ("}
+"), ((map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{"java_type"};
             my $perl_to_java = $class->{"perl_to_java"};
@@ -29822,27 +31545,24 @@ class PlString extends PlObject {
     public boolean is_undef() {
         return stuff == null;
     }
+    public PlObject clone() throws CloneNotSupportedException {
+        // TODO - test if implements 'Cloneable' and call stuff.clone() if possible
+        return this;
+    }
 }
 " : ()
         } sort {;
             $a cmp $b
-        } keys(%java_classes))), "// end Perl-Java runtime
-")
+        } keys(%java_classes))), ("// end Perl-Java runtime
+"))
     }
     1
 }
 {
     package main;
     package Perlito5::Java::Lib;
-    sub Perlito5::Java::Lib::init {
-        Perlito5::Grammar::Use::register_internal_module("Cwd", "Perlito5X::Java::Cwd");
-        Perlito5::Grammar::Use::register_internal_module("MIME::Base64", "Perlito5X::Java::MIME::Base64");
-        Perlito5::Grammar::Use::register_internal_module("Scalar::Util", "Perlito5X::Java::Scalar::Util");
-        Perlito5::Grammar::Use::register_internal_module("List::Util", "Perlito5X::Java::List::Util");
-        Perlito5::Grammar::Use::register_internal_module("Digest::MD5", "Perlito5X::Java::Digest::MD5");
-        Perlito5::Grammar::Use::register_internal_module("Digest::SHA1", "Perlito5X::Java::Digest::SHA1");
-        Perlito5::Grammar::Use::register_internal_module("Encode", "Perlito5X::Java::Encode");
-        Perlito5::Grammar::Use::register_internal_module("Time::HiRes", "Perlito5X::Java::Time::HiRes")
+    sub Perlito5::Java::Lib::init {;
+        @Perlito5::Grammar::Use::Perlito_internal_lib_directory = ("Perlito5X/Java", "Perlito5X", '')
     }
     1
 }
@@ -29899,7 +31619,7 @@ perlito5 [switches] [programfile]
     --java_eval     enable java eval, using perlito5-lib.jar
     --nojava_eval   disable java eval, creates a standalone file that doesn't depend on perlito5-lib.jar
 ";
-    my $copyright_message = "This is Perlito5 " . $_V5_COMPILER_VERSION . ", an implementation of the Perl language.
+    my $copyright_message = (("This is Perlito5 " . $_V5_COMPILER_VERSION . ", an implementation of the Perl language.
 
 The Perl language is Copyright 1987-2017, Larry Wall
 The Perlito5 implementation is Copyright 2011-2017 by Flavio Soibelmann Glock and others.
@@ -29910,7 +31630,7 @@ GNU General Public License, which may be found in the Perl 5 source kit.
 Complete documentation for Perl, including FAQ lists, should be found on
 this system using \"man perl\" or \"perldoc perl\".  If you have access to the
 Internet, point your browser at http://www.perl.org/, the Perl Home Page.
-";
+"));
     sub Perlito5::chomp_switch {
         my $s = substr($ARGV[0], 2);
         if ($s) {;
@@ -29937,6 +31657,7 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.
         return $s
     }
     my $use_warnings = '';
+    my @user_inc;
     push(@Use, "no strict");
     ARG_LOOP:
     while (@ARGV && substr($ARGV[0], 0, 1) eq "-") {
@@ -29946,7 +31667,7 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.
         }
         elsif (substr($ARGV[0], 0, 2) eq "-I") {
             my $lib = Perlito5::get_text_from_switch();
-            unshift(@INC, $lib);
+            push(@user_inc, $lib);
             shift(@ARGV)
         }
         elsif (substr($ARGV[0], 0, 2) eq "-e" || substr($ARGV[0], 0, 2) eq "-E") {
@@ -30092,6 +31813,7 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.
 ")
         }
     }
+    unshift(@INC, @user_inc);
     if (!$expand_use) {;
         $Perlito5::EMIT_USE = 1
     }
@@ -30111,12 +31833,9 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.
                 local $/ = undef;
                 $source = <STDIN>
             }
-            else {
-                open(FILE, "<:encoding(UTF-8)", $source_filename) or die("Cannot read " . $source_filename . ": " . ${"!"} . "
-");
-                local $/ = undef;
-                $source = <FILE>;
-                close(FILE)
+            else {;
+                $source = Perlito5::Grammar::Use::slurp_source_file($source_filename) or die("Cannot read " . $source_filename . ": " . ${"!"} . "
+")
             }
         }
         $0 = $Perlito5::FILE_NAME;
@@ -30193,7 +31912,7 @@ INIT failed--call queue aborted.
                     $ok = 1
                 };
                 if (!$ok || $m->{"to"} < length($source)) {
-                    my $error = ${"\@"} || ($m->{"to"} < length($source) && "Syntax Error near " . $m->{"to"}) || "Unknown error";
+                    my $error = ${"\@"} || ($m->{"to"} < length($source) && "Syntax Error near " . ($m->{"to"})) || "Unknown error";
                     warn($error);
                     exit(255)
                 }
@@ -30291,7 +32010,7 @@ INIT failed--call queue aborted.
                         print(${"\@"})
                     }
                     elsif ($backend eq "_comp") {;
-                        say(Perlito5::Dumper::ast_dumper($Perlito5::SCOPE))
+                        say(Perlito5::Dumper::ast_dumper(\@Perlito5::BASE_SCOPE))
                     }
                     else {;
                         die("don't know what to do with backend '" . $backend . "'")
