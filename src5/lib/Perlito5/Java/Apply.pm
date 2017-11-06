@@ -905,12 +905,25 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my $arg = pop @{$self->{arguments}};
             if (@{$self->{arguments}}) {
+                my @out;
+                for my $arg (@{$self->{arguments}}) {
+                    my $context = 'void';
+                    # TODO - FIXME - workaround for broken optimization in these boolean operators
+                    $context = 'scalar' if
+                        $arg->{code} && (
+                           ( $arg->{code} eq "infix:<&&>" )
+                        || ( $arg->{code} eq "infix:<||>" )
+                        || ( $arg->{code} eq "infix:<and>" )
+                        || ( $arg->{code} eq "infix:<or>" )
+                        || ( $arg->{code} eq "ternary:<? :>" )
+                        );
+                    push @out, $arg->emit_java( $level, $context );
+                }
+                push @out, $arg->emit_java( $level, 'scalar' );
                 return 'PerlOp.context('
                 . join( ', ',
                         Perlito5::Java::to_context('scalar'),
-                        map( $_->emit_java( $level, 'void' ), @{ $self->{arguments} } ),
-                        $arg->emit_java( $level, 'scalar' ),
-                  )
+                        @out )
                 . ')';
             }
             Perlito5::Java::to_scalar([$arg], $level+1);
@@ -953,7 +966,27 @@ package Perlito5::AST::Apply;
             if ($wantarray eq 'scalar' && @{ $self->{arguments} } == 1) {
                 return $self->{arguments}->[0]->emit_java( $level, $wantarray );
             }
-            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
+
+            my @out;
+            for my $arg (@{$self->{arguments}}) {
+                my $context = $wantarray;
+                # TODO - FIXME - workaround for broken 'void' optimization in these boolean operators
+                $context = 'scalar' if 
+                       $wantarray eq 'void'
+                    && $arg->{code}
+                    && (  ( $arg->{code} eq "infix:<&&>" )
+                       || ( $arg->{code} eq "infix:<||>" )
+                       || ( $arg->{code} eq "infix:<and>" )
+                       || ( $arg->{code} eq "infix:<or>" )
+                       || ( $arg->{code} eq "ternary:<? :>" )
+                       );
+                push @out, $arg->emit_java( $level, $context );
+            }
+            return 'PerlOp.context('
+            . join( ', ',
+                    Perlito5::Java::to_context($wantarray),
+                    @out )
+            . ')';
         },
         'infix:<=>' => sub {
             my ($self, $level, $wantarray) = @_;
