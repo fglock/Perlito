@@ -21,15 +21,6 @@ sub is_fixity_type {
     return $Operator->{$fixity_type}{$op_name}
 }
 
-sub is_term {
-    my $token = shift;
-    ($token->[0] eq 'term') || ($token->[0] eq 'postfix_or_term') || ($token->[0] eq 'postfix')
-}
-
-sub is_num {
-    $_[0] ge '0' && $_[0] le '9'
-}
-
 sub is_ident_middle {
     my $c = shift;
        ($c ge 'a' && $c le 'z')
@@ -98,7 +89,7 @@ sub op_parse {
             if (exists($Term{$term})) {
                 my $c1 = $str->[$pos + $len - 1];
                 my $c2 = $str->[$pos + $len];
-                if ( is_num($c1) || !is_ident_middle($c1) || !is_ident_middle($c2) ) {
+                if ( ($c1 ge '0' && $c1 le '9') || !is_ident_middle($c1) || !is_ident_middle($c2) ) {
                     my $m = $Term{$term}->($str, $pos);
                     return $m if $m;
                 }
@@ -297,7 +288,7 @@ sub precedence_parse {
         $token = $get_token->($last_is_term)
     }
     while ((defined($token)) && ($token->[0] ne 'end')) {
-        my $token_is_term = is_term($token);
+        my $token_is_term = ($token->[0] eq 'term') || ($token->[0] eq 'postfix_or_term') || ($token->[0] eq 'postfix');
         if (($token->[1] eq ',') && ( ($last->[1] eq '*start*') || ($last->[1] eq ',') )) {
             # allow (,,,)
             push( @$num_stack, ['term', undef] );
