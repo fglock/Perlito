@@ -493,18 +493,6 @@ token term_curly {
     ]
 };
 
-token term_not {
-    'not' <.Perlito5::Grammar::Space::opt_ws> '('  <paren_parse>   ')'
-        {
-            $MATCH->{capture} = [ 'term', 
-                Perlito5::AST::Apply->new(
-                    code      => 'prefix:<not>',
-                    arguments => expand_list( Perlito5::Match::flat($MATCH->{paren_parse}) ),
-                    namespace => '',
-                ) ]
-        }
-};
-
 my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 my $Expr_end_token = {
         ']' => 1,
@@ -801,8 +789,6 @@ sub exp_parse {
         capture => $result
     };
 }
-
-Perlito5::Grammar::Precedence::add_term( 'not'   => \&term_not );
 
 1;
 
