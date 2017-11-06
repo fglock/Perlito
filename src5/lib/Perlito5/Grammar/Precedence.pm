@@ -4,16 +4,6 @@ package Perlito5::Grammar::Precedence;
 use feature 'say';
 use strict;
 
-# Perlito5::Grammar::Precedence attributes:
-#   get_token - code ref
-#   end_token - array ref
-#   end_token_chars - array ref (index to end_token entries)
-
-sub new { 
-    my $class = shift;
-    bless {@_}, $class
-}
-
 my $Operator         = {};
 my $Precedence       = {};  # integer 0..100
 my $PrefixPrecedence = {};  # integer 0..100; 'prefix' operations
@@ -278,6 +268,13 @@ sub get_token_precedence {
 }
 
 sub precedence_parse {
+    my $get_token    = $_[0];
+
+    # TODO - use "local"
+    my $last_end_token  = $End_token;
+    my $last_end_token_chars = $End_token_chars;
+    $End_token       = $_[1];
+    $End_token_chars = $_[2];
 
     # this routine implements operator precedence
     # using (more or less) the "shunting yard" algorithm
@@ -291,13 +288,6 @@ sub precedence_parse {
     # http://en.wikipedia.org/wiki/Shunting-yard_algorithm
     #
 
-    my $self = shift;
-
-    my $get_token       = $self->{get_token};
-    my $last_end_token  = $End_token;
-    my $last_end_token_chars = $End_token_chars;
-    $End_token          = $self->{end_token};
-    $End_token_chars    = $self->{end_token_chars};
     my $op_stack  = [];   # [category, name]
     my $num_stack = [];
     my $last      = ['op', '*start*'];
@@ -388,18 +378,6 @@ sub precedence_parse {
 =head1 NAME
 
 Perlito5::Grammar::Precedence - precedence parser for Perlito
-
-=head1 SYNOPSIS
-
-    my $prec = Perlito5::Grammar::Precedence->new(
-        get_token => $get_token,
-        end_token => [ 
-                {}, 
-                { ']' => 1, ')' => 1, '}' => 1, ';' => 1 } 
-            ],
-        end_token_chars => [ 1 ],
-    );
-    my $res = $prec->precedence_parse;
 
 =head1 DESCRIPTION
 

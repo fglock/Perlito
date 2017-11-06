@@ -620,12 +620,11 @@ sub list_parser {
         $is_first_token = 0;
         return $v;
     };
-    my $prec = Perlito5::Grammar::Precedence->new(
-        get_token       => $get_token, 
-        end_token       => $end_token,
-        end_token_chars => $Expr_end_token_chars,
+    my $res = Perlito5::Grammar::Precedence::precedence_parse(
+        $get_token, 
+        $end_token,
+        $Expr_end_token_chars,
     );
-    my $res = $prec->precedence_parse;
     if (scalar(@$res) == 0) {
         return {
             'str' => $str, 'from' => $pos, 'to' => $last_pos,
@@ -690,12 +689,11 @@ sub circumfix_parse {
 
     my %delim_token;
     $delim_token{ $delimiter } = 1;
-    my $prec = Perlito5::Grammar::Precedence->new(
-        get_token       => $get_token,
-        end_token       => \%delim_token,
-        end_token_chars => [ length $delimiter ],
+    my $res = Perlito5::Grammar::Precedence::precedence_parse(
+        $get_token,
+        \%delim_token,
+        [ length $delimiter ],
     );
-    my $res = $prec->precedence_parse;
     $res = pop_term($res);
     if (!(defined($res))) {
         # can't return undef in a capture (BUG in Match object?)
@@ -740,12 +738,11 @@ sub exp_parse {
         }
         return $v;
     };
-    my $prec = Perlito5::Grammar::Precedence->new(
-        get_token       => $get_token,
-        end_token       => $Expr_end_token,
-        end_token_chars => $Expr_end_token_chars,
+    my $res = Perlito5::Grammar::Precedence::precedence_parse(
+        $get_token,
+        $Expr_end_token,
+        $Expr_end_token_chars,
     );
-    my $res = $prec->precedence_parse;
     # say "# exp terminated";
     if (scalar(@$res) == 0) {
         # say "# exp terminated with false";
