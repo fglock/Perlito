@@ -337,6 +337,13 @@ Parser
   syntax error at -e line 1, at EOF
   ```
 
+  however:
+
+  ```sh
+  $ perl -e ' @ __END__ = (123); print @ __END__ ;'
+  123
+  ```
+
 - error messages depend on eval context
 
   ```sh
