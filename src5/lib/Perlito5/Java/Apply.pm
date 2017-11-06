@@ -904,7 +904,7 @@ package Perlito5::AST::Apply;
         'scalar' => sub {
             my ($self, $level, $wantarray) = @_;
             if (@{$self->{arguments}} > 1) {
-                return 'PerlOp.context(' . join( ', ', Perlito5::Java::to_context('scalar'), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
+                return 'PerlOp.context(' . join( ', ', Perlito5::Java::to_context('scalar'), map( $_->emit_java( $level, 'scalar' ), @{ $self->{arguments} } ) ) . ')';
             }
             Perlito5::Java::to_scalar($self->{arguments}, $level+1);
         },
