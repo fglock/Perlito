@@ -129,7 +129,7 @@ Perlito5-Java work-in-progress
       - https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/prog_guide/api.html
       - http://download.java.net/java/jdk9/docs/api/javax/script/package-summary.html
 
-  - Java 8 seems to trigger this problem:
+  - Java 8 triggers this problem:
 
       - http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
       - http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
@@ -174,7 +174,6 @@ Perlito5-Java work-in-progress
 
   - object system is partially implemented
       - method resolution order is not selectable
-      - method caching is not implemented
       - interaction between inheritance and overloading need more tests
 
   - tied variables are partially implemented
@@ -210,7 +209,7 @@ Perlito5-Java work-in-progress
 
   - `local @_` doesn't work yet, because `@_` is special
 
-  - `~~` operator not implemented; also `when` and `given` not implemented.
+  - smartmatch `~~` operator not implemented; also `when` and `given` not implemented.
 
   - incomplete CORE function implementations
       - open()
@@ -1208,8 +1207,6 @@ Missing features, or partially implemented, or untested
 
   - TODO - unit tests (work in progress)
 
-  - TODO - method cache
-
   - TODO - invalidate method cache when subroutine changes or @INC changes
 
 - Perl features
@@ -1414,8 +1411,6 @@ Optimizations
 
   - use `our`-ish variables to avoid global variable lookups
         Note: remember the special-cases for `local` keyword
-
-  - memoize method-name lookups
 
   - do-block and eval-block in void-context don't need a subroutine wrapper
 
