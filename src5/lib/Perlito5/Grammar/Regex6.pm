@@ -20,10 +20,11 @@ token term_token {
                 'my $str     = $_[0]; ' .
                 'my $pos     = $_[1]; ' .
                 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' .
-                'my $tmp = ( ' .
+                'my @stack; ' .
+                '( ' .
                     Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex6::rule"})->emit_perl5() .
-                '); ' .
-                '$tmp ? $MATCH : undef; '
+                ') ' .
+                '? $MATCH : undef; '
             . '}';
         $source = [ split //, $source ];
         my $ast = Perlito5::Grammar::Block::named_sub_def( $source, 0 );
