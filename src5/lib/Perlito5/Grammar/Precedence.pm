@@ -210,8 +210,8 @@ add_op( 'postfix',
     ],
     $prec, );
 $prec = $prec - 1;
-add_op( 'prefix',  [ '++',  '--' ], $prec );
-add_op( 'postfix', [ '++',, '--' ], $prec, );
+add_op( 'prefix',  [ '++', '--' ], $prec );
+add_op( 'postfix', [ '++', '--' ], $prec, );
 $prec = $prec - 1;
 add_op( 'infix', [ '**' ],  $prec, { assoc => 'right' } );
 $prec = $prec - 1;
