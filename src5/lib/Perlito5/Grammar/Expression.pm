@@ -599,14 +599,12 @@ sub list_parser {
         my $last_is_term = $_[0];
         my $v;
         my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
-        if ($m) {
-            my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
-            if ($spc) {
-                $m->{to} = $spc->{to};
-            }
-        }
         if (!$m) {
             return [ 'end', '*end*' ];
+        }
+        my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
+        if ($spc) {
+            $m->{to} = $spc->{to};
         }
         $v = $m->{capture};
         if  (  $is_first_token
@@ -676,17 +674,15 @@ sub circumfix_parse {
     my $get_token = sub {
         my $last_is_term = $_[0];
         my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
-        if ($m) {
-            my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
-            if ($spc) {
-                $m->{to} = $spc->{to};
-            }
-        }
         if (!$m) {
             my $msg = "Expected closing delimiter: $delimiter";
             $msg = 'Missing right curly or square bracket'
                 if $delimiter eq '}' || $delimiter eq ']';
             Perlito5::Compiler::error "$msg near ", $last_pos;
+        }
+        my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
+        if ($spc) {
+            $m->{to} = $spc->{to};
         }
         my $v = $m->{capture};
         if ($v->[0] ne 'end') {
@@ -736,14 +732,12 @@ sub exp_parse {
         my $last_is_term = $_[0];
         my $v;
         my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
-        if ($m) {
-            my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
-            if ($spc) {
-                $m->{to} = $spc->{to};
-            }
-        }
         if (!$m) {
             return [ 'end', '*end*' ];
+        }
+        my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
+        if ($spc) {
+            $m->{to} = $spc->{to};
         }
         $v = $m->{capture};
         if ($v->[0] ne 'end') {
