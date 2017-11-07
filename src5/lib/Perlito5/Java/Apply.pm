@@ -572,7 +572,7 @@ package Perlito5::AST::Apply;
             if ($arg->{is_version_string}) {
                 # require VERSION
                 # create a PlStringConstant
-                $code = Perlito5::AST::Buf->new( buf => "Perlito5::test_perl_version" )->emit_java($level, 'scalar');
+                my $code = Perlito5::AST::Buf->new( buf => "Perlito5::test_perl_version" )->emit_java($level, 'scalar');
                 return $code . '.apply(PlCx.VOID, new PlArray('
                     .       $arg->emit_java( $level, 'scalar' )
                     . '))';
