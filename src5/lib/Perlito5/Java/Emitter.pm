@@ -718,7 +718,9 @@ package Perlito5::Java;
                && $cond->{arguments} && @{$cond->{arguments}}
                ) 
             {
-                return to_boolean( $cond->{arguments}[0], $level )
+                if (@{$cond->{arguments}} == 1) {
+                    return to_boolean( $cond->{arguments}[0], $level );
+                }
             }
 
             # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
