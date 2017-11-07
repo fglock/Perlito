@@ -1101,11 +1101,23 @@ package Perlito5::Java::LexicalBlock;
         : 'return ' . $value;
     }
 
-    sub looks_like_statement {
+    sub looks_like_dead_code {
         my ($decl) = @_;
 
-        # TODO - add "circumfix:<( )>" with dead-code args
-
+        if ( $decl->isa('Perlito5::AST::Apply') && $decl->{code} eq 'circumfix:<( )>' ) {
+            # dead code     ()
+            return 1 if !@{$decl->{arguments}};
+            # dead code     (my $x, undef)
+            return 1 if !grep {  !looks_like_dead_code($_)  } @{$decl->{arguments}};
+        }
+        if ( $decl->isa('Perlito5::AST::Apply') && ($decl->code eq 'my' || $decl->code eq 'our') ) {
+            # dead code     my ($x)
+            return 1;
+        }
+        if ( $decl->isa('Perlito5::AST::Decl') && ($decl->decl eq 'my' || $decl->decl eq 'our') ) {
+            # dead code     my $x
+            return 1;
+        }
         if (  ( $decl->isa('Perlito5::AST::Int') )
            || ( $decl->isa('Perlito5::AST::Num') )
            || ( $decl->isa('Perlito5::AST::Buf') )
@@ -1113,10 +1125,11 @@ package Perlito5::Java::LexicalBlock;
            || ( $decl->isa('Perlito5::AST::Apply') && $decl->code eq 'undef' && !@{$decl->{arguments}} )
            )
         {
-            # this looks like dead code
-            return 0;
+            # dead code     123
+            # dead code     undef
+            return 1;
         }
-        return 1;
+        return 0;
     }
 
     sub emit_body_statement {
@@ -1132,36 +1145,34 @@ package Perlito5::Java::LexicalBlock;
             push @str, $arg->emit_java_init($level, $wantarray);
         }
 
-        if ( !( $decl->isa('Perlito5::AST::Decl') && ($decl->decl eq 'my' || $decl->decl eq 'our') ) ) {
-            if ( !looks_like_statement( $decl ) ) {
-                # this looks like dead code
-            }
-            elsif ( $decl->isa('Perlito5::AST::Apply')
-              && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
-              && !( $Perlito5::Java::valid_java_statement{ $decl->{code} } ) 
-              && !( $decl->{namespace} ne "" && $decl->{namespace} ne "CORE" ) 
-              && !( $decl->{code} eq "infix:<&&>" )
-              && !( $decl->{code} eq "infix:<||>" )
-              && !( $decl->{code} eq "infix:<and>" )
-              && !( $decl->{code} eq "infix:<or>" )
-              && !( $decl->{code} eq "ternary:<? :>" )
+        if ( looks_like_dead_code( $decl ) ) {
+            # this looks like dead code
+        }
+        elsif ( $decl->isa('Perlito5::AST::Apply')
+          && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
+          && !( $Perlito5::Java::valid_java_statement{ $decl->{code} } ) 
+          && !( $decl->{namespace} ne "" && $decl->{namespace} ne "CORE" ) 
+          && !( $decl->{code} eq "infix:<&&>" )
+          && !( $decl->{code} eq "infix:<||>" )
+          && !( $decl->{code} eq "infix:<and>" )
+          && !( $decl->{code} eq "infix:<or>" )
+          && !( $decl->{code} eq "ternary:<? :>" )
+          )
+        {
+            # workaround for "Error: not a statement"
+            push @str, 'PerlOp.statement(' . $decl->emit_java( $level+1, 'void' ) . ');';
+        }
+        elsif ( $decl->isa('Perlito5::AST::CompUnit')
+              || $decl->isa('Perlito5::AST::For' )
+              || $decl->isa('Perlito5::AST::While' )
+              || $decl->isa('Perlito5::AST::If' )
+              || $decl->isa('Perlito5::AST::Block' )
               )
-            {
-                # workaround for "Error: not a statement"
-                push @str, 'PerlOp.statement(' . $decl->emit_java( $level+1, 'void' ) . ');';
-            }
-            elsif ( $decl->isa('Perlito5::AST::CompUnit')
-                  || $decl->isa('Perlito5::AST::For' )
-                  || $decl->isa('Perlito5::AST::While' )
-                  || $decl->isa('Perlito5::AST::If' )
-                  || $decl->isa('Perlito5::AST::Block' )
-                  )
-            {
-                push @str, $decl->emit_java( $level, 'statement' );
-            }
-            else {
-                push @str, $decl->emit_java( $level, 'statement' ) . ';';
-            }
+        {
+            push @str, $decl->emit_java( $level, 'statement' );
+        }
+        else {
+            push @str, $decl->emit_java( $level, 'statement' ) . ';';
         }
         return @str;
     }
