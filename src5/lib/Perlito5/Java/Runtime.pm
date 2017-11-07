@@ -4881,6 +4881,9 @@ class PlLvalue extends PlObject {
     public PlLvalue() {
         this.o = PlCx.UNDEF;
     }
+    public PlLvalue(long o) {
+        this.o = new PlInt(o);
+    }
     public PlLvalue(PlObject o) {
         this.o = o;
     }

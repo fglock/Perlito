@@ -2837,22 +2837,36 @@ package Perlito5::AST::For;
                 '}';
         }
         else {
+            my $local_label = Perlito5::Java::get_label();
             my $cond = $self->{cond};
+            my $loop_expression;
+            my $loop_expression_is_integer = 0;
             if ( $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'infix:<..>' ) {
-                $cond = 'new PerlRange('
-                              . $cond->{arguments}->[0]->emit_java($level + 1) . ', '
-                              . $cond->{arguments}->[1]->emit_java($level + 1)
-                        . ')';
+                my ($arg1, $arg2) = @{ $cond->{arguments} };
+
+                if ($arg1->isa('Perlito5::AST::Int') && $arg2->isa('Perlito5::AST::Int')) {
+                    $loop_expression_is_integer = 1;
+                    $loop_expression = 
+                          'long ' . $local_label . ' = ' . $arg1->{int} . '; '
+                        . $local_label . ' <= ' . $arg2->{int} . '; '
+                        . $local_label . '++';
+                }
+                else {
+                    $loop_expression = 'PlObject ' . $local_label
+                        . ' : new PerlRange('
+                              . $arg1->emit_java($level + 1) . ', '
+                              . $arg2->emit_java($level + 1)
+                        .     ')';
+                }
             }
             else {
                 # TODO - optimization - use to_list() when the topic doesn't need to mutate
-                $cond = Perlito5::Java::to_param_list([$cond], $level + 1);
+                $loop_expression = 'PlObject ' . $local_label
+                    . ' : ' . Perlito5::Java::to_param_list([$cond], $level + 1);
             }
 
-            my $topic = $self->{topic};
-            my $local_label = Perlito5::Java::get_label();
             my $decl = '';
-            my $v = $topic;
+            my $v = $self->{topic};
             if ($v->{decl}) {
                 $decl = $v->{decl};
                 $v    = $v->{var};
@@ -2866,9 +2880,16 @@ package Perlito5::AST::For;
                 # TODO - use PlObject for topic, because:
                 #   - less memory
                 #   - arguments are r/o when needed
+                my $loop_init;
+                if ($loop_expression_is_integer) {
+                    $loop_init = 'PlLvalue ' . $v->emit_java($level + 1) . ' = new PlLvalue(' . $local_label . ')';
+                }
+                else {
+                    $loop_init = 'PlLvalue ' . $v->emit_java($level + 1) . " = (PlLvalue)$local_label";
+                }
                 push @str,
-                        'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
-                          [ 'PlLvalue ' . $v->emit_java($level + 1) . " = (PlLvalue)$local_label;",
+                        'for (' . $loop_expression . ') {',
+                          [ $loop_init . ";",
                             Perlito5::Java::LexicalBlock->new(
                                 block => $body,
                                 block_label => $self->{label},
@@ -2881,11 +2902,18 @@ package Perlito5::AST::For;
                 # use global variable or $_
                 # localize variable
                 my $local_label2 = Perlito5::Java::get_label();
+                my $loop_init;
+                if ($loop_expression_is_integer) {
+                    $loop_init = $v->emit_java($level, 'scalar', 'lvalue') . '.set(' . $local_label . ')';
+                }
+                else {
+                    $loop_init = $v->emit_java_global_set_alias( "(PlLvalue)$local_label", $level + 1 );
+                }
                 push @str, 'int ' . $local_label2 . ' = PerlOp.local_length();';
                 push @str, $v->emit_java_global($level + 1, 'scalar', 1) . ";";
                 push @str,
-                        'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
-                          [ $v->emit_java_global_set_alias( "(PlLvalue)$local_label", $level + 1 ) . ";",
+                        'for (' . $loop_expression . ') {',
+                          [ $loop_init . ";",
                             Perlito5::Java::LexicalBlock->new(
                                 block => $body,
                                 block_label => $self->{label},
