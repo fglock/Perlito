@@ -967,6 +967,7 @@ package Perlito5::Java;
           $wantarray eq 'list'    ? 'PlCx.LIST' 
         : $wantarray eq 'scalar'  ? 'PlCx.SCALAR' 
         : $wantarray eq 'void'    ? 'PlCx.VOID'
+        : $wantarray eq 'statement' ? 'PlCx.VOID'
         : $wantarray eq 'return'  ? 'return_context'
         : $wantarray eq 'runtime' ? 'want'
         :                           'want'    # default = 'runtime'
@@ -1027,7 +1028,7 @@ package Perlito5::Java;
 
     sub emit_wrap_statement_java {
         my ($level, $wantarray, $argument) = @_;
-        if ($wantarray eq 'void') {
+        if ($wantarray eq 'void' || $wantarray eq 'statement') {
             return $argument;
         }
         emit_wrap_java( $level, $argument )
@@ -1049,7 +1050,7 @@ package Perlito5::Java;
                   "}"
                 ],
              '}' );
-        if ($wantarray ne 'void') {
+        if ($wantarray ne 'void' && $wantarray ne 'statement') {
             push @str, "return PlCx.UNDEF;";
         }
         return @str;
@@ -1136,10 +1137,10 @@ package Perlito5::Java::LexicalBlock;
                   || $decl->isa('Perlito5::AST::Block' )
                   )
             {
-                push @str, $decl->emit_java( $level, 'void' );
+                push @str, $decl->emit_java( $level, 'statement' );
             }
             else {
-                push @str, $decl->emit_java( $level, 'void' ) . ';';
+                push @str, $decl->emit_java( $level, 'statement' ) . ';';
             }
         }
         return @str;
@@ -1158,7 +1159,7 @@ package Perlito5::Java::LexicalBlock;
         $last_statement = pop @stmt;
 
         for (@stmt) {
-            push @str, $_->emit_java($level, 'void') . ';';
+            push @str, $_->emit_java($level, 'statement') . ';';
         }
 
         if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
@@ -1241,11 +1242,11 @@ package Perlito5::Java::LexicalBlock;
         }
 
         my $last_statement;
-        if ($wantarray ne 'void') {
+        if ($wantarray ne 'void' && $wantarray ne 'statement') {
             $last_statement = pop @block;
         }
         for my $decl ( @block ) {
-            push @str, emit_body_statement( $decl, $level, 'void' );
+            push @str, emit_body_statement( $decl, $level, 'statement' );
         }
         if ($last_statement) {
             push @str, emit_last_statement( $last_statement, $level, $wantarray, $has_local, $local_label );
@@ -1517,7 +1518,7 @@ package Perlito5::AST::CompUnit;
         $Perlito5::THROW = 0;
         $Perlito5::THROW_RETURN = 0;
         my $level = 0;
-        my $wantarray = 'void';
+        my $wantarray = 'statement';
         my $str;
         $str .= Perlito5::Compiler::do_not_edit("//");
 
@@ -2284,8 +2285,8 @@ package Perlito5::AST::Var;
         if ( $decl_type ne 'my' && $decl_type ne 'state' ) {
             return $self->emit_java_global_set($arguments, $level, $wantarray);
         }
-        my $open  = $wantarray eq 'void' ? '' : '(';
-        my $close = $wantarray eq 'void' ? '' : ')';
+        my $open  = $wantarray eq 'void' || $wantarray eq 'statement' ? '' : '(';
+        my $close = $wantarray eq 'void' || $wantarray eq 'statement' ? '' : ')';
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         if ( $sigil eq '$' ) {
             my $id = $self->{_id};

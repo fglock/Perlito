@@ -200,8 +200,8 @@ package Perlito5::AST::Apply;
             return $self->emit_java( $level+1, 'scalar', 'lvalue' ) . '.set(' . $arguments->emit_java( $level+1 ) . ')';
         }
 
-        my $open  = $wantarray eq 'void' ? '' : '(';
-        my $close = $wantarray eq 'void' ? '' : ')';
+        my $open  = $wantarray eq 'void' || $wantarray eq 'statement' ? '' : '(';
+        my $close = $wantarray eq 'void' || $wantarray eq 'statement' ? '' : ')';
         $open . $self->emit_java( $level+1 ) . ' = ' . $arguments->emit_java( $level+1 ) . $close;
     }
 
@@ -443,7 +443,7 @@ package Perlito5::AST::Apply;
 
         'infix:<&&>' => sub {
             my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'void') {
+            if ($wantarray eq 'statement') {
                 return
                     Perlito5::AST::If->new(
                         cond => $self->{arguments}[0],
@@ -458,7 +458,7 @@ package Perlito5::AST::Apply;
         },
         'infix:<and>' => sub {
             my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'void') {
+            if ($wantarray eq 'statement') {
                 return
                     Perlito5::AST::If->new(
                         cond => $self->{arguments}[0],
@@ -473,7 +473,7 @@ package Perlito5::AST::Apply;
         },
         'infix:<||>' => sub {
             my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'void') {
+            if ($wantarray eq 'statement') {
                 return
                     Perlito5::AST::If->new(
                         cond => $self->{arguments}[0],
@@ -488,7 +488,7 @@ package Perlito5::AST::Apply;
         },
         'infix:<or>' => sub {
             my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'void') {
+            if ($wantarray eq 'statement') {
                 return
                     Perlito5::AST::If->new(
                         cond => $self->{arguments}[0],
@@ -900,38 +900,9 @@ package Perlito5::AST::Apply;
                 die 'TODO delete &$code';
             }
         },
-
-        'scalar' => sub {
-            my ($self, $level, $wantarray) = @_;
-            my $arg = pop @{$self->{arguments}};
-            if (@{$self->{arguments}}) {
-                my @out;
-                for my $arg (@{$self->{arguments}}) {
-                    my $context = 'void';
-                    # TODO - FIXME - workaround for broken optimization in these boolean operators
-                    $context = 'scalar' if
-                        $arg->{code} && (
-                           ( $arg->{code} eq "infix:<&&>" )
-                        || ( $arg->{code} eq "infix:<||>" )
-                        || ( $arg->{code} eq "infix:<and>" )
-                        || ( $arg->{code} eq "infix:<or>" )
-                        || ( $arg->{code} eq "ternary:<? :>" )
-                        );
-                    push @out, $arg->emit_java( $level, $context );
-                }
-                push @out, $arg->emit_java( $level, 'scalar' );
-                return 'PerlOp.context('
-                . join( ', ',
-                        Perlito5::Java::to_context('scalar'),
-                        @out )
-                . ')';
-            }
-            Perlito5::Java::to_scalar([$arg], $level+1);
-        },
-
         'ternary:<? :>' => sub {
             my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'void') {
+            if ($wantarray eq 'statement') {
                 return
                     Perlito5::AST::If->new(
                         cond => $self->{arguments}[0],
@@ -939,7 +910,10 @@ package Perlito5::AST::Apply;
                         otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[2] ] ),
                     )->emit_java($level, $wantarray);
             }
-            '( ' . Perlito5::Java::to_boolean( $self->{arguments}->[0], $level ) . ' ? ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray ) . ' : ' . ( $self->{arguments}->[2] )->emit_java( $level, $wantarray ) . ')';
+               '( ' . Perlito5::Java::to_boolean( $self->{arguments}->[0], $level )
+            . ' ? ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray )
+            . ' : ' . ( $self->{arguments}->[2] )->emit_java( $level, $wantarray )
+            .  ')';
         },
         'my' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -961,27 +935,37 @@ package Perlito5::AST::Apply;
             # 'local ($x, $y[10])'
             'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
-        'circumfix:<( )>' => sub {
-            my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'scalar' && @{ $self->{arguments} } == 1) {
-                return $self->{arguments}->[0]->emit_java( $level, $wantarray );
-            }
-
+        'scalar' => sub {
+            my ($self, $level, $wantarray, $autovivification_type) = @_;
+            my @args = @{$self->{arguments}};
+            my $arg = pop @args;
             my @out;
-            for my $arg (@{$self->{arguments}}) {
-                my $context = $wantarray;
-                # TODO - FIXME - workaround for broken 'void' optimization in these boolean operators
-                $context = 'scalar' if 
-                       $wantarray eq 'void'
-                    && $arg->{code}
-                    && (  ( $arg->{code} eq "infix:<&&>" )
-                       || ( $arg->{code} eq "infix:<||>" )
-                       || ( $arg->{code} eq "infix:<and>" )
-                       || ( $arg->{code} eq "infix:<or>" )
-                       || ( $arg->{code} eq "ternary:<? :>" )
-                       );
-                push @out, $arg->emit_java( $level, $context );
+            if ($arg) {
+                for my $arg (@args) {
+                    push @out, $arg->emit_java( $level, 'void' );
+                }
+                push @out, $arg->emit_java( $level, 'scalar', $autovivification_type );
             }
+            return $out[0] if @out == 1;
+            return 'PerlOp.context('
+            . join( ', ',
+                    Perlito5::Java::to_context('scalar'),
+                    @out )
+            . ')';
+        },
+        'circumfix:<( )>' => sub {
+            my ($self, $level, $wantarray, $autovivification_type) = @_;
+            my @args = @{$self->{arguments}};
+            my $arg = pop @args;
+            my @out;
+            if ($arg) {
+                for my $arg (@args) {
+                    my $context = $wantarray eq 'list' ? 'list' : 'void';
+                    push @out, $arg->emit_java( $level, $context );
+                }
+                push @out, $arg->emit_java( $level, $wantarray, $autovivification_type );
+            }
+            return $out[0] if @out == 1;
             return 'PerlOp.context('
             . join( ', ',
                     Perlito5::Java::to_context($wantarray),
@@ -1039,7 +1023,7 @@ package Perlito5::AST::Apply;
         'return' => sub {
             my ($self, $level, $wantarray) = @_;
 
-            if ($wantarray eq 'void' && $Perlito5::JAVA_CAN_RETURN) {
+            if (($wantarray eq 'void' || $wantarray eq 'statement') && $Perlito5::JAVA_CAN_RETURN) {
                 my $has_local = $Perlito5::JAVA_HAS_LOCAL;
                 my $local_label = $Perlito5::JAVA_LOCAL_LABEL;
                 if (!@{$self->{arguments}}) {
