@@ -390,7 +390,8 @@ package Perlito5::Java;
         }
         push @out, "\"$tmp\"" if $tmp ne '';
         unshift @out, '""' if $has_char;
-        return join(' + ', @out);
+        return $out[0] if @out == 1;
+        return '(' . join(' + ', @out) . ')';
     }
 
     sub is_native {
@@ -713,63 +714,82 @@ package Perlito5::Java;
             my $cond = shift;
             my $level = shift;
             my $wantarray = 'scalar';
+            my $class = ref($cond);
 
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
-               && $cond->{arguments} && @{$cond->{arguments}}
-               ) 
-            {
-                if (@{$cond->{arguments}} == 1) {
-                    return to_boolean( $cond->{arguments}[0], $level );
-                }
-            }
+            if (  $class eq 'Perlito5::AST::Apply' ) {
 
-            # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) 
-               && (  $cond->code eq 'infix:<&&>'
-                  || $cond->code eq 'infix:<and>'
-                  )
-               ) 
-            {
-                return '(' . to_boolean($cond->{arguments}->[0], $level) . ' && '
-                           . to_boolean($cond->{arguments}->[1], $level) . ')'
-            }
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) 
-               && (  $cond->code eq 'infix:<||>'
-                  || $cond->code eq 'infix:<or>'
-                  )
-               ) 
-            {
-                return '(' . to_boolean($cond->{arguments}->[0], $level) . ' || '
-                           . to_boolean($cond->{arguments}->[1], $level) . ')'
-            }
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) 
-               && (  $cond->code eq 'prefix:<!>'
-                  || $cond->code eq 'prefix:<not>'
-                  )
-               ) 
-            {
-                if (@{$cond->{arguments}} == 1) {
-                    return '!' . to_boolean($cond->{arguments}->[0], $level)
+                if (  $cond->code eq 'circumfix:<( )>'
+                   && $cond->{arguments} && @{$cond->{arguments}}
+                   ) 
+                {
+                    if (@{$cond->{arguments}} == 1) {
+                        return to_boolean( $cond->{arguments}[0], $level );
+                    }
                 }
-            }
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) 
-               && (  $cond->code eq 'defined' )
-               ) 
-            {
-                if (@{$cond->{arguments}} == 1) {
-                    my $arg = $cond->{arguments}[0];
-                    if (  ref( $arg ) eq 'Perlito5::AST::Var' 
-                       && $arg->{sigil} eq '$'
-                       )
-                    {
-                        return '!' . $arg->emit_java($level, 'scalar') . '.is_undef()';
+
+                # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
+                if (  $cond->code eq 'infix:<&&>'
+                   || $cond->code eq 'infix:<and>'
+                   ) 
+                {
+                    return '(' . to_boolean($cond->{arguments}->[0], $level) . ' && '
+                               . to_boolean($cond->{arguments}->[1], $level) . ')'
+                }
+                if (  $cond->code eq 'infix:<||>'
+                   || $cond->code eq 'infix:<or>'
+                   ) 
+                {
+                    return '(' . to_boolean($cond->{arguments}->[0], $level) . ' || '
+                               . to_boolean($cond->{arguments}->[1], $level) . ')'
+                }
+                if (  $cond->code eq 'prefix:<!>'
+                   || $cond->code eq 'prefix:<not>'
+                   )
+                {
+                    if (@{$cond->{arguments}} == 1) {
+                        return '!' . to_boolean($cond->{arguments}->[0], $level)
+                    }
+                }
+                if (  $cond->code eq 'infix:<eq>' ) {
+                    return       to_native_str($cond->{arguments}->[0], $level) . '.equals('
+                               . to_native_str($cond->{arguments}->[1], $level) . ')'
+                }
+                if (  $cond->code eq 'infix:<ne>' ) {
+                    return '!' . to_native_str($cond->{arguments}->[0], $level) . '.equals('
+                               . to_native_str($cond->{arguments}->[1], $level) . ')'
+                }
+                if (  $cond->code eq 'infix:<le>' ) {
+                    return '(' . to_native_str($cond->{arguments}->[0], $level) . '.compareTo('
+                               . to_native_str($cond->{arguments}->[1], $level) . ') <= 0)'
+                }
+                if (  $cond->code eq 'infix:<ge>' ) {
+                    return '(' . to_native_str($cond->{arguments}->[0], $level) . '.compareTo('
+                               . to_native_str($cond->{arguments}->[1], $level) . ') >= 0)'
+                }
+                if (  $cond->code eq 'infix:<lt>' ) {
+                    return '(' . to_native_str($cond->{arguments}->[0], $level) . '.compareTo('
+                               . to_native_str($cond->{arguments}->[1], $level) . ') < 0)'
+                }
+                if (  $cond->code eq 'infix:<gt>' ) {
+                    return '(' . to_native_str($cond->{arguments}->[0], $level) . '.compareTo('
+                               . to_native_str($cond->{arguments}->[1], $level) . ') > 0)'
+                }
+                if (  $cond->code eq 'defined' ) {
+                    if (@{$cond->{arguments}} == 1) {
+                        my $arg = $cond->{arguments}[0];
+                        if (  ref( $arg ) eq 'Perlito5::AST::Var' 
+                           && $arg->{sigil} eq '$'
+                           )
+                        {
+                            return '!' . $arg->emit_java($level, 'scalar') . '.is_undef()';
+                        }
                     }
                 }
             }
 
-            if  (  ($cond->isa( 'Perlito5::AST::Int' ))
-                || ($cond->isa( 'Perlito5::AST::Num' ))
-                || ($cond->isa( 'Perlito5::AST::Apply' ) && exists $op_to_boolean{ $cond->code })
+            if  (  ($class eq 'Perlito5::AST::Int' )
+                || ($class eq 'Perlito5::AST::Num' )
+                || ($class eq 'Perlito5::AST::Apply'  && exists $op_to_boolean{ $cond->code })
                 )
             {
                 return $cond->emit_java($level, $wantarray) . '.to_boolean()';
