@@ -143,7 +143,7 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
     }
     elsif (substr($ARGV[0], 0, 2) eq '-J') {
         my $java_opt = get_text_from_switch();
-        ($key, $value) = split("=", $java_opt, 2);
+        my ($key, $value) = split("=", $java_opt, 2);
         if (!defined $value) {
             $value = 1;
         }
