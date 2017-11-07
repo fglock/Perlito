@@ -751,28 +751,28 @@ package Perlito5::Java;
                     }
                 }
                 if (  $cond->code eq 'infix:<eq>' ) {
-                    return       to_native_str($cond->{arguments}->[0], $level) . '.equals('
-                               . to_native_str($cond->{arguments}->[1], $level) . ')'
+                    return       to_native_str($cond->{arguments}->[0], $level, 'scalar') . '.equals('
+                               . to_native_str($cond->{arguments}->[1], $level, 'scalar') . ')'
                 }
                 if (  $cond->code eq 'infix:<ne>' ) {
-                    return '!' . to_native_str($cond->{arguments}->[0], $level) . '.equals('
-                               . to_native_str($cond->{arguments}->[1], $level) . ')'
+                    return '!' . to_native_str($cond->{arguments}->[0], $level, 'scalar') . '.equals('
+                               . to_native_str($cond->{arguments}->[1], $level, 'scalar') . ')'
                 }
                 if (  $cond->code eq 'infix:<le>' ) {
-                    return '(' . to_native_str($cond->{arguments}->[0], $level) . '.compareTo('
-                               . to_native_str($cond->{arguments}->[1], $level) . ') <= 0)'
+                    return '(' . to_native_str($cond->{arguments}->[0], $level, 'scalar') . '.compareTo('
+                               . to_native_str($cond->{arguments}->[1], $level, 'scalar') . ') <= 0)'
                 }
                 if (  $cond->code eq 'infix:<ge>' ) {
-                    return '(' . to_native_str($cond->{arguments}->[0], $level) . '.compareTo('
-                               . to_native_str($cond->{arguments}->[1], $level) . ') >= 0)'
+                    return '(' . to_native_str($cond->{arguments}->[0], $level, 'scalar') . '.compareTo('
+                               . to_native_str($cond->{arguments}->[1], $level, 'scalar') . ') >= 0)'
                 }
                 if (  $cond->code eq 'infix:<lt>' ) {
-                    return '(' . to_native_str($cond->{arguments}->[0], $level) . '.compareTo('
-                               . to_native_str($cond->{arguments}->[1], $level) . ') < 0)'
+                    return '(' . to_native_str($cond->{arguments}->[0], $level, 'scalar') . '.compareTo('
+                               . to_native_str($cond->{arguments}->[1], $level, 'scalar') . ') < 0)'
                 }
                 if (  $cond->code eq 'infix:<gt>' ) {
-                    return '(' . to_native_str($cond->{arguments}->[0], $level) . '.compareTo('
-                               . to_native_str($cond->{arguments}->[1], $level) . ') > 0)'
+                    return '(' . to_native_str($cond->{arguments}->[0], $level, 'scalar') . '.compareTo('
+                               . to_native_str($cond->{arguments}->[1], $level, 'scalar') . ') > 0)'
                 }
                 if (  $cond->code eq 'defined' ) {
                     if (@{$cond->{arguments}} == 1) {
