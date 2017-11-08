@@ -371,33 +371,48 @@ if ($backend) {
         if $bootstrapping;
 
     if ( $execute ) { 
-        local $@;
         Perlito5::eval_string( join("; ", @Use) );
-        my $warnings = '';
-        $warnings = "use warnings" if $use_warnings;
-        Perlito5::eval_string( qq{
-            $warnings;
-            Perlito5::set_global_phase("CHECK");
-            \$_->() for \@Perlito5::CHECK_BLOCK;
-            Perlito5::set_global_phase("INIT");
-            eval {
-                \$_->() for \@Perlito5::INIT_BLOCK;
-                1;
-            }
-            or die "\$@\nINIT failed--call queue aborted.\n";
-            Perlito5::set_global_phase("RUN");
-#--START--
-# line 1
-$source
-;\$@ = undef} );
-        my $error = $@;
-        warn $error if $error;
-        Perlito5::set_global_phase("END");
-        $_->() for @Perlito5::END_BLOCK;
-        @Perlito5::END_BLOCK = ();
-        if ( $error ) {
-            exit(255);
+        if ($@) {
+            Perlito5::Compiler::error $@;
         }
+
+        Perlito5::Grammar::Scope::check_variable_declarations();    # reset the scope
+        local @Perlito5::BASE_SCOPE      = (Perlito5::Grammar::Scope->new_base_scope());
+        local $Perlito5::CLOSURE_SCOPE   = 0;    # variables that are in scope in the current closure being compiled
+        local @Perlito5::SCOPE_STMT      = ();
+        local $^H = 0;
+        local %^H = ();
+        warnings->import() if $use_warnings;
+        my $m = Perlito5::Grammar::exp_stmts($source, 0);
+        my $ast = Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($m) );
+        # use Data::Dumper;
+        # print STDERR Dumper $ast;
+
+        Perlito5::set_global_phase("CHECK");
+        $_->() for @Perlito5::CHECK_BLOCK;
+        Perlito5::set_global_phase("INIT");
+        eval {
+            $_->() for @Perlito5::INIT_BLOCK;
+            1;
+        }
+        or die "\$@\nINIT failed--call queue aborted.\n";
+        Perlito5::set_global_phase("RUN");
+
+        my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
+        # print STDERR "result from require: ", Dumper $result;
+        if ($@) {
+            Perlito5::Compiler::error $@;
+        }
+
+        # Note: @Perlito5::END_BLOCK are now handled by the runtime
+        #   my $error = $@;
+        #   warn $error if $error;
+        #   Perlito5::set_global_phase("END");
+        #   $_->() for @Perlito5::END_BLOCK;
+        #   @Perlito5::END_BLOCK = ();
+        #   if ( $error ) {
+        #       exit(255);
+        #   }
     }
     else {
         eval {
