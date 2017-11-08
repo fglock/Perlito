@@ -1776,18 +1776,6 @@ package Perlito5::AST::Block;
             block_label => $self->{label},
             continue    => $self->{continue},
         );
-
-        my $init = "";
-        if ($self->{name} eq 'INIT') {
-            my $tmp  = 'p5pkg.main.' . Perlito5::Java::get_label();
-
-            # INIT-blocks execute only once
-            $init = Perlito5::Java::tab($level + 2) . "if ($tmp) { return }; $tmp = 1;\n";
-
-            # TODO - make this execute before anything else
-
-        }
-
         my @str = $body->emit_java($level + 1, $wantarray);
         if ($Perlito5::THROW) {
             @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str, $wantarray );
