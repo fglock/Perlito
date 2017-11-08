@@ -1560,6 +1560,30 @@ package Perlito5::AST::CompUnit;
         }
 
         my @main;
+
+        if ($options{'expand_use'}) {
+            for my $k (keys %INC) {
+                # serialize %INC
+                push @main, Perlito5::AST::Apply->new(
+                    code => 'infix:<=>',
+                    arguments => [
+                        Perlito5::AST::Lookup->new(
+                            obj => Perlito5::AST::Var->new(
+                                '_decl' => "global",
+                                '_namespace' => "main",
+                                '_real_sigil' => "%",
+                                'name' => "INC",
+                                'namespace' => '',
+                                'sigil' => "\$",
+                            ),
+                            index_exp => Perlito5::AST::Buf->new( buf => $k ),
+                        ),
+                        Perlito5::AST::Buf->new( buf => $INC{$k} ),
+                    ],
+                )->emit_java($level + 1, 'void') . ';';
+            }
+        }
+
         for my $comp_unit ( @$comp_units ) {
             my @str = $comp_unit->emit_java($level + 1, $wantarray);
             $str[-1] .= ";\n" if @str && !ref($str[-1]);

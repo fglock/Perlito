@@ -17,21 +17,21 @@ use warnings;
 # precompile some extra modules
 use Data::Dumper ();
 use Exporter ();
-# use Symbol ();
+use Symbol ();
 use utf8 ();
 use integer ();
-%INC = (
-    'Dumper.pm'     => 'src5/lib/Perlito5X/Dumper.pm',
-    'Encode.pm'     => 'src5/lib/Perlito5X/Encode.pm',
-    'Exporter.pm'   => 'src5/lib/Perlito5X/Exporter.pm',
-  # 'Symbol.pm'     => 'src5/lib/Perlito5X/Symbol.pm',
-    'Time/HiRes.pm' => 'src5/lib/Perlito5X/Time/HiRes.pm',
-    'strict.pm'     => 'src5/lib/Perlito5X/strict.pm',
-    'warnings.pm'   => 'src5/lib/Perlito5X/warnings.pm',
-    'feature.pm'    => 'src5/lib/Perlito5X/feature.pm',
-    'utf8.pm'       => 'src5/lib/Perlito5X/utf8.pm',
-    'integer.pm'    => 'src5/lib/Perlito5X/integer.pm',
-);
+# %INC = (
+#     'Data/Dumper.pm'=> 'src5/lib/Perlito5X/Data/Dumper.pm',
+#     'Encode.pm'     => 'src5/lib/Perlito5X/Encode.pm',
+#     'Exporter.pm'   => 'src5/lib/Perlito5X/Exporter.pm',
+#     'Symbol.pm'     => 'src5/lib/Perlito5X/Symbol.pm',
+#     'Time/HiRes.pm' => 'src5/lib/Perlito5X/Time/HiRes.pm',
+#     'strict.pm'     => 'src5/lib/Perlito5X/strict.pm',
+#     'warnings.pm'   => 'src5/lib/Perlito5X/warnings.pm',
+#     'feature.pm'    => 'src5/lib/Perlito5X/feature.pm',
+#     'utf8.pm'       => 'src5/lib/Perlito5X/utf8.pm',
+#     'integer.pm'    => 'src5/lib/Perlito5X/integer.pm',
+# );
 
 my $_V5_COMPILER_NAME    = Perlito5::Compiler::compiler_name();
 my $_V5_COMPILER_VERSION = $Perlito5::VERSION;

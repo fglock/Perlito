@@ -231,8 +231,22 @@ sub emit_globals_after_BEGIN {
     delete $scope->{'@main::_'};
     local $_;   # not sure about keeping $_
 
-    for my $v ( '$main::0', '$main::a', '$main::b', '$main::_' ) {
-        # inject special variables like $0 (script name) in the scope, if it is not there already
+    my @dump_these = (
+        '$main::0',
+        '$main::a',
+        '$main::b',
+        '$main::_',
+        '%main::INC',
+        '@Perlito5::END_BLOCK',       # __END__ blocks
+        '@Perlito5::INIT_BLOCK',      # __INIT__ blocks
+        '%Perlito5::DATA_SECTION',    # __DATA__ contents
+    );
+    for my $pkg (keys %{$Perlito5::PACKAGES}) {;
+        push @dump_these, '@' . $pkg . "::ISA";     # dump @ISA
+    }
+    for my $v ( @dump_these ) {
+        # inject global variable in the scope, if it is not there already
+        no strict 'refs';
         my ($sigil, $namespace, $name) = $v =~ /^([$@%])(\w+)::(.*)$/;
         $scope->{$v} //= {
             'ast' => Perlito5::AST::Var->new(
@@ -241,64 +255,23 @@ sub emit_globals_after_BEGIN {
                 '_decl'     => 'global',
                 'namespace' => $namespace,
             ),
+            value => (
+                  $sigil eq '$' ? \${ $namespace . "::" . $name }
+                : $sigil eq '@' ? \@{ $namespace . "::" . $name }
+                : $sigil eq '%' ? \%{ $namespace . "::" . $name }
+                : undef
+            ),
         };
     }
 
-    for my $pkg (keys %{$Perlito5::PACKAGES}) {;
-        # dump @ISA
-        no strict 'refs';
-        if (@{ $pkg . "::ISA" }) {
-            $scope->{ '@' . $pkg . "::ISA" } //= {
-                'ast' => Perlito5::AST::Var->new(
-                    'name'      => "ISA",
-                    'sigil'     => '@',
-                    '_decl'     => 'global',
-                    'namespace' => $pkg,
-                ),
-                value => \@{ $pkg . "::ISA" },
-            };
-        }
-        # # TODO - look for imported subroutines
-        # for my $glob (%{ $pkg . "::" }) {
-        #     my $name = *{$glob}{NAME};
-        #     if (defined &{ $pkg . '::' . $name }) {
-        #         warn "sub $pkg :: " . $name . "\n";
-        #     }
-        # }
-    }
+    # # TODO - look for imported subroutines
+    # for my $glob (%{ $pkg . "::" }) {
+    #     my $name = *{$glob}{NAME};
+    #     if (defined &{ $pkg . '::' . $name }) {
+    #         warn "sub $pkg :: " . $name . "\n";
+    #     }
+    # }
 
-    # dump __END__ blocks
-    $scope->{'@Perlito5::END_BLOCK'} //= {
-        'ast' => Perlito5::AST::Var->new(
-            'namespace' => 'Perlito5',
-            'name'      => 'END_BLOCK',
-            'sigil'     => '@',
-            '_decl'     => 'global',
-        ),
-        value => \@Perlito5::END_BLOCK,
-    };
-
-    # dump __INIT__ blocks
-    $scope->{'@Perlito5::INIT_BLOCK'} //= {
-        'ast' => Perlito5::AST::Var->new(
-            'namespace' => 'Perlito5',
-            'name'      => 'INIT_BLOCK',
-            'sigil'     => '@',
-            '_decl'     => 'global',
-        ),
-        value => \@Perlito5::INIT_BLOCK,
-    };
-
-    # dump __DATA__ contents
-    $scope->{'%Perlito5::DATA_SECTION'} //= {
-        'ast' => Perlito5::AST::Var->new(
-            'namespace' => 'Perlito5',
-            'name'      => 'DATA_SECTION',
-            'sigil'     => '%',
-            '_decl'     => 'global',
-        ),
-        value => \%Perlito5::DATA_SECTION,
-    };
 
     for my $id (keys %Perlito5::BEGIN_SCRATCHPAD) {
         # BEGIN side-effects
