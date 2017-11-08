@@ -34,7 +34,7 @@ use Perlito5::Perl6::PrettyPrinter;
 
 # use Perlito5::XS::Emitter;      # experimental
 
-use Perlito5::Java::Emitter;
+use Perlito5::Java;
 use Perlito5::Java::Runtime;
 use Perlito5::Java::Lib;
 

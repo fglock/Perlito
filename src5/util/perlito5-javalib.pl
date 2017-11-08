@@ -4,7 +4,7 @@ use warnings;
 
 use Perlito5;
 use Perlito5::Compiler;
-use Perlito5::Java::Emitter;
+use Perlito5::Java;
 use Perlito5::Java::Runtime;
 use Perlito5::Java::Lib;
 
