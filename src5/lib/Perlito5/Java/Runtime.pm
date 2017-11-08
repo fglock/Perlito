@@ -2534,7 +2534,7 @@ class PlV {
 
 }
 class PlObject implements Cloneable {
-    public static final PlString REF = new PlString("");
+    public static final PlStringConstant REF = new PlStringConstant("");
 
     public PlObject() {
     }
@@ -3327,7 +3327,7 @@ EOT
     , <<'EOT'
 }
 class PlReference extends PlObject {
-    public static final PlString REF = new PlString("REF");
+    public static final PlStringConstant REF = new PlStringConstant("REF");
     public PlClass bless;
 
     public boolean is_ref() {
@@ -3432,7 +3432,7 @@ EOT
     , <<'EOT'
 }
 class PlGlobRef extends PlReference {
-    public static final PlString REF = new PlString("GLOB");
+    public static final PlStringConstant REF = new PlStringConstant("GLOB");
     public PlFileHandle filehandle;
 
     public PlGlobRef(PlFileHandle filehandle) {
@@ -3509,7 +3509,7 @@ class PlStringReader extends Reader{
 }
 
 class PlFileHandle extends PlObject {
-    // public static final PlString REF = new PlString("GLOB");
+    // public static final PlStringConstant REF = new PlStringConstant("GLOB");
     public String  typeglob_name;
     public OutputStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
@@ -3621,7 +3621,7 @@ class PlRegex extends PlReference {
     public String  original_string;
     // public Matcher m;
     public boolean flag_xx;
-    public static final PlString REF = new PlString("Regexp");
+    public static final PlStringConstant REF = new PlStringConstant("Regexp");
 
     public PlRegex(String p, int flags, boolean flag_xx) {
         this.flag_xx = flag_xx;
@@ -3710,7 +3710,7 @@ class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
     public PlObject prototype;   // '$$$'
     public String pkg_name;      // 'main'
-    public static final PlString REF = new PlString("CODE");
+    public static final PlStringConstant REF = new PlStringConstant("CODE");
     public PlClosure currentSub;
     public boolean is_defined;
     // metadata for caller()
@@ -3820,7 +3820,7 @@ class PlClosure extends PlReference implements Runnable {
 }
 class PlLvalueRef extends PlReference {
     private PlObject o;
-    public static final PlString REF = new PlString("SCALAR");
+    public static final PlStringConstant REF = new PlStringConstant("SCALAR");
     public static final PlString REF_REF = new PlString("REF");
 
     public PlString ref() {
@@ -3865,7 +3865,7 @@ class PlLvalueRef extends PlReference {
     }
 }
 class PlArrayRef extends PlReference {
-    public static final PlString REF = new PlString("ARRAY");
+    public static final PlStringConstant REF = new PlStringConstant("ARRAY");
     public PlArray ar;
 
     public PlArrayRef() {
@@ -3960,7 +3960,7 @@ class PlArrayRef extends PlReference {
 }
 
 class PlHashRef extends PlReference {
-    public static final PlString REF = new PlString("HASH");
+    public static final PlStringConstant REF = new PlStringConstant("HASH");
     public PlHash ha;
 
     public PlHashRef() {
@@ -7729,7 +7729,7 @@ EOT
                     my $java_native_to_perl = $class->{java_native_to_perl};
                     $class->{import} || $class->{extends} || $class->{implements} ? 
 "class ${java_native_to_perl} extends PlReference {
-    public static final PlString REF = new PlString(\"${perl_package}\");
+    public static final PlStringConstant REF = new PlStringConstant(\"${perl_package}\");
     private ${java_class_name} stuff;
 
     public ${java_native_to_perl}(${java_class_name} stuff) {
