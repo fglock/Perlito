@@ -371,33 +371,50 @@ if ($backend) {
         if $bootstrapping;
 
     if ( $execute ) { 
-        local $@;
         Perlito5::eval_string( join("; ", @Use) );
-        my $warnings = '';
-        $warnings = "use warnings" if $use_warnings;
-        Perlito5::eval_string( qq{
-            $warnings;
-            Perlito5::set_global_phase("CHECK");
-            \$_->() for \@Perlito5::CHECK_BLOCK;
-            Perlito5::set_global_phase("INIT");
-            eval {
-                \$_->() for \@Perlito5::INIT_BLOCK;
-                1;
-            }
-            or die "\$@\nINIT failed--call queue aborted.\n";
-            Perlito5::set_global_phase("RUN");
-#--START--
-# line 1
-$source
-;\$@ = undef} );
+        if ($@) {
+            Perlito5::Compiler::error $@;
+        }
+
+        @Perlito5::COMP_UNIT = ();
+        @Perlito5::BASE_SCOPE      = (Perlito5::Grammar::Scope->new_base_scope());
+        $Perlito5::CLOSURE_SCOPE   = 0;    # variables that are in scope in the current closure being compiled
+        @Perlito5::SCOPE_STMT      = ();
+        $^H = 0;
+        %^H = ();
+
+        warnings->import() if $use_warnings;
+
+        my $m = Perlito5::Grammar::exp_stmts($source, 0);
+        my $ast = Perlito5::AST::Block->new(
+            stmts => [
+                @{ Perlito5::Match::flat($m) },
+                Perlito5::AST::Apply->new(
+                    code => 'exit',
+                    arguments => [ Perlito5::AST::Int->new( int => 0 ) ],
+                ),
+            ],
+        );
+        # use Data::Dumper;
+        # print STDERR Dumper $ast;
+        Perlito5::set_global_phase("CHECK");
+        $_->() for @Perlito5::CHECK_BLOCK;
+        Perlito5::set_global_phase("INIT");
+        eval {
+            $_->() for @Perlito5::INIT_BLOCK;
+            1;
+        }
+        or die "\$@\nINIT failed--call queue aborted.\n";
+        Perlito5::set_global_phase("RUN");
+        Perlito5::eval_ast($ast);
+
         my $error = $@;
         warn $error if $error;
-        Perlito5::set_global_phase("END");
-        $_->() for @Perlito5::END_BLOCK;
-        @Perlito5::END_BLOCK = ();
         if ( $error ) {
             exit(255);
         }
+        exit(0);
+
     }
     else {
         eval {

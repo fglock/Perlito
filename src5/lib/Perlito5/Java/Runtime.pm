@@ -73,6 +73,9 @@ sub eval_ast {
 
     # warn "AST:\n" . Data::Dumper::Dumper($ast);
 
+    # use lexicals from BEGIN scratchpad
+    $ast = $ast->emit_begin_scratchpad();
+
     my $java_code = $ast->emit_java(0, $want);
     # say STDERR "java-source: [" . $java_code . "]";
     Perlito5::set_global_phase("UNITCHECK");
