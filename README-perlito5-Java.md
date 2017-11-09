@@ -1384,6 +1384,17 @@ See also:
     - uses JRegex: http://jregex.sourceforge.net/
 
 
+Storable
+-------
+
+See:
+
+  - Storable for python
+    - https://github.com/CowboyTim/python-storable
+
+  - related, pure perl module
+    - http://search.cpan.org/~ilyaz/FreezeThaw-0.5001/
+
 Threads
 -------
 
