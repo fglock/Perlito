@@ -327,23 +327,6 @@ Parser
   Missing right curly or square bracket at -e line 1, within string
   ```
 
-- `__DATA__` and `__END__` can be anywhere in the line
-
-  ```sh
-  $ perl -e 'print 123 __END__ x xx + '
-  123
-
-  $ perl -e 'print 123 + __END__ x xx + '
-  syntax error at -e line 1, at EOF
-  ```
-
-  however:
-
-  ```sh
-  $ perl -e ' @ __END__ = (123); print @ __END__ ;'
-  123
-  ```
-
 - error messages depend on eval context
 
   ```sh
@@ -703,6 +686,23 @@ Add tests for fixed bugs
 
 - add tests for CORE::GLOBAL namespace
 
+- `__DATA__` and `__END__` can be anywhere in the line
+
+  ```sh
+  $ perl -e 'print 123 __END__ x xx + '
+  123
+
+  $ perl -e 'print 123 + __END__ x xx + '
+  syntax error at -e line 1, at EOF
+  ```
+
+  however:
+
+  ```sh
+  $ perl -e ' @ __END__ = (123); print @ __END__ ;'
+  123
+  ```
+
 
 Perl6 backend
 -------------
@@ -805,7 +805,6 @@ Nice to Have
 
 - debugging symbols
 - line numbers in error messages
-- `__LINE__` is off-by-one
 
 - caller()
 - "when"
