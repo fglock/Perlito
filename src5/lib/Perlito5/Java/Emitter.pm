@@ -1409,12 +1409,14 @@ package Perlito5::AST::Call;
                     # __SUB__->()
                     $invocant = 'this.getCurrentSub()';     # "this" is the closure
                 }
-                # x->()
-                my $fullname = $self->{invocant}{namespace};
-                if ($fullname !~ /::/) {
-                    $fullname = $Perlito5::PKG_NAME . '::' . $fullname;
+                else {
+                    # x->()
+                    my $fullname = $self->{invocant}{namespace};
+                    if ($fullname !~ /::/) {
+                        $fullname = $Perlito5::PKG_NAME . '::' . $fullname;
+                    }
+                    $invocant = Perlito5::AST::Buf->new( buf => $fullname )->emit_java($level, 'scalar');
                 }
-                $invocant = Perlito5::AST::Buf->new( buf => $fullname )->emit_java($level, 'scalar');
             }
             elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Int' ) {
                 # 4->()
