@@ -65,6 +65,13 @@ token term_qr_quote {
         }
 };
 
+our $unicode_table;     # unicore/UnicodeData.txt
+sub get_unicode_table {
+    $unicode_table = Perlito5::Grammar::Use::slurp_file("unicore/UnicodeData.txt")
+        if !$unicode_table;
+    return $unicode_table;
+}
+
 my %pair = (
     '{' => '}',
     '(' => ')',
@@ -955,7 +962,20 @@ sub double_quoted_unescape {
             }
             else {
                 #  \N{name}    named Unicode character
-                Perlito5::Compiler::error "TODO - \\N{charname} not implemented; requires 'use charnames'";
+                my $p = $pos+3;
+                $p++
+                    while $p < @$str && $str->[$p] ne '}';
+                my $name = join("", @{$str}[ $pos+3 .. $p - 1 ]);
+                my ($hex_code) = get_unicode_table() =~ /\n([0-9A-Z]+);$name;/;
+                Perlito5::Compiler::error "Unknown charname '$name'"
+                    if !$hex_code;
+                my $tmp = oct( "0x" . $hex_code );
+                $m = {
+                    str => $str,
+                    from => $pos,
+                    to => $p + 1,
+                    capture => Perlito5::AST::Buf->new( buf => chr($tmp) ),
+                };
             }
         }
     }

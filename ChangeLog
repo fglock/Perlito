@@ -40,7 +40,7 @@
 -- decode source code "magic number" for UTF-8, UTF-16LE, UTF-16BE
 -- "hexfloat" literals
 -- new operators '|.', '|.=', '&.', '&.=', '^.', '^.=', '~.'
--- "\N{U+263D}" string escape sequence
+-- "\N{U+263D}", "\N{YIN YANG}" string escape sequence
 
 - Java:
 -- fix $^O, returns the the operating system name
