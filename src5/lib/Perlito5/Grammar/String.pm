@@ -937,9 +937,27 @@ sub double_quoted_unescape {
         };
     }
     elsif ( $c2 eq 'N' ) {
-        #  \N{name}    named Unicode character
-        #  \N{U+263D}  Unicode character     (example: FIRST QUARTER MOON)
-        Perlito5::Compiler::error "TODO - \\N{charname} not implemented; requires 'use charnames'";
+        if ($str->[$pos+2] eq '{') {
+            if ($str->[$pos+3] eq 'U' && $str->[$pos+4] eq '+') {
+                #  \N{U+263D}  Unicode character
+                my $p = $pos+5;
+                $p++
+                    while $p < @$str && $str->[$p] ne '}';
+                my $hex_code = join("", @{$str}[ $pos+5 .. $p - 1 ]);
+                $hex_code = "0" unless $hex_code;
+                my $tmp = oct( "0x" . $hex_code );
+                $m = {
+                    str => $str,
+                    from => $pos,
+                    to => $p + 1,
+                    capture => Perlito5::AST::Buf->new( buf => chr($tmp) ),
+                };
+            }
+            else {
+                #  \N{name}    named Unicode character
+                Perlito5::Compiler::error "TODO - \\N{charname} not implemented; requires 'use charnames'";
+            }
+        }
     }
     else {
         $m = {
