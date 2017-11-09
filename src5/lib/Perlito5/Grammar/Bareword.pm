@@ -92,6 +92,10 @@ sub term_bareword {
              )
            )
     {
+        if ( $name eq '__END__' || $name eq '__DATA__' ) {
+            return Perlito5::Grammar::Space::term_end(@_);
+        }
+
         # first term is a subroutine name;
         $is_subroutine_name = 1;
 

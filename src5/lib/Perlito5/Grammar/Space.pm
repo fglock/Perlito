@@ -46,12 +46,6 @@ sub term_space {
     while ( $p <= @$str && $space{ $str->[$p] }) {
         $p = $space{ $str->[$p] }->($str, $p+1)
     }
-    if ( $str->[$p] eq '_' ) {
-        my $s = join( "", @{$str}[ $p .. $p + 6 ] );
-        return term_end( $str, $p )
-            if $s eq '__END__'
-            || $s . $str->[$p+7] eq '__DATA__';
-    }
     return { str => $str, from => $pos, to => $p, capture => [ 'space',   ' ' ] }
 }
 
@@ -100,6 +94,12 @@ sub term_end {
     return { str => $str, from => $_[1], to => scalar(@$str), capture => [ 'space',   ' ' ] }
 }
 
+sub stmt_end {
+    my $ret = term_end(@_);
+    $ret->{capture} = undef;
+    return $ret;
+}
+
 Perlito5::Grammar::Precedence::add_term( '#'        => \&term_space );
 Perlito5::Grammar::Precedence::add_term( chr(9)     => \&term_space );
 Perlito5::Grammar::Precedence::add_term( chr(10)    => \&term_space );
@@ -109,6 +109,8 @@ Perlito5::Grammar::Precedence::add_term( chr(32)    => \&term_space );
 Perlito5::Grammar::Precedence::add_term( '__END__'  => \&term_end );
 Perlito5::Grammar::Precedence::add_term( '__DATA__' => \&term_end );
 
+Perlito5::Grammar::Statement::add_statement( '__END__'  => \&stmt_end );
+Perlito5::Grammar::Statement::add_statement( '__DATA__'  => \&stmt_end );
 
 token to_eol {
     [ <!before [ \c10 | \c13 ]> . ]*
@@ -170,12 +172,6 @@ sub ws {
     while ( $p <= @$str && $space{ $str->[$p] }) {
         $p = $space{ $str->[$p] }->($str, $p+1)
     }
-    if ( $str->[$p] eq '_' ) {
-        my $s = join( "", @{$str}[ $p .. $p + 6 ] );
-        return term_end( $str, $p )
-            if $s eq '__END__'
-            || $s . $str->[$p+7] eq '__DATA__';
-    }
     if ($p == $pos) {
         return;
     }
@@ -190,12 +186,6 @@ sub opt_ws {
     # print STDERR "$pos: $Perlito5::FILE_NAME $Perlito5::LINE_NUMBER\n";
     while ( $p <= @$str && $space{ $str->[$p] }) {
         $p = $space{ $str->[$p] }->($str, $p+1)
-    }
-    if ( $str->[$p] eq '_' ) {
-        my $s = join( "", @{$str}[ $p .. $p + 6 ] );
-        return term_end( $_[0], $p )
-            if $s eq '__END__'
-            || $s . $str->[$p+7] eq '__DATA__';
     }
     return { str => $_[0], from => $pos, to => $p }
 }

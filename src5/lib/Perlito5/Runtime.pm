@@ -814,6 +814,8 @@ our $CORE_PROTO = {
     'CORE::__FILE__'         => '',
     'CORE::__LINE__'         => '',
     'CORE::__PACKAGE__'      => '',
+    'CORE::__END__'          => undef,
+    'CORE::__DATA__'         => undef,
 };
 
 # this is the routine executed by statements like 'require 5.20' and 'use v5.20'
