@@ -1099,6 +1099,7 @@ package Perlito5::AST::Var;
         }
         if ( $sigil eq '::' ) {
             return Perlito5::Java::escape_string( $namespace );
+            # return Perlito5::AST::Buf->new( buf => $namespace )->emit_java($level, 'scalar');
         }
 
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
@@ -1403,16 +1404,24 @@ package Perlito5::AST::Call;
             # $x->()
             my $invocant;
 
-            if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
-               && $self->{invocant}{sigil} eq '::'
-               && ( $self->{invocant}{namespace} eq '__SUB__'
-                  || $self->{invocant}{namespace} eq 'CORE::__SUB__' )
-               )
-            {
-                # __SUB__->()
-                $invocant = 'this.getCurrentSub()';     # "this" is the closure
+            if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' && $self->{invocant}{sigil} eq '::' ) {
+                if ( $self->{invocant}{namespace} eq '__SUB__' || $self->{invocant}{namespace} eq 'CORE::__SUB__' ) {
+                    # __SUB__->()
+                    $invocant = 'this.getCurrentSub()';     # "this" is the closure
+                }
+                # x->()
+                my $fullname = $self->{invocant}{namespace};
+                if ($fullname !~ /::/) {
+                    $fullname = $Perlito5::PKG_NAME . '::' . $fullname;
+                }
+                $invocant = Perlito5::AST::Buf->new( buf => $fullname )->emit_java($level, 'scalar');
+            }
+            elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Int' ) {
+                # 4->()
+                $invocant = Perlito5::AST::Buf->new( buf => $Perlito5::PKG_NAME . '::' . $self->{invocant}{int} )->emit_java($level, 'scalar');
             }
             else {
+                # $x->()
                 $invocant = $self->{invocant}->emit_java($level, 'scalar');
             }
 
