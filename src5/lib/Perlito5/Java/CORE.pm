@@ -2154,11 +2154,14 @@ EOT
             }
         }
 
-        PlObject plCoderef;
+        PlObject plCoderef = codeRef.aget(item);
+        PlObject plCallerCoderef = codeRef.aget(item + 1);
         PlObject packageName = PlCx.UNDEF;
-        plCoderef = codeRef.aget(item + 1);
-        if (plCoderef.is_coderef()) {
-            packageName = new PlString(((PlClosure)plCoderef).pkg_name);
+        if (plCallerCoderef.is_coderef()) {
+            packageName = new PlString(((PlClosure)plCallerCoderef).pkg_name);
+        }
+        else if (plCoderef.is_coderef()) {
+            packageName = new PlString("main");
         }
 
         if (wantarray != PlCx.LIST) {
@@ -2167,7 +2170,6 @@ EOT
         }
 
         PlObject plFullName = callerName.aget(item);    // "subroutine" comes from the current level
-        plCoderef = codeRef.aget(item);
         PlObject lineNumber = PlCx.UNDEF;
         String fileName = "";
         if (plCoderef.is_coderef()) {
