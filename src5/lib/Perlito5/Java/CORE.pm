@@ -2121,6 +2121,7 @@ EOT
                 // TODO - this code doesn't account for package name changes inside a sub
                 // TODO - this code skips anonymous subroutines
                 // this loop does a symbol table scan - PlV.cvar
+              SCAN_SUBNAME:
                 for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
                     PlObject value = PlV.cget_no_autoload(perlSubName.toString());
                     if (value.is_lvalue()) {
@@ -2142,6 +2143,7 @@ EOT
                             // PlCORE.say("\tPerl sub &" + perlSubName.toString());
                             callerName.push(perlSubName);
                             codeRef.push(value);
+                            break SCAN_SUBNAME;
                         }
                     }
                 }
