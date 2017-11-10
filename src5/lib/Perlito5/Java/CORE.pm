@@ -2120,6 +2120,9 @@ EOT
                 // TODO - this code doesn't account for inner-subs - it might match an outer sub instead
                 // TODO - this code doesn't account for package name changes inside a sub
                 // TODO - this code skips anonymous subroutines
+                // TODO - the "perlSubName" resoltution is ambiguous,
+                //        because a sub can be exported to several namespaces:
+                //        Exporter::import and MyClass::import can point to the same Java code
                 // this loop does a symbol table scan - PlV.cvar
               SCAN_SUBNAME:
                 for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
