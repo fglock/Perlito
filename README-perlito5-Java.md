@@ -168,13 +168,10 @@ Perlito5-Java work-in-progress
       - `$SIG{__WARN__}` and `$SIG{__DIE__}` are implemented
       - other signals are not yet implemented.
 
-  - no Unix pipes
-      - named pipes are possible using C and JNI
-      - See: https://github.com/jnr/jnr-posix
-
   - object system is partially implemented
       - method resolution order is not selectable
       - interaction between inheritance and overloading need more tests
+      - interaction between "local" and method cache more tests
 
   - tied variables are partially implemented
       - DESTROY not used, because we use Java memory management
@@ -195,11 +192,11 @@ Perlito5-Java work-in-progress
   - file handles are partially implemented
       - open scalarref works
       - `<DATA>` works
-      - open binary mode vs. open utf8 needs more work
+      - open binary mode vs. open utf8 needs more tests
       - files don't `auto-close`
 
   - `tr()` is partially implemented
-      - pre-expand escape sequences needs some work
+      - modifier switches needs some tests
 
   - subroutines
       - `my sub x {...}` not implemented
@@ -216,10 +213,11 @@ Perlito5-Java work-in-progress
       - sprintf()
       - pack()
       - unpack()
-
-  - not implemented CORE functions
       - format()
       - UNIX-specific operators
+      - no Unix pipes
+        - named pipes are possible using C and JNI
+      - See: https://github.com/jnr
       - See: https://github.com/jnr/jnr-posix
 
   - clone() is work-in-progress
