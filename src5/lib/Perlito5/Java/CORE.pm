@@ -710,7 +710,7 @@ EOT
                 PerlOp.cleanup_local(tmp, PlCx.UNDEF);
             }
             else {
-                String s = List__.toString() + "\n";
+                String s = List__.toString();
                 byte[] bytes = s.getBytes(PlV.STDERR.charset);
                 PlV.STDERR.outputStream.write(bytes);
                 PlV.STDERR.outputStream.flush();
