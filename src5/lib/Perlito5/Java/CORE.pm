@@ -2083,11 +2083,11 @@ EOT
         boolean argDefined = !arg.is_undef();
         int item = arg.to_int();
 
-        PlArray caller = PlV.array_get("Perlito5::CALLER");
-        if (caller.length_of_array().to_boolean()) {
+        PlArray callerName = PlV.array_get("Perlito5::CALLER");
+        if (callerName.length_of_array().to_boolean()) {
             // maybe we are inside an import() subroutine
 
-            PlObject arr = caller.aget(0);  // XXX this should be "item"
+            PlObject arr = callerName.aget(0);  // XXX this should be "item"
                                             // XXX FIXME TODO - workaround for "export to level"
             if (arr.is_arrayref()) {
                 if (wantarray == PlCx.LIST) {
@@ -2103,8 +2103,8 @@ EOT
         // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
         // The last element of the array represents the bottom of the stack,
         // which is the least recent method invocation in the sequence.
-        caller = new PlArray();
-        PlArray coderef = new PlArray();
+        callerName = new PlArray();
+        PlArray codeRef = new PlArray();
         Thread t = Thread.currentThread();
         StackTraceElement[] stackTraceElements = t.getStackTrace();
         for (StackTraceElement elem : stackTraceElements) {
@@ -2122,8 +2122,7 @@ EOT
                 // TODO - this code skips anonymous subroutines
                 // this loop does a symbol table scan - PlV.cvar
                 for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
-                    fullName = perlSubName.toString();
-                    PlObject value = PlV.cget_no_autoload(fullName);
+                    PlObject value = PlV.cget_no_autoload(perlSubName.toString());
                     if (value.is_lvalue()) {
                         value = value.get();
                     }
@@ -2134,9 +2133,15 @@ EOT
                              elem.getLineNumber() > code.firstLineNumber() &&
                              elem.getLineNumber() < code.lastLineNumber()
                         ) {
-                            // PlCORE.say(" Perl sub &" + fullName);
-                            caller.push(perlSubName);
-                            coderef.push(value);
+                            // PlCORE.say(
+                            //     elem.getClassName()  + " \t" +
+                            //     elem.getMethodName() + " \t" +
+                            //     elem.getFileName()   + " \t" +
+                            //     elem.getLineNumber()
+                            // );
+                            // PlCORE.say("\tPerl sub &" + perlSubName.toString());
+                            callerName.push(perlSubName);
+                            codeRef.push(value);
                         }
                     }
                 }
@@ -2145,7 +2150,7 @@ EOT
 
         PlObject plCoderef;
         PlObject packageName = PlCx.UNDEF;
-        plCoderef = coderef.aget(item + 1);
+        plCoderef = codeRef.aget(item + 1);
         if (plCoderef.is_coderef()) {
             String pkg_name = ((PlClosure)plCoderef).pkg_name;
             if (! pkg_name.equals("Perlito5::Java::Runtime") ) {
@@ -2158,8 +2163,8 @@ EOT
             return packageName;
         }
 
-        PlObject plFullName = caller.aget(item);    // "subroutine" comes from the current level
-        plCoderef = coderef.aget(item);
+        PlObject plFullName = callerName.aget(item);    // "subroutine" comes from the current level
+        plCoderef = codeRef.aget(item);
         PlObject lineNumber = PlCx.UNDEF;
         String fileName = "";
         if (plCoderef.is_coderef()) {
