@@ -2135,7 +2135,8 @@ EOT
                         if ( code.javaClassName() != null &&
                              elem.getClassName().equals(code.javaClassName()) &&
                              elem.getLineNumber() > code.firstLineNumber() &&
-                             elem.getLineNumber() < code.lastLineNumber()
+                             elem.getLineNumber() < code.lastLineNumber() &&
+                             !code.pkg_name.startsWith("Perlito5::")
                         ) {
                             // PlCORE.say(
                             //     elem.getClassName()  + " \t" +
@@ -2157,10 +2158,7 @@ EOT
         PlObject packageName = PlCx.UNDEF;
         plCoderef = codeRef.aget(item + 1);
         if (plCoderef.is_coderef()) {
-            String pkg_name = ((PlClosure)plCoderef).pkg_name;
-            if (! pkg_name.equals("Perlito5::Java::Runtime") ) {
-                packageName = new PlString(pkg_name);
-            }
+            packageName = new PlString(((PlClosure)plCoderef).pkg_name);
         }
 
         if (wantarray != PlCx.LIST) {
