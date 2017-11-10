@@ -20,7 +20,7 @@
 -- use $^H and %^H
 -- set Perl version to 5.026
 -- add core modules:
-    Benchmark
+	Benchmark, Memoize
 	DirHandle, File::Spec, File::Basename,
 	Text::Abbrev, Text::ParseWords
 	Time::Local, Time::localtime, Time::gmtime
@@ -30,7 +30,7 @@
 	FindBin
 	IO, IO::Handle, IO::Seekable, IO::File,
 	Class::Struct, Perl::OSType
-    integer, if, parent, subs
+	integer, if, parent, subs
 -- syntax fixes for hash vs. block, and ${var->{index}}
 -- CORE:: prefix (CORE::print, CORE::tr)
 -- CORE::GLOBAL special namespace

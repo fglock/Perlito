@@ -41,18 +41,6 @@ my %IS_CACHE_TAG = map {($_ => 1)} @CONTEXT_TAGS;
 
 my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File NDBM_File);
 
-
-sub show_caller {
-    my $v = caller();
-    my $vv = join( " - ", caller() );
-    warn "show_caller  [ $v ] [ $vv ] ", defined($v);
-    for (0..3) {
-        my $v = caller($_);
-        my $vv = join( " - ", caller($_) );
-        warn "    $_ [ $v ] [ $vv ] ", defined($v), "\n";
-    }
-}
-
 sub memoize {
   my $fn = shift;
   my %options = @_;
@@ -63,10 +51,7 @@ sub memoize {
     croak "Usage: memoize 'functionname'|coderef {OPTIONS}";
   }
 
-    show_caller();
-
   my $uppack = caller;		# TCL me Elmo!
-
   my $cref;			# Code reference to original function
   my $name = (ref $fn ? undef : $fn);
 
