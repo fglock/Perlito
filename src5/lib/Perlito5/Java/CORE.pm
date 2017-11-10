@@ -1101,6 +1101,19 @@ EOT
                                 scanning = false;
                                 offset++;
                                 break;
+                            case 'v':
+                                // TODO - format value like "v1.v2.v3"
+                                // replace "%v" with "%s"
+                                StringBuilder sbv = new StringBuilder();
+                                if (offset > 0) {
+                                    sbv.append(format.substring(0, offset));
+                                }
+                                sbv.append("s");
+                                if (offset + 1 < format.length()) {
+                                    sbv.append(format.substring(offset + 1));
+                                }
+                                format = sbv.toString();
+                                break;
                             case 'c': case 's': case 'd': case 'u': case 'o':
                             case 'x': case 'e': case 'f': case 'g':
                             case 'X': case 'E': case 'G': case 'b':
