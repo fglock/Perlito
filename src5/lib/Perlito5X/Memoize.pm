@@ -44,10 +44,12 @@ my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File NDBM_
 
 sub show_caller {
     my $v = caller();
-    warn "show_caller  [ $v ]";
+    my $vv = join( " - ", caller() );
+    warn "show_caller  [ $v ] [ $vv ] ", defined($v);
     for (0..3) {
         my $v = caller($_);
-        warn "    $_ [ $v ]\n";
+        my $vv = join( " - ", caller($_) );
+        warn "    $_ [ $v ] [ $vv ] ", defined($v), "\n";
     }
 }
 

@@ -2147,24 +2147,16 @@ EOT
         PlObject packageName = PlCx.UNDEF;
         plCoderef = coderef.aget(item + 1);
         if (plCoderef.is_coderef()) {
-            packageName = new PlString(((PlClosure)plCoderef).pkg_name);
+            String pkg_name = ((PlClosure)plCoderef).pkg_name;
+            if (! pkg_name.equals("Perlito5::Java::Runtime") ) {
+                packageName = new PlString(pkg_name);
+            }
         }
 
         if (wantarray != PlCx.LIST) {
 			// caller() in scalar or void context
             return packageName;
         }
-
-        // PlObject plFullName = caller.aget(item + 1);    // "package" comes from the next level
-        // fullName = plFullName.toString();
-        // int pos = fullName.lastIndexOf("::");
-        // if (pos != -1) {
-        //     packageName = new PlString(fullName.substring(0, pos));
-        // }
-        // if (wantarray != PlCx.LIST) {
-		// 	// caller() in scalar or void context
-        //     return packageName;
-        // }
 
         PlObject plFullName = caller.aget(item);    // "subroutine" comes from the current level
         plCoderef = coderef.aget(item);
