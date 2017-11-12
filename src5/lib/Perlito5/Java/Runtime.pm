@@ -4850,7 +4850,7 @@ class PlLvalue extends PlObject {
         PlObject self = PerlOp.call("TIESCALAR", args, PlCx.VOID);
         v.tied = self;
         v.old_var = this.o;
-        this.o = v;
+        this.set(v);
         return self;
     }
 
