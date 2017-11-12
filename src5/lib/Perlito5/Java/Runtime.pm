@@ -4861,7 +4861,7 @@ class PlLvalue extends PlObject {
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };
-            this.o = ((PlTieScalar)o).old_var;
+            this.set(((PlTieScalar)o).old_var);
             return tied;
         }
         return this;
