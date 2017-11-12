@@ -77,35 +77,19 @@ sub import {
     my ($callpack) = caller(0);
     my $pack = shift;
     my @vars = grep /^[\$\@]?[A-Za-z_]\w*$/, (@_ ? @_ : keys(%ENV));
-
-    warn "import $callpack [ @vars ]\n";
-
     return unless @vars;
 
     @vars = map { m/^[\$\@]/ ? $_ : '$'.$_ } @vars;
-
-    warn "import $callpack [ @vars ]\n";
 
     eval "package $callpack; use vars qw(" . join(' ', @vars) . ")";
     die $@ if $@;
     foreach (@vars) {
 	my ($type, $name) = m/^([\$\@])(.*)$/;
 	if ($type eq '$') {
-        warn "Tie scalar ${callpack}::$name \n";
 	    tie ${"${callpack}::$name"}, Env, $name;
-        warn "  tied  ", tied( ${"${callpack}::$name"} ), "\n";
-
-	    tie ${"main::PATH"}, Env, $name;
-        warn "  tied2 ", tied( ${"main::PATH"} ), "\n";
-
-	    my $t = tie $main::PATH, Env, $name;
-        warn "  tied3 ", tied( $main::PATH ), " [ $t ] \n";
-
 	} else {
 	    if ($^O eq 'VMS') {
 		tie @{"${callpack}::$name"}, Env::Array::VMS, $name;
-
-
 	    } else {
 		tie @{"${callpack}::$name"}, Env::Array, $name;
 	    }
@@ -114,20 +98,11 @@ sub import {
 }
 
 sub TIESCALAR {
-    warn "tie [ @_ ]\n";
-
-    my $v = bless \($_[1]);
-
-    warn "    $v - $$v \n";
-
-    return $v;
+    bless \($_[1]);
 }
 
 sub FETCH {
     my ($self) = @_;
-
-    warn "fetch [ @_ ] \n";
-
     $ENV{$$self};
 }
 
