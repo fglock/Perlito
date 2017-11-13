@@ -681,7 +681,7 @@ package Perlito5::AST::Buf;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        my $s = "new PlStringConstant(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
+        my $s = "PlStringConstant.makeConstant(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
 
         return Perlito5::Java::get_constant( "PlStringConstant", $s );
     }

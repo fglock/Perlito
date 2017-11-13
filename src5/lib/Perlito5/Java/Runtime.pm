@@ -7188,11 +7188,22 @@ class PlStringLazyError extends PlString {
     }
 }
 class PlStringConstant extends PlString {
+    private static HashMap<String, PlStringConstant> constants = new HashMap<String, PlStringConstant>();
+
     private PlClass cls;
     private PlObject codeRef;
 
     public PlStringConstant(String s) {
         super(s);
+    }
+
+    public static PlStringConstant makeConstant(String s) {
+        PlStringConstant v = constants.get(s);
+        if (v == null) {
+            v = new PlStringConstant(s);
+            constants.put(s, v);
+        }
+        return v;
     }
 
     public PlClass blessed_class() {
