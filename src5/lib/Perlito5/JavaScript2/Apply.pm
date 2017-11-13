@@ -5,7 +5,7 @@ package Perlito5::AST::Apply;
     sub _emit_assignment_javascript2 {
         my ($parameters, $arguments, $level, $wantarray) = @_;
         if (   $parameters->isa( 'Perlito5::AST::Apply' )
-            &&  ( $parameters->code eq 'my' || $parameters->code eq 'local' || $parameters->code eq 'circumfix:<( )>' )
+            &&  ( $parameters->code eq 'circumfix:<( )>' )
         )
         {
             # my ($x, $y) = ...
@@ -602,26 +602,6 @@ package Perlito5::AST::Apply;
         'ternary:<? :>' => sub {
             my ($self, $level, $wantarray) = @_;
             '( ' . Perlito5::JavaScript2::to_bool( $self->{arguments}->[0] ) . ' ? ' . ( $self->{arguments}->[1] )->emit_javascript2( $level, $wantarray ) . ' : ' . ( $self->{arguments}->[2] )->emit_javascript2( $level, $wantarray ) . ')';
-        },
-        'my' => sub {
-            my ($self, $level, $wantarray) = @_;
-            # this is a side-effect of my($x,$y)
-            'p5context(' . '[' . join( ', ', map( $_->emit_javascript2( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
-        },
-        'state' => sub {
-            my ($self, $level, $wantarray) = @_;
-            # this is a side-effect of state($x,$y)
-            'p5context(' . '[' . join( ', ', map( $_->emit_javascript2( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
-        },
-        'our' => sub {
-            my ($self, $level, $wantarray) = @_;
-            # this is a side-effect of our($x,$y)
-            'p5context(' . '[' . join( ', ', map( $_->emit_javascript2( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
-        },
-        'local' => sub {
-            my ($self, $level, $wantarray) = @_;
-            # 'local ($x, $y[10])'
-            'p5context(' . '[' . join( ', ', map( $_->emit_javascript2( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'circumfix:<( )>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1496,30 +1476,12 @@ package Perlito5::AST::Apply;
                 . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME)
                 . ')';
         }
-        if ($code eq 'my' || $code eq 'our' || $code eq 'state' || $code eq 'local') {
-            return join( '; ',
-                     map { $_->emit_javascript2_set_list( $level, $list ) }
-                         @{ $self->{arguments} }
-                   );
-        }
         die "not implemented: assign to ", $self->code;
     }
 
     sub emit_javascript2_get_decl {
         my $self      = shift;
         my $code = $self->{code};
-        if ($code eq 'my' || $code eq 'our' || $code eq 'state' || $code eq 'local') {
-            return ( map {     ref($_) eq 'Perlito5::AST::Var'
-                             ? Perlito5::AST::Decl->new(
-                                 decl => $code,
-                                 type => '',     # TODO - add type
-                                 var  => $_,
-                               )
-                             : ()
-                         }
-                         @{ $self->{arguments} }
-                   );
-        }
         if ($code ne 'do' && $code ne 'eval') {
             return ( map  +( $_->emit_javascript2_get_decl ), 
                           @{ $self->{arguments} }

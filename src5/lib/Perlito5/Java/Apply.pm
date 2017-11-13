@@ -141,7 +141,7 @@ package Perlito5::AST::Apply;
             . ')';
         }
 
-        if ( $code eq 'my' || $code eq 'state' || $code eq 'local' || $code eq 'circumfix:<( )>' ) {
+        if ( $code eq 'circumfix:<( )>' ) {
             # my ($x, $y) = ...
             # local ($x, $y) = ...
             # ($x, $y) = ...
@@ -914,26 +914,6 @@ package Perlito5::AST::Apply;
             . ' ? ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray )
             . ' : ' . ( $self->{arguments}->[2] )->emit_java( $level, $wantarray )
             .  ')';
-        },
-        'my' => sub {
-            my ($self, $level, $wantarray) = @_;
-            # this is a side-effect of my($x,$y)
-            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
-        },
-        'state' => sub {
-            my ($self, $level, $wantarray) = @_;
-            # this is a side-effect of state($x,$y)
-            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
-        },
-        'our' => sub {
-            my ($self, $level, $wantarray) = @_;
-            # this is a side-effect of our($x,$y)
-            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
-        },
-        'local' => sub {
-            my ($self, $level, $wantarray) = @_;
-            # 'local ($x, $y[10])'
-            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'scalar' => sub {
             my ($self, $level, $wantarray, $autovivification_type) = @_;
@@ -1987,19 +1967,6 @@ package Perlito5::AST::Apply;
     sub emit_java_get_decl {
         my $self      = shift;
         my $code = $self->{code};
-        if ($code eq 'my' || $code eq 'state' || $code eq 'local') {
-            # $self->{code} = 'circumfix:<( )>';
-            return ( map {     ref($_) eq 'Perlito5::AST::Var'
-                             ? Perlito5::AST::Decl->new(
-                                 decl => $code,
-                                 type => '',     # TODO - add type
-                                 var  => $_,
-                               )
-                             : ()
-                         }
-                         @{ $self->{arguments} }
-                   );
-        }
         if ($code ne 'do' && $code ne 'eval') {
             return ( map  +( $_->emit_java_get_decl ), 
                           @{ $self->{arguments} }

@@ -594,9 +594,11 @@ sub term_bareword {
                 )
             {
                 my $declarator = $name;
+                my @out;
                 for my $var (@$arg) {
                     if ( ref($var) eq 'Perlito5::AST::Apply' && $var->{code} eq 'undef' ) {
                         # "local (undef)" is a no-op
+                        push @out, $var;
                     }
                     else {
                         my $decl = Perlito5::AST::Decl->new(
@@ -610,8 +612,18 @@ sub term_bareword {
                         $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
                         $var->{_namespace} = $Perlito5::PKG_NAME
                             if $declarator eq 'local' && !$var->{namespace} && !$var->{_namespace};
+                        push @out, $decl;
                     }
                 }
+                $m->{capture} = [ 'term',
+                        Perlito5::AST::Apply->new(
+                            code      => 'circumfix:<( )>',
+                            namespace => '',
+                            arguments => \@out,
+                            proto     => undef,
+                        )
+                    ];
+                return $m;
             }
             if ( $name eq 'print' || $name eq 'say' ) {
                 if (@$arg == 0) {
