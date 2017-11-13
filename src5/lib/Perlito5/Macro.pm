@@ -178,10 +178,12 @@ sub maybe_rewrite_statevars {
 sub myvar_declaration_stmt {
     die 'Can only handle `my` variables'
         if (grep { ($_->{decl} // 'my') ne 'my' } @_);
-    return Perlito5::AST::Apply->new(
-        code      => 'my',
-        arguments => [@_],
-    );
+    return map {
+        Perlito5::AST::Decl->new(
+            decl  => 'my',
+            var   => $_,
+        )
+    } @_;
 }
 
 # rewrite_state_expr($refnode)
