@@ -42,7 +42,7 @@ build-5js ::
 	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
 
 build-5java ::
-	. ./make_perlito5-lib-jar.sh
+	makefiles/make_perlito5-lib-jar.sh
 
 build-5browser ::
 	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5-browser.pl > docs/perlito/perlito5.js
