@@ -851,6 +851,7 @@ class PerlOp {
         local_stack.a.add(new PlString(index));
         PlLvalue empty = new PlLvalue();
         local_stack.a.add(container.hget_lvalue(index));
+        local_stack.a.add(PlCx.INT0);
         container.hset_alias(index, empty);
         return empty;
     }
@@ -859,12 +860,14 @@ class PerlOp {
         local_stack.a.add(new PlInt(index));
         PlLvalue empty = new PlLvalue();
         local_stack.a.add(container.aget_lvalue(index));
+        local_stack.a.add(PlCx.INT1);
         container.aset_alias(index, empty);
         return empty;
     }
     public static final void push_local_regex_result() {
         PlRegexResult match = PlV.regex_result;
         local_stack.a.add(match);
+        local_stack.a.add(PlCx.INT2);
         PlRegexResult new_match = new PlRegexResult();
         new_match.matcher = match.matcher;
         new_match.regex_string = match.regex_string;
@@ -876,20 +879,24 @@ class PerlOp {
     }
     public static final PlObject cleanup_local(int pos, PlObject ret) {
         while (local_stack.to_int() > pos) {
+            int t = local_stack.pop().to_int();
             PlObject v = local_stack.pop();
-            if (v.is_regex_result()) {
-                PlV.regex_result = (PlRegexResult)v;
-            }
-            else {
-                PlLvalue lvalue    = (PlLvalue)v;
-                PlObject index     = local_stack.pop();
-                PlObject container = local_stack.pop();
-                if (container.is_array()) {
-                    ((PlArray)container).aset_alias(index.to_int(), lvalue);
-                }
-                else {
-                    ((PlHash)container).hset_alias(index.toString(), lvalue);
-                }
+            PlObject index;
+            PlObject container;
+            switch (t) {
+                case 0:
+                    index     = local_stack.pop();
+                    container = local_stack.pop();
+                    ((PlHash)container).hset_alias(index.toString(), (PlLvalue)v);
+                    break;
+                case 1:
+                    index     = local_stack.pop();
+                    container = local_stack.pop();
+                    ((PlArray)container).aset_alias(index.to_int(), (PlLvalue)v);
+                    break;
+                case 2:
+                    PlV.regex_result = (PlRegexResult)v;
+                    break;
             }
         }
         return ret;
@@ -7204,6 +7211,9 @@ class PlStringConstant extends PlString {
             constants.put(s, v);
         }
         return v;
+    }
+    public static PlStringConstant getConstant(String s) {
+        return constants.get(s);
     }
 
     public PlClass blessed_class() {
