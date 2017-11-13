@@ -80,6 +80,10 @@ package Perlito5::Java::LexicalBlock;
           && !( $decl->{code} eq "infix:<and>" )
           && !( $decl->{code} eq "infix:<or>" )
           && !( $decl->{code} eq "ternary:<? :>" )
+          && !( $decl->{code} eq "infix:<+=>" )
+          && !( $decl->{code} eq "infix:<-=>" )
+          && !( $decl->{code} eq "infix:<*=>" )
+          && !( $decl->{code} eq "infix:</=>" )
           )
         {
             # workaround for "Error: not a statement"
