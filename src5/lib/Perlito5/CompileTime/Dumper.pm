@@ -244,10 +244,19 @@ sub emit_globals_after_BEGIN {
     for my $pkg (keys %{$Perlito5::PACKAGES}) {;
         push @dump_these, '@' . $pkg . "::ISA";     # dump @ISA
     }
+  DUMP:
     for my $v ( @dump_these ) {
         # inject global variable in the scope, if it is not there already
         no strict 'refs';
-        my ($sigil, $namespace, $name) = $v =~ /^([$@%])(\w+)::(.*)$/;
+        my ($sigil, $namespace, $name) = $v =~ /^([\$\@%])(\w+)::(.*)$/;
+
+        if ($sigil eq '@' && @{ $namespace . "::" . $name } == 0) {
+            next DUMP;
+        }
+        if ($sigil eq '%' && keys %{ $namespace . "::" . $name } == 0) {
+            next DUMP;
+        }
+
         $scope->{$v} //= {
             'ast' => Perlito5::AST::Var->new(
                 'name'      => $name,
