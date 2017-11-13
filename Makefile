@@ -63,13 +63,13 @@ test-5js-parallel ::
 	prove -j 9 -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5
 
 test-5java ::
-	prove -r -e 'perl run_java_test.pl' t5
+	prove -r -e 'perl makefiles/run_java_test.pl' t5
 
 test-5jar ::
 	prove -r -e 'java -jar perlito5.jar -I src5/lib -I t ' t5
 
 test-5javaunit ::
-	prove -r -e 'perl run_java_test.pl' t5/unit
+	prove -r -e 'perl makefiles/run_java_test.pl' t5/unit
 
 boot-5to5 ::
 	time perl perlito5.pl --bootstrapping -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && diff perlito5-new.pl perlito5.pl ; cp perlito5-new.pl perlito5.pl
