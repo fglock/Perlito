@@ -431,7 +431,7 @@ class PlCx {
 EOT
     , "    " . join("\n    ",
         map { "public static final PlInt " . ($_ < 0 ? "MIN" : "INT") . abs($_) . " = new PlInt($_);" }
-            (-2 .. 2) ) . "\n"
+            (-2 .. 9) ) . "\n"
     , "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
     , <<'EOT'
 }
@@ -873,6 +873,14 @@ class PerlOp {
         new_match.regex_string = match.regex_string;
         PlV.regex_result = new_match;
     }
+    public static final PlObject push_local_named_sub(PlObject value, String name) {
+        local_stack.a.add(new PlString(name));
+        local_stack.a.add(PlV.cget_no_autoload(name));
+        local_stack.a.add(PlCx.INT3);
+        PlLvalue newValue = new PlLvalue(value);
+        PlV.cset_alias(name, newValue);
+        return newValue;
+    }
 
     public static final int local_length() {
         return local_stack.to_int();
@@ -896,6 +904,10 @@ class PerlOp {
                     break;
                 case 2:
                     PlV.regex_result = (PlRegexResult)v;
+                    break;
+                case 3:
+                    index     = local_stack.pop();
+                    PlV.cset_alias(index.toString(), (PlLvalue)v);
                     break;
             }
         }
@@ -2229,18 +2241,22 @@ class PlV {
         return code;
     }
     public static final PlLvalue cget_local(String name) {
-        return (PlLvalue)cvar.hget_lvalue_local(name);
+        return (PlLvalue)PerlOp.push_local_named_sub(PlCx.UNDEF, name);
     }
     public static final PlLvalue cget_no_autoload(String name) {
         return (PlLvalue)cvar.hget_lvalue(name);
     }
     public static final PlObject cset(String name, PlObject v) {
+        // TODO - invalidate the method lookup cache
+        PlStringConstant.getConstant(name).setCodeRef(v);    // apply() cache
         return cvar.hset(name, v);
     }
     public static final PlObject cset_local(String name, PlObject v) {
-        return cvar.hget_lvalue_local(name).set(v);
+        return PerlOp.push_local_named_sub(v, name);
     }
     public static final void cset_alias(String name, PlLvalue v) {
+        // TODO - invalidate the method lookup cache
+        PlStringConstant.getConstant(name).setCodeRef(v);    // apply() cache
         cvar.hset_alias(name, v);
     }
 
@@ -7204,7 +7220,7 @@ class PlStringConstant extends PlString {
         super(s);
     }
 
-    public static PlStringConstant makeConstant(String s) {
+    public static PlStringConstant getConstant(String s) {
         PlStringConstant v = constants.get(s);
         if (v == null) {
             v = new PlStringConstant(s);
@@ -7212,10 +7228,10 @@ class PlStringConstant extends PlString {
         }
         return v;
     }
-    public static PlStringConstant getConstant(String s) {
-        return constants.get(s);
-    }
 
+    public void setCodeRef(PlObject c) {
+        this.codeRef = c;
+    }
     public PlClass blessed_class() {
         if (cls == null) {
             cls = PlClass.getInstance(s);

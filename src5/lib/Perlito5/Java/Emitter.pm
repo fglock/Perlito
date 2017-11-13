@@ -648,7 +648,7 @@ package Perlito5::AST::Int;
         if ( $v >= -2 && $v < 0) {
             return "PlCx.MIN" . abs($v);
         }
-        if ( $v >= 0 && $v <= 2) {
+        if ( $v >= 0 && $v <= 9) {
             return "PlCx.INT" . abs($v);
         }
         my $s = "new PlInt(" . $v . "L)";
@@ -681,7 +681,7 @@ package Perlito5::AST::Buf;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        my $s = "PlStringConstant.makeConstant(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
+        my $s = "PlStringConstant.getConstant(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
 
         return Perlito5::Java::get_constant( "PlStringConstant", $s );
     }
