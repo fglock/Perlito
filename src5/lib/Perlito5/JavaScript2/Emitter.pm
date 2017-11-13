@@ -856,14 +856,14 @@ package Perlito5::AST::Index;
             # %$a[0, 2] ==> %{$a}[0,2]
 
             # "fix" the sigil type
-            my $obj = $self->{obj};
+            my $obj = $self->{obj}->clone();
             $obj->{sigil} = '@'
                 if $obj->{sigil} eq '%';
             $obj->{code} = 'prefix:<@>'
                 if $obj->{code} eq 'prefix:<%>';
 
             return 'p5hash_slice('
-                        . $self->{obj}->emit_javascript2($level, 'list') . ', '
+                        . $obj->emit_javascript2($level, 'list') . ', '
                         . Perlito5::JavaScript2::to_list([$self->{index_exp}], $level) . ', '
                         . Perlito5::JavaScript2::to_context($wantarray)
                    . ')';
@@ -959,8 +959,9 @@ package Perlito5::AST::Index;
            && $self->{obj}->sigil eq '$'
            )
         {
-            $self->{obj}->{sigil} = '@';
-            return $self->{obj}->emit_javascript2($level);
+            my $obj = $self->{obj}->clone();
+            $obj->{sigil} = '@';
+            return $obj->emit_javascript2($level);
         }
         else {
             return Perlito5::JavaScript2::emit_javascript2_autovivify( $self->{obj}, $level, 'array' ) . '._array_';
@@ -1208,6 +1209,7 @@ package Perlito5::AST::Var;
 
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
+        $self = $self->to_begin_scratchpad();
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $decl_type = $self->{_decl} || 'global';
         if ( $decl_type ne 'my' && $decl_type ne 'state' ) {
@@ -1238,6 +1240,7 @@ package Perlito5::AST::Var;
 
     sub emit_javascript2_set {
         my ($self, $arguments, $level, $wantarray) = @_;
+        $self = $self->to_begin_scratchpad();
         my $open  = $wantarray eq 'void' ? '' : '(';
         my $close = $wantarray eq 'void' ? '' : ')';
         my $sigil = $self->{_real_sigil} || $self->{sigil};
@@ -1247,6 +1250,7 @@ package Perlito5::AST::Var;
         if ( $sigil eq '@' ) {
 
             if ($self->{sigil} eq '$#') {
+                $self = $self->clone();
                 $self->{sigil} = '@';
                 return $open . $self->emit_javascript2() . '.length = 1 + ' . Perlito5::JavaScript2::to_scalar([$arguments], $level+1) . $close
             }
@@ -1300,8 +1304,9 @@ package Perlito5::AST::Decl;
     }
     sub emit_javascript2_init {
         my ($self, $level, $wantarray) = @_;
+        my $var = $self->{var};
+        return '' if ref($var) eq 'Perlito5::AST::Var' && $var->is_begin_scratchpad();
         if ($self->{decl} eq 'local') {
-            my $var = $self->{var};
             my $var_set;
             my $tmp_name  = Perlito5::JavaScript2::get_label();
             my $id = $Perlito5::ID++;

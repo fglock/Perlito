@@ -1174,6 +1174,9 @@ package Perlito5::AST::Apply;
                     my @str;
                     my @val;
                     for my $var ( keys %{ $vars{$sigil} } ) {
+
+                        next if $vars{$sigil}{$var}->is_begin_scratchpad();
+
                         push @str, Perlito5::Java::escape_string( $vars{$sigil}{$var}->emit_java(0) );
                         push @val, $var;
                     }

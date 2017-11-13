@@ -161,6 +161,7 @@ package Perlito5::AST::Var;
 {
     sub emit_perl5 {
         my $self = $_[0];
+        $self = $self->to_begin_scratchpad();
 
         my $str_name = $self->{name};
         my $c = substr($str_name, 0, 1);
@@ -549,9 +550,12 @@ package Perlito5::AST::Decl;
     sub emit_perl5 {
         my $self = $_[0];
 
+        my $var = $self->{var};
+        return $var->emit_perl5() if ref($var) eq 'Perlito5::AST::Var' && $var->is_begin_scratchpad();
+
         return [ op => 'prefix:<' . $self->{decl} . '>', 
                  ($self->{type} ? $self->{type} : ()),
-                 $self->{var}->emit_perl5()
+                 $var->emit_perl5()
                ];
     }
 }

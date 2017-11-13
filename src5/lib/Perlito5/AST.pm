@@ -174,6 +174,11 @@ sub sigil { $_[0]->{sigil} }
 sub namespace { $_[0]->{namespace} }
 sub name { $_[0]->{name} }
 
+sub clone {
+    my $self = shift;
+    return bless { %$self }, ref($self);
+}
+
 sub plain_name {
     my $self = shift;
     if ($self->namespace) {

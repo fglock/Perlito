@@ -342,6 +342,7 @@ package Perlito5::AST::Sub;
                 );
                 my $id = Perlito5::get_label();
                 $Perlito5::BEGIN_SUBS{$id} = $code;
+                # warn "BEGIN_SUBS: ", Perlito5::Dumper::Dumper( $code );
                 $Perlito5::BEGIN_LEXICALS{$_} = $capture{$_} for keys %capture;
 
                 if (!@stmts) {

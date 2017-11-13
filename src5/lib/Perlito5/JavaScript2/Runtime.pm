@@ -52,6 +52,9 @@ sub eval_ast {
     my ($ast) = @_;
     my $want = 0;
 
+    # use lexicals from BEGIN scratchpad
+    $ast = $ast->emit_begin_scratchpad();
+
     my $js_code = $ast->emit_javascript2(0, $want);
     # say STDERR "js-source: [" . $js_code . "]";
     Perlito5::set_global_phase("UNITCHECK");

@@ -751,13 +751,13 @@ package Perlito5::AST::Index;
             # %$a[0, 2] ==> %{$a}[0,2]
 
             # "fix" the sigil type
-            my $obj = $self->{obj};
+            my $obj = $self->{obj}->clone();
             $obj->{sigil} = '@'
                 if $obj->{sigil} eq '%';
             $obj->{code} = 'prefix:<@>'
                 if $obj->{code} eq 'prefix:<%>';
 
-            return $self->{obj}->emit_java($level) . '.aget_hash_list_of_aliases('
+            return $obj->emit_java($level) . '.aget_hash_list_of_aliases('
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . Perlito5::Java::to_list([$self->{index_exp}], $level)
                    . ')';
@@ -865,8 +865,9 @@ package Perlito5::AST::Index;
            && $self->{obj}->sigil eq '$'
            )
         {
-            $self->{obj}->{sigil} = '@';
-            return $self->{obj}->emit_java($level);
+            my $obj = $self->{obj}->clone();
+            $obj->{sigil} = '@';
+            return $obj->emit_java($level);
         }
         else {
             return Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'array' );
@@ -1177,6 +1178,7 @@ package Perlito5::AST::Var;
         if ( $sigil eq '@' ) {
 
             if ($self->{sigil} eq '$#') {
+                $self = $self->clone();
                 $self->{sigil} = '@';
                 return 'PlV.array_get(' . $index . ').set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
             }
@@ -1219,6 +1221,7 @@ package Perlito5::AST::Var;
 
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
+        $self = $self->to_begin_scratchpad();
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $decl_type = $self->{_decl} || 'global';
         if ( $decl_type ne 'my' && $decl_type ne 'state' ) {
@@ -1248,6 +1251,7 @@ package Perlito5::AST::Var;
 
     sub emit_java_set {
         my ($self, $arguments, $level, $wantarray) = @_;
+        $self = $self->to_begin_scratchpad();
         my $decl_type = $self->{_decl} || 'global';
         if ( $decl_type ne 'my' && $decl_type ne 'state' ) {
             return $self->emit_java_global_set($arguments, $level, $wantarray);
@@ -1269,6 +1273,7 @@ package Perlito5::AST::Var;
         if ( $sigil eq '@' ) {
 
             if ($self->{sigil} eq '$#') {
+                $self = $self->clone();
                 $self->{sigil} = '@';
                 return $open . $self->emit_java($level) . '.set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')' . $close
             }
@@ -1300,8 +1305,8 @@ package Perlito5::AST::Decl;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-
         my $var = $self->{var};
+        $var = $var->to_begin_scratchpad() if ref($var) eq 'Perlito5::AST::Var';
         my $localize = '';
         if ($self->{decl} eq 'local') {
             $localize = 'local';
@@ -1313,8 +1318,8 @@ package Perlito5::AST::Decl;
     }
     sub emit_java_init {
         my ($self, $level, $wantarray) = @_;
-
         my $var = $self->{var};
+        return () if ref($var) eq 'Perlito5::AST::Var' && $var->is_begin_scratchpad();
         my $Java_var = Perlito5::Java::get_java_var_info();
         my $type = $self->{type} || 'PlLvalue';
         my $id = $self->{var}{_id};
@@ -1355,6 +1360,7 @@ package Perlito5::AST::Decl;
     sub emit_java_set {
         my ($self, $arguments, $level, $wantarray) = @_;
         my $var = $self->{var};
+        $var = $var->to_begin_scratchpad() if ref($var) eq 'Perlito5::AST::Var';
         my $localize = '';
         if ($self->{decl} eq 'local') {
             $localize = 'local';
@@ -1366,6 +1372,8 @@ package Perlito5::AST::Decl;
     }
     sub emit_java_get_decl {
         my $self = shift;
+        my $var = $self->{var};
+        return () if ref($var) eq 'Perlito5::AST::Var' && $var->is_begin_scratchpad();
         return ($self);
     }
     sub emit_java_has_regex { () }

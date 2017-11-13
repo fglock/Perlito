@@ -71,16 +71,29 @@ package Perlito5::AST::Var;
 {
     sub emit_begin_scratchpad {
         my $self = $_[0];
+        return $self;
+    }
 
+    sub is_begin_scratchpad {
+        my ($self) = @_;
         if (!$self->{namespace} && $Perlito5::BEGIN_SCRATCHPAD{ $self->{_id} || "" }) {
-            return __PACKAGE__->new(
+            return 1;
+        }
+        return 0;
+    }
+ 
+    sub to_begin_scratchpad {
+        my ($self) = @_;
+        if (!$self->{namespace} && $Perlito5::BEGIN_SCRATCHPAD{ $self->{_id} || "" }) {
+            # warn "rewrite sigil ", $self->{sigil}, " real-sigil ", $self->{_real_sigil}, "\n";
+            $self = __PACKAGE__->new(
                 %$self,
                 _decl     => "global",
                 namespace => "Perlito5::BEGIN",
                 name      => "_" . $self->{_id} . "_" . $self->{name},
             );
+            # warn "rewritten [ @{[ %$self ]} ]\n";
         }
-
         return $self;
     }
 }

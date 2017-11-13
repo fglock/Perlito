@@ -68,6 +68,7 @@ sub dump_to_ast {
         my $current_package = "main";
         for my $var_id (sort keys %$captures) {
             next if $var_id eq "__PKG__";
+            next if $Perlito5::BEGIN_SCRATCHPAD{$var_id};   # variable captured at BEGIN
             if ($var_id eq '__SUB__') {
                 my $sub_id = $captures->{$var_id};
                 $ast = $Perlito5::BEGIN_SUBS{$sub_id};
@@ -134,7 +135,7 @@ sub dump_to_ast {
             $current_package = $package;
         }
  
-        # say "dump_to_ast: source [[ $source ]]";
+        # warn "dump_to_ast: source: ", Perlito5::Dumper::Dumper( $source );
         return Perlito5::AST::Apply->new(
             code => 'do',
             arguments => [

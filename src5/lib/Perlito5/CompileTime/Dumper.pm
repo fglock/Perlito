@@ -237,9 +237,10 @@ sub emit_globals_after_BEGIN {
         '$main::b',
         '$main::_',
         '%main::INC',
-        '@Perlito5::END_BLOCK',       # __END__ blocks
-        '@Perlito5::INIT_BLOCK',      # __INIT__ blocks
-        '%Perlito5::DATA_SECTION',    # __DATA__ contents
+        '@Perlito5::END_BLOCK',         # __END__ blocks
+        '@Perlito5::INIT_BLOCK',        # __INIT__ blocks
+        '%Perlito5::DATA_SECTION',      # __DATA__ contents
+        '%Perlito5::BEGIN_SCRATCHPAD',  # BEGIN captures
     );
     for my $pkg (keys %{$Perlito5::PACKAGES}) {;
         push @dump_these, '@' . $pkg . "::ISA";     # dump @ISA
