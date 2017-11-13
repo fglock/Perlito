@@ -155,6 +155,22 @@ Perlito5-Java work-in-progress
 
           - lexical variables are not shared between closures created in BEGIN blocks
 
+      - bug capturing BEGIN variables in eval-string:
+
+        ```
+        $ time java -jar perlito5.jar -I src5/lib -Cperl5 -e ' my @v; BEGIN { @v = (123); sub x { @v }; eval " sub yy { \@v }  " } x; yy; '
+        *main::x = do {;
+            sub {;
+                @Perlito5::BEGIN::_100_v
+            }
+        };
+        *main::yy = do {;
+            sub {;
+                @v      # <--- this should be @Perlito5::BEGIN::_100_v
+            }
+        };
+        ```
+
   - runtime error messages do not include the line number in the Perl code
 
       - also caller() is only partially implemented
