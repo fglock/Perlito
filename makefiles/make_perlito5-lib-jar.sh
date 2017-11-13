@@ -1,4 +1,6 @@
 
+set -x
+
 # cleanup
 
 # make clean
