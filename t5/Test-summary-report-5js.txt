@@ -205,3 +205,6 @@ t5/unit/unpack_u.t                        (Wstat: 0 Tests: 7 Failed: 7)
   Failed tests:  1-7
 t5/unit/while_return.t                    (Wstat: 0 Tests: 3 Failed: 2)
   Failed tests:  2-3
+
+t5/op/numconvert.t .......................... CORE::pack not implemented at t5-js/op/numconvert.t line 1547
+
