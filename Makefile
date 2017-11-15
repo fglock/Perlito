@@ -70,13 +70,21 @@ test-5to5 ::
 	perl makefiles/copy-tests.pl t5/Test-summary-report-5to5.txt t5-5to5
 	prove -r -e 'perl perlito5.pl -I./src5/lib ' t5-5to5
 
+test-5js-parallel ::
+	perl makefiles/copy-tests.pl t5/Test-summary-report-5js.txt t5-js
+	prove -j 3 -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5-js
+
+test-5jar-parallel ::
+	perl makefiles/copy-tests.pl t5/Test-summary-report-5jar.txt t5-jar
+	prove -j 3 -r -e 'java -jar perlito5.jar -I src5/lib -I t ' t5-jar
+
 # Perl 5 dev tests (some tests can fail)
 
 test-5js-dev ::
 	prove -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5
 
 test-5js-parallel-dev ::
-	prove -j 9 -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5
+	prove -j 3 -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5
 
 test-5java-dev ::
 	prove -r -e 'perl makefiles/run_java_test.pl' t5
@@ -104,6 +112,9 @@ clean ::
 	-rm *.pyc
 	-rm misc/Java/*.class
 	-rm *.[0-9][0-9]
+	-rm -rf t5-js/
+	-rm -rf t5-jar/
+	-rm -rf t5-5to5/
 
 # :set tabstop=4
 # :set noexpandtab	  " Use tabs, not spaces
