@@ -790,6 +790,9 @@ class PerlOp {
             return call( method.toString(), args, context );
         }
     }
+    public static final PlObject call( PlStringConstant method, PlArray args, int context ) {
+        return call( method.toString(), args, context );
+    }
     public static final PlObject call( String method, PlArray args, int context ) {
         PlObject invocant = args.aget(0);
 
