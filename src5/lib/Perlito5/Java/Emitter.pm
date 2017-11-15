@@ -893,6 +893,32 @@ package Perlito5::AST::Lookup;
         $method = 'hget_lvalue'    if $autovivification_type eq 'lvalue';
         $method = 'hget_lvalue_local' if $autovivification_type eq 'local';
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<$>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '$'
+              )
+           )
+        {
+            if (  $self->{index_exp}->isa('Perlito5::AST::Apply')
+               && $self->{index_exp}->{code} eq 'list:<,>'
+               )
+            {
+                # Perl "multidimensional array emulation"
+                # $a{ 'x', 'y' }
+                # $$a{ 'x', 'y' }  ==> ${$a}{ 'x', 'y' }
+                $self->{index_exp}{code} = 'join';
+                unshift @{ $self->{index_exp}{arguments} }, 
+                    Perlito5::AST::Var->new(
+                        '_decl' => "global",
+                        '_namespace' => "main",
+                        'name' => ";",
+                        'namespace' => '',
+                        'sigil' => "\$",
+                    );
+            }
+        }
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
@@ -968,6 +994,32 @@ package Perlito5::AST::Lookup;
     }
     sub emit_java_set {
         my ($self, $arguments, $level, $wantarray, $localize) = @_;
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<$>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '$'
+              )
+           )
+        {
+            if (  $self->{index_exp}->isa('Perlito5::AST::Apply')
+               && $self->{index_exp}->{code} eq 'list:<,>'
+               )
+            {
+                # Perl "multidimensional array emulation"
+                # $a{ 'x', 'y' }
+                # $$a{ 'x', 'y' }  ==> ${$a}{ 'x', 'y' }
+                $self->{index_exp}{code} = 'join';
+                unshift @{ $self->{index_exp}{arguments} }, 
+                    Perlito5::AST::Var->new(
+                        '_decl' => "global",
+                        '_namespace' => "main",
+                        'name' => ";",
+                        'namespace' => '',
+                        'sigil' => "\$",
+                    );
+            }
+        }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
