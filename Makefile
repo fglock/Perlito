@@ -61,18 +61,21 @@ boot-5to5 ::
 test-5js ::
 	-mkdir t5-js
 	-cp -R t5/ t5-js/
+	sync
 	perl makefiles/copy-tests.pl t5/Test-summary-report-5js.txt t5-js
 	prove -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5-js
 
 test-5jar ::
 	-mkdir t5-jar
 	-cp -R t5/ t5-jar/
+	sync
 	perl makefiles/copy-tests.pl t5/Test-summary-report-5jar.txt t5-jar
 	prove -r -e 'java -jar perlito5.jar -I src5/lib -I t ' t5-jar
 
 test-5to5 ::
 	-mkdir t5-5to5
 	-cp -R t5/ t5-5to5/
+	sync
 	perl makefiles/copy-tests.pl t5/Test-summary-report-5to5.txt t5-5to5
 	prove -r -e 'perl perlito5.pl -I./src5/lib ' t5-5to5
 
