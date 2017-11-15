@@ -19,6 +19,7 @@ for my $line (@files) {
         my $bad_file = $out_dir . '/' . $1;
         # warn "$bad_file\n";
         unlink $bad_file
+            or (system("rm", $bad_file) == 0)
             or warn "Can't unlink $bad_file: $!";
     }
 }
