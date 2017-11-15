@@ -1193,6 +1193,58 @@ EOT
             return PlCx.UNDEF;
         }
     }
+    public static final PlObject p5is_symbolic_link(PlObject s) {
+        try {
+            return new PlBool(Files.isSymbolicLink(resolve_file(s)));
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+            return PlCx.UNDEF;
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject p5is_writable(PlObject s) {
+        try {
+            return new PlBool(Files.isWritable(resolve_file(s)));
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+            return PlCx.UNDEF;
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject p5is_readable(PlObject s) {
+        try {
+            return new PlBool(Files.isReadable(resolve_file(s)));
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+            return PlCx.UNDEF;
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject p5is_executable(PlObject s) {
+        try {
+            return new PlBool(Files.isExecutable(resolve_file(s)));
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+            return PlCx.UNDEF;
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+            return PlCx.UNDEF;
+        }
+    }
 
     public static final PlObject list_replicate(PlArray o, PlObject c, int wantarray) {
         if (wantarray == PlCx.SCALAR) {

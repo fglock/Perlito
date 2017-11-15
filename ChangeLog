@@ -58,7 +58,7 @@
 -- $\
 -- caller() now works "natively", decoding the Java stack trace
 -- symbol tables like %:: and typeglobs support
--- '-e' file test
+-- file tests: "-e", "-l", "-r", "-w", "-x"
 -- lvalue ternary "?:", "vec", "substr"
 -- regex modifier /xx
 -- regex %+ named captures

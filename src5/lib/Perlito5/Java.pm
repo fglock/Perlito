@@ -212,6 +212,10 @@ our %op_prefix_js_str = (
     'prefix:<-e>' => 'PerlOp.p5file_exists',
     'prefix:<-f>' => 'PerlOp.p5is_file',
     'prefix:<-s>' => 'PerlOp.p5size',
+    'prefix:<-l>' => 'PerlOp.p5is_symbolic_link',
+    'prefix:<-r>' => 'PerlOp.p5is_readable',
+    'prefix:<-w>' => 'PerlOp.p5is_writable',
+    'prefix:<-x>' => 'PerlOp.p5is_executable',
 );
 
 # these operators need 2 "str" parameters
