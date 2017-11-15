@@ -5,7 +5,6 @@ html/perlito6.min.js
 perlito5-new.pl
 perlito5.js
 *.class
-Test.*
 Main.*
 *.swp
 
