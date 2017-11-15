@@ -613,6 +613,10 @@ EOT
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject lstat(int want, PlArray List__) {
+        // TODO
+        return PlCORE.stat(want, List__);
+    }
     public static final PlObject stat(int want, PlArray List__) {
         // TODO - "_" filehandle
         PlArray res = new PlArray();
