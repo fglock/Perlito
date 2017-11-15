@@ -18,7 +18,8 @@ for my $line (@files) {
     if ($line =~ m{^t5/(\S+)}) {
         my $bad_file = $out_dir . '/' . $1;
         # warn "$bad_file\n";
-        unlink $bad_file;
+        unlink $bad_file
+            or warn "Can't unlink $bad_file: $!";
     }
 }
 
