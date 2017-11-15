@@ -2182,6 +2182,8 @@ class PlV {
         PlV.sset("main::" + (char)15, new PlString( System.getProperty("os.name", "perlito5") ));
         // $/ = "\n"
         PlV.sset("main::/", new PlString( System.getProperty("line.separator", "\n") ));
+        // $; = \034
+        PlV.sset("main::;", new PlString((char)28));
 
         PlV.STDIN.inputStream   = System.in;
         PlV.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
