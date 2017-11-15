@@ -9,6 +9,7 @@ before_script:
 - make build-5to5
 script:
 - make build-5js build-5browser build-5to6browser
+- make build-5java
 - make test-5jar
 notifications:
     email:
