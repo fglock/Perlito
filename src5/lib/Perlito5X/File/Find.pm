@@ -67,7 +67,6 @@ sub PathCombine($$) {
     return $AbsName;
 }
 
-__END__
 sub Follow_SymLink($) {
     my ($AbsName) = @_;
 
@@ -518,6 +517,7 @@ sub _find_dir($$$) {
 	}
     }
 }
+
 
 # API:
 #  $wanted
