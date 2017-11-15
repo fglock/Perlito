@@ -1,0 +1,210 @@
+Test Summary Report
+-------------------
+t5/01-perlito/010-sanity.t                (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/020-int.t                   (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/030-num.t                   (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/035-num-octal.t             (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/040-op.t                    (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/060-anon-sub-lex-block.t    (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/070-anon-sub.t              (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/075-anon-sub-prototype.t    (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/090-bind.t                  (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/140-lex-block-if.t          (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/150-lex-block.t             (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/180-namespace.t             (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/210-bind-method-param.t     (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/220-bless.t                 (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/230-class-open.t            (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/270-var-redeclare.t         (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/310-test.t                  (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/350-syntax-namespace.t      (Wstat: 0 Tests: 9 Failed: 0)
+  TODO passed:   6-9
+t5/01-perlito/420-vstring.t               (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/01-perlito/520-block-loop.t            (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/cmd/for.t                              (Wstat: 0 Tests: 116 Failed: 0)
+  TODO passed:   13
+t5/lib/overload.t                         (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/op/for.t                               (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/op/hashassign.t                        (Wstat: 65280 Tests: 216 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: Bad plan.  You planned 309 tests but ran 216.
+t5/op/hexfp.t                             (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/op/int.t                               (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/op/list.t                              (Wstat: 0 Tests: 58 Failed: 5)
+  Failed tests:  53-57
+t5/op/loopctl.t                           (Wstat: 0 Tests: 67 Failed: 3)
+  Failed tests:  61, 66-67
+t5/op/rand.t                              (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/op/repeat.t                            (Wstat: 0 Tests: 43 Failed: 1)
+  Failed test:  43
+t5/op/unshift.t                           (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/op/vec.t                               (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/array.t                           (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/array_strict.t                    (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/boolean_value.t                   (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/data.t                            (Wstat: 0 Tests: 0 Failed: 0)
+  Parse errors: Bad plan.  You planned 1 tests but ran 0.
+t5/unit/do_until.t                        (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/flip-flop.t                       (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/hash.t                            (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/hash_autovivify.t                 (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/hash_each.t                       (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/hash_slice.t                      (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/if_else.t                         (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/local.t                           (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/local_array.t                     (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/local_hash.t                      (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/phase_init.t                      (Wstat: 0 Tests: 1 Failed: 1)
+  Failed test:  1
+t5/unit/phase_init_global.t               (Wstat: 0 Tests: 1 Failed: 1)
+  Failed test:  1
+t5/unit/phase_init_loop.t                 (Wstat: 0 Tests: 3 Failed: 1)
+  Failed test:  1
+t5/unit/phase_init_my.t                   (Wstat: 0 Tests: 1 Failed: 1)
+  Failed test:  1
+t5/unit/range.t                           (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/regex_comment.t                   (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/regex_escape.t                    (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/regex_named_capture.t             (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/regex_x.t                         (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/regex_xx.t                        (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/reverse.t                         (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/string.t                          (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/string_backslash.t                (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/sub_ampersand.t                   (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/sub_bind_param.t                  (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/sub_current.t                     (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/tie_array.t                       (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/tie_array_deref.t                 (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/tie_hash.t                        (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/tie_hash_deref.t                  (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/tie_hash_each.t                   (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/tie_scalar.t                      (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/tie_scalar_autoviv.t              (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/tie_scalar_deref.t                (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t5/unit/while_cond.t                      (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+
+t5/01-perlito/330-strict.t .................. Variable "$x" is not imported at (eval 5) line 1.
+
+t5/01-perlito/410-ampersand.t ............... Number found where operator expected at (eval 2) line 1, near "with_proto 4"
+

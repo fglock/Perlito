@@ -71,7 +71,10 @@ test-5jar ::
 	prove -r -e 'java -jar perlito5.jar -I src5/lib -I t ' t5-jar
 
 test-5to5 ::
-	prove -r -e 'perl perlito5.pl -I./src5/lib ' t5
+	-mkdir t5-5to5
+	-cp -R t5/ t5-5to5/
+	perl makefiles/copy-tests.pl t5/Test-summary-report-5to5.txt t5-5to5
+	prove -r -e 'perl perlito5.pl -I./src5/lib ' t5-5to5
 
 # Perl 5 dev tests (some tests can fail)
 
