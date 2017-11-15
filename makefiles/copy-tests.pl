@@ -13,7 +13,7 @@ open my $f, "<", $test_report;
 my @files = <$f>;
 
 # warn Dumper(\@files);
-warn "running from directory: ", system("pwd");
+warn "running from directory: ", `pwd`;
 
 for my $line (@files) {
     if ($line =~ m{^t5/(\S+)}) {
