@@ -1459,6 +1459,26 @@ package Perlito5::AST::Call;
             $method = 'hget_arrayref'  if $autovivification_type eq 'array';
             $method = 'hget_hashref'   if $autovivification_type eq 'hash';
             $method = 'hget_lvalue'    if $autovivification_type eq 'lvalue';
+
+            my $args = $self->{arguments};
+            if (  $args->isa('Perlito5::AST::Apply')
+               && $args->{code} eq 'list:<,>'
+               )
+            {
+                # Perl "multidimensional array emulation"
+                # $a{ 'x', 'y' }
+                # $$a{ 'x', 'y' }  ==> ${$a}{ 'x', 'y' }
+                $args->{code} = 'join';
+                unshift @{ $args->{arguments} }, 
+                    Perlito5::AST::Var->new(
+                        '_decl' => "global",
+                        '_namespace' => "main",
+                        'name' => ";",
+                        'namespace' => '',
+                        'sigil' => "\$",
+                    );
+            }
+
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
                 . '.' . $method . '('
                 .       Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($self->{arguments}), $level + 1, 'list')
@@ -1612,6 +1632,26 @@ package Perlito5::AST::Call;
                     . ')';
         }
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
+
+            my $args = $self->{arguments};
+            if (  $args->isa('Perlito5::AST::Apply')
+               && $args->{code} eq 'list:<,>'
+               )
+            {
+                # Perl "multidimensional array emulation"
+                # $a{ 'x', 'y' }
+                # $$a{ 'x', 'y' }  ==> ${$a}{ 'x', 'y' }
+                $args->{code} = 'join';
+                unshift @{ $args->{arguments} }, 
+                    Perlito5::AST::Var->new(
+                        '_decl' => "global",
+                        '_namespace' => "main",
+                        'name' => ";",
+                        'namespace' => '',
+                        'sigil' => "\$",
+                    );
+            }
+
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
                     . '.hset(' 
                         . Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($self->{arguments}), $level + 1, 'list') . ', '
