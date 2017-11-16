@@ -32,7 +32,7 @@ import org.perlito.Perlito5.PerlRange;
 import org.perlito.Perlito5.PerlRange0;
 import org.perlito.Perlito5.PerlRangeInt;
 import org.perlito.Perlito5.PerlRangeString;
-import org.perlito.Perlito5.PerlRangeString1;
+import org.perlito.Perlito5.PlLvalueIterator;
 import org.perlito.Perlito5.PlArray;
 import org.perlito.Perlito5.PlArrayRef;
 import org.perlito.Perlito5.PlBool;
