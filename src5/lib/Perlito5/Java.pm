@@ -860,9 +860,11 @@ sub to_param_list {
         return "new PlArray()";
     }
 
-    my $item = $items->[0];
-    if ( $item->isa('Perlito5::AST::Apply') && ( $item->code eq 'infix:<..>' ) ) {
-        return '(PlArray)(' . $item->emit_java($level, 'list') . ')';
+    if (@$items == 1) {
+        my $item = $items->[0];
+        if ( $item->isa('Perlito5::AST::Apply') && ( $item->code eq 'infix:<..>' ) ) {
+            return '(PlArray)(' . $item->emit_java($level, 'list') . ')';
+        }
     }
 
     'PlArray.construct_list_of_aliases('
