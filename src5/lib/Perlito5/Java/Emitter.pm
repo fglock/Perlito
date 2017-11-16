@@ -1909,10 +1909,15 @@ package Perlito5::AST::For;
                         .     ')';
                 }
             }
-            else {
+            elsif ( $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'list:<,>' ) {
+                # TODO - create an iterator over the iterators
                 # TODO - optimization - use to_list() when the topic doesn't need to mutate
                 $loop_expression = 'PlObject ' . $local_label
-                    . ' : ' . Perlito5::Java::to_param_list([$cond], $level + 1);
+                    . ' : ' . Perlito5::Java::to_param_list($cond->{arguments}, $level + 1);
+            }
+            else {
+                $loop_expression = 'PlObject ' . $local_label
+                    . ' : ' . $cond->emit_java($level + 1, 'list');
             }
 
             my $decl = '';
