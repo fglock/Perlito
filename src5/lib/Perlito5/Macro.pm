@@ -50,6 +50,7 @@ sub rewrite_goto {
     } @Perlito5::GOTO;
     return $stmts if !@Perlito5::GOTO;
 
+    my $change = 0;
   GOTO:
     for my $goto (@Perlito5::GOTO) {
         my $label = $goto->{arguments}[0]{code};
@@ -57,17 +58,27 @@ sub rewrite_goto {
 
         # lookup for labels
         my @label;
-        for my $ast (@$stmts) {
+        for my $id (0 .. $#$stmts) {
+            my $ast = $stmts->[$id];
             if ($ast->{label} && $ast->{label} eq $label) {
                 # TODO
 
+                my @stmt_list = @{$stmts}[ $id .. $#$stmts ];
                 # warn "Block uses goto: ", Perlito5::Dumper::Dumper($goto);
+                # warn "Block goes here: ", Perlito5::Dumper::Dumper(\@stmt_list);
 
-                # TODO - mark this @Perlito5::GOTO entry as processed
+                # NOTE: if $id == 0, replace "goto" with "redo"
+
+                # TODO - mark this @Perlito5::GOTO entry as processed (remove from list)
+                # $change = 1;
 
                 next GOTO;
             }
         }
+    }
+
+    if ($change) {
+        # TODO wrap the statements in a block
     }
 
     return $stmts;
