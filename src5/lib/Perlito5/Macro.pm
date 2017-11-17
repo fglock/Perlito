@@ -3,6 +3,41 @@ package Perlito5::Macro;
 use strict;
 
 {
+    # provide "goto LABEL" inside a block
+    #
+    #  {
+    #       123;
+    #       my $var;
+    #       goto LABEL;
+    #       123;
+    #     LABEL:
+    #       456;
+    #  }
+    #
+    #  a "forward goto" becomes:
+
+    #  {
+    #    my $var;
+    #    LABEL:
+    #    {
+    #       123;
+    #       last LABEL;
+    #       123;
+    #    }
+    #       456;
+    #  }
+
+    #  {
+    #       123;
+    #       my $var;
+    #       return do { 456; };
+    #       123;
+    #       456;
+    #  }
+
+}
+
+{
 package Perlito5::AST::Apply;
 use strict;
 
