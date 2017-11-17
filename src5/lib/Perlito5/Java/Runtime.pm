@@ -5826,12 +5826,10 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
 class PlArrayLvalueIterator implements Iterator<PlObject> {
     private final PlArray ar;
     private final PlArrayList a;
-    private final int size;
     private int pos;
     public PlArrayLvalueIterator(PlArray ar) {
         this.ar = ar;
         this.a = ar.a;
-        this.size = ar.a.size();
         this.pos = 0;
     }
     public PlObject next() {
@@ -5848,7 +5846,7 @@ class PlArrayLvalueIterator implements Iterator<PlObject> {
         return la;
     }
     public boolean hasNext() {
-        return pos < size;
+        return pos < this.a.size();
     }
 }
 class PlArray extends PlObject implements Iterable<PlObject> {
