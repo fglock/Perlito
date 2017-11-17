@@ -16,22 +16,11 @@ use Perlito5::Clone;
 #
 #  a "forward goto" becomes:
 
-#  {
-#    my $var;
-#    LABEL:
-#    {
-#       123;
-#       last LABEL;
-#       123;
-#    }
-#       456;
-#  }
-
 #  LABEL:
 #  {
 #       123;
 #       my $var;
-#       do { do { 456; }; last LABEL; };
+#       do { 456; last LABEL; };
 #       123;
 #       456;
 #  }
@@ -71,6 +60,12 @@ sub rewrite_goto {
                 if ( $id == 0 ) {
                     # if $id == 0, replace "goto" with "redo"
                     $goto->{code} = "redo";
+                    $goto->{arguments} =[
+                        Perlito5::AST::Apply->new(
+                            code => $outer_label,
+                            bareword => 1,
+                        )
+                    ];
                     $change = 1;
                     next GOTO;
                 }
