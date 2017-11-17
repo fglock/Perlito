@@ -212,7 +212,7 @@ sub term_file_test {
 };
 
 token next_last_redo {
-     'next' | 'last' | 'redo' 
+     'next' | 'last' | 'redo' | 'goto'
 };
 token term_next_last_redo {
     #        Unlike most named operators, this is also exempt from the

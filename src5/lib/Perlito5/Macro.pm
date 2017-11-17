@@ -2,8 +2,7 @@ use v5;
 package Perlito5::Macro;
 use strict;
 
-{
-    # provide "goto LABEL" inside a block
+# TODO - provide "goto LABEL" inside a block
     #
     #  {
     #       123;
@@ -34,8 +33,6 @@ use strict;
     #       123;
     #       456;
     #  }
-
-}
 
 {
 package Perlito5::AST::Apply;
