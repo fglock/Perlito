@@ -510,7 +510,11 @@ sub string_interpolation_parse {
         my $c2 = $str->[$p+1];
         my $m;
         my $more = '';
-        if ($balanced && $c eq '\\' && ($c2 eq $open_delimiter || $c2 eq $delimiter)) {
+        if ($c eq '\\' && $c2 eq $delimiter) {
+            $p++;
+            $c = $c2;
+        }
+        elsif ($balanced && $c eq '\\' && ($c2 eq $open_delimiter || $c2 eq $delimiter)) {
             $p++;
             $c = $c2;
         }
