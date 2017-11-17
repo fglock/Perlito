@@ -52,6 +52,7 @@ sub rewrite_goto {
 
     my $change = 0;
     my $outer_label = Perlito5::get_label();
+    my @unprocessed;
   GOTO:
     for my $goto (@Perlito5::GOTO) {
         my $label = $goto->{arguments}[0]{code};
@@ -62,21 +63,44 @@ sub rewrite_goto {
         for my $id (0 .. $#$stmts) {
             my $ast = $stmts->[$id];
             if ($ast->{label} && $ast->{label} eq $label) {
-                # TODO
-
                 my @stmt_list = @{$stmts}[ $id .. $#$stmts ];
                 # warn "Block uses goto: ", Perlito5::Dumper::Dumper($goto);
                 # warn "Block goes here: ", Perlito5::Dumper::Dumper(\@stmt_list);
 
-                # NOTE: if $id == 0, replace "goto" with "redo"
+                if ( $id == 0 ) {
+                    # if $id == 0, replace "goto" with "redo"
+                    $goto->{code} = "redo";
+                    $change = 1;
+                    next GOTO;
+                }
 
-                # TODO - mark this @Perlito5::GOTO entry as processed (remove from list)
-                $change = 1;
+                # TODO
 
-                next GOTO;
+                ## # do { do { @stmt }; last LABEL; };
+                ## $goto->{code} = "do";
+                ## $goto->{arguments} = [
+                ##     Perlito5::AST::Block->new(
+                ##         stmts => [
+                ##             ( map { $_->clone() } @stmt_list ),
+                ##             Perlito5::AST::Apply->new(
+                ##                 code => "last",
+                ##                 arguments => [
+                ##                     Perlito5::AST::Apply->new(
+                ##                         code => $outer_label,
+                ##                         bareword => 1,
+                ##                     ),
+                ##                 ],
+                ##             ),
+                ##         ],
+                ##     ),
+                ## ];
+                ## $change = 1;
+                ## next GOTO;
             }
         }
+        push @unprocessed, $goto;
     }
+    @Perlito::GOTO = @unprocessed;
 
     if ($change) {
         # wrap the statements in a block with the new label
