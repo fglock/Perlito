@@ -3,37 +3,47 @@ package Perlito5::Macro;
 use strict;
 
 # TODO - provide "goto LABEL" inside a block
-    #
-    #  {
-    #       123;
-    #       my $var;
-    #       goto LABEL;
-    #       123;
-    #     LABEL:
-    #       456;
-    #  }
-    #
-    #  a "forward goto" becomes:
+#
+#  {
+#       123;
+#       my $var;
+#       goto LABEL;
+#       123;
+#     LABEL:
+#       456;
+#  }
+#
+#  a "forward goto" becomes:
 
-    #  {
-    #    my $var;
-    #    LABEL:
-    #    {
-    #       123;
-    #       last LABEL;
-    #       123;
-    #    }
-    #       456;
-    #  }
+#  {
+#    my $var;
+#    LABEL:
+#    {
+#       123;
+#       last LABEL;
+#       123;
+#    }
+#       456;
+#  }
 
-    #  LABEL:
-    #  {
-    #       123;
-    #       my $var;
-    #       do { do { 456; }; last LABEL; };
-    #       123;
-    #       456;
-    #  }
+#  LABEL:
+#  {
+#       123;
+#       my $var;
+#       do { do { 456; }; last LABEL; };
+#       123;
+#       456;
+#  }
+
+sub rewrite_goto {
+    my ($stmts) = @_;
+    if (@Perlito5::GOTO) {
+        # TODO
+        # warn "Block uses goto: ", Perlito5::Dumper::Dumper(\@Perlito5::GOTO);
+    }
+    return $stmts;
+}
+
 
 {
 package Perlito5::AST::Apply;
