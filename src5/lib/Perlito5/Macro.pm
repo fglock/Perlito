@@ -1,6 +1,7 @@
 use v5;
 package Perlito5::Macro;
 use strict;
+use Perlito5::Clone;
 
 # provide "goto LABEL" within a statement list
 #
@@ -74,28 +75,28 @@ sub rewrite_goto {
                     next GOTO;
                 }
 
-                # TODO
+                # TODO - this doesn't cover all cases
 
-                ## # do { do { @stmt }; last LABEL; };
-                ## $goto->{code} = "do";
-                ## $goto->{arguments} = [
-                ##     Perlito5::AST::Block->new(
-                ##         stmts => [
-                ##             ( map { $_->clone() } @stmt_list ),
-                ##             Perlito5::AST::Apply->new(
-                ##                 code => "last",
-                ##                 arguments => [
-                ##                     Perlito5::AST::Apply->new(
-                ##                         code => $outer_label,
-                ##                         bareword => 1,
-                ##                     ),
-                ##                 ],
-                ##             ),
-                ##         ],
-                ##     ),
-                ## ];
-                ## $change = 1;
-                ## next GOTO;
+                # do { @stmt; last LABEL };
+                $goto->{code} = "do";
+                $goto->{arguments} = [
+                    Perlito5::AST::Block->new(
+                        stmts => [
+                            @{ Perlito5::Clone::clone(\@stmt_list) },
+                            Perlito5::AST::Apply->new(
+                                code => "last",
+                                arguments => [
+                                    Perlito5::AST::Apply->new(
+                                        code => $outer_label,
+                                        bareword => 1,
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ];
+                $change = 1;
+                next GOTO;
             }
         }
         push @unprocessed, $goto;

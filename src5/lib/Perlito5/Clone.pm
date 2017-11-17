@@ -1,11 +1,7 @@
 package Perlito5::Clone;
 
 sub clone {
-    my @out;
-    for my $i ( 0 .. $#_ ) {
-        push @out, _clone( $_[$i] );
-    }
-    return @out;
+    _clone( $_[0] );
 }
 
 sub _clone {
@@ -15,7 +11,7 @@ sub _clone {
 
     my $ref = ref($obj);
     if ( !$ref ) {
-        return $ref;
+        return $obj;
     }
 
     if ( $ref eq 'ARRAY' ) {

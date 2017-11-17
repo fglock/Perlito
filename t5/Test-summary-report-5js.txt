@@ -208,3 +208,5 @@ t5/unit/while_return.t                    (Wstat: 0 Tests: 3 Failed: 2)
 
 t5/op/numconvert.t .......................... CORE::pack not implemented at t5-js/op/numconvert.t line 1547
 
+t5/unit/goto_redo.t 
+
