@@ -1,6 +1,6 @@
 use feature 'say';
 
-say '1..1';
+say '1..2';
 
 # goto working as "redo"
 
