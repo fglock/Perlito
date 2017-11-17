@@ -1,16 +1,4 @@
-
-- work in progress:
-	pack() unpack() (Java) by Bas Appelo
-
-	module-level compilation for perlito5.pl (Perl5)
-
-	utf8 support (Java)
-
-	BEGIN blocks (parser)
-
-	tie() and overload
-
-	XS replacement modules
+Dev Version:
 
 - Parser:
 -- some "goto" forms are transformed, so they work in JavaScript and Java
@@ -57,7 +45,7 @@ backends.
 -- strict refs
 -- srand() returns true, warns on overflow
 -- fix read-only values
--- $\
+-- "$\", "$;"
 -- caller() now works "natively", decoding the Java stack trace
 -- symbol tables like %:: and typeglobs support
 -- file tests: "-e", "-l", "-r", "-w", "-x"
