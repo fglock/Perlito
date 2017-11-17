@@ -51,6 +51,7 @@ sub rewrite_goto {
     return $stmts if !@Perlito5::GOTO;
 
     my $change = 0;
+    my $outer_label = Perlito5::get_label();
   GOTO:
     for my $goto (@Perlito5::GOTO) {
         my $label = $goto->{arguments}[0]{code};
@@ -70,7 +71,7 @@ sub rewrite_goto {
                 # NOTE: if $id == 0, replace "goto" with "redo"
 
                 # TODO - mark this @Perlito5::GOTO entry as processed (remove from list)
-                # $change = 1;
+                $change = 1;
 
                 next GOTO;
             }
@@ -78,7 +79,13 @@ sub rewrite_goto {
     }
 
     if ($change) {
-        # TODO wrap the statements in a block
+        # wrap the statements in a block with the new label
+        return [
+            Perlito5::AST::Block->new(
+                label => $outer_label,
+                stmts => [ @$stmts ],
+            ),
+        ];
     }
 
     return $stmts;
