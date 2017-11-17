@@ -231,6 +231,8 @@ token term_next_last_redo {
                  );
             $MATCH->{capture} = [ 'term', $ast ];
             if ($code eq 'goto') {
+                Perlito5::Compiler::error "goto must have label"
+                    if !@{$ast->{arguments}};
                 push @Perlito5::GOTO, $ast;
             }
         }
