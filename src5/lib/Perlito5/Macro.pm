@@ -37,10 +37,22 @@ use strict;
 
 sub rewrite_goto {
     my ($stmts) = @_;
-    if (@Perlito5::GOTO) {
-        # TODO
-        # warn "Block uses goto: ", Perlito5::Dumper::Dumper(\@Perlito5::GOTO);
+    return $stmts if !@Perlito5::GOTO;  # no "goto"
+
+    # TODO - ignore "goto &sub", because this is processed elsewhere
+
+    # lookup for labels
+    my @label;
+    for my $ast (@$stmts) {
+        push @label, $ast->{label} if $ast->{label};
     }
+    return $stmts if !@labels;  # no labels
+
+    # TODO
+
+    # warn "Block uses goto: ", Perlito5::Dumper::Dumper(\@Perlito5::GOTO);
+    # warn "Labels: ", Perlito5::Dumper::Dumper(\@label);
+
     return $stmts;
 }
 
