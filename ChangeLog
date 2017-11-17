@@ -13,6 +13,8 @@
 	XS replacement modules
 
 - Parser:
+-- some "goto" forms are transformed, so they work in JavaScript and Java
+backends.
 -- fix chomp(), chop()
 -- fix fat-arrow in argument lists
 -- fix indirect object
