@@ -2,7 +2,7 @@ use v5;
 package Perlito5::Macro;
 use strict;
 
-# TODO - provide "goto LABEL" inside a block
+# provide "goto LABEL" within a statement list
 #
 #  {
 #       123;
@@ -35,23 +35,40 @@ use strict;
 #       456;
 #  }
 
+# See:
+#   https://jamey.thesharps.us/2016/05/09/how-to-eliminate-goto-statements/
+
 sub rewrite_goto {
     my ($stmts) = @_;
     return $stmts if !@Perlito5::GOTO;  # no "goto"
 
-    # TODO - ignore "goto &sub", because this is processed elsewhere
+    # ignore "goto &sub" - this is processed elsewhere
+    # ignore "goto $str" - this is not yet implemented - TODO
+    # accept "goto LABEL" (bareword)
+    @Perlito5::GOTO = grep {
+        $_->{arguments}[0]{bareword}
+    } @Perlito5::GOTO;
+    return $stmts if !@Perlito5::GOTO;
 
-    # lookup for labels
-    my @label;
-    for my $ast (@$stmts) {
-        push @label, $ast->{label} if $ast->{label};
+  GOTO:
+    for my $goto (@Perlito5::GOTO) {
+        my $label = $goto->{arguments}[0]{code};
+        next GOTO unless $label;
+
+        # lookup for labels
+        my @label;
+        for my $ast (@$stmts) {
+            if ($ast->{label} && $ast->{label} eq $label) {
+                # TODO
+
+                # warn "Block uses goto: ", Perlito5::Dumper::Dumper($goto);
+
+                # TODO - mark this @Perlito5::GOTO entry as processed
+
+                next GOTO;
+            }
+        }
     }
-    return $stmts if !@labels;  # no labels
-
-    # TODO
-
-    # warn "Block uses goto: ", Perlito5::Dumper::Dumper(\@Perlito5::GOTO);
-    # warn "Labels: ", Perlito5::Dumper::Dumper(\@label);
 
     return $stmts;
 }
