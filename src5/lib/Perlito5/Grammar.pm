@@ -172,6 +172,11 @@ sub exp_stmts {
             }
         }
     }
+
+    # if (@Perlito5::GOTO) {
+    #     warn "Block uses goto: ", Perlito5::Dumper::Dumper(\@Perlito5::GOTO);
+    # }
+
     $Perlito5::PKG_NAME = pop @PKG;
     $Perlito5::BLOCK_HAS_SEMICOLON ||= $has_semicolon;
     return { str => $str, to => $pos, capture => \@stmts };

@@ -77,6 +77,7 @@ sub closure_block {
     if ( $str->[$pos] ne '}' ) {
         Perlito5::Compiler::error "syntax error";
     }
+
     $m->{to} = $pos + 1;
     $m->{capture} = Perlito5::AST::Block->new( stmts => $capture, sig => undef );
     # end of lexical scope

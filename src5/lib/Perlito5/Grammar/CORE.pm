@@ -220,15 +220,19 @@ token term_next_last_redo {
     #        "bar" to be part of the argument to "redo". See: perldoc -f redo
     <next_last_redo> <.Perlito5::Grammar::Space::opt_ws> <next_last_redo_parse>
         {
+            my $code = Perlito5::Match::flat($MATCH->{next_last_redo});
             my $args = Perlito5::Match::flat($MATCH->{next_last_redo_parse});
-            $MATCH->{capture} = [ 'term',
+            my $ast =
                  Perlito5::AST::Apply->new(
-                    code      => Perlito5::Match::flat($MATCH->{next_last_redo}),
+                    code      => $code,
                     arguments => $args eq '*undef*' ? [] : [$args],
                     namespace => '',
                     bareword  => $args eq '*undef*' ? 1 : 0,
-                 )
-               ]
+                 );
+            $MATCH->{capture} = [ 'term', $ast ];
+            if ($code eq 'goto') {
+                push @Perlito5::GOTO, $ast;
+            }
         }
 };
 
@@ -407,6 +411,7 @@ Perlito5::Grammar::Precedence::add_term( 'chop'   => \&term_operator_with_paren 
 Perlito5::Grammar::Precedence::add_term( 'next'   => \&term_next_last_redo );
 Perlito5::Grammar::Precedence::add_term( 'last'   => \&term_next_last_redo );
 Perlito5::Grammar::Precedence::add_term( 'redo'   => \&term_next_last_redo );
+Perlito5::Grammar::Precedence::add_term( 'goto'   => \&term_next_last_redo );
 Perlito5::Grammar::Precedence::add_term( 'shift'  => \&term_unary );
 Perlito5::Grammar::Precedence::add_term( 'pop'    => \&term_unary );
 Perlito5::Grammar::Precedence::add_term( 'scalar' => \&term_scalar );

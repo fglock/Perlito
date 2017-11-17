@@ -26,10 +26,11 @@ use strict;
     #       456;
     #  }
 
+    #  LABEL:
     #  {
     #       123;
     #       my $var;
-    #       return do { 456; };
+    #       do { do { 456; }; last LABEL; };
     #       123;
     #       456;
     #  }
