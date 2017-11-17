@@ -35,5 +35,4 @@ t5/unit/regex_zero_length_match_match.t   (Wstat: 0 Tests: 4 Failed: 2)
 t5/unit/regex_zero_length_replace.t       (Wstat: 0 Tests: 1 Failed: 1)
   Failed test:  1
 
-t5/unit/goto_redo.t 
 
