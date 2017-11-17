@@ -35,6 +35,7 @@ Perlito5-Java platform differences
   - no `goto LABEL`
       - `goto &code` works, but it doesn't do a tail-call
       - Text::Balanced module doesn't work
+      - File::Copy module doesn't work
 
 
 Build using make
