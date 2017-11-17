@@ -32,11 +32,6 @@ Perlito5-Java platform differences
       - file permissions for setuid, setgid, and sticky bit are not implemented
       - some signals are not available in Java.
 
-  - no `goto LABEL`
-      - `goto &code` works, but it doesn't do a tail-call
-      - Text::Balanced module doesn't work
-      - File::Copy module doesn't work
-
 
 Build using make
 ----------------
@@ -178,8 +173,12 @@ Perlito5-Java work-in-progress
 
       - BEGIN line numbers show the line number at the time of eval - the line number is relative to the start of the BEGIN block
 
-  - no `goto LABEL`
+  - `goto`
       - `goto &code` works, but it doesn't do a tail-call
+      - `goto LABEL` - some use patterns work.
+        - TODO - test Text::Balanced module
+        - TODO - test File::Copy module
+      - "computed goto" is not implemented
 
   - signals are partially implemented
       - `$SIG{__WARN__}` and `$SIG{__DIE__}` are implemented

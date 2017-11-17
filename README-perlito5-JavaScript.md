@@ -23,6 +23,7 @@ Perlito5-in-JavaScript - what works
 - Most control structures.
   `next`, `last`, `redo`, `continue` and labels.
   `goto &subr`.
+  `goto LABEL` - some use patterns work.
 
 - Most string, numeric, array, hash operators.
 
@@ -68,9 +69,10 @@ Perlito5-in-JavaScript differences from "perl"
   `/x`, `/s`, `/e` modifiers are supported.
 
 - Control structures are partially implemented;
-  `goto LABEL` is not supported.
-  `given` is not implemented.
-  `goto &sub` works, but tail call is not implemented yet.
+  - `goto LABEL` - some use patterns work.
+  - `goto &sub` works, but tail call is not implemented yet.
+  - "computed goto" is not implemented
+  - `given` is not implemented.
 
 - String pos() is not implemented yet.
 
