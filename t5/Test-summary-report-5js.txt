@@ -208,5 +208,5 @@ t5/unit/while_return.t                    (Wstat: 0 Tests: 3 Failed: 2)
 
 t5/op/numconvert.t .......................... CORE::pack not implemented at t5-js/op/numconvert.t line 1547
 
-t5-js/unit/for_modify_arglist_array.t 
+t5/unit/for_modify_arglist_array.t 
 
