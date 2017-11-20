@@ -1717,7 +1717,9 @@ package Perlito5::AST::Apply;
         },
     );
 
-    for my $op (qw/ binmode close closedir open opendir readdir seek seekdir read sysread /) {
+    for my $op (qw/ binmode close closedir open opendir readdir seek seekdir read sysread
+        write syswrite /
+    ) {
         $emit_js{$op} = sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
