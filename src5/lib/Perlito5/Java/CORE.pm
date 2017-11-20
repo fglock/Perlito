@@ -319,6 +319,19 @@ EOT
             return PlCx.UNDEF;
         }
 EOT
+    syswrite => <<'EOT',
+        int argCount = List__.to_int();
+        if (argCount < 1) {
+            PlCORE.die("Not enough arguments for syswrite");
+        }
+        if (argCount == 1) {
+            return PlCORE.print(want, fh, List__);
+        }
+        return PlCORE.die("syswrite(FILEHANDLE,SCALAR,LENGTH,OFFSET) not implemented");
+EOT
+    write => <<'EOT',
+        return PlCORE.die("write() not implemented");
+EOT
     say => <<'EOT',
         List__.push( new PlString("\n") );
         return PlCORE.print(want, fh, List__);
