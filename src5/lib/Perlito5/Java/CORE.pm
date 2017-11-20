@@ -324,19 +324,39 @@ EOT
         if (argCount < 1) {
             PlCORE.die("Not enough arguments for syswrite");
         }
+        PlObject st = PlCx.EMPTY;
         if (argCount == 1) {
-            return PlCORE.print(want, fh, List__);
+            st = List__.aget(0);
         }
-        if (argCount == 2) {
+        else if (argCount == 2) {
             // syswrite(FILEHANDLE,SCALAR,LENGTH)
-            return PlCORE.print(want, fh, new PlArray(
-                List__.aget(0).substr(PlCx.INT0, List__.aget(1))
-            ));
+            st = List__.aget(0).substr(PlCx.INT0, List__.aget(1));
         }
-        // syswrite(FILEHANDLE,SCALAR,LENGTH,OFFSET)
-        return PlCORE.print(want, fh, new PlArray(
-            List__.aget(0).substr(List__.aget(2), List__.aget(1))
-        ));
+        else {
+            // syswrite(FILEHANDLE,SCALAR,LENGTH,OFFSET)
+            st = List__.aget(0).substr(List__.aget(2), List__.aget(1));
+        }
+        int count = 0;
+        try {
+            String s = st.toString();
+
+            if (fh.binmode) {
+                for (int i = 0; i < s.length(); i++) {
+                    fh.outputStream.write(s.charAt(i));
+                    count++;
+                }
+            }
+            else {
+                byte[] bytes = s.getBytes(fh.charset);
+                fh.outputStream.write(bytes);
+                count += bytes.length;
+            }
+            fh.outputStream.flush();
+        }
+        catch(Exception e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+        }
+        return new PlInt(count);
 EOT
     write => <<'EOT',
         return PlCORE.die("write() not implemented");
