@@ -3586,6 +3586,9 @@ class PlFileHandle extends PlObject {
         return true;
     }
     public String toString() {
+        if (this.typeglob_name == null) {
+            return "";
+        }
         if (this.typeglob_name.startsWith("main::")) {
             return "*" + this.typeglob_name.substring(4);
         }
