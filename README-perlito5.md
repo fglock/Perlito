@@ -340,6 +340,9 @@ Parser
   Bareword "GG" not allowed while "strict subs" in use at (eval 1) line 1.
   ```
 
+- each statement can have a single label for 'last', 'goto'.
+  Multiple labels are not supported.
+
 Add tests for fixed bugs
 ------------------------
 
