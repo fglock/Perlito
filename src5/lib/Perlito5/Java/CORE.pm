@@ -327,7 +327,16 @@ EOT
         if (argCount == 1) {
             return PlCORE.print(want, fh, List__);
         }
-        return PlCORE.die("syswrite(FILEHANDLE,SCALAR,LENGTH,OFFSET) not implemented");
+        if (argCount == 2) {
+            // syswrite(FILEHANDLE,SCALAR,LENGTH)
+            return PlCORE.print(want, fh, new PlArray(
+                List__.aget(0).substr(PlCx.INT0, List__.aget(1))
+            ));
+        }
+        // syswrite(FILEHANDLE,SCALAR,LENGTH,OFFSET)
+        return PlCORE.print(want, fh, new PlArray(
+            List__.aget(0).substr(List__.aget(2), List__.aget(1))
+        ));
 EOT
     write => <<'EOT',
         return PlCORE.die("write() not implemented");
