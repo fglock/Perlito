@@ -1356,12 +1356,22 @@ EOT
         //      space    becomes: "\ " unless the /xx flag is used (flag_xx)
         //      \120     becomes: \0120 - Java requires octal sequences to start with zero
         //      \0       becomes: \00 - Java requires the extra zero
+        boolean first = true;
         for ( ; offset < length; ) {
             final int c = s.codePointAt(offset);
             switch (c) {
                 case ']':
-                    sb.append(Character.toChars(c));
-                    return offset;
+                    if (first) {
+                        sb.append("\\]");
+                        break;
+                    }
+                    else {
+                        sb.append(Character.toChars(c));
+                        return offset;
+                    }
+                case '[':
+                    sb.append("\\[");
+                    break;
                 case '\\':  // escape - \[ \120
                     sb.append(Character.toChars(c));
                     if (offset < length) {
@@ -1397,6 +1407,7 @@ EOT
                     sb.append(Character.toChars(c));
                     break;
             }
+            first = false;
             offset++;
         }
         return offset;
