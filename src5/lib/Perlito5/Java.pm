@@ -216,6 +216,7 @@ our %op_prefix_js_str = (
     'prefix:<-r>' => 'PerlOp.p5is_readable',
     'prefix:<-w>' => 'PerlOp.p5is_writable',
     'prefix:<-x>' => 'PerlOp.p5is_executable',
+    'prefix:<-p>' => 'PerlOp.p5is_named_pipe',
 );
 
 # these operators need 2 "str" parameters

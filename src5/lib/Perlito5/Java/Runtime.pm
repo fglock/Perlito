@@ -1249,6 +1249,11 @@ EOT
         }
     }
 
+    public static final PlObject p5is_named_pipe(PlObject s) {
+        // TODO "-p"
+        return new PlBool(false);
+    }
+
     public static final PlObject list_replicate(PlArray o, PlObject c, int wantarray) {
         if (wantarray == PlCx.SCALAR) {
             return o.aget(-1).string_replicate(c);
