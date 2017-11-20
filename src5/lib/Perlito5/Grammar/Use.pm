@@ -216,7 +216,9 @@ sub parse_time_eval {
         # require $filename;
         #   use the compiler "require" instead of native Perl
         #   because we need to add BEGIN-block instrumentation
+        unshift @Perlito5::CALLER, [ $module_name ];
         Perlito5::Grammar::Use::require($filename);
+        shift @Perlito5::CALLER;
 
         if (!$skip_import) {
             # call import/unimport
