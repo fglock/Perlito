@@ -1288,6 +1288,9 @@ package Perlito5::AST::Var;
         $str_name = $Perlito5::Java::Java_var_name{$self->{_id}}
             if exists $Perlito5::Java::Java_var_name{$self->{_id}};
 
+        if ($self->{sigil} eq '$#') {
+            return $str_name . '.end_of_array_index()';
+        }
         if ( $sigil eq '@' ) {
             if ( $wantarray eq 'scalar' ) {
                 return $self->emit_java($level, 'list') . '.length_of_array()';
@@ -1298,9 +1301,6 @@ package Perlito5::AST::Var;
                     . ' : ' . $self->emit_java($level, 'list') . '.length_of_array()'
                     . ')';
             }
-        }
-        if ($self->{sigil} eq '$#') {
-            return $str_name . '.end_of_array_index()';
         }
         return $str_name;
     }
