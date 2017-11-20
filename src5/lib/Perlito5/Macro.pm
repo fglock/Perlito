@@ -50,7 +50,7 @@ sub rewrite_goto {
 
         # lookup for labels
         my @label;
-        for my $id (0 .. $#$stmts) {
+        for my $id (reverse (0 .. $#$stmts)) {
             my $ast = $stmts->[$id];
             if ($ast->{label} && $ast->{label} eq $label) {
                 my @stmt_list = @{$stmts}[ $id .. $#$stmts ];
