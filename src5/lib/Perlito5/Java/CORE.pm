@@ -655,6 +655,23 @@ EOT
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject rename(int want, PlArray List__) {
+        try {
+            Files.move(
+                PlV.path.resolve( List__.aget(0).toString() ),
+                PlV.path.resolve( List__.aget(1).toString() ),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            );
+            return PlCx.INT1;
+        }
+        catch(NoSuchFileException e) {
+            PlV.sset("main::!", new PlString("No such file or directory"));
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+        }
+        return PlCx.UNDEF;
+    }
     public static final PlObject lstat(int want, PlArray List__) {
         // TODO
         return PlCORE.stat(want, List__);
