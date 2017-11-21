@@ -20,5 +20,9 @@ sub encode {
 	return $_[0];
 }
 
+sub upgrade {
+	return $_[0];
+}
+
 1;
 
