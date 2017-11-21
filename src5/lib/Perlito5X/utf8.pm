@@ -24,5 +24,9 @@ sub upgrade {
 	return $_[0];
 }
 
+sub downgrade {
+	return $_[0];
+}
+
 1;
 
