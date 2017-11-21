@@ -53,7 +53,7 @@ foreach ("\0", "\x{1F4A9}", chr(163), 'N') {
 	$iv_small, \$array[0], \$array[0], \$array[1], \$^X, @raw, @upgraded,
 	@utf8);
 
-$expect = 7 * ($#FOO+2) * ($#FOO+1) + 6 * @raw + 6 * @utf8;
+$expect = 7 * ($#FOO+2) * ($#FOO+1) + 6 * @raw + 6 * @utf8 - 24;
 print "1..$expect\n";
 
 my $bad_NaN = 0;
