@@ -210,3 +210,9 @@ t5/op/numconvert.t .......................... CORE::pack not implemented at t5-j
 
 t5/unit/for_modify_arglist_array.t 
 
+t5/opbasic/arith.t
+t5/opbasic/cmp.t
+t5/opbasic/concat.t
+t5/opbasic/magic_phase.t
+t5/opbasic/qq.t
+
