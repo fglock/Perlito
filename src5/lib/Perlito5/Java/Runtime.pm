@@ -7481,7 +7481,7 @@ class PlString extends PlObject {
             }
         }
         if (s.indexOf("::") == -1) {
-            s = namespace + "::" + s;
+            return PlV.sget( namespace + "::" + s );
         }
         return PlV.sget(s);
     }
@@ -7490,7 +7490,7 @@ class PlString extends PlObject {
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
         if (s.indexOf("::") == -1) {
-            s = namespace + "::" + s;
+            return PlV.sset( namespace + "::" + s, v );
         }
         return PlV.sset(s, v);
     }
@@ -7504,7 +7504,7 @@ class PlString extends PlObject {
     }
     public PlArray array_deref(String namespace) {
         if (s.indexOf("::") == -1) {
-            s = namespace + "::" + s;
+            return PlV.array_get( namespace + "::" + s );
         }
         return PlV.array_get(s);
     }
@@ -7518,7 +7518,7 @@ class PlString extends PlObject {
     public PlObject hash_deref(String namespace) {
         int pos = s.lastIndexOf("::");
         if (pos == -1) {
-            s = namespace + "::" + s;
+            return PlV.hash_get( namespace + "::" + s );
         }
         else if (pos == s.length() - 2) {
             // %{"Module::"}
