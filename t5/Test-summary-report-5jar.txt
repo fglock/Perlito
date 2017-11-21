@@ -36,7 +36,7 @@ t5/unit/regex_zero_length_replace.t       (Wstat: 0 Tests: 1 Failed: 1)
   Failed test:  1
 
 # t5/opbasic/arith.t
-# t5/opbasic/cmp.t
+t5/opbasic/cmp.t
 t5/opbasic/concat.t
 t5/opbasic/magic_phase.t
 t5/opbasic/qq.t
