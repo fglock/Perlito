@@ -3301,6 +3301,9 @@ EOT
         return b.num_cmp2(this);
     }
     public PlObject num_cmp2(PlObject b) {
+        if (b.is_num()) {
+            return ((PlDouble)b).num_cmp(this);
+        }
         Long blong = b.to_long();
         int c = blong.compareTo(this.to_long());
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
@@ -7269,6 +7272,12 @@ class PlDouble extends PlObject {
         return this.i;
     }
     public String toString() {
+        if (Double.isNaN(this.i)) {
+            return "NaN";
+        }
+        if (Double.isInfinite(this.i)) {
+            return this.i > 0 ? "Inf" : "-Inf";
+        }
         double v = this.i;
         String s;
         if (   v < 0.0001 && v > -0.0001
@@ -7309,10 +7318,16 @@ class PlDouble extends PlObject {
         return new PlDouble(i < 0.0 ? -i : i);
     }
     public PlObject num_cmp(PlObject b) {
+        if (Double.isNaN(this.i)) {
+            return PlCx.UNDEF;
+        }
         int c = ((Double)this.i).compareTo(b.to_double());
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
     public PlObject num_cmp2(PlObject b) {
+        if (Double.isNaN(this.i)) {
+            return PlCx.UNDEF;
+        }
         int c = ((Double)b.to_double()).compareTo(this.i);
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
