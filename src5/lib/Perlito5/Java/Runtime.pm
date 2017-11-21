@@ -7835,7 +7835,7 @@ class PlString extends PlObject {
         return this.parse().num_cmp(b);
     }
     public PlObject num_cmp2(PlObject b) {
-        return b.num_cmp2(this.parse());
+        return b.num_cmp(this.parse());
     }
     public boolean is_integer_range() {
         return this.parse().is_integer_range();
