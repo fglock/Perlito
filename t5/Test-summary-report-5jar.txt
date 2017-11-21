@@ -41,3 +41,5 @@ t5/opbasic/concat.t
 t5/opbasic/magic_phase.t
 t5/opbasic/qq.t
 
+t5/op/utfhash.t
+
