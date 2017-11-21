@@ -1,5 +1,7 @@
 #!./perl
 
+use Config;
+
 BEGIN {
        chdir 't' if -d 't';
        @INC = '../lib';
