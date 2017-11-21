@@ -3430,6 +3430,9 @@ class PlReference extends PlObject {
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
     }
+    public double to_double() {
+        return PlClass.overload_to_number(this).to_double();
+    }
     public PlObject to_num() {
         return PlClass.overload_to_number(this);
     }
