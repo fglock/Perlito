@@ -286,37 +286,39 @@ while (my ($i, $v) = each @raw) {
     printf "%sok %d # cmp, chr %d\n", $not, ++$ok, ord $raw;
 }
 
-while (my ($i, $v) = each @utf8) {
-    # Copy, to avoid any inadvertent conversion
-    my ($raw, $cooked, $not);
-    $raw = $raw[$i];
-    $cooked = $v;
-    $not = $raw eq $cooked ? 'not ' : '';
-    printf "%sok %d # eq vs octets, chr %d\n", $not, ++$ok, ord $raw;
+# TODO
 
-    $raw = $raw[$i];
-    $cooked = $v;
-    $not = $raw ne $cooked ? '' : 'not ';
-    printf "%sok %d # ne vs octets, chr %d\n", $not, ++$ok, ord $raw;
-
-    $raw = $raw[$i];
-    $cooked = $v;
-    $not = (($raw cmp $cooked) == 0) ? 'not ' : '';
-    printf "%sok %d # cmp vs octects, chr %d\n", $not, ++$ok, ord $raw;
-
-    # And now, transposed.
-    $raw = $raw[$i];
-    $cooked = $v;
-    $not = $cooked eq $raw ? 'not ' : '';
-    printf "%sok %d # eq vs octets, chr %d\n", $not, ++$ok, ord $raw;
-
-    $raw = $raw[$i];
-    $cooked = $v;
-    $not = $cooked ne $raw? '' : 'not ';
-    printf "%sok %d # ne vs octets, chr %d\n", $not, ++$ok, ord $raw;
-
-    $raw = $raw[$i];
-    $cooked = $v;
-    $not = (($cooked cmp $raw) == 0) ? 'not ' : '';
-    printf "%sok %d # cmp vs octects, chr %d\n", $not, ++$ok, ord $raw;
-}
+# while (my ($i, $v) = each @utf8) {
+#     # Copy, to avoid any inadvertent conversion
+#     my ($raw, $cooked, $not);
+#     $raw = $raw[$i];
+#     $cooked = $v;
+#     $not = $raw eq $cooked ? 'not ' : '';
+#     printf "%sok %d # eq vs octets, chr %d\n", $not, ++$ok, ord $raw;
+# 
+#     $raw = $raw[$i];
+#     $cooked = $v;
+#     $not = $raw ne $cooked ? '' : 'not ';
+#     printf "%sok %d # ne vs octets, chr %d\n", $not, ++$ok, ord $raw;
+# 
+#     $raw = $raw[$i];
+#     $cooked = $v;
+#     $not = (($raw cmp $cooked) == 0) ? 'not ' : '';
+#     printf "%sok %d # cmp vs octects, chr %d\n", $not, ++$ok, ord $raw;
+# 
+#     # And now, transposed.
+#     $raw = $raw[$i];
+#     $cooked = $v;
+#     $not = $cooked eq $raw ? 'not ' : '';
+#     printf "%sok %d # eq vs octets, chr %d\n", $not, ++$ok, ord $raw;
+# 
+#     $raw = $raw[$i];
+#     $cooked = $v;
+#     $not = $cooked ne $raw? '' : 'not ';
+#     printf "%sok %d # ne vs octets, chr %d\n", $not, ++$ok, ord $raw;
+# 
+#     $raw = $raw[$i];
+#     $cooked = $v;
+#     $not = (($cooked cmp $raw) == 0) ? 'not ' : '';
+#     printf "%sok %d # cmp vs octects, chr %d\n", $not, ++$ok, ord $raw;
+# }
