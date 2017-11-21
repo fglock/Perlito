@@ -7321,14 +7321,22 @@ class PlDouble extends PlObject {
         if (Double.isNaN(this.i)) {
             return PlCx.UNDEF;
         }
-        int c = ((Double)this.i).compareTo(b.to_double());
+        double bb = b.to_double();
+        if (Double.isNaN(bb)) {
+            return PlCx.UNDEF;
+        }
+        int c = ((Double)this.i).compareTo(bb);
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
     public PlObject num_cmp2(PlObject b) {
         if (Double.isNaN(this.i)) {
             return PlCx.UNDEF;
         }
-        int c = ((Double)b.to_double()).compareTo(this.i);
+        double bb = b.to_double();
+        if (Double.isNaN(bb)) {
+            return PlCx.UNDEF;
+        }
+        int c = ((Double)bb).compareTo(this.i);
         return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
 EOT
