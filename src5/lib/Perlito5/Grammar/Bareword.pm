@@ -587,12 +587,7 @@ sub term_bareword {
         $arg = Perlito5::Grammar::Expression::expand_list( $arg );
 
         if ( $namespace eq '' || $namespace eq 'CORE' ) {
-            if  (   $name eq 'local'
-                ||  $name eq 'my'
-                ||  $name eq 'state'
-                ||  $name eq 'our'
-                )
-            {
+            if  (   $name eq 'local' ) {
                 my $declarator = $name;
                 my @out;
                 for my $var (@$arg) {
@@ -609,9 +604,8 @@ sub term_bareword {
                             );
                         $var->{_decl} = $name;
                         $var->{_id}   = $Perlito5::ID++;
-                        $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
                         $var->{_namespace} = $Perlito5::PKG_NAME
-                            if $declarator eq 'local' && !$var->{namespace} && !$var->{_namespace};
+                            if !$var->{namespace} && !$var->{_namespace};
                         push @out, $decl;
                     }
                 }

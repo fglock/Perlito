@@ -46,8 +46,10 @@ token term_declarator {
         ]
     | ''
     ]
-    <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::var_ident>   # my Int $variable
-    <Perlito5::Grammar::Attribute::opt_attribute>
+    <.Perlito5::Grammar::Space::opt_ws>
+    [
+      <Perlito5::Grammar::var_ident>   # my Int $variable
+      <Perlito5::Grammar::Attribute::opt_attribute>
         {
             my $declarator = Perlito5::Match::flat($MATCH->{declarator});
             my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::opt_type"});
@@ -69,7 +71,50 @@ token term_declarator {
                 );
             $MATCH->{capture} = [ 'term', $decl ];
         }
-    # TODO - my ($var, %hash, @array) :shared
+    |
+      # my Int ($var, %hash, @array) :shared
+      '('  <paren_parse>   ')'
+      <Perlito5::Grammar::Attribute::opt_attribute>
+        {
+            my $declarator = Perlito5::Match::flat($MATCH->{declarator});
+            my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::opt_type"});
+            my $arg = expand_list( Perlito5::Match::flat($MATCH->{paren_parse}) );
+            my $attributes = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"});
+
+            Perlito5::Compiler::error "No such class $type"
+                if $type && ! $Perlito5::PACKAGES->{$type};
+
+            my @out;
+            for my $var (@$arg) {
+                if ( ref($var) eq 'Perlito5::AST::Apply' && $var->{code} eq 'undef' ) {
+                    # "local (undef)" is a no-op
+                    push @out, $var;
+                }
+                else {
+                    my $decl = Perlito5::AST::Decl->new(
+                            decl => $declarator,
+                            type => $type,
+                            var  => $var,
+                            attributes => $attributes,
+                        );
+                    $var->{_decl} = $declarator;
+                    $var->{_id}   = $Perlito5::ID++;
+                    $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
+                    # $var->{_namespace} = $Perlito5::PKG_NAME
+                    #     if $declarator eq 'local' && !$var->{namespace} && !$var->{_namespace};
+                    push @out, $decl;
+                }
+            }
+            $MATCH->{capture} = [ 'term',
+                    Perlito5::AST::Apply->new(
+                        code      => 'circumfix:<( )>',
+                        namespace => '',
+                        arguments => \@out,
+                        proto     => undef,
+                    )
+                ];
+        }
+    ]
 };
 
 # these operators parse differently when followed by parenthesis
