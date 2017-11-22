@@ -105,9 +105,7 @@ Some things in this TODO list are already implemented, but missing tests of docu
 CPAN distribution
 -----------------
 
-- create Markdown files for github documentation;
-- example: http://www.unexpected-vortices.com/sw/rippledoc/quick-markdown-example.html
-- in CPAN, convert all the documentation to POD using one of these:
+- in CPAN, convert all the github documentation to POD using one of these:
 
   ```
     $ perl -e ' use Markdown::To::POD "markdown_to_pod"; my @text = <>; my $pod = markdown_to_pod(join "", @text); print $pod; ' README
@@ -134,27 +132,7 @@ Libraries
 
 - these go into namespace `Perlito5X::*`
 
-- Test (implemented as Perlito5::Test)
-
-- Data::Dumper (implemented as Perlito5X::Dumper)
-
-- there are perlito5-specific libs for:
-
-    ```
-    feature.pm
-    Config.pm
-    overload.pm
-    bytes.pm
-    integer.pm
-    lib.pm
-    Carp.pm
-    Tie::Array
-    Tie::Hash
-    Tie::Scalar
-    Symbol
-    ```
-
-  - add tests for core modules
+- add tests for core modules
 
 
 Parser
@@ -162,7 +140,7 @@ Parser
 
 - Regexes
 
-  - /x modifier is seen to late, after variable interpolation is processed:
+  - /x modifier is seen too late, after variable interpolation is processed:
 
     ```sh
     $ perl perlito5.pl -I src5/lib -Cast -e ' use strict; /abc # $v/x '
@@ -311,6 +289,35 @@ Parser
 
   $ perl -MO=Deparse -e ' $x CORE::+ $v '
   CORE:: is not a keyword
+  ```
+
+  possible implementation:
+
+  ```
+  diff --git a/src5/lib/Perlito5/Grammar/Precedence.pm b/src5/lib/Perlito5/Grammar/Precedence.pm
+  index f29a8de3..ecde73ff 100644
+  --- a/src5/lib/Perlito5/Grammar/Precedence.pm
+  +++ b/src5/lib/Perlito5/Grammar/Precedence.pm
+  @@ -54,7 +54,7 @@ sub add_term {
+   my $End_token;
+   my $End_token_chars;
+   my %Op;
+  -my @Op_chars = (4, 3, 2, 1);
+  +my @Op_chars = (9, 8, 4, 3, 2, 1);     # CORE::and CORE::or
+   sub op_parse {
+       my $str  = shift;
+       my $pos  = shift;
+  @@ -243,9 +243,9 @@ add_op( 'list', [ ',' ],   $prec, { assoc => 'list' } );
+   $prec = $prec - 1;
+   add_op( 'prefix', [ 'not' ], $prec );
+   $prec = $prec - 1;
+  -add_op( 'infix', [ 'and' ], $prec );
+  +add_op( 'infix', [ 'and', 'CORE::and' ], $prec );
+   $prec = $prec - 1;
+  -add_op( 'infix', [ 'or', 'xor' ], $prec );
+  +add_op( 'infix', [ 'or', 'xor', 'CORE::or', 'CORE::xor' ], $prec );
+   $prec = $prec - 1;
+   add_op( 'infix', [ '*start*' ], $prec );
   ```
 
 - strict and warnings: create options like 'subs', 'refs'
