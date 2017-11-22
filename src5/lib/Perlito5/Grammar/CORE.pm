@@ -87,7 +87,7 @@ token term_declarator {
             my @out;
             for my $var (@$arg) {
                 if ( ref($var) eq 'Perlito5::AST::Apply' && $var->{code} eq 'undef' ) {
-                    # "local (undef)" is a no-op
+                    # "my (undef)" is a no-op
                     push @out, $var;
                 }
                 else {
@@ -100,8 +100,6 @@ token term_declarator {
                     $var->{_decl} = $declarator;
                     $var->{_id}   = $Perlito5::ID++;
                     $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
-                    # $var->{_namespace} = $Perlito5::PKG_NAME
-                    #     if $declarator eq 'local' && !$var->{namespace} && !$var->{_namespace};
                     push @out, $decl;
                 }
             }
@@ -135,7 +133,8 @@ token term_operator_with_paren {
 };
 
 token term_local {
-    'local' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Sigil::term_sigil>
+    'local' <.Perlito5::Grammar::Space::opt_ws>
+    [ <Perlito5::Grammar::Sigil::term_sigil>
         {
             my $declarator = 'local';
             my $type = '';
@@ -162,6 +161,45 @@ token term_local {
                 );
             $MATCH->{capture} = [ 'term', $decl ];
         }
+    |
+      # local ($var, %hash, undef, @array)
+      '('  <paren_parse>   ')'
+        {
+            my $declarator = 'local';
+            my $type = undef;
+            my $arg = expand_list( Perlito5::Match::flat($MATCH->{paren_parse}) );
+            my $attributes = [];
+
+            my @out;
+            for my $var (@$arg) {
+                if ( ref($var) eq 'Perlito5::AST::Apply' && $var->{code} eq 'undef' ) {
+                    # "local (undef)" is a no-op
+                    push @out, $var;
+                }
+                else {
+                    my $decl = Perlito5::AST::Decl->new(
+                            decl => $declarator,
+                            type => $type,
+                            var  => $var,
+                            attributes => $attributes,
+                        );
+                    $var->{_decl} = $declarator;
+                    $var->{_id}   = $Perlito5::ID++;
+                    $var->{_namespace} = $Perlito5::PKG_NAME
+                        if !$var->{namespace} && !$var->{_namespace};
+                    push @out, $decl;
+                }
+            }
+            $MATCH->{capture} = [ 'term',
+                    Perlito5::AST::Apply->new(
+                        code      => 'circumfix:<( )>',
+                        namespace => '',
+                        arguments => \@out,
+                        proto     => undef,
+                    )
+                ];
+        }
+    ]
 };
 
 token term_return {
