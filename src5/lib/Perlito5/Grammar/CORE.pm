@@ -42,7 +42,7 @@ token term_declarator {
             $MATCH->{capture} = [ 'term', $sub ];
             return $MATCH;
           }
-        | <Perlito5::Grammar::opt_type> 
+        | <Perlito5::Grammar::opt_type>     # my Int ...
         ]
     | ''
     ]
@@ -69,6 +69,7 @@ token term_declarator {
                 );
             $MATCH->{capture} = [ 'term', $decl ];
         }
+    # TODO - my ($var, %hash, @array) :shared
 };
 
 # these operators parse differently when followed by parenthesis
