@@ -7132,7 +7132,7 @@ class PlUndef extends PlObject {
 
 }
 class PlBool extends PlObject {
-    private boolean i;
+    private final boolean i;
     public PlBool(boolean i) {
         this.i = i;
     }
@@ -7212,7 +7212,7 @@ class PlBool extends PlObject {
     }
 }
 class PlInt extends PlObject {
-    private long i;
+    private final long i;
     public PlInt(long i) {
         this.i = i;
     }
@@ -7264,7 +7264,7 @@ class PlInt extends PlObject {
     }
 }
 class PlDouble extends PlObject {
-    private double i;
+    private final double i;
     public PlDouble(double i) {
         this.i = i;
     }
