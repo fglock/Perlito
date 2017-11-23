@@ -83,6 +83,8 @@ public final class Perlito5ScriptEngineFactory implements javax.script.ScriptEng
             return getLanguageName();
         if (p.equals(ScriptEngine.LANGUAGE_VERSION))
             return getLanguageVersion();
+        if (p.equals("THREADING"))
+            return null;    // not thread-safe
         return null;
     }
     @Override
@@ -234,8 +236,13 @@ class Perlito5ScriptEngine implements javax.script.ScriptEngine {
         return eval(s, ctxt);
     }
     public Object eval(String script, ScriptContext ctxt) throws ScriptException {
-        // TODO
-        return "hello, World!\n";
+        org.perlito.Perlito5.LibPerl.init();
+        org.perlito.Perlito5.Main.main(new String[]{"-Cinit"});
+        Object[] ret = org.perlito.Perlito5.Main.apply( "Perlito5::eval_string", script );
+        if (ret.length > 0) {
+            return ret[0];
+        }
+        return null;
     }
 
     protected ScriptContext getScriptContext(Bindings nn) {

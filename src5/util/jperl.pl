@@ -305,7 +305,10 @@ if (!$expand_use) {
     $Perlito5::EMIT_USE = 1;
 }
 
-if ($backend) {
+if ($backend && $backend eq 'init') {
+    # "-Cinit" - this is used by the "ScriptEngine" only
+}
+elsif ($backend) {
     local $Perlito5::LINE_NUMBER = 1;
     if (@e_switch) {
         $source = join( "\n", @e_switch );

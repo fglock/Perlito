@@ -624,6 +624,21 @@ package Perlito5::AST::CompUnit;
                  ],
                  "}",
                ],
+               [ "public static PlObject[] apply(String functionName) {",
+                 [
+                     "PlArray list = new PlArray();",
+                     "PlObject result = new PlString(functionName).apply(PlCx.LIST, list);",
+                     "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
+                     "PlObject[] out = new PlObject[res.to_int()];",
+                     "int i = 0;",
+                     "for (PlObject s : res) {",
+                         [ "out[i++] = s;",
+                         ],
+                     "}",
+                     "return out;",
+                 ],
+                 "}",
+               ],
              "}",
         ) . "\n";
 
