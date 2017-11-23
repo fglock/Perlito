@@ -21,7 +21,8 @@ import javax.script.*;
 import java.util.*;
 import java.io.*;
 
-class Perlito5ScriptEngineFactory implements javax.script.ScriptEngineFactory {
+public final class Perlito5ScriptEngineFactory implements javax.script.ScriptEngineFactory {
+
     @Override
     public String getEngineName() {
         return "perlito5";
@@ -58,11 +59,11 @@ class Perlito5ScriptEngineFactory implements javax.script.ScriptEngineFactory {
     @Override
     public List<String> getMimeTypes() {
         // https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=229148
-        return Arrays.asList("text/x-perl");
+        return Arrays.asList("text/x-perl", "text/x-perl5");
     }
     @Override
     public List<String> getNames() {
-        return Arrays.asList("perl", "perl5", "perlito", "perlito5");
+        return Arrays.asList("perl", "perl5", "perlito", "perlito5", "Perl", "Perl5", "Perlito", "Perlito5");
     }
     @Override
     public String getOutputStatement(String o) {
