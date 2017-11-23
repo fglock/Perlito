@@ -8,12 +8,14 @@ sub meta_file_name {
 }
 
 sub emit_meta_file {
-    "org.perlito.Perlito5.PerlitoEngineFactory\n"
+    "org.perlito.Perlito5.Perlito5ScriptEngineFactory\n"
 }
 
-sub emit_java {
+sub emit_java_EngineFactory {
+    # TODO - get constants from Perlito5::Runtime
+
     return <<'EOT'
-class PerlitoEngineFactory implements javax.script.ScriptEngineFactory {
+class Perlito5ScriptEngineFactory implements javax.script.ScriptEngineFactory {
     @Override
     public String getEngineName() {
         return "perlito5";
@@ -88,7 +90,7 @@ class PerlitoEngineFactory implements javax.script.ScriptEngineFactory {
     @Override
     public ScriptEngine getScriptEngine() {
         try {
-            PerlitoScriptEngine e = new PerlitoScriptEngine();
+            Perlito5ScriptEngine e = new Perlito5ScriptEngine();
             e.setFactory(this);
             return e;
         } catch (ScriptException e) {
@@ -96,12 +98,122 @@ class PerlitoEngineFactory implements javax.script.ScriptEngineFactory {
         }
     }
 }
-class PerlitoEngine implements javax.script.ScriptEngine {
+EOT
 
+} # end of emit_java_EngineFactory()
+
+sub emit_java_Engine {
+    return <<'EOT'
+class Perlito5ScriptEngine implements javax.script.ScriptEngine {
+
+    protected ScriptContext context;
+
+    public Perlito5ScriptEngine() {
+        // TODO
+        context = new SimpleScriptContext();
+    }
+    public Perlito5ScriptEngine(Bindings n) {
+        this();
+        if (n == null) {
+            throw new NullPointerException("n is null");
+        }
+        context.setBindings(n, ScriptContext.ENGINE_SCOPE);
+    }
+    public void setContext(ScriptContext ctxt) {
+        if (ctxt == null) {
+            throw new NullPointerException("null context");
+        }
+        context = ctxt;
+    }
+    public ScriptContext getContext() {
+        return context;
+    }
+    public Bindings getBindings(int scope) {
+
+        if (scope == ScriptContext.GLOBAL_SCOPE) {
+            return context.getBindings(ScriptContext.GLOBAL_SCOPE);
+        } else if (scope == ScriptContext.ENGINE_SCOPE) {
+            return context.getBindings(ScriptContext.ENGINE_SCOPE);
+        } else {
+            throw new IllegalArgumentException("Invalid scope value.");
+        }
+    }
+    public void setBindings(Bindings bindings, int scope) {
+
+        if (scope == ScriptContext.GLOBAL_SCOPE) {
+            context.setBindings(bindings, ScriptContext.GLOBAL_SCOPE);;
+        } else if (scope == ScriptContext.ENGINE_SCOPE) {
+            context.setBindings(bindings, ScriptContext.ENGINE_SCOPE);;
+        } else {
+            throw new IllegalArgumentException("Invalid scope value.");
+        }
+    }
+    public void put(String key, Object value) {
+
+        Bindings nn = getBindings(ScriptContext.ENGINE_SCOPE);
+        if (nn != null) {
+            nn.put(key, value);
+        }
+
+    }
+    public Object get(String key) {
+
+        Bindings nn = getBindings(ScriptContext.ENGINE_SCOPE);
+        if (nn != null) {
+            return nn.get(key);
+        }
+
+        return null;
+    }
+    public Object eval(Reader reader, Bindings bindings ) throws ScriptException {
+
+        ScriptContext ctxt = getScriptContext(bindings);
+
+        return eval(reader, ctxt);
+    }
+    public Object eval(String script, Bindings bindings) throws ScriptException {
+
+        ScriptContext ctxt = getScriptContext(bindings);
+
+        return eval(script , ctxt);
+    }
+    public Object eval(Reader reader) throws ScriptException {
+
+
+        return eval(reader, context);
+    }
+    public Object eval(String script) throws ScriptException {
+
+
+        return eval(script, context);
+    }
+    protected ScriptContext getScriptContext(Bindings nn) {
+
+        SimpleScriptContext ctxt = new SimpleScriptContext();
+        Bindings gs = getBindings(ScriptContext.GLOBAL_SCOPE);
+
+        if (gs != null) {
+            ctxt.setBindings(gs, ScriptContext.GLOBAL_SCOPE);
+        }
+
+        if (nn != null) {
+            ctxt.setBindings(nn,
+                    ScriptContext.ENGINE_SCOPE);
+        } else {
+            throw new NullPointerException("Engine scope Bindings may not be null.");
+        }
+
+        ctxt.setReader(context.getReader());
+        ctxt.setWriter(context.getWriter());
+        ctxt.setErrorWriter(context.getErrorWriter());
+
+        return ctxt;
+
+    }
 }
 EOT
 
-} # end of emit_java()
+} # end of emit_java_Engine()
 
 1;
 
