@@ -15,6 +15,12 @@ sub emit_java_EngineFactory {
     # TODO - get constants from Perlito5::Runtime
 
     return <<'EOT'
+package org.perlito.Perlito5;
+
+import javax.script.*;
+import java.util.*;
+import java.io.*;
+
 class Perlito5ScriptEngineFactory implements javax.script.ScriptEngineFactory {
     @Override
     public String getEngineName() {
@@ -89,13 +95,13 @@ class Perlito5ScriptEngineFactory implements javax.script.ScriptEngineFactory {
     }
     @Override
     public ScriptEngine getScriptEngine() {
-        try {
+        // try {
             Perlito5ScriptEngine e = new Perlito5ScriptEngine();
             e.setFactory(this);
             return e;
-        } catch (ScriptException e) {
-            throw new RuntimeException(e);
-        }
+        // } catch (ScriptException e) {
+        //     throw new RuntimeException(e);
+        // }
     }
 }
 EOT
@@ -104,9 +110,16 @@ EOT
 
 sub emit_java_Engine {
     return <<'EOT'
+package org.perlito.Perlito5;
+
+import javax.script.*;
+import java.util.*;
+import java.io.*;
+
 class Perlito5ScriptEngine implements javax.script.ScriptEngine {
 
     protected ScriptContext context;
+    private Perlito5ScriptEngineFactory factory;
 
     public Perlito5ScriptEngine() {
         // TODO
@@ -119,6 +132,20 @@ class Perlito5ScriptEngine implements javax.script.ScriptEngine {
         }
         context.setBindings(n, ScriptContext.ENGINE_SCOPE);
     }
+
+    @Override
+    public ScriptEngineFactory getFactory() {
+        synchronized (this) {
+            if (factory == null) {
+                factory = new Perlito5ScriptEngineFactory();
+            }
+        }
+        return factory;
+    }
+    void setFactory(final Perlito5ScriptEngineFactory owningFactory) {
+        factory = owningFactory;
+    }
+
     public void setContext(ScriptContext ctxt) {
         if (ctxt == null) {
             throw new NullPointerException("null context");
@@ -127,6 +154,9 @@ class Perlito5ScriptEngine implements javax.script.ScriptEngine {
     }
     public ScriptContext getContext() {
         return context;
+    }
+    public Bindings createBindings() {
+        return new SimpleBindings();
     }
     public Bindings getBindings(int scope) {
 
@@ -157,36 +187,56 @@ class Perlito5ScriptEngine implements javax.script.ScriptEngine {
 
     }
     public Object get(String key) {
-
         Bindings nn = getBindings(ScriptContext.ENGINE_SCOPE);
         if (nn != null) {
             return nn.get(key);
         }
-
         return null;
     }
     public Object eval(Reader reader, Bindings bindings ) throws ScriptException {
-
         ScriptContext ctxt = getScriptContext(bindings);
-
         return eval(reader, ctxt);
     }
     public Object eval(String script, Bindings bindings) throws ScriptException {
-
         ScriptContext ctxt = getScriptContext(bindings);
-
         return eval(script , ctxt);
     }
     public Object eval(Reader reader) throws ScriptException {
-
-
         return eval(reader, context);
     }
     public Object eval(String script) throws ScriptException {
-
-
         return eval(script, context);
     }
+    public Object eval(Reader reader, ScriptContext ctxt) throws ScriptException {
+        StringBuilder buf = new StringBuilder();
+        boolean eof = false;
+        while (!eof) {
+            int len = 1000;
+            char[] c = new char[len];
+            int num_chars = 0;
+            try {
+                num_chars = reader.read(c, 0, len);
+                if (num_chars > 0) {
+                    String s = new String(c, 0, num_chars);
+                    buf.append(s);
+                }
+            }
+            catch(IOException e) {
+                throw new ScriptException(e);
+            }
+            if (num_chars <= 0) {
+                eof = true;
+            }
+        }
+        String s;
+        s = buf.toString();
+        return eval(s, ctxt);
+    }
+    public Object eval(String script, ScriptContext ctxt) throws ScriptException {
+        // TODO
+        return "hello, World!\n";
+    }
+
     protected ScriptContext getScriptContext(Bindings nn) {
 
         SimpleScriptContext ctxt = new SimpleScriptContext();
