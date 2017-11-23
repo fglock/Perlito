@@ -23,7 +23,7 @@ while (<>) {
     print F $s if $class;
 }
 
-require 'src5/lib/Perlito5/Java/JavaxScript.pm';
+require './src5/lib/Perlito5/Java/JavaxScript.pm';
 
 open F, ">", Perlito5::Java::JavaxScript::meta_file_name();
 print F Perlito5::Java::JavaxScript::emit_meta_file();
