@@ -10,7 +10,7 @@ backends.
 -- use $^H and %^H
 -- set Perl version to 5.026
 -- add core modules:
-    Env
+	Env
 	Benchmark, Memoize
 	DirHandle, File::Spec, File::Basename,
 	Text::Abbrev, Text::ParseWords
@@ -34,6 +34,8 @@ backends.
 -- "\N{U+263D}", "\N{YIN YANG}" string escape sequence
 
 - Java:
+-- javax.script API registers "Perl5" interpreter
+	example at misc/Java/Script.java
 -- fix $^O, returns the the operating system name
 -- "require", "require VERSION"
 -- "opendir", "readdir", "closedir", "select", "binmode"

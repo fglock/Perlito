@@ -120,11 +120,6 @@ Perlito5-Java work-in-progress
           ```
 
 
-  - "Java Scripting API"
-
-      - https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/prog_guide/api.html
-      - http://download.java.net/java/jdk9/docs/api/javax/script/package-summary.html
-
   - Java 8 triggers this problem:
 
       - http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
@@ -330,17 +325,46 @@ Note: Java extensions are disabled in the Java eval-string backend.
 Calling a Perl subroutine from Java
 -----------------------------------
 
-```java
-class MyJava {
-    public static void main(String[] args) throws Exception {
-        Main.init();
-        PlObject[] res = Main.apply("main::test", "123");
-        for (PlObject s: res) {
-            System.out.println("Java result: " + s.toString());
-        }
-    }
-}
-```
+- "Java Scripting API"
+
+  - javax.script API registers "Perl5" interpreter
+  - See example at `misc/Java/Script.java`
+
+  ```java
+  // $ cp misc/Java/Script.java .
+  // $ javac -cp .:perlito5.jar Script.java 
+  // $ java -cp .:perlito5.jar Script
+  
+  import javax.script.*;
+  
+  public class Script {
+      public static void main(String[] args) throws Exception {
+      
+          ScriptEngineManager factory = new ScriptEngineManager();
+          ScriptEngine engine = factory.getEngineByName("Perl5");
+      
+          Object o = engine.eval(" $x = 456; say 123 + $x; \"value was $x\" ");
+          System.out.println("result: " + o);
+      }
+  }
+  ```
+
+  - https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/prog_guide/api.html
+  - http://download.java.net/java/jdk9/docs/api/javax/script/package-summary.html
+
+- older API (deprecated)
+
+  ```java
+  class MyJava {
+      public static void main(String[] args) throws Exception {
+          Main.init();
+          PlObject[] res = Main.apply("main::test", "123");
+          for (PlObject s: res) {
+              System.out.println("Java result: " + s.toString());
+          }
+      }
+  }
+  ```
 
 Importing a Java class into Perl
 --------------------------------
