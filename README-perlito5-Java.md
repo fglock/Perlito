@@ -748,6 +748,8 @@ Perlito5-Java extensibility in "eval-string" mode
 
   Jython, JRuby, Groovy and Nashorn provide some examples.
 
+  - https://github.com/shekhargulati/java8-the-missing-tutorial/blob/master/10-nashorn.md
+
   Alternately, our own "pre-compile" mode introduced some syntax we could reuse.
 
   See also http://search.cpan.org/dist/Inline-Java/Java.pod
