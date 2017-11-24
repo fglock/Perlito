@@ -36,6 +36,11 @@ Perlito5 Release
 
     example: "Perlito5 - CPAN - v9.017"
 
+* release perlito5.jar and perlito5.js
+
+  See https://github.com/fglock/Perlito/releases
+
+
 Perlito6 Release
 ----------------
 

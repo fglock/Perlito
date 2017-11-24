@@ -731,6 +731,21 @@ the bytecode of a method must not be bigger than 65536 bytes:
         }->() )
     ```
 
+XS support using libperl.so
+-----------------------------------
+
+- Other implementations
+
+  - Jperl
+  
+    - http://www.drdobbs.com/jvm/jperl-accessing-perl-from-java/184410852
+  
+  - BSFPerl
+  
+    - http://bsfperl.sourceforge.net/tutorial/
+  
+    - https://sourceforge.net/p/bsfperl/discussion/307607/
+
 Perlito5-Java extensibility in "eval-string" mode
 ------------------------------------
 
