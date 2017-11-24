@@ -205,6 +205,7 @@ Perlito5-Java work-in-progress
       - `<DATA>` works
       - open binary mode vs. open utf8 needs more tests
       - files don't `auto-close`
+      - `$|` and `STDOUT->autoflush` not implemented
 
   - `tr()` is partially implemented
       - modifier switches needs some tests
@@ -359,6 +360,8 @@ Calling a Perl subroutine from Java
   perl>
   ```
 
+  - BUG - syntax errors are not reported
+
   - BUG - exit() in jrunscript causes a Java compiler error:
 
     ```
@@ -369,6 +372,8 @@ Calling a Perl subroutine from Java
     ```
 
 - older API (deprecated)
+
+  - using `Main.apply()`
 
   ```java
   class MyJava {
