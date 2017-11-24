@@ -36,9 +36,17 @@ Perlito5 Release
 
     example: "Perlito5 - CPAN - v9.017"
 
-* release perlito5.jar and perlito5.js
+* release perlito5.jar and perlito5.js to GitHub
 
   See https://github.com/fglock/Perlito/releases
+
+* release perlito5.jar to Maven
+
+  TODO
+
+* relase perlito5.js to npm
+
+  TODO
 
 
 Perlito6 Release
@@ -78,4 +86,6 @@ TODO for the release process
 * BUG - "cpan-v6/ChangeLog" is not updated automatically
 
 * BUG - the README files are not included in the cpan distribution
+
+* BUG - version number in src5/lib/Perlito5/Java/JavaxScript.pm is not updated automatically
 

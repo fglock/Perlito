@@ -162,7 +162,7 @@ Perlito5-Java work-in-progress
         };
         ```
 
-  - runtime error messages do not include the line number in the Perl code
+  - runtime error messages sometimes do not include the line number in the Perl code
 
       - also caller() is only partially implemented
 
@@ -358,6 +358,15 @@ Calling a Perl subroutine from Java
   $ jrunscript -cp .:perlito5.jar -l Perl5
   perl>
   ```
+
+  - BUG - exit() in jrunscript causes a Java compiler error:
+
+    ```
+    perl> exit(0)
+    
+    An exception has occurred in the compiler (9.0.1). Please file a bug against the Java compiler via the Java bug reporting page (http://bugreport.java.com) after checking the Bug Database (http://bugs.java.com) for duplicates. Include your program and the following diagnostic in your report. Thank you.
+    java.lang.StackOverflowError
+    ```
 
 - older API (deprecated)
 
@@ -892,27 +901,36 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
   - Method chaining:
 
+    ```
         my $global_queue = ConcurrentLinkedQueue::Of::String->new();
         my ConcurrentLinkedQueue::Of::String $queue = $global_queue->to_ConcurrentLinkedQueueOfString();
         my $x = $queue->poll();
+    ```
 
   - but this doesn't work yet:
 
+    ```
         my $x = $global_queue->to_ConcurrentLinkedQueueOfString()->poll();
         (TODO)
+    ```
 
   - Automatic casting:
 
+    ```
         # cast perl object to java object
         my Result $java_obj_result = $scan_result->to_Result();
+    ```
 
   - would be:
 
+    ```
         my Result $java_obj_result = $scan_result;
         (TODO)
+    ```
 
   - Array-deref:
 
+    ```
         @$native will retrieve an iterator and produce a Perl list
         (TODO)
 
@@ -921,6 +939,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         @{ $native->keySet() }
         @{ $native->values() }
         (TODO)
+    ```
 
   - Array-deref in boolean context:
         
@@ -1488,10 +1507,11 @@ Threads
 
   - Examples:
 
+    ```
     misc/Java/TestConcurrent.pl
     misc/Java/TestThread.pl
     misc/Java/TestThread2.pl    # atomic
-
+    ```
 
   - pass the threadid as a parameter to all closures;
 
