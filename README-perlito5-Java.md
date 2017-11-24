@@ -731,7 +731,26 @@ the bytecode of a method must not be bigger than 65536 bytes:
         }->() )
     ```
 
-Document Perlito5-Java extensibility
+Perlito5-Java extensibility in "eval-string" mode
+------------------------------------
+
+- Introspection container
+
+  When a new Java class is introduced inside "eval-string", it is too late to create a (static) type
+  that is recognizable by the already compiled code.
+
+  In this case we could use a container "PlJavaObject" and call methods using introspection.
+
+- Syntax
+
+  JRuby, Groovy and Nashorn provide some examples.
+
+  Alternately, our own "pre-compile" mode introduced some syntax we could reuse.
+
+  See also http://search.cpan.org/dist/Inline-Java/Java.pod
+
+
+Perlito5-Java extensibility in "pre-compile" mode
 ------------------------------------
 
 This documentation should be copied to file Perlito5::Java, in the CPAN distribution.
