@@ -1422,6 +1422,29 @@ Missing features, or partially implemented, or untested
 
         `print " ${__PACKAGE__} \n"`
 
+- BUG - auto modification is not lazy:
+
+  ```
+  $ perl -e ' $c{$_} //= scalar keys %c for qw(a b c a b d); use Data::Dumper; print Dumper \%c '
+  $VAR1 = {
+            'b' => 2,
+            'a' => 1,
+            'd' => 4,
+            'c' => 3
+          };
+  ```
+
+  ```
+  $ jrunscript -cp .:perlito5.jar -l Perl5
+  perl> $c{$_} //= scalar keys %c for qw(a b c a b d); use Data::Dumper; print Dumper \%c
+  $VAR1 = {
+          'a' => 0,
+          'b' => 1,
+          'c' => 2,
+          'd' => 3,
+      };
+  ```
+
 - Add tests
 
   - `NaN`, `Inf`, `-0`
