@@ -758,12 +758,13 @@ Perlito5-Java extensibility in "eval-string" mode
 
 - Syntax
 
-  JRuby, Groovy and Nashorn provide some examples.
+  Jython, JRuby, Groovy and Nashorn provide some examples.
 
   Alternately, our own "pre-compile" mode introduced some syntax we could reuse.
 
   See also http://search.cpan.org/dist/Inline-Java/Java.pod
 
+  - https://wiki.python.org/jython/UserGuide#interaction-with-java-packages
 
 Perlito5-Java extensibility in "pre-compile" mode
 ------------------------------------
