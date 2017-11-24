@@ -67,7 +67,8 @@ class PlJavaCompiler {
         // }
 
         javac = ToolProvider.getSystemJavaCompiler();
-        classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
+        classLoader = new DynamicClassLoader( new PlArray().getClass().getClassLoader() );
+        // classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
     }
 
