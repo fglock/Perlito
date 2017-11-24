@@ -36,6 +36,8 @@ backends.
 - Java:
 -- javax.script API registers "Perl5" interpreter
 	example at misc/Java/Script.java
+-- "jrunscript" support
+	$ jrunscript -cp .:perlito5.jar -l Perl5
 -- fix $^O, returns the the operating system name
 -- "require", "require VERSION"
 -- "opendir", "readdir", "closedir", "select", "binmode"

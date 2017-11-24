@@ -352,24 +352,12 @@ Calling a Perl subroutine from Java
   - https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/prog_guide/api.html
   - http://download.java.net/java/jdk9/docs/api/javax/script/package-summary.html
 
-- bug using `jrunscript`
+- "jrunscript" support
 
   ```
-  $ jrunscript -cp .:perlito5.jar -l perl
-  perl> 123
-  Exception in thread "main" java.lang.NoClassDefFoundError: PlReturnException
+  $ jrunscript -cp .:perlito5.jar -l Perl5
+  perl>
   ```
-
-  - https://www.ibm.com/developerworks/community/forums/html/topic?id=77777777-0000-0000-0000-000014413184
-
-    the jrunscript -classpath value is used by a separate "scripting" classloader that parallels the usual application classloader and that is used to resolve classes that have been mentioned in importClass() and importPackage().
-    
-    This is ok for some simple scripting, but runs into trouble the moment anything--your script or something your script ends up calling--tries a java.lang.Class.forName(), which uses the application classloader rather than the scripting classloader. Seems like an unneccessarily ugly design IMHO.
-    
-    You can either add your classes to the bootstrap classloader, or the extensions classloader, or "carefully" use -J-classpath and -classpath.
-
-  - https://stackoverflow.com/questions/3355262/why-doesnt-jrunscript-honor-my-classpath
-
 
 - older API (deprecated)
 
