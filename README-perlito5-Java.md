@@ -641,10 +641,16 @@ are shared.
 
 Perl operators are not atomic.
 
-Possible workaround: use the Context (javax.script.ScriptContext in Perlito5ScriptEngine) to store
-per-thread references to PlCx and PlV instances.
+- TODO - Cloning the context
 
-Note: be aware of circular references when cloning PlV instances.
+  - use the Context (javax.script.ScriptContext in Perlito5ScriptEngine) to store
+    per-thread references to PlCx and PlV instances.
+
+  - be aware of circular references when cloning PlV instances.
+
+  - PlStringConstant instances and method caches also need to be cloned
+
+    - TODO - check how 'local &sub' works in threaded perl 
 
 Perlito5 Java development tools
 ===============================

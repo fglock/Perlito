@@ -803,7 +803,7 @@ class PerlOp {
                 String className = pClass.className();
                 return PlCORE.die( "Can't locate object method \"" + method
                     + "\" via package \"" + className
-                    + "\" (perhaps you forgot to load \"" + className + "\"?" );
+                    + "\" (perhaps you forgot to load \"" + className + "\"?)" );
             }
             return methodCode.apply(context, args);
         }
@@ -842,7 +842,7 @@ class PerlOp {
         if (methodCode.is_undef()) {
             return PlCORE.die( "Can't locate object method \"" + method
                 + "\" via package \"" + invocant_str
-                + "\" (perhaps you forgot to load \"" + invocant_str + "\"?" );
+                + "\" (perhaps you forgot to load \"" + invocant_str + "\"?)" );
         }
         return methodCode.apply(context, args);
     }
