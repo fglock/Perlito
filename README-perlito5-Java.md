@@ -293,6 +293,9 @@ Perlito5-Java extensibility
 The Perlito5 Java backend doesn't support Perl XS extensions.
 Instead of XS, it has an extension mechanism that connects Perl with Java.
 
+TODO - investigate using the Nashorn convention for "Using Java from Scripts", see:
+https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
+
 Java classes can be added to a Perl script using a special "package" declaration:
 
 ```perl
