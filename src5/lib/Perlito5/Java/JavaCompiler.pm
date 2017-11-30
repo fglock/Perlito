@@ -218,6 +218,7 @@ class PlJavaCompiler {
         // return eval_java_string(outJava.toString());
 
         if (source.equals("")) {
+            PlV.sset("main::@", PlCx.EMPTY);
             return PlCx.UNDEF;
         }
 
@@ -253,18 +254,24 @@ class PlJavaCompiler {
             source5.append("        PlHash " + hash_name[i] + " = ((PlHash[])(hash_val))[" + i + "];\n");
             }
             source5.append("        try {\n");
-            source5.append("            return " + outJava + ";\n");
+            source5.append("            PlObject ret = " + outJava + ";\n");
+            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
+            source5.append("            return ret;\n");
             source5.append("        }\n");
             source5.append("        catch(PlReturnException e) {\n");
+            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
             source5.append("            return e.ret;\n");
             source5.append("        }\n");
             source5.append("        catch(PlNextException e) {\n");
+            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
             source5.append("            throw(e);\n");
             source5.append("        }\n");
             source5.append("        catch(PlLastException e) {\n");
+            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
             source5.append("            throw(e);\n");
             source5.append("        }\n");
             source5.append("        catch(PlRedoException e) {\n");
+            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
             source5.append("            throw(e);\n");
             source5.append("        }\n");
             source5.append("        catch(Exception e) {\n");
