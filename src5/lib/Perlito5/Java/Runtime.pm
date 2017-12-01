@@ -1044,17 +1044,35 @@ EOT
         return new PlDouble(s * random.nextDouble());
     }
 
-    public static final PlObject smartmatch_scalar(PlObject arg0, PlObject arg1) {
-        if (arg1.is_undef()) {
-            return arg0.is_undef() ? PlCx.TRUE : PlCx.FALSE;
+    public static final PlObject smartmatch_scalar(PlObject arg1, PlObject arg2) {
+        if (arg2.is_undef()) {
+            return arg1.is_undef() ? PlCx.TRUE : PlCx.FALSE;
         }
-        if (arg1.is_string()) {
-            return arg0.str_eq(arg1);
+        if (arg2.is_string()) {
+            return arg1.str_eq(arg2);
         }
-        if (arg1.is_num() || arg1.is_int()) {
-            return arg0.num_eq(arg1);
+        if (arg2.is_num() || arg2.is_int()) {
+            return arg1.num_eq(arg2);
         }
-        return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type '"), arg1.ref(), new PlString("'")));
+        if (arg2.is_ref()) {
+            PlClass bless = arg2.blessed_class();
+            if ( bless != null ) {
+                // TODO - right side is object: invoke ~~ overloading on Object, or die
+            }
+        }
+        if (arg2.is_array()) {
+            // TODO - right side is array
+        }
+        if (arg2.is_hash()) {
+            // TODO - right side is array
+        }
+        if (arg2.is_coderef()) {
+            // TODO - right side is code
+        }
+        if (arg2.is_regex()) {
+            // TODO - right side is regex
+        }
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type '"), arg2.ref(), new PlString("'")));
     }
 
     // and1(x) ? y : and3()
