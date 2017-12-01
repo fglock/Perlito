@@ -11,6 +11,24 @@ sub emit_meta_file {
     "org.perlito.Perlito5.Perlito5ScriptEngineFactory\n"
 }
 
+sub emit_java_ScriptContext {
+    return <<'EOT'
+package org.perlito.Perlito5;
+
+import javax.script.*;
+import java.util.*;
+import java.io.*;
+
+class Perlito5ScriptContext extends SimpleScriptContext {
+    public Perlito5ScriptContext() {
+    }
+}
+
+EOT
+
+} # end of emit_java_ScriptContext()
+
+
 sub emit_java_EngineFactory {
     # TODO - get constants from Perlito5::Runtime
 
@@ -124,7 +142,7 @@ class Perlito5ScriptEngine implements javax.script.ScriptEngine {
 
     public Perlito5ScriptEngine() {
         // TODO
-        context = new SimpleScriptContext();
+        context = new Perlito5ScriptContext();
     }
     public Perlito5ScriptEngine(Bindings n) {
         this();
@@ -247,7 +265,7 @@ class Perlito5ScriptEngine implements javax.script.ScriptEngine {
 
     protected ScriptContext getScriptContext(Bindings nn) {
 
-        SimpleScriptContext ctxt = new SimpleScriptContext();
+        Perlito5ScriptContext ctxt = new Perlito5ScriptContext();
         Bindings gs = getBindings(ScriptContext.GLOBAL_SCOPE);
 
         if (gs != null) {

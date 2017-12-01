@@ -29,6 +29,10 @@ open F, ">", Perlito5::Java::JavaxScript::meta_file_name();
 print F Perlito5::Java::JavaxScript::emit_meta_file();
 close F;
 
+open F, ">", "org/perlito/Perlito5/Perlito5ScriptContext.java";
+print F Perlito5::Java::JavaxScript::emit_java_ScriptContext();
+close F;
+
 open F, ">", "org/perlito/Perlito5/Perlito5ScriptEngineFactory.java";
 print F Perlito5::Java::JavaxScript::emit_java_EngineFactory();
 close F;
