@@ -48,7 +48,7 @@ sub perl5_to_java {
     $ast = $ast->emit_begin_scratchpad();
 
     # warn "perl_to_java: ", Perlito5::Dumper::Dumper( $ast );
-    my $java_code = $ast->emit_java(0, $want);
+    my $java_code = $ast->emit_java(2, $want);
 
     # say "java-source: [" . $java_code . "]";
 
@@ -76,7 +76,7 @@ sub eval_ast {
     $ast = $ast->emit_begin_scratchpad();
     # warn "eval_ast: ", Perlito5::Dumper::Dumper( $ast );
 
-    my $java_code = $ast->emit_java(0, $want);
+    my $java_code = $ast->emit_java(2, $want);
     # say STDERR "java-source: [" . $java_code . "]";
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
