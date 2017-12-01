@@ -363,16 +363,9 @@ Calling a Perl subroutine from Java
   perl>
   ```
 
-  - BUG - syntax errors are not reported
-
-  - BUG - exit() in jrunscript causes a Java compiler error:
-
-    ```
-    perl> exit(0)
-    
-    An exception has occurred in the compiler (9.0.1). Please file a bug against the Java compiler via the Java bug reporting page (http://bugreport.java.com) after checking the Bug Database (http://bugs.java.com) for duplicates. Include your program and the following diagnostic in your report. Thank you.
-    java.lang.StackOverflowError
-    ```
+  ```
+  perl> $Perlito5::Java::DEBUG=1   # enable debugging output
+  ```
 
 - older API (deprecated)
 
