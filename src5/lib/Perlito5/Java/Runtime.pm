@@ -628,10 +628,6 @@ class PerlOp {
     //
     // TODO - see Perlito5/JavaScript2/Runtime.pm for more operator implementations
 
-    private static PlObject boolean_stack;
-    private static PlArray local_stack = new PlArray();
-    private static Random random = new Random();
-
     // symbol tables
     // like %Module::
     public static final PlObject getSymbolTable(String nameSpace) {
@@ -848,66 +844,66 @@ class PerlOp {
 
     // local()
     public static final PlObject push_local(PlHash container, String index) {
-        local_stack.a.add(container);
-        local_stack.a.add(new PlString(index));
+        PlV.local_stack.a.add(container);
+        PlV.local_stack.a.add(new PlString(index));
         PlLvalue empty = new PlLvalue();
-        local_stack.a.add(container.hget_lvalue(index));
-        local_stack.a.add(PlCx.INT0);
+        PlV.local_stack.a.add(container.hget_lvalue(index));
+        PlV.local_stack.a.add(PlCx.INT0);
         container.hset_alias(index, empty);
         return empty;
     }
     public static final PlObject push_local(PlArray container, int index) {
-        local_stack.a.add(container);
-        local_stack.a.add(new PlInt(index));
+        PlV.local_stack.a.add(container);
+        PlV.local_stack.a.add(new PlInt(index));
         PlLvalue empty = new PlLvalue();
-        local_stack.a.add(container.aget_lvalue(index));
-        local_stack.a.add(PlCx.INT1);
+        PlV.local_stack.a.add(container.aget_lvalue(index));
+        PlV.local_stack.a.add(PlCx.INT1);
         container.aset_alias(index, empty);
         return empty;
     }
     public static final void push_local_regex_result() {
         PlRegexResult match = PlV.regex_result;
-        local_stack.a.add(match);
-        local_stack.a.add(PlCx.INT2);
+        PlV.local_stack.a.add(match);
+        PlV.local_stack.a.add(PlCx.INT2);
         PlRegexResult new_match = new PlRegexResult();
         new_match.matcher = match.matcher;
         new_match.regex_string = match.regex_string;
         PlV.regex_result = new_match;
     }
     public static final PlObject push_local_named_sub(PlObject value, String name) {
-        local_stack.a.add(new PlString(name));
-        local_stack.a.add(PlV.cget_no_autoload(name));
-        local_stack.a.add(PlCx.INT3);
+        PlV.local_stack.a.add(new PlString(name));
+        PlV.local_stack.a.add(PlV.cget_no_autoload(name));
+        PlV.local_stack.a.add(PlCx.INT3);
         PlLvalue newValue = new PlLvalue(value);
         PlV.cset_alias(name, newValue);
         return newValue;
     }
 
     public static final int local_length() {
-        return local_stack.to_int();
+        return PlV.local_stack.to_int();
     }
     public static final PlObject cleanup_local(int pos, PlObject ret) {
-        while (local_stack.to_int() > pos) {
-            int t = local_stack.pop().to_int();
-            PlObject v = local_stack.pop();
+        while (PlV.local_stack.to_int() > pos) {
+            int t = PlV.local_stack.pop().to_int();
+            PlObject v = PlV.local_stack.pop();
             PlObject index;
             PlObject container;
             switch (t) {
                 case 0:
-                    index     = local_stack.pop();
-                    container = local_stack.pop();
+                    index     = PlV.local_stack.pop();
+                    container = PlV.local_stack.pop();
                     ((PlHash)container).hset_alias(index.toString(), (PlLvalue)v);
                     break;
                 case 1:
-                    index     = local_stack.pop();
-                    container = local_stack.pop();
+                    index     = PlV.local_stack.pop();
+                    container = PlV.local_stack.pop();
                     ((PlArray)container).aset_alias(index.to_int(), (PlLvalue)v);
                     break;
                 case 2:
                     PlV.regex_result = (PlRegexResult)v;
                     break;
                 case 3:
-                    index     = local_stack.pop();
+                    index     = PlV.local_stack.pop();
                     PlV.cset_alias(index.toString(), (PlLvalue)v);
                     break;
             }
@@ -1021,7 +1017,7 @@ EOT
     }
 
     public static final PlObject srand() {
-        random = new Random();
+        PlV.random = new Random();
         return PlCx.UNDEF;
     }
     public static final PlObject srand(PlObject o) {
@@ -1029,7 +1025,7 @@ EOT
             PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Integer overflow in srand")));
         }
         long s = o.to_long();
-        random = new Random(s);
+        PlV.random = new Random(s);
         if (s == 0) {
             return new PlString("0E0");
         }
@@ -1040,7 +1036,7 @@ EOT
         if (s == 0.0) {
             s = 1.0;
         }
-        return new PlDouble(s * random.nextDouble());
+        return new PlDouble(s * PlV.random.nextDouble());
     }
 
     public static final PlObject smartmatch_scalar(PlObject arg1, PlObject arg2) {
@@ -1080,18 +1076,18 @@ EOT
             return true;
         }
         else {
-            boolean_stack = arg1;
+            PlV.boolean_stack = arg1;
             return false;
         }
     }
     public static final PlObject and3() {
-        return boolean_stack;
+        return PlV.boolean_stack;
     }
 
     // or1(x) ? or2() : y
     public static final boolean or1(PlObject arg1) {
         if (arg1.to_boolean()) {
-            boolean_stack = arg1;
+            PlV.boolean_stack = arg1;
             return true;
         }
         else {
@@ -1099,13 +1095,13 @@ EOT
         }
     }
     public static final PlObject or2() {
-        return boolean_stack;
+        return PlV.boolean_stack;
     }
 
     // defined_or1(x) ? defined_or2() : y
     public static final boolean defined_or1(PlObject arg1) {
         if (!arg1.is_undef()) {
-            boolean_stack = arg1;
+            PlV.boolean_stack = arg1;
             return true;
         }
         else {
@@ -1113,7 +1109,7 @@ EOT
         }
     }
     public static final PlObject defined_or2() {
-        return boolean_stack;
+        return PlV.boolean_stack;
     }
 
     public static final PlInt ord(PlObject s) {
@@ -1129,14 +1125,12 @@ EOT
     //    'prefix:<-f>' => 'PerlOp.p5is_file',
     //    'prefix:<-s>' => 'PerlOp.p5size',
 
-    static String lastStat = null;
-
     public static final Path resolve_file(PlObject s) throws IOException {
         String name = s.toString();
-        if (name.equals("_") && lastStat != null) {
-            return PlV.path.resolve(lastStat).toRealPath();
+        if (name.equals("_") && PlV.lastStat != null) {
+            return PlV.path.resolve(PlV.lastStat).toRealPath();
         }
-        lastStat = name;
+        PlV.lastStat = name;
         return PlV.path.resolve(name).toRealPath();
     }
 
@@ -2207,6 +2201,11 @@ class PlV {
     public static PlFileHandle STDIN  = new PlFileHandle();
     public static PlFileHandle STDOUT = new PlFileHandle();
     public static PlFileHandle STDERR = new PlFileHandle();
+
+    public static PlObject boolean_stack;
+    public static PlArray local_stack = new PlArray();
+    public static Random random = new Random();
+    public static String lastStat = null;
 
     public static final void init(String[] args) {
         PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
