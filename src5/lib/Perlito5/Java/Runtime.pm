@@ -627,9 +627,8 @@ class PerlOp {
     // note: '+' add() and '-' sub() are PlObject methods, not implemented here.
     //
     // TODO - see Perlito5/JavaScript2/Runtime.pm for more operator implementations
-    // TODO - 'boolean_stack' should be reset when an exception happens
 
-    private static PlArrayList boolean_stack = new PlArrayList();
+    private static PlObject boolean_stack;
     private static PlArray local_stack = new PlArray();
     private static Random random = new Random();
 
@@ -1081,18 +1080,18 @@ EOT
             return true;
         }
         else {
-            boolean_stack.add(0, arg1);
+            boolean_stack = arg1;
             return false;
         }
     }
     public static final PlObject and3() {
-        return boolean_stack.remove(0);
+        return boolean_stack;
     }
 
     // or1(x) ? or2() : y
     public static final boolean or1(PlObject arg1) {
         if (arg1.to_boolean()) {
-            boolean_stack.add(0, arg1);
+            boolean_stack = arg1;
             return true;
         }
         else {
@@ -1100,13 +1099,13 @@ EOT
         }
     }
     public static final PlObject or2() {
-        return boolean_stack.remove(0);
+        return boolean_stack;
     }
 
     // defined_or1(x) ? defined_or2() : y
     public static final boolean defined_or1(PlObject arg1) {
         if (!arg1.is_undef()) {
-            boolean_stack.add(0, arg1);
+            boolean_stack = arg1;
             return true;
         }
         else {
@@ -1114,7 +1113,7 @@ EOT
         }
     }
     public static final PlObject defined_or2() {
-        return boolean_stack.remove(0);
+        return boolean_stack;
     }
 
     public static final PlInt ord(PlObject s) {
