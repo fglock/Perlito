@@ -55,6 +55,7 @@ class PlJavaCompiler {
     static JavaCompiler javac;
     static Boolean initDone;
     static int invocationCount = 0;
+    static List<String> optionList;
 
     public static void init() throws Exception
     {
@@ -70,6 +71,11 @@ class PlJavaCompiler {
         classLoader = new DynamicClassLoader( new PlArray().getClass().getClassLoader() );
         // classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
+
+        optionList = new ArrayList<String>();
+        // set compiler's classpath to be same as the runtime's
+        optionList.addAll(Arrays.asList("-classpath", System.getProperty("java.class.path")));
+        optionList.addAll(Arrays.asList("-source",    "7"));
     }
 
     public static PlObject eval_java_string(PlArray List__)
@@ -334,11 +340,6 @@ class PlJavaCompiler {
             // reusing the file manager; replace the source code
             compilationUnits.set(0, sourceCodeObj);
         }
-
-        List<String> optionList = new ArrayList<String>();
-        // set compiler's classpath to be same as the runtime's
-        optionList.addAll(Arrays.asList("-classpath", System.getProperty("java.class.path")));
-        optionList.addAll(Arrays.asList("-source",    "7"));
 
         // run the compiler
         JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
