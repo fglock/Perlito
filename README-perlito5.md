@@ -200,6 +200,10 @@ Parser
       this dies! at -e line 1.
   ```
 
+- unicode characters in identifiers
+
+  - See: https://stackoverflow.com/questions/4800275/what-characters-are-allowed-in-perl-identifiers/4800711#4800711
+
 - `'` meaning `::`
 
   ```perl
