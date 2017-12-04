@@ -429,16 +429,19 @@ package Perlito5::AST::Apply;
         ),
         'infix:<~~>' => sub {
             my ($self, $level, $wantarray) = @_;
-            my $arg0 = $self->{arguments}->[0];
-            my $arg1 = $self->{arguments}->[1];
-            # TODO - test argument type
-            #   See: http://perldoc.perl.org/perlop.html#Smartmatch-Operator
-            # if (Perlito5::Java::is_num($arg1)) {
-            #     # ==
-            # }
-            'PerlOp.smartmatch_scalar('
-                . $arg0->emit_java($level, 'scalar') . ', '
-                . $arg1->emit_java($level, 'scalar') . ')'
+            my @op;
+            for my $arg ( @{ $self->{arguments} } ) {
+                if ( ( $arg->isa('Perlito5::AST::Var') && ( $arg->{sigil} eq '@' ) ) 
+                  || ( $arg->isa('Perlito5::AST::Apply') && ( $arg->{code} eq 'prefix:<@>' ) )
+                   )
+                {
+                    push @op, $arg->emit_java($level, 'list' );
+                }
+                else {
+                    push @op, $arg->emit_java($level, 'scalar');
+                }
+            }
+            $op[0] . '.smartmatch(' . $op[1] . ')'
         },
 
         'infix:<&&>' => sub {

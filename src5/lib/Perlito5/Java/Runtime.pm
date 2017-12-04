@@ -1039,37 +1039,6 @@ EOT
         return new PlDouble(s * PlV.random.nextDouble());
     }
 
-    public static final PlObject smartmatch_scalar(PlObject arg1, PlObject arg2) {
-        if (arg2.is_undef()) {
-            return arg1.is_undef() ? PlCx.TRUE : PlCx.FALSE;
-        }
-        if (arg2.is_string()) {
-            return arg1.str_eq(arg2);
-        }
-        if (arg2.is_num() || arg2.is_int()) {
-            return arg1.num_eq(arg2);
-        }
-        if (arg2.is_ref()) {
-            PlClass bless = arg2.blessed_class();
-            if ( bless != null ) {
-                // TODO - right side is object: invoke ~~ overloading on Object, or die
-            }
-        }
-        if (arg2.is_array()) {
-            // TODO - right side is array
-        }
-        if (arg2.is_hash()) {
-            // TODO - right side is array
-        }
-        if (arg2.is_coderef()) {
-            // TODO - right side is code
-        }
-        if (arg2.is_regex()) {
-            // TODO - right side is regex
-        }
-        return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type '"), arg2.ref(), new PlString("'")));
-    }
-
     // and1(x) ? y : and3()
     public static final boolean and1(PlObject arg1) {
         if (arg1.to_boolean()) {
@@ -3332,6 +3301,37 @@ EOT
     public PlObject str_or(PlObject b) {
         return PlCORE.die("|. not implemented");
     }
+    public PlObject smartmatch(PlObject arg2) {
+        if (arg2.is_undef()) {
+            return this.is_undef() ? PlCx.TRUE : PlCx.FALSE;
+        }
+        if (arg2.is_string()) {
+            return this.str_eq(arg2);
+        }
+        if (arg2.is_num() || arg2.is_int()) {
+            return this.num_eq(arg2);
+        }
+        if (arg2.is_ref()) {
+            PlClass bless = arg2.blessed_class();
+            if ( bless != null ) {
+                // TODO - right side is object: invoke ~~ overloading on Object, or die
+            }
+        }
+        if (arg2.is_array()) {
+            // TODO - right side is array
+        }
+        if (arg2.is_hash()) {
+            // TODO - right side is array
+        }
+        if (arg2.is_coderef()) {
+            // TODO - right side is code
+        }
+        if (arg2.is_regex()) {
+            // TODO - right side is regex
+        }
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type '"), arg2.ref(), new PlString("'")));
+    }
+
 EOT
     , ((map {
             my $perl = $_;
