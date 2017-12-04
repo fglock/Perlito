@@ -3496,6 +3496,7 @@ EOT
                 'mod',
                 'num_cmp',
                 'string_replicate',
+                'smartmatch',
                 keys(%string_binop),
                 keys(%number_binop),
                 ( map { "_self_$_" } keys %self_assign_number_binop ),
@@ -4592,6 +4593,7 @@ EOT
             $native = $string_binop{$perl}{str_op} if exists $string_binop{$perl};
             $native = "cmp" if $perl eq "str_cmp";
             $native = "x"   if $perl eq "string_replicate";
+            $native = "~~"  if $perl eq "smartmatch";
 "    public static PlObject overload_${perl}(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null && bless.is_overloaded() ) {
@@ -4619,6 +4621,7 @@ EOT
             sort (
                 'str_cmp',
                 'string_replicate',
+                'smartmatch',
                 keys %string_binop,
             )
       ))
