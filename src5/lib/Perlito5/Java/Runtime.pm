@@ -3319,9 +3319,17 @@ EOT
         }
         if (arg2.is_array()) {
             // TODO - right side is array
+            PlArray ret = new PlArray();
+            for (PlObject aa : arg2) {
+                PlObject rr = this.smartmatch(aa);
+                if (rr.to_boolean()) {
+                    ret.push(rr);
+                }
+            }
+            return ret;
         }
         if (arg2.is_hash()) {
-            // TODO - right side is array
+            // TODO - right side is hash
         }
         if (arg2.is_coderef()) {
             // TODO - right side is code
