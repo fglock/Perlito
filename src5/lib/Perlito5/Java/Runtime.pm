@@ -7949,6 +7949,34 @@ EOT
             sort keys %java_classes
       ))
 
+    # Java API
+    # work in progress
+    # See "Java" and "Packages" object in Nashorn
+    # https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/api.html
+
+#     , <<'EOT'
+# class PlJavaObject extends PlReference {
+#     private Object stuff;
+# 
+#     public PlJavaObject(Object stuff) {
+#         this.stuff = stuff;
+#     }
+#     public Object to_Java() {
+#         return this.stuff;
+#     }
+#     public PlString ref() {
+#         return stuff.getClass().getSimpleName();
+#     }
+#     public boolean is_undef() {
+#         return stuff == null;
+#     }
+#     public PlObject clone() throws CloneNotSupportedException {
+#         // TODO - test if implements 'Cloneable' and call stuff.clone() if possible
+#         return this;
+#     }
+# }
+# EOT
+
     , <<'EOT'
 // end Perl-Java runtime
 EOT
