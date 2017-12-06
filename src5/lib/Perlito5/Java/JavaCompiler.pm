@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.net.URI;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +74,23 @@ class PlJavaCompiler {
 
         optionList = new ArrayList<String>();
         // set compiler's classpath to be same as the runtime's
-        optionList.addAll(Arrays.asList("-classpath", System.getProperty("java.class.path")));
+        StringBuilder cp = new StringBuilder();
+        int cpCount = 0;
+        for (URL url : ((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs()) {
+            // System.out.println("url: " + url.getFile());
+            if (cpCount++ != 0) {
+                cp.append(":");
+            }
+            cp.append(url.getFile());
+        }
+        String systemCp = System.getProperty("java.class.path");
+        if (! systemCp.equals("")) {
+            if (cpCount++ != 0) {
+                cp.append(":");
+            }
+            cp.append(systemCp);
+        }
+        optionList.addAll(Arrays.asList("-classpath", cp.toString()));
         optionList.addAll(Arrays.asList("-source",    "7"));
     }
 
