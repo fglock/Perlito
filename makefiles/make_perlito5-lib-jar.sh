@@ -7,6 +7,7 @@
 rm perlito5-lib.jar
 rm perlito5.jar
 rm -rf org
+rm -rf META-INF
 
 
 # Step 1: compile and package the Perl lib
