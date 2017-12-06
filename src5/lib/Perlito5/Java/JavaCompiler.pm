@@ -76,12 +76,18 @@ class PlJavaCompiler {
         // set compiler's classpath to be same as the runtime's
         StringBuilder cp = new StringBuilder();
         int cpCount = 0;
-        for (URL url : ((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs()) {
-            // System.out.println("url: " + url.getFile());
-            if (cpCount++ != 0) {
-                cp.append(":");
+        try {
+            for (URL url : ((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs()) {
+                // System.out.println("url: " + url.getFile());
+                if (cpCount++ != 0) {
+                    cp.append(":");
+                }
+                cp.append(url.getFile());
             }
-            cp.append(url.getFile());
+        }
+        catch (Exception e) {
+            // java.base/jdk.internal.loader.ClassLoaders$AppClassLoader cannot be cast to
+            //      java.base/java.net.URLClassLoader
         }
         String systemCp = System.getProperty("java.class.path");
         if (! systemCp.equals("")) {
