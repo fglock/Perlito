@@ -990,6 +990,13 @@ class PerlOp {
         }
         return arg.scalar();
     }
+    public static final PlObject context(int want, Object o) {
+        PlObject arg = PlJavaObject.fromObject(o);
+        if (want == PlCx.LIST) {
+            return arg;
+        }
+        return arg.scalar();
+    }
     public static final PlObject context(int want) {
         if (want == PlCx.LIST) {
             return new PlArray();
@@ -5429,20 +5436,7 @@ class PlLvalue extends PlObject {
     }
     public PlObject set(Object o) {
         // $a = new Object()
-        if (o instanceof Integer) {
-            return this.set(new PlInt((Integer)o));
-        }
-        if (o instanceof Long) {
-            return this.set(new PlInt((Long)o));
-        }
-        if (o instanceof Double) {
-            return this.set(new PlDouble((Double)o));
-        }
-        if (o instanceof String) {
-            return this.set(new PlString((String)o));
-        }
-        // TODO - more casting
-        return this.set(new PlJavaObject(o));
+        return this.set(PlJavaObject.fromObject(o));
     }
 EOT
     , ((map {
@@ -6426,16 +6420,16 @@ EOT
         return this.length_of_array();
     }
     public PlObject aset(PlObject s, Object o) {
-        return this.aset(s, new PlJavaObject(o));
+        return this.aset(s, PlJavaObject.fromObject(o));
     }
     public PlObject aset(int s, Object o) {
-        return this.aset(s, new PlJavaObject(o));
+        return this.aset(s, PlJavaObject.fromObject(o));
     }
     public PlObject push(Object o) {
-        return this.push(new PlJavaObject(o));
+        return this.push(PlJavaObject.fromObject(o));
     }
     public PlObject unshift(Object o) {
-        return this.unshift(new PlJavaObject(o));
+        return this.unshift(PlJavaObject.fromObject(o));
     }
 
 EOT
@@ -7176,10 +7170,10 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         return aa;
     }
     public PlObject hset(PlObject s, Object o) {
-        return this.hset(s, new PlJavaObject(o));
+        return this.hset(s, PlJavaObject.fromObject(o));
     }
     public PlObject hset(String s, Object o) {
-        return this.hset(s, new PlJavaObject(o));
+        return this.hset(s, PlJavaObject.fromObject(o));
     }
 EOT
     , ((map {
@@ -8072,6 +8066,31 @@ EOT
     , <<'EOT'
 class PlJavaObject extends PlReference {
     private Object stuff;
+
+    static PlObject fromObject(Object o) {
+        // Runtime casting
+        if (o instanceof PlObject) {
+            // this is already a Perl object
+            return (PlObject)o;
+        }
+        if (o instanceof Integer) {
+            return new PlInt((Integer)o);
+        }
+        if (o instanceof Long) {
+            return new PlInt((Long)o);
+        }
+        if (o instanceof Double) {
+            return new PlDouble((Double)o);
+        }
+        if (o instanceof String) {
+            return new PlString((String)o);
+        }
+        if (o instanceof Boolean) {
+            return new PlBool((Boolean)o);
+        }
+        // TODO - more castings
+        return new PlJavaObject(o);
+    }
 
     public PlJavaObject(Object stuff) {
         this.stuff = stuff;

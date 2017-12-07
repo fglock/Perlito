@@ -356,15 +356,33 @@ Java fields, methods and constructors
 
 ```
 $ jrunscript -cp . -l Perl5 
+perl> my $x = Java::inline q{ new Integer(123) }; say $x
+123
 perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; say $x->PI
 3.141592653589793
 perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Integer") } }; say $x->MAX_VALUE
 2147483647
 perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Thread") } }; say $x->currentThread()
 Thread(0x262b2c86)
+perl> $x[10] = eval { Java::inline q{ Class.forName("java.lang.Thread") } }; say $x[10]->currentThread()
+Thread(0x5ed828d)
 ```
 
   - `new` invokes a constructor
+
+  - Simple Java objects (String, Integer, Long, Double, Boolean) are converted to Perl values.
+
+  - Other Java objects are seen by Perl as "blessed references"
+
+  - Java exceptions can be catched with Perl eval-block
+
+  - Note that explicitly returning `null` from `Java::inline` is a syntax error, because Java can't know how to dispatch the method call:
+
+    ```
+    perl> my $x; eval { $x = Java::inline q{ null } }; say $x
+    /PlEval3.java:23: error: reference to set is ambiguous
+      both method set(String) in PlLvalue and method set(System) in PlLvalue match
+    ```
 
   - TODO - typed argument lists are work in progress
 
@@ -372,10 +390,6 @@ Java extensions in eval-string (work in progress)
 -------------------------------------------------
 
   - Java objects can be assigned to Perl `my` variables, array elements, or hash elements.
-
-  - Java objects are seen by Perl as "blessed references"
-
-  - Java exceptions can be catched with Perl eval-block
 
   - These extensions are allowed in pre-compilation mode, but not in eval-string mode:
 
