@@ -811,26 +811,33 @@ class PerlOp {
         if ( invocant.is_JavaObject() ) {
             Object obj = ((PlJavaObject)invocant).toJava();
             PlLvalue ret = new PlLvalue();
-            try {
-                // obj is Class; method is static (property)
-                Field fi;
-                if (obj instanceof Class) {
-                    fi = ((Class)obj).getDeclaredField(method);
-                    ret.set( fi.get(null) );
+            if (args.to_int() == 1) {
+                // no arguments; this may be a "field"
+                try {
+                    Field fi;
+                    if (obj instanceof Class) {
+                        // obj is Class; method is "field"
+                        fi = ((Class)obj).getField(method);
+                        ret.set( fi.get(null) );
+                    }
+                    else {
+                        // obj is instance; method is "field"
+                        fi = obj.getClass().getField(method);
+                        ret.set( fi.get(obj) );
+                    }
+                    return ret;
                 }
-                else {
-                    fi = obj.getClass().getDeclaredField(method);
-                    ret.set( fi.get(obj) );
+                catch (Exception e) {
                 }
-                return ret;
-            }
-            catch (Exception e) {
             }
 
             // obj is Class
             // obj is instance
             // method is Method
             // method is constructor
+
+            // getMethod(String name, Class<?>... parameterTypes)
+            // getConstructor(Class<?>... parameterTypes)
 
             // TODO
             return PlCORE.die( "Not implemented: Can't call method \"" + method + "\" on a Java Object" );
