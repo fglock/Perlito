@@ -389,6 +389,23 @@ Java fields, methods and constructors
     ```
 
 
+`Java` Perl module
+-----------------
+
+The `Java` Perl module is meant to emulate the `Java` global object in Nashorn.
+
+```
+$ jrunscript -cp .:perlito5.jar -l Perl5
+perl> push @INC, "src5/lib";
+1
+perl> use Java
+perl> Java->type("java.lang.Thread")
+Class(0x704b2127)
+perl> $Thread = Java->type("java.lang.Thread"); $Thread->new();
+Thread(0x7ff2b8d2)
+```
+
+
 Java extensions in eval-string (work in progress)
 -------------------------------------------------
 
