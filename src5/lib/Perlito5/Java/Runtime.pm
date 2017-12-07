@@ -2350,6 +2350,9 @@ class PlV {
     public static final PlObject sset(String name, PlObject v) {
         return (PlLvalue)svar.hget_lvalue(name).set(v);
     }
+    public static final PlObject sset(String name, Object o) {
+        return (PlLvalue)svar.hget_lvalue(name).set( PlJavaObject.fromObject(o) );
+    }
     public static final PlObject sset_local(String name, PlObject v) {
         return svar.hget_lvalue_local(name).set(v);
     }
@@ -8069,6 +8072,9 @@ class PlJavaObject extends PlReference {
 
     static PlObject fromObject(Object o) {
         // Runtime casting
+        if (o == null) {
+            return PlCx.UNDEF;
+        }
         if (o instanceof PlObject) {
             // this is already a Perl object
             return (PlObject)o;

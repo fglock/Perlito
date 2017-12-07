@@ -354,19 +354,21 @@ https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
 Java fields, methods and constructors
 ------------------------------------
 
-```
-$ jrunscript -cp . -l Perl5 
-perl> my $x = Java::inline q{ new Integer(123) }; say $x
-123
-perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; say $x->PI
-3.141592653589793
-perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Integer") } }; say $x->MAX_VALUE
-2147483647
-perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Thread") } }; say $x->currentThread()
-Thread(0x262b2c86)
-perl> $x[10] = eval { Java::inline q{ Class.forName("java.lang.Thread") } }; say $x[10]->currentThread()
-Thread(0x5ed828d)
-```
+  - examples:
+
+    ```
+    $ jrunscript -cp . -l Perl5 
+    perl> my $x = Java::inline q{ new Integer(123) }; say $x
+    123
+    perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; say $x->PI
+    3.141592653589793
+    perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Integer") } }; say $x->MAX_VALUE
+    2147483647
+    perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Thread") } }; say $x->currentThread()
+    Thread(0x262b2c86)
+    perl> $x[10] = eval { Java::inline q{ Class.forName("java.lang.Thread") } }; say $x[10]->currentThread()
+    Thread(0x5ed828d)
+    ```
 
   - `new` invokes a constructor
 
@@ -376,7 +378,7 @@ Thread(0x5ed828d)
 
   - Java exceptions can be catched with Perl eval-block
 
-  - Note that explicitly returning `null` from `Java::inline` is a syntax error, because Java can't know how to dispatch the method call:
+  - Note that explicitly returning `null` from `Java::inline` is a syntax error, because Java doesn't know how to dispatch the method call:
 
     ```
     perl> my $x; eval { $x = Java::inline q{ null } }; say $x
@@ -384,30 +386,29 @@ Thread(0x5ed828d)
       both method set(String) in PlLvalue and method set(System) in PlLvalue match
     ```
 
-  - TODO - typed argument lists are work in progress
 
 Java extensions in eval-string (work in progress)
 -------------------------------------------------
 
-  - Java objects can be assigned to Perl `my` variables, array elements, or hash elements.
+  - Java objects can be assigned to Perl scalar variables, array elements, or hash elements.
 
   - These extensions are allowed in pre-compilation mode, but not in eval-string mode:
 
     - TODO - syntax for dereferencing scalars (Java objects are stored as references)
 
-    - TODO - global scalars cannot be set to Java objects
-
     - TODO - native Java variables (typed variables)
 
     - TODO - assign to array, assign to hash
 
-    - TODO - syntax for "import"
+    - TODO - syntax for "import" Java class
 
-    - TODO - syntax for Java method calls
+    - TODO - syntax for Java method calls - typed argument lists are work in progress
 
-    - TODO - syntax for creating new Java class
+    - TODO - syntax for creating new Java subclass ("extends" and "implements")
 
-    - extensions can be precompiled ahead-of-time in `perlito5.jar`, by adding a `use` statement in `src5/util/jperl.pl`
+  - Perl modules using extensions can be precompiled ahead-of-time in `perlito5.jar`, by adding a `use` statement in `src5/util/jperl.pl`
+
+    - TODO - interoperation of "ahead-of-time" compiler extensions and "eval-string" extensions is untested
 
 
 Java extensions in ahead-of-time (pre-compilation) mode
