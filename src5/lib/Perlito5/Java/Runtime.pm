@@ -811,23 +811,57 @@ class PerlOp {
         if ( invocant.is_JavaObject() ) {
             Object obj = ((PlJavaObject)invocant).toJava();
             PlLvalue ret = new PlLvalue();
+            Class cl;
+            if (obj instanceof Class) {
+                cl = (Class)obj;
+            }
+            else {
+                cl = obj.getClass();
+            }
+
             if (args.to_int() == 1) {
+
                 // no arguments; this may be a "field"
                 try {
-                    Field fi;
+                    Field fi = cl.getField(method);
                     if (obj instanceof Class) {
                         // obj is Class; method is "field"
-                        fi = ((Class)obj).getField(method);
                         ret.set( fi.get(null) );
                     }
                     else {
                         // obj is instance; method is "field"
-                        fi = obj.getClass().getField(method);
                         ret.set( fi.get(obj) );
                     }
                     return ret;
                 }
+                catch (NoSuchFieldException e) {
+                }
                 catch (Exception e) {
+                    return PlCORE.die(new PlStringLazyError(e));
+                }
+
+                try {
+                    Method meth = cl.getMethod(method, new Class[]{});
+                    ret.set( meth.invoke(obj, new Object[0]) );
+                    return ret;
+                }
+                catch (NoSuchMethodException e) {
+                }
+                catch (Exception e) {
+                    return PlCORE.die(new PlStringLazyError(e));
+                }
+
+                if (method.equals("new")) {
+                    try {
+                        Constructor co = cl.getConstructor(new Class[]{});
+                        ret.set( co.newInstance() );
+                        return ret;
+                    }
+                    catch (NoSuchMethodException e) {
+                    }
+                    catch (Exception e) {
+                        return PlCORE.die(new PlStringLazyError(e));
+                    }
                 }
             }
 
@@ -836,6 +870,7 @@ class PerlOp {
             // method is Method
             // method is constructor
 
+            // TODO - obtain list of parameterTypes
             // getMethod(String name, Class<?>... parameterTypes)
             // getConstructor(Class<?>... parameterTypes)
 

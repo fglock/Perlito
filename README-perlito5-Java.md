@@ -351,8 +351,8 @@ https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
   my $dateString_pObject = $dateJavaObject->toString();   # Hello
   ```
 
-Java fields
------------
+Java fields, methods and constructors
+------------------------------------
 
 ```
 $ jrunscript -cp . -l Perl5 
@@ -360,7 +360,13 @@ perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; sa
 3.141592653589793
 perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Integer") } }; say $x->MAX_VALUE
 2147483647
+perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Thread") } }; say $x->currentThread()
+Thread(0x262b2c86)
 ```
+
+  - `new` invokes a constructor
+
+  - TODO - typed argument lists are work in progress
 
 Java extensions in eval-string (work in progress)
 -------------------------------------------------

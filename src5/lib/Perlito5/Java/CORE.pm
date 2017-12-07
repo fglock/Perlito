@@ -579,6 +579,9 @@ EOT
     public static final PlObject die(String s) {
         return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));
     }
+    public static final PlObject die(PlObject s) {
+        return PlCORE.die(PlCx.VOID, new PlArray(s));
+    }
 
     public static final PlObject mkdir(int want, PlArray List__) {
         try {
