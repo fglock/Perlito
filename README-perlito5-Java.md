@@ -351,6 +351,16 @@ https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
   my $dateString_pObject = $dateJavaObject->toString();   # Hello
   ```
 
+Java fields
+-----------
+
+```
+$ jrunscript -cp . -l Perl5 
+perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; say $x->PI
+3.141592653589793
+perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Integer") } }; say $x->MAX_VALUE
+2147483647
+```
 
 Java extensions in eval-string (work in progress)
 -------------------------------------------------

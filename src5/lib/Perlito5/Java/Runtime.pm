@@ -340,6 +340,7 @@ import java.time.format.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
+import java.lang.reflect.*;
 EOT
     , ( $Perlito5::BOOTSTRAP_JAVA_EVAL ? Perlito5::Java::JavaCompiler->emit_java_imports() : () )
 
@@ -808,6 +809,30 @@ class PerlOp {
             invocant = invocant.get();
         }
         if ( invocant.is_JavaObject() ) {
+            Object obj = ((PlJavaObject)invocant).toJava();
+            PlLvalue ret = new PlLvalue();
+            try {
+                // obj is Class; method is static (property)
+                Field fi;
+                if (obj instanceof Class) {
+                    fi = ((Class)obj).getDeclaredField(method);
+                    ret.set( fi.get(null) );
+                }
+                else {
+                    fi = obj.getClass().getDeclaredField(method);
+                    ret.set( fi.get(obj) );
+                }
+                return ret;
+            }
+            catch (Exception e) {
+            }
+
+            // obj is Class
+            // obj is instance
+            // method is Method
+            // method is constructor
+
+            // TODO
             return PlCORE.die( "Not implemented: Can't call method \"" + method + "\" on a Java Object" );
         }
         if ( invocant.is_undef() ) {
@@ -5362,6 +5387,19 @@ class PlLvalue extends PlObject {
     }
     public PlObject set(Object o) {
         // $a = new Object()
+        if (o instanceof Integer) {
+            return this.set(new PlInt((Integer)o));
+        }
+        if (o instanceof Long) {
+            return this.set(new PlInt((Long)o));
+        }
+        if (o instanceof Double) {
+            return this.set(new PlDouble((Double)o));
+        }
+        if (o instanceof String) {
+            return this.set(new PlString((String)o));
+        }
+        // TODO - more casting
         return this.set(new PlJavaObject(o));
     }
 EOT
