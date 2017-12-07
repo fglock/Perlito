@@ -793,6 +793,7 @@ class PerlOp {
         PlClass pClass = invocant.blessed_class();
 
         if ( pClass != null ) {
+            // invocant is a normal Perl object instance
             PlObject methodCode = pClass.method_lookup(method, 0);
             if (methodCode.is_undef()) {
                 String className = pClass.className();
@@ -805,6 +806,9 @@ class PerlOp {
 
         if ( invocant.is_lvalue() ) {
             invocant = invocant.get();
+        }
+        if ( invocant.is_JavaObject() ) {
+            return PlCORE.die( "Not implemented: Can't call method \"" + method + "\" on a Java Object" );
         }
         if ( invocant.is_undef() ) {
             return PlCORE.die( "Can't call method \"" + method + "\" on an undefined value" );
@@ -2968,6 +2972,9 @@ EOT
 
     , <<'EOT'
 
+    public boolean is_JavaObject() {
+        return false;
+    }
     public boolean is_hash() {
         return false;
     }
@@ -7955,8 +7962,14 @@ EOT
     public ${java_class_name} ${perl_to_java}() {
         return this.stuff;
     }
+    public Object toJava() {
+        return this.stuff;
+    }
     public PlString ref() {
         return REF;
+    }
+    public boolean is_JavaObject() {
+        return true;
     }
     public boolean is_undef() {
         return stuff == null;
@@ -7992,6 +8005,9 @@ class PlJavaObject extends PlReference {
     public PlObject reftype() {
         // Scalar::Util::reftype()
         return ref();
+    }
+    public boolean is_JavaObject() {
+        return true;
     }
     public boolean is_undef() {
         return stuff == null;
