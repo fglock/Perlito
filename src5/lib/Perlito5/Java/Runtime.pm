@@ -8079,14 +8079,29 @@ class PlJavaObject extends PlReference {
             // this is already a Perl object
             return (PlObject)o;
         }
-        if (o instanceof Integer) {
-            return new PlInt((Integer)o);
+        if (o instanceof Number) {
+            if (o instanceof Byte) {
+                return new PlInt((Byte)o);
+            }
+            if (o instanceof Short) {
+                return new PlInt((Short)o);
+            }
+            if (o instanceof Integer) {
+                return new PlInt((Integer)o);
+            }
+            if (o instanceof Long) {
+                return new PlInt((Long)o);
+            }
+            if (o instanceof Float) {
+                return new PlDouble((Float)o);
+            }
+            if (o instanceof Double) {
+                return new PlDouble((Double)o);
+            }
+            // TODO - there are more Number types
         }
-        if (o instanceof Long) {
-            return new PlInt((Long)o);
-        }
-        if (o instanceof Double) {
-            return new PlDouble((Double)o);
+        if (o instanceof Character) {
+            return new PlString((Character)o);
         }
         if (o instanceof String) {
             return new PlString((String)o);
@@ -8094,7 +8109,7 @@ class PlJavaObject extends PlReference {
         if (o instanceof Boolean) {
             return new PlBool((Boolean)o);
         }
-        // TODO - more castings
+        // TODO - more castings from %java_classes
         return new PlJavaObject(o);
     }
 

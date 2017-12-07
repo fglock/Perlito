@@ -358,8 +358,10 @@ Java fields, methods and constructors
 
     ```
     $ jrunscript -cp . -l Perl5 
-    perl> my $x = Java::inline q{ new Integer(123) }; say $x
+    perl> my $x = Java::inline q{ new Integer(123) }
     123
+    perl> my $x = Java::inline q{ (char)90 }
+    Z
     perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; say $x->PI
     3.141592653589793
     perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Integer") } }; say $x->MAX_VALUE
