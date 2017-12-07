@@ -323,6 +323,19 @@ https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
   true
   ```
 
+- example: retrieve a Java Class Object
+
+  ```
+  $ jrunscript -cp . -l Perl5 
+  perl> eval { my $x = Java::inline q{ Class.forName("java.lang.Thread") }; say ref($x); say $x; }
+  Class
+  Class(0x3047254d)
+  ```
+
+  - only fully qualified class names are supported.
+
+  - support for simple names can be added; the list of classes can be extracted from the ClassLoader
+
 - example: Java method override using Java::inline
 
   ```perl
