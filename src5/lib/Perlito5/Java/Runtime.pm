@@ -842,7 +842,7 @@ class PerlOp {
 
                 try {
                     Method meth = ((Class<?>)cl).getMethod(method, new Class[]{});
-                    ret.set( meth.invoke(obj, new Object[0]) );
+                    ret.set( meth.invoke(obj, new Object[]{}) );
                     return ret;
                 }
                 catch (NoSuchMethodException e) {
@@ -855,6 +855,59 @@ class PerlOp {
                     try {
                         Constructor co = ((Class<?>)cl).getConstructor(new Class[]{});
                         ret.set( co.newInstance() );
+                        return ret;
+                    }
+                    catch (NoSuchMethodException e) {
+                    }
+                    catch (Exception e) {
+                        return PlCORE.die(new PlStringLazyError(e));
+                    }
+                }
+            }
+
+            if (args.to_int() == 2) {
+                PlObject arg = args.aget(1);
+
+                int argValue = arg.to_int();                   // TODO
+                Class argClass = java.lang.Integer.TYPE;       // TODO
+
+                try {
+
+                    // TODO - sort methods by specificity
+
+                    Method m[] = cl.getMethods();
+                    System.out.println("Methods:");
+                    for(int i = 0; i < m.length; i++) {
+                        if (m[i].getName().equals(method)) {
+                            System.out.println("  " + m[i]);
+                        }
+                    }
+
+                    Method meth = ((Class<?>)cl).getMethod(method, new Class[]{argClass});
+                    ret.set( meth.invoke(obj, new Object[]{argValue}) );
+                    return ret;
+                }
+                catch (NoSuchMethodException e) {
+                }
+                catch (Exception e) {
+                    return PlCORE.die(new PlStringLazyError(e));
+                }
+
+                if (method.equals("new")) {
+                    try {
+
+                        // TODO - sort constructors by specificity
+
+                        //  public java.lang.Integer(java.lang.String) throws java.lang.NumberFormatException
+                        //  public java.lang.Integer(int)
+                        Constructor c[] = cl.getConstructors();
+                        System.out.println("Constructors:");
+                        for(int i = 0; i < c.length; i++) {
+                           System.out.println("  " + c[i]);
+                        }
+
+                        Constructor co = ((Class<?>)cl).getConstructor(new Class[]{argClass});
+                        ret.set( co.newInstance(new Object[]{argValue}) );
                         return ret;
                     }
                     catch (NoSuchMethodException e) {
