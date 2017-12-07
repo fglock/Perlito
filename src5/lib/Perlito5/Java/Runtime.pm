@@ -841,7 +841,7 @@ class PerlOp {
                 }
 
                 try {
-                    Method meth = cl.getMethod(method, new Class[]{});
+                    Method meth = ((Class<?>)cl).getMethod(method, new Class[]{});
                     ret.set( meth.invoke(obj, new Object[0]) );
                     return ret;
                 }
@@ -853,7 +853,7 @@ class PerlOp {
 
                 if (method.equals("new")) {
                     try {
-                        Constructor co = cl.getConstructor(new Class[]{});
+                        Constructor co = ((Class<?>)cl).getConstructor(new Class[]{});
                         ret.set( co.newInstance() );
                         return ret;
                     }
