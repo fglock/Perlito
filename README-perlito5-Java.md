@@ -276,9 +276,7 @@ Limitations
   - eval bytecode is cached - this will leak memory
       - review the ClassLoader for leaks
 
-  - Java extensions are disabled inside eval-string (only plain-perl)
-      - `Java::inline` works inside eval-string
-      - extensions can be precompiled in `perlito5.jar`
+  - some Java extensions are disabled inside eval-string - see section `Perlito5-Java extensibility`
 
 Possible workarounds for slow compilation:
 
@@ -287,25 +285,8 @@ Possible workarounds for slow compilation:
 
   - write a tiny interpreter for simple expressions
 
-Java extensions in eval-string (work in progress)
+  - preload modules in `src5/util/jperl.pl`
 
-  ```
-  $ jrunscript -cp . -l Perl5 
-  perl> my $x = Java::inline " new Object() "; say ref($x); say $x; say ($x ? "true" : "false" );
-  Object
-  Object(0x34f22f9d)
-  true
-  ```
-
-  - TODO - syntax for dereferencing scalars (Java objects are stored as references)
-
-  - TODO - global scalars cannot be set to Java objects
-
-  - TODO - syntax for "import"
-
-  - TODO - syntax for Java method calls
-
-  - TODO - syntax for creating new Java class
 
 Perlito5-Java extensibility
 ===========================
@@ -316,12 +297,83 @@ Instead of XS, it has an extension mechanism that connects Perl with Java.
 TODO - investigate using the Nashorn convention for "Using Java from Scripts", see:
 https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
 
+
+`Java::inline` extension
+------------
+
+`Java::inline` can be used to add simple Java expressions to a Perl script
+
+  ```perl
+  my @arr = Java::inline ' new String[]{ "a", "b" } ';
+  ```
+
+- `Java::inline` works in eval-string and in ahead-of-time (pre-compilation) mode
+
+- `Java::inline` can be used inside expressions or in statement position
+
+- Java exceptions can be catched with a Perl eval-block
+
+- example: instantiate an Object with jrunscript
+
+  ```
+  $ jrunscript -cp . -l Perl5 
+  perl> my $x = Java::inline " new Object() "; say ref($x); say $x; say ($x ? "true" : "false" );
+  Object
+  Object(0x34f22f9d)
+  true
+  ```
+
+- example: Java method override using Java::inline
+
+  ```perl
+  # See: https://github.com/bdevetak/perl2j/tree/master/examples/myapp
+  package Date  { import => "java.util.Date" };
+  my Date $dateJavaObject =
+      Java::inline
+          'new Date() {
+              public String toString() {
+                  return "Hello";    
+              }    
+          }';
+  my $dateString_pObject = $dateJavaObject->toString();   # Hello
+  ```
+
+
+Java extensions in eval-string (work in progress)
+-------------------------------------------------
+
+  - Java objects can be assigned to Perl `my` variables, array elements, or hash elements.
+
+  - Java objects are seen by Perl as "blessed references"
+
+  - Java exceptions can be catched with Perl eval-block
+
+  - These extensions are allowed in pre-compilation mode, but not in eval-string mode:
+
+    - TODO - syntax for dereferencing scalars (Java objects are stored as references)
+
+    - TODO - global scalars cannot be set to Java objects
+
+    - TODO - native Java variables (typed variables)
+
+    - TODO - assign to array, assign to hash
+
+    - TODO - syntax for "import"
+
+    - TODO - syntax for Java method calls
+
+    - TODO - syntax for creating new Java class
+
+    - extensions can be precompiled ahead-of-time in `perlito5.jar`, by adding a `use` statement in `src5/util/jperl.pl`
+
+
+Java extensions in ahead-of-time (pre-compilation) mode
+-------------------------------------------------------
+
 Java classes can be added to a Perl script using a special "package" declaration:
 
 ```perl
-package Sample {
-    import => "misc.Java.Sample"
-};
+package Sample { import => "misc.Java.Sample" };
 ```
 
   - an empty package works for importing builtin types or primitives ("String", "Long", "long")
@@ -333,17 +385,6 @@ package Sample {
   - an "implements" specification works for adding methods to an existing interface
 
   - a "header" specification works for creating a Java package
-
-`Java::inline` can be used to add simple Java expressions to a Perl script
-
-```perl
-my @arr = Java::inline ' new String[]{ "a", "b" } ';
-```
-
-Note: Java extensions are disabled in the Java eval-string backend.
-
-  - Java::inline is enabled in the eval-string backend.
-  - extensions can be precompiled in perlito5.jar
 
 
 Calling a Perl subroutine from Java
@@ -618,24 +659,6 @@ my $s2 = $date->toString();     # extended class
 print $s1, " ", $s2, "\n";   # prints date and "Hello"
 ```
 
-
-Using Java inside Perl code with Java::inline
----------------------------------------------
-
-Example: Java method override using Java::inline
-
-```perl
-# See: https://github.com/bdevetak/perl2j/tree/master/examples/myapp
-package Date  { import => "java.util.Date" };
-my Date $dateJavaObject =
-    Java::inline
-        'new Date() {
-            public String toString() {
-                return "Hello";    
-            }    
-        }';
-my $dateString_pObject = $dateJavaObject->toString();   # Hello
-```
 
 Thread safety
 -------------
