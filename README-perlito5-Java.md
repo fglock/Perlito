@@ -399,10 +399,15 @@ $ jrunscript -cp .:perlito5.jar -l Perl5
 perl> push @INC, "src5/lib";
 1
 perl> use Java
+
 perl> Java->type("java.lang.Thread")
 Class(0x704b2127)
 perl> $Thread = Java->type("java.lang.Thread"); $Thread->new();
 Thread(0x7ff2b8d2)
+
+perl> sub UUID () { Java->type("java.util.UUID") }
+perl> UUID->randomUUID()->toString()
+9e8aadb3-4d81-41c6-af85-7ab7213a9945
 ```
 
 
