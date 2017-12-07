@@ -819,7 +819,9 @@ class PerlOp {
                 cl = obj.getClass();
             }
 
-            if (args.to_int() == 1) {
+            int argCount = args.to_int() - 1;   // Perl arg 0 is the invocant
+
+            if (argCount == 0) {
 
                 // no arguments; this may be a "field"
                 try {
@@ -865,26 +867,54 @@ class PerlOp {
                 }
             }
 
-            if (args.to_int() == 2) {
-                PlObject arg = args.aget(1);
+            // argCount > 0
+            PlObject arg = args.aget(1);                // TODO
+            int argValue = arg.to_int();                // TODO
+            Class argClass = java.lang.Integer.TYPE;    // TODO
 
-                int argValue = arg.to_int();                   // TODO
-                Class argClass = java.lang.Integer.TYPE;       // TODO
+            try {
 
-                try {
+                // TODO - sort methods by specificity
 
-                    // TODO - sort methods by specificity
-
-                    Method m[] = cl.getMethods();
-                    System.out.println("Methods:");
-                    for(int i = 0; i < m.length; i++) {
-                        if (m[i].getName().equals(method)) {
+                Method m[] = cl.getMethods();
+                System.out.println("Methods:");
+                for(int i = 0; i < m.length; i++) {
+                    if (m[i].getName().equals(method)) {
+                        Class[] mArgs = m[i].getParameterTypes();
+                        if (mArgs.length == argCount) {
                             System.out.println("  " + m[i]);
                         }
                     }
+                }
 
-                    Method meth = ((Class<?>)cl).getMethod(method, new Class[]{argClass});
-                    ret.set( meth.invoke(obj, new Object[]{argValue}) );
+                Method meth = ((Class<?>)cl).getMethod(method, new Class[]{argClass});
+                ret.set( meth.invoke(obj, new Object[]{argValue}) );
+                return ret;
+            }
+            catch (NoSuchMethodException e) {
+            }
+            catch (Exception e) {
+                return PlCORE.die(new PlStringLazyError(e));
+            }
+
+            if (method.equals("new")) {
+                try {
+
+                    // TODO - sort constructors by specificity
+
+                    //  public java.lang.Integer(java.lang.String) throws java.lang.NumberFormatException
+                    //  public java.lang.Integer(int)
+                    Constructor c[] = cl.getConstructors();
+                    System.out.println("Constructors:");
+                    for(int i = 0; i < c.length; i++) {
+                        Class[] mArgs = c[i].getParameterTypes();
+                        if (mArgs.length == argCount) {
+                            System.out.println("  " + c[i]);
+                        }
+                    }
+
+                    Constructor co = ((Class<?>)cl).getConstructor(new Class[]{argClass});
+                    ret.set( co.newInstance(new Object[]{argValue}) );
                     return ret;
                 }
                 catch (NoSuchMethodException e) {
@@ -892,42 +922,8 @@ class PerlOp {
                 catch (Exception e) {
                     return PlCORE.die(new PlStringLazyError(e));
                 }
-
-                if (method.equals("new")) {
-                    try {
-
-                        // TODO - sort constructors by specificity
-
-                        //  public java.lang.Integer(java.lang.String) throws java.lang.NumberFormatException
-                        //  public java.lang.Integer(int)
-                        Constructor c[] = cl.getConstructors();
-                        System.out.println("Constructors:");
-                        for(int i = 0; i < c.length; i++) {
-                           System.out.println("  " + c[i]);
-                        }
-
-                        Constructor co = ((Class<?>)cl).getConstructor(new Class[]{argClass});
-                        ret.set( co.newInstance(new Object[]{argValue}) );
-                        return ret;
-                    }
-                    catch (NoSuchMethodException e) {
-                    }
-                    catch (Exception e) {
-                        return PlCORE.die(new PlStringLazyError(e));
-                    }
-                }
             }
 
-            // obj is Class
-            // obj is instance
-            // method is Method
-            // method is constructor
-
-            // TODO - obtain list of parameterTypes
-            // getMethod(String name, Class<?>... parameterTypes)
-            // getConstructor(Class<?>... parameterTypes)
-
-            // TODO
             return PlCORE.die( "Not implemented: Can't call method \"" + method + "\" on a Java Object" );
         }
         if ( invocant.is_undef() ) {
