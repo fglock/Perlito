@@ -874,7 +874,8 @@ class PerlOp {
 
             try {
 
-                // TODO - sort methods by specificity
+                // TODO - overloading
+                //   - sort methods by specificity
 
                 Method m[] = cl.getMethods();
                 System.out.println("Methods:");
@@ -883,6 +884,9 @@ class PerlOp {
                         Class[] mArgs = m[i].getParameterTypes();
                         if (mArgs.length == argCount) {
                             System.out.println("  " + m[i]);
+                            for(int j = 0; j < mArgs.length; j++) {
+                                System.out.println("    " + mArgs[j].getName());
+                            }
                         }
                     }
                 }
@@ -900,16 +904,31 @@ class PerlOp {
             if (method.equals("new")) {
                 try {
 
-                    // TODO - sort constructors by specificity
+                    // TODO - overloading
+                    //   - sort constructors by specificity
+                    //   - See: https://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.12.2
+                    //          http://www.xyzws.com/javafaq/what-is-a-mostspecific-method/8
+                    //   - type promotion: byte -> short -> int -> long -> float -> double
+                    //   - boxing / unboxing
+                    //   - method arity: consider variable arity (Object...) "[Ljava.lang.Object;"
+                    //
+                    //          perl> eval { $aa = Java::inline q{ Class.forName("java.lang.String") }}
+                    //          Class(0xf3fcd59)
+                    //          perl> $aa->format("aaa")
+                    //              java.lang.String    - param #1
+                    //              [Ljava.lang.Object; - param #2, ...
+                    //
+                    //   - check Class.getSuperclass()
 
-                    //  public java.lang.Integer(java.lang.String) throws java.lang.NumberFormatException
-                    //  public java.lang.Integer(int)
                     Constructor c[] = cl.getConstructors();
                     System.out.println("Constructors:");
                     for(int i = 0; i < c.length; i++) {
                         Class[] mArgs = c[i].getParameterTypes();
                         if (mArgs.length == argCount) {
                             System.out.println("  " + c[i]);
+                            for(int j = 0; j < mArgs.length; j++) {
+                                System.out.println("    " + mArgs[j].getName());
+                            }
                         }
                     }
 
