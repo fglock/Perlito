@@ -410,6 +410,10 @@ perl> UUID->randomUUID()->toString()
 9e8aadb3-4d81-41c6-af85-7ab7213a9945
 ```
 
+  - this doesn't work yet:
+
+    `Java->type("int[]")`
+
 
 Java extensions in eval-string (work in progress)
 -------------------------------------------------
