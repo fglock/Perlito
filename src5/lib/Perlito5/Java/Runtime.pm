@@ -924,7 +924,9 @@ class PerlOp {
                 }
             }
 
-            return PlCORE.die( "Not implemented: Can't call method \"" + method + "\" on a Java Object" );
+            return PlCORE.die( "Can't locate object method \"" + method
+                + "\" via Java class \"" + cl.getSimpleName()
+                + "\" (perhaps the parameter types don\'t match?)" );
         }
         if ( invocant.is_undef() ) {
             return PlCORE.die( "Can't call method \"" + method + "\" on an undefined value" );
