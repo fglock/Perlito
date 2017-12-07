@@ -287,6 +287,26 @@ Possible workarounds for slow compilation:
 
   - write a tiny interpreter for simple expressions
 
+Java extensions in eval-string (work in progress)
+
+  ```
+  $ jrunscript -cp . -l Perl5 
+  perl> my $x = Java::inline " new Object() "; say ref($x); say $x; say ($x ? "true" : "false" );
+  Object
+  Object(0x34f22f9d)
+  true
+  ```
+
+  - TODO - syntax for dereferencing scalars (Java objects are stored as references)
+
+  - TODO - global scalars cannot be set to Java objects
+
+  - TODO - syntax for "import"
+
+  - TODO - syntax for Java method calls
+
+  - TODO - syntax for creating new Java class
+
 Perlito5-Java extensibility
 ===========================
 

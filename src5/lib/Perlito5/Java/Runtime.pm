@@ -5353,6 +5353,10 @@ class PlLvalue extends PlObject {
         // $a = %x
         return this.set(o.scalar());
     }
+    public PlObject set(Object o) {
+        // $a = new Object()
+        return this.set(new PlJavaObject(o));
+    }
 EOT
     , ((map {
             my $native = $_;
@@ -6334,6 +6338,18 @@ EOT
         }
         return this.length_of_array();
     }
+    public PlObject aset(PlObject s, Object o) {
+        return this.aset(s, new PlJavaObject(o));
+    }
+    public PlObject aset(int s, Object o) {
+        return this.aset(s, new PlJavaObject(o));
+    }
+    public PlObject push(Object o) {
+        return this.push(new PlJavaObject(o));
+    }
+    public PlObject unshift(Object o) {
+        return this.unshift(new PlJavaObject(o));
+    }
 
 EOT
     , ((map {
@@ -7071,6 +7087,12 @@ class PlHash extends PlObject implements Iterable<PlObject> {
             this.each_iterator.reset();
         }
         return aa;
+    }
+    public PlObject hset(PlObject s, Object o) {
+        return this.hset(s, new PlJavaObject(o));
+    }
+    public PlObject hset(String s, Object o) {
+        return this.hset(s, new PlJavaObject(o));
     }
 EOT
     , ((map {
@@ -7954,28 +7976,32 @@ EOT
     # See "Java" and "Packages" object in Nashorn
     # https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/api.html
 
-#     , <<'EOT'
-# class PlJavaObject extends PlReference {
-#     private Object stuff;
-# 
-#     public PlJavaObject(Object stuff) {
-#         this.stuff = stuff;
-#     }
-#     public Object to_Java() {
-#         return this.stuff;
-#     }
-#     public PlString ref() {
-#         return stuff.getClass().getSimpleName();
-#     }
-#     public boolean is_undef() {
-#         return stuff == null;
-#     }
-#     public PlObject clone() throws CloneNotSupportedException {
-#         // TODO - test if implements 'Cloneable' and call stuff.clone() if possible
-#         return this;
-#     }
-# }
-# EOT
+    , <<'EOT'
+class PlJavaObject extends PlReference {
+    private Object stuff;
+
+    public PlJavaObject(Object stuff) {
+        this.stuff = stuff;
+    }
+    public Object toJava() {
+        return this.stuff;
+    }
+    public PlString ref() {
+        return new PlString(stuff.getClass().getSimpleName());
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return ref();
+    }
+    public boolean is_undef() {
+        return stuff == null;
+    }
+    public PlObject clone() throws CloneNotSupportedException {
+        // TODO - test if implements 'Cloneable' and call stuff.clone() if possible
+        return this;
+    }
+}
+EOT
 
     , <<'EOT'
 // end Perl-Java runtime
