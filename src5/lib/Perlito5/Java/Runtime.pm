@@ -2767,12 +2767,31 @@ EOT
                 return new PerlArgumentLookupResult( this.to_int(), cl[pos] );
             }
         }
+        // want long
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Long.TYPE )) {
+                return new PerlArgumentLookupResult( this.to_long(), cl[pos] );
+            }
+        }
         // want boolean
         for (Class[] cl : params) {
             if (cl[pos].equals( java.lang.Boolean.TYPE )) {
                 return new PerlArgumentLookupResult( this.to_boolean(), cl[pos] );
             }
         }
+        // want double
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Double.TYPE )) {
+                return new PerlArgumentLookupResult( this.to_double(), cl[pos] );
+            }
+        }
+        // want float
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Float.TYPE )) {
+                return new PerlArgumentLookupResult( this.to_float(), cl[pos] );
+            }
+        }
+
         // default: return the Perl class
         return new PerlArgumentLookupResult( this, this.getClass() );
     }
@@ -7475,7 +7494,7 @@ class PlInt extends PlObject {
     }
 
     public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
-        // TODO - byte -> short -> int -> long -> float -> double
+        // TODO - byte - short - int - long - float - double
 
         // want long
         for (Class[] cl : params) {
@@ -7487,6 +7506,18 @@ class PlInt extends PlObject {
         for (Class[] cl : params) {
             if (cl[pos].equals( java.lang.Integer.TYPE )) {
                 return new PerlArgumentLookupResult( this.to_int(), cl[pos] );
+            }
+        }
+        // want float
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Float.TYPE )) {
+                return new PerlArgumentLookupResult( this.to_float(), cl[pos] );
+            }
+        }
+        // want double
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Double.TYPE )) {
+                return new PerlArgumentLookupResult( this.to_double(), cl[pos] );
             }
         }
         // try other things
@@ -7542,6 +7573,38 @@ class PlDouble extends PlObject {
     public PlDouble(double i) {
         this.i = i;
     }
+
+    public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
+        // TODO - byte - short - int - long - float - double
+
+        // want double
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Double.TYPE )) {
+                return new PerlArgumentLookupResult( this.to_double(), cl[pos] );
+            }
+        }
+        // want float
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Float.TYPE )) {
+                return new PerlArgumentLookupResult( this.to_float(), cl[pos] );
+            }
+        }
+        // want long
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Long.TYPE )) {
+                return new PerlArgumentLookupResult( this.to_long(), cl[pos] );
+            }
+        }
+        // want int
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Integer.TYPE )) {
+                return new PerlArgumentLookupResult( this.to_int(), cl[pos] );
+            }
+        }
+        // try other things
+        return super.castToClass(params, pos);
+    }
+
     public long to_long() {
         return (long)(this.i);
     }
