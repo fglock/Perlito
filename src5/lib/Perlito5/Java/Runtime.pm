@@ -889,7 +889,7 @@ class PerlOp {
             //
             //          perl> eval { $aa = Java::inline q{ Class.forName("java.lang.String") }}
             //          Class(0xf3fcd59)
-            //          perl> $aa->format("aaa")
+            //          perl> $aa->format("aaa", 123)
             //              java.lang.String    - param #1
             //              [Ljava.lang.Object; - param #2, ...
             //
