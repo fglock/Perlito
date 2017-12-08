@@ -870,12 +870,18 @@ class PerlOp {
             ArrayList<Class[]> params = new ArrayList<Class[]>();
             for (Method m : cl.getMethods()) {
                 if (m.getName().equals(method)) {
-                    params.add(m.getParameterTypes());
+                    Class[] mArgs = m.getParameterTypes();
+                    if (mArgs.length > 0 && mArgs.length <= argCount) {
+                        params.add(mArgs);
+                    }
                 }
             }
             if (method.equals("new")) {
                 for (Constructor m : cl.getConstructors()) {
-                    params.add(m.getParameterTypes());
+                    Class[] mArgs = m.getParameterTypes();
+                    if (mArgs.length > 0 && mArgs.length <= argCount) {
+                        params.add(mArgs);
+                    }
                 }
             }
 
@@ -900,13 +906,11 @@ class PerlOp {
             int candidateCount = 0;
             for(int i = 0; i < params.size(); i++) {
                 Class[] mArgs = params.get(i);
-                if (mArgs.length > 0 && mArgs.length <= argCount) {
-                    System.out.println("  params:");
-                    for(int j = 0; j < mArgs.length; j++) {
-                        System.out.println("    " + mArgs[j].getName());
-                        if (j == 0) {
-                            candidates[candidateCount++] = mArgs[j];
-                        }
+                System.out.println("  params:");
+                for(int j = 0; j < mArgs.length; j++) {
+                    System.out.println("    " + mArgs[j].getName());
+                    if (j == 0) {
+                        candidates[candidateCount++] = mArgs[j];
                     }
                 }
             }
