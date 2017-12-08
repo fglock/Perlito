@@ -867,17 +867,15 @@ class PerlOp {
                 }
             }
 
-            // argCount > 0
-            PlObject arg = args.aget(1);                // TODO
-            int argValue = arg.to_int();                // TODO
-            Class argClass = java.lang.Integer.TYPE;    // TODO
-
             try {
 
                 // TODO - overloading
                 //   - sort methods by specificity
+                //   - method arity: consider variable arity (Object...) "[Ljava.lang.Object;"
 
                 Method m[] = cl.getMethods();
+                Class[] candidates = new Class[m.length];
+                int candidateCount = 0;
                 System.out.println("Methods:");
                 for(int i = 0; i < m.length; i++) {
                     if (m[i].getName().equals(method)) {
@@ -886,13 +884,19 @@ class PerlOp {
                             System.out.println("  " + m[i]);
                             for(int j = 0; j < mArgs.length; j++) {
                                 System.out.println("    " + mArgs[j].getName());
+                                if (j == 0) {
+                                    candidates[candidateCount++] = mArgs[j];
+                                }
                             }
                         }
                     }
                 }
 
-                Method meth = ((Class<?>)cl).getMethod(method, new Class[]{argClass});
-                ret.set( meth.invoke(obj, new Object[]{argValue}) );
+                // TODO - process remaining args
+                AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( Arrays.copyOf(candidates, candidateCount) );
+
+                Method meth = ((Class<?>)cl).getMethod(method, new Class[]{ newArg.getValue() });
+                ret.set( meth.invoke(obj, new Object[]{ newArg.getKey() }) );
                 return ret;
             }
             catch (NoSuchMethodException e) {
@@ -921,6 +925,8 @@ class PerlOp {
                     //   - check Class.getSuperclass()
 
                     Constructor c[] = cl.getConstructors();
+                    Class[] candidates = new Class[c.length];
+                    int candidateCount = 0;
                     System.out.println("Constructors:");
                     for(int i = 0; i < c.length; i++) {
                         Class[] mArgs = c[i].getParameterTypes();
@@ -928,12 +934,18 @@ class PerlOp {
                             System.out.println("  " + c[i]);
                             for(int j = 0; j < mArgs.length; j++) {
                                 System.out.println("    " + mArgs[j].getName());
+                                if (j == 0) {
+                                    candidates[candidateCount++] = mArgs[j];
+                                }
                             }
                         }
                     }
 
-                    Constructor co = ((Class<?>)cl).getConstructor(new Class[]{argClass});
-                    ret.set( co.newInstance(new Object[]{argValue}) );
+                    // TODO - process remaining args
+                    AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( Arrays.copyOf(candidates, candidateCount) );
+
+                    Constructor co = ((Class<?>)cl).getConstructor(new Class[]{ newArg.getValue() });
+                    ret.set( co.newInstance(new Object[]{ newArg.getKey() }) );
                     return ret;
                 }
                 catch (NoSuchMethodException e) {
@@ -2747,6 +2759,22 @@ EOT
     // public String toString() {
     //     return this.toString();
     // }
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+        // want String
+        for (Class cl : candidates) {
+            if (cl.equals( "".getClass() )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.toString(), cl );
+            }
+        }
+        // want int
+        for (Class cl : candidates) {
+            if (cl.equals( java.lang.Integer.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_int(), cl );
+            }
+        }
+        // default: return the Perl class
+        return new AbstractMap.SimpleEntry<Object, Class>( this, this.getClass() );
+    }
     public int to_int() {
         long v = this.to_long();
         if (v > Integer.MAX_VALUE || v < Integer.MIN_VALUE) {
