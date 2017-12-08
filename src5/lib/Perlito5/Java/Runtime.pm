@@ -821,6 +821,7 @@ class PerlOp {
             invocant = invocant.get();
         }
         if ( invocant.is_JavaObject() ) {
+            args.shift();   // remove invocant
             Object obj = ((PlJavaObject)invocant).toJava();
             PlLvalue ret = new PlLvalue();
             Class cl;
@@ -831,10 +832,8 @@ class PerlOp {
                 cl = obj.getClass();
             }
 
-            int argCount = args.to_int() - 1;   // Perl arg 0 is the invocant
-
+            int argCount = args.to_int();
             if (argCount == 0) {
-
                 // no arguments; this may be a "field"
                 try {
                     Field fi = cl.getField(method);
@@ -852,30 +851,6 @@ class PerlOp {
                 }
                 catch (Exception e) {
                     return PlCORE.die(new PlStringLazyError(e));
-                }
-
-                try {
-                    Method meth = ((Class<?>)cl).getMethod(method, new Class[]{});
-                    ret.set( meth.invoke(obj, new Object[]{}) );
-                    return ret;
-                }
-                catch (NoSuchMethodException e) {
-                }
-                catch (Exception e) {
-                    return PlCORE.die(new PlStringLazyError(e));
-                }
-
-                if (method.equals("new")) {
-                    try {
-                        Constructor co = ((Class<?>)cl).getConstructor(new Class[]{});
-                        ret.set( co.newInstance() );
-                        return ret;
-                    }
-                    catch (NoSuchMethodException e) {
-                    }
-                    catch (Exception e) {
-                        return PlCORE.die(new PlStringLazyError(e));
-                    }
                 }
             }
 
@@ -914,40 +889,42 @@ class PerlOp {
             //   - check Class.getSuperclass()
             //   - special case when arglist is empty, but (Object...)
 
-            System.out.println("Candidate methods " + method);
-            for(int i = 0; i < params.size(); i++) {
-                System.out.println("  params:");
-                for(Class c : params.get(i)) {
-                    System.out.println("    " + c.getName());
-                }
-            }
+            // System.out.println("Candidate methods " + method);
+            // for(int i = 0; i < params.size(); i++) {
+            //     System.out.println("  params:");
+            //     for(Class c : params.get(i)) {
+            //         System.out.println("    " + c.getName());
+            //     }
+            // }
 
             int paramPos = 0;
             ArrayList<Class[]> param2;
             ArrayList<Class> classArgs = new ArrayList<Class>();
             ArrayList<Object> objArgs = new ArrayList<Object>();
+            PerlArgumentLookupResult newArg;
 
-            // TODO - process remaining args
-            PerlArgumentLookupResult newArg = args.aget(1).castToClass( params, paramPos );
-            System.out.println("Closest class " + newArg.cl.getName());
-            classArgs.add(newArg.cl);
-            objArgs.add(newArg.arg);
+            while (args.to_int() > 0) {
+                newArg = args.shift().castToClass( params, paramPos );
+                System.out.println("Closest class " + newArg.cl.getName());
+                classArgs.add(newArg.cl);
+                objArgs.add(newArg.arg);
 
-            // prune candidates
-            param2 = new ArrayList<Class[]>();
-            for (Class[] mArgs : params) {
-                if (mArgs[paramPos].equals(newArg.cl)) {
-                    param2.add(mArgs);
+                // prune candidates
+                param2 = new ArrayList<Class[]>();
+                for (Class[] mArgs : params) {
+                    if (mArgs[paramPos].equals(newArg.cl)) {
+                        param2.add(mArgs);
+                    }
                 }
-            }
-            params = param2;
-            paramPos++;
+                params = param2;
+                paramPos++;
 
-            System.out.println("Candidate methods (2) " + method);
-            for(int i = 0; i < params.size(); i++) {
-                System.out.println("  params:");
-                for(Class c : params.get(i)) {
-                    System.out.println("    " + c.getName());
+                System.out.println("Candidate methods " + method);
+                for(int i = 0; i < params.size(); i++) {
+                    System.out.println("  params:");
+                    for(Class c : params.get(i)) {
+                        System.out.println("    " + c.getName());
+                    }
                 }
             }
 
