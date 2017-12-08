@@ -295,7 +295,10 @@ The Perlito5 Java backend doesn't support Perl XS extensions.
 Instead of XS, it has an extension mechanism that connects Perl with Java.
 
 TODO - investigate using the Nashorn convention for "Using Java from Scripts", see:
-https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
+
+  - https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
+  - https://wiki.openjdk.java.net/display/Nashorn/Nashorn+extensions
+  - https://github.com/shekhargulati/java8-the-missing-tutorial/blob/master/10-nashorn.md
 
 
 `Java::inline` extension
@@ -882,8 +885,6 @@ Perlito5-Java extensibility in "eval-string" mode
 - Syntax
 
   Jython, JRuby, Groovy and Nashorn provide some examples.
-
-  - https://github.com/shekhargulati/java8-the-missing-tutorial/blob/master/10-nashorn.md
 
   Alternately, our own "pre-compile" mode introduced some syntax we could reuse.
 
