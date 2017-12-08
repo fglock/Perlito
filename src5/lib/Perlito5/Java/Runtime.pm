@@ -8099,11 +8099,12 @@ EOT
                     my $perl_package    = $class->{perl_package};
                     my $java_native_to_perl = $class->{java_native_to_perl};
                     $class->{import} || $class->{extends} || $class->{implements} ? 
-"class ${java_native_to_perl} extends PlReference {
+"class ${java_native_to_perl} extends PlJavaObject {
     public static final PlStringConstant REF = new PlStringConstant(\"${perl_package}\");
     private ${java_class_name} stuff;
 
     public ${java_native_to_perl}(${java_class_name} stuff) {
+        super((Object)stuff);
         this.stuff = stuff;
     }
     public ${java_class_name} ${perl_to_java}() {
