@@ -4130,6 +4130,18 @@ class PlClosure extends PlReference implements Runnable {
         // run as a thread
         this.apply(PlCx.VOID, new PlArray());
     }
+
+    public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
+        // want java.lang.Runnable
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Runnable.class )) {
+                return new PerlArgumentLookupResult( this, cl[pos] );
+            }
+        }
+        // try other things
+        return this.get().castToClass(params, pos);
+    }
+
     public PlString ref() {
         if ( this.bless == null ) {
             return REF;

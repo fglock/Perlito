@@ -407,6 +407,7 @@ perl> Java->type("java.lang.Thread")
 Class(0x704b2127)
 perl> $Thread = Java->type("java.lang.Thread"); $Thread->new();
 Thread(0x7ff2b8d2)
+perl> $Thread->new( sub { say "123" } )->start()
 
 perl> sub UUID () { Java->type("java.util.UUID") }
 perl> UUID->randomUUID()->toString()
