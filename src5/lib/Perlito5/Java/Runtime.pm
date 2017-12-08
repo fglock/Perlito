@@ -864,6 +864,13 @@ class PerlOp {
                 }
             }
             if (method.equals("new")) {
+
+                if (cl.isArray() && args.to_int() == 1) {
+                    // $ArrayClass->new(10)
+                    ret.set( java.lang.reflect.Array.newInstance(cl.getComponentType(), args.to_int()) );
+                    return ret;
+                }
+
                 for (Constructor m : cl.getConstructors()) {
                     Class[] mArgs = m.getParameterTypes();
                     if (mArgs.length > 0 && mArgs.length <= argCount) {
