@@ -61,6 +61,9 @@ package Perlito5::AST::Var;
 {
     sub get_captures {
         my $self = shift;
+        if ($self->{sigil} eq '$#') {
+            return Perlito5::AST::Var->new( %$self, sigil => '@' );
+        }
         return ($self); 
     }
 }
