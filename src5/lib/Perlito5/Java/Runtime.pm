@@ -916,7 +916,7 @@ class PerlOp {
             }
 
             // TODO - process remaining args
-            AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( Arrays.copyOf(candidates, candidateCount) );
+            AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( params, 0 );
             System.out.println("Choose class " + newArg.getValue().getName());
 
             try {
@@ -2745,23 +2745,23 @@ EOT
     // public String toString() {
     //     return this.toString();
     // }
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
         // want String
-        for (Class cl : candidates) {
-            if (cl.equals( "".getClass() )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.toString(), cl );
+        for (Class[] cl : params) {
+            if (cl[pos].equals( "".getClass() )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.toString(), cl[pos] );
             }
         }
         // want int
-        for (Class cl : candidates) {
-            if (cl.equals( java.lang.Integer.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_int(), cl );
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Integer.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_int(), cl[pos] );
             }
         }
         // want boolean
-        for (Class cl : candidates) {
-            if (cl.equals( java.lang.Boolean.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_boolean(), cl );
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Boolean.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_boolean(), cl[pos] );
             }
         }
         // default: return the Perl class
@@ -5160,15 +5160,15 @@ class PlLvalue extends PlObject {
         this.o = o.scalar();
     }
 
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
         // want PlLvalue
-        for (Class cl : candidates) {
-            if (cl.equals( this.getClass() )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this, cl );
+        for (Class[] cl : params) {
+            if (cl[pos].equals( this.getClass() )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this, cl[pos] );
             }
         }
         // try other things
-        return this.get().castToClass(candidates);
+        return this.get().castToClass(params, pos);
     }
 
     public Iterator<PlObject> iterator() {
@@ -7370,15 +7370,15 @@ class PlBool extends PlObject {
         this.i = i;
     }
 
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
         // want boolean
-        for (Class cl : candidates) {
-            if (cl.equals( java.lang.Boolean.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_boolean(), cl );
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Boolean.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_boolean(), cl[pos] );
             }
         }
         // try other things
-        return super.castToClass(candidates);
+        return super.castToClass(params, pos);
     }
 
     public long to_long() {
@@ -7465,23 +7465,23 @@ class PlInt extends PlObject {
         this.i = (long)i;
     }
 
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
         // TODO - byte -> short -> int -> long -> float -> double
 
         // want long
-        for (Class cl : candidates) {
-            if (cl.equals( java.lang.Long.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_long(), cl );
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Long.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_long(), cl[pos] );
             }
         }
         // want int
-        for (Class cl : candidates) {
-            if (cl.equals( java.lang.Integer.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_int(), cl );
+        for (Class[] cl : params) {
+            if (cl[pos].equals( java.lang.Integer.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_int(), cl[pos] );
             }
         }
         // try other things
-        return super.castToClass(candidates);
+        return super.castToClass(params, pos);
     }
 
     public long to_long() {
@@ -8247,15 +8247,15 @@ class PlJavaObject extends PlReference {
         return new PlJavaObject(o);
     }
 
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
         // want same Java class
-        for (Class cl : candidates) {
-            if (cl.equals( this.stuff.getClass() )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.stuff, cl );
+        for (Class[] cl : params) {
+            if (cl[pos].equals( this.stuff.getClass() )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.stuff, cl[pos] );
             }
         }
         // try other things
-        return super.castToClass(candidates);
+        return super.castToClass(params, pos);
     }
 
     public PlJavaObject(Object stuff) {
