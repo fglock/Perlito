@@ -621,6 +621,18 @@ class PerlRange implements Iterable<PlObject> {
         }
     }
 }
+class PerlArgumentLookupResult {
+    // public ArrayList<Class[]> params;
+    public Object arg;
+    public Class cl;
+
+    public PerlArgumentLookupResult(Object arg, Class cl) {
+        // , ArrayList<Class[]> params) {
+        this.arg    = arg;
+        this.cl     = cl;
+        // this.params = params;
+    }
+}
 class PerlOp {
     // PerlOp implements operators: && ||
     //      and auxiliary functions
@@ -900,8 +912,9 @@ class PerlOp {
             //              [Ljava.lang.Object; - param #2, ...
             //
             //   - check Class.getSuperclass()
+            //   - special case when arglist is empty, but (Object...)
 
-            System.out.println("Methods " + method);
+            System.out.println("Candidate methods " + method);
             for(int i = 0; i < params.size(); i++) {
                 System.out.println("  params:");
                 for(Class c : params.get(i)) {
@@ -909,13 +922,38 @@ class PerlOp {
                 }
             }
 
+            int paramPos = 0;
+            ArrayList<Class[]> param2;
+            ArrayList<Class> classArgs = new ArrayList<Class>();
+            ArrayList<Object> objArgs = new ArrayList<Object>();
+
             // TODO - process remaining args
-            AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( params, 0 );
-            System.out.println("Choose class " + newArg.getValue().getName());
+            PerlArgumentLookupResult newArg = args.aget(1).castToClass( params, paramPos );
+            System.out.println("Closest class " + newArg.cl.getName());
+            classArgs.add(newArg.cl);
+            objArgs.add(newArg.arg);
+
+            // prune candidates
+            param2 = new ArrayList<Class[]>();
+            for (Class[] mArgs : params) {
+                if (mArgs[paramPos].equals(newArg.cl)) {
+                    param2.add(mArgs);
+                }
+            }
+            params = param2;
+            paramPos++;
+
+            System.out.println("Candidate methods (2) " + method);
+            for(int i = 0; i < params.size(); i++) {
+                System.out.println("  params:");
+                for(Class c : params.get(i)) {
+                    System.out.println("    " + c.getName());
+                }
+            }
 
             try {
-                Method meth = ((Class<?>)cl).getMethod(method, new Class[]{ newArg.getValue() });
-                ret.set( meth.invoke(obj, new Object[]{ newArg.getKey() }) );
+                Method meth = ((Class<?>)cl).getMethod(method, classArgs.toArray(new Class[classArgs.size()]));
+                ret.set( meth.invoke(obj, objArgs.toArray(new Object[objArgs.size()])));
                 return ret;
             }
             catch (NoSuchMethodException e) {
@@ -925,8 +963,8 @@ class PerlOp {
             }
             if (method.equals("new")) {
                 try {
-                    Constructor co = ((Class<?>)cl).getConstructor(new Class[]{ newArg.getValue() });
-                    ret.set( co.newInstance(new Object[]{ newArg.getKey() }) );
+                    Constructor co = ((Class<?>)cl).getConstructor(classArgs.toArray(new Class[classArgs.size()]));
+                    ret.set( co.newInstance(objArgs.toArray(new Object[objArgs.size()])) );
                     return ret;
                 }
                 catch (NoSuchMethodException e) {
@@ -2739,27 +2777,27 @@ EOT
     // public String toString() {
     //     return this.toString();
     // }
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
+    public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
         // want String
         for (Class[] cl : params) {
             if (cl[pos].equals( "".getClass() )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.toString(), cl[pos] );
+                return new PerlArgumentLookupResult( this.toString(), cl[pos] );
             }
         }
         // want int
         for (Class[] cl : params) {
             if (cl[pos].equals( java.lang.Integer.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_int(), cl[pos] );
+                return new PerlArgumentLookupResult( this.to_int(), cl[pos] );
             }
         }
         // want boolean
         for (Class[] cl : params) {
             if (cl[pos].equals( java.lang.Boolean.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_boolean(), cl[pos] );
+                return new PerlArgumentLookupResult( this.to_boolean(), cl[pos] );
             }
         }
         // default: return the Perl class
-        return new AbstractMap.SimpleEntry<Object, Class>( this, this.getClass() );
+        return new PerlArgumentLookupResult( this, this.getClass() );
     }
     public int to_int() {
         long v = this.to_long();
@@ -5154,11 +5192,11 @@ class PlLvalue extends PlObject {
         this.o = o.scalar();
     }
 
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
+    public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
         // want PlLvalue
         for (Class[] cl : params) {
             if (cl[pos].equals( this.getClass() )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this, cl[pos] );
+                return new PerlArgumentLookupResult( this, cl[pos] );
             }
         }
         // try other things
@@ -7364,11 +7402,11 @@ class PlBool extends PlObject {
         this.i = i;
     }
 
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
+    public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
         // want boolean
         for (Class[] cl : params) {
             if (cl[pos].equals( java.lang.Boolean.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_boolean(), cl[pos] );
+                return new PerlArgumentLookupResult( this.to_boolean(), cl[pos] );
             }
         }
         // try other things
@@ -7459,19 +7497,19 @@ class PlInt extends PlObject {
         this.i = (long)i;
     }
 
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
+    public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
         // TODO - byte -> short -> int -> long -> float -> double
 
         // want long
         for (Class[] cl : params) {
             if (cl[pos].equals( java.lang.Long.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_long(), cl[pos] );
+                return new PerlArgumentLookupResult( this.to_long(), cl[pos] );
             }
         }
         // want int
         for (Class[] cl : params) {
             if (cl[pos].equals( java.lang.Integer.TYPE )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.to_int(), cl[pos] );
+                return new PerlArgumentLookupResult( this.to_int(), cl[pos] );
             }
         }
         // try other things
@@ -8241,11 +8279,11 @@ class PlJavaObject extends PlReference {
         return new PlJavaObject(o);
     }
 
-    public AbstractMap.SimpleEntry<Object, Class> castToClass(ArrayList<Class[]> params, int pos) {
+    public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
         // want same Java class
         for (Class[] cl : params) {
             if (cl[pos].equals( this.stuff.getClass() )) {
-                return new AbstractMap.SimpleEntry<Object, Class>( this.stuff, cl[pos] );
+                return new PerlArgumentLookupResult( this.stuff, cl[pos] );
             }
         }
         // try other things
