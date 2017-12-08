@@ -888,6 +888,10 @@ class PerlOp {
             //
             //   - check Class.getSuperclass()
             //   - special case when arglist is empty, but (Object...)
+            //   - Creating arrays via Java Reflection is done using the java.lang.reflect.Array:
+            //
+            //          int[] intArray = (int[]) Array.newInstance(int.class, 3);
+            //
 
             // System.out.println("Candidate methods " + method);
             // for(int i = 0; i < params.size(); i++) {
