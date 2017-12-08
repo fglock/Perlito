@@ -867,35 +867,55 @@ class PerlOp {
                 }
             }
 
-            try {
+            ArrayList<Class[]> params = new ArrayList<Class[]>();
+            for (Method m : cl.getMethods()) {
+                if (m.getName().equals(method)) {
+                    params.add(m.getParameterTypes());
+                }
+            }
+            if (method.equals("new")) {
+                for (Constructor m : cl.getConstructors()) {
+                    params.add(m.getParameterTypes());
+                }
+            }
 
-                // TODO - overloading
-                //   - sort methods by specificity
-                //   - method arity: consider variable arity (Object...) "[Ljava.lang.Object;"
+            // TODO - overloading
+            //   - sort constructors by specificity
+            //   - See: https://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.12.2
+            //          http://www.xyzws.com/javafaq/what-is-a-mostspecific-method/8
+            //   - type promotion: byte -> short -> int -> long -> float -> double
+            //   - boxing / unboxing
+            //   - method arity: consider variable arity (Object...) "[Ljava.lang.Object;"
+            //
+            //          perl> eval { $aa = Java::inline q{ Class.forName("java.lang.String") }}
+            //          Class(0xf3fcd59)
+            //          perl> $aa->format("aaa")
+            //              java.lang.String    - param #1
+            //              [Ljava.lang.Object; - param #2, ...
+            //
+            //   - check Class.getSuperclass()
 
-                Method m[] = cl.getMethods();
-                Class[] candidates = new Class[m.length];
-                int candidateCount = 0;
-                System.out.println("Methods:");
-                for(int i = 0; i < m.length; i++) {
-                    if (m[i].getName().equals(method)) {
-                        Class[] mArgs = m[i].getParameterTypes();
-                        if (mArgs.length == argCount) {
-                            System.out.println("  " + m[i]);
-                            for(int j = 0; j < mArgs.length; j++) {
-                                System.out.println("    " + mArgs[j].getName());
-                                if (j == 0) {
-                                    candidates[candidateCount++] = mArgs[j];
-                                }
-                            }
+            System.out.println("Methods " + method);
+            Class[] candidates = new Class[params.size()];
+            int candidateCount = 0;
+            for(int i = 0; i < params.size(); i++) {
+                Class[] mArgs = params.get(i);
+                if (mArgs.length > 0 && mArgs.length <= argCount) {
+                    System.out.println("  params:");
+                    for(int j = 0; j < mArgs.length; j++) {
+                        System.out.println("    " + mArgs[j].getName());
+                        if (j == 0) {
+                            candidates[candidateCount++] = mArgs[j];
                         }
                     }
                 }
+            }
 
-                // TODO - process remaining args
-                AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( Arrays.copyOf(candidates, candidateCount) );
-                System.out.println("Choose class " + newArg.getValue().getName());
+            // TODO - process remaining args
+            AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( Arrays.copyOf(candidates, candidateCount) );
+            System.out.println("Choose class " + newArg.getValue().getName());
 
+            try {
                 Method meth = ((Class<?>)cl).getMethod(method, new Class[]{ newArg.getValue() });
                 ret.set( meth.invoke(obj, new Object[]{ newArg.getKey() }) );
                 return ret;
@@ -905,47 +925,8 @@ class PerlOp {
             catch (Exception e) {
                 return PlCORE.die(new PlStringLazyError(e));
             }
-
             if (method.equals("new")) {
                 try {
-
-                    // TODO - overloading
-                    //   - sort constructors by specificity
-                    //   - See: https://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.12.2
-                    //          http://www.xyzws.com/javafaq/what-is-a-mostspecific-method/8
-                    //   - type promotion: byte -> short -> int -> long -> float -> double
-                    //   - boxing / unboxing
-                    //   - method arity: consider variable arity (Object...) "[Ljava.lang.Object;"
-                    //
-                    //          perl> eval { $aa = Java::inline q{ Class.forName("java.lang.String") }}
-                    //          Class(0xf3fcd59)
-                    //          perl> $aa->format("aaa")
-                    //              java.lang.String    - param #1
-                    //              [Ljava.lang.Object; - param #2, ...
-                    //
-                    //   - check Class.getSuperclass()
-
-                    Constructor c[] = cl.getConstructors();
-                    Class[] candidates = new Class[c.length];
-                    int candidateCount = 0;
-                    System.out.println("Constructors:");
-                    for(int i = 0; i < c.length; i++) {
-                        Class[] mArgs = c[i].getParameterTypes();
-                        if (mArgs.length == argCount) {
-                            System.out.println("  " + c[i]);
-                            for(int j = 0; j < mArgs.length; j++) {
-                                System.out.println("    " + mArgs[j].getName());
-                                if (j == 0) {
-                                    candidates[candidateCount++] = mArgs[j];
-                                }
-                            }
-                        }
-                    }
-
-                    // TODO - process remaining args
-                    AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( Arrays.copyOf(candidates, candidateCount) );
-                    System.out.println("Choose class " + newArg.getValue().getName());
-
                     Constructor co = ((Class<?>)cl).getConstructor(new Class[]{ newArg.getValue() });
                     ret.set( co.newInstance(new Object[]{ newArg.getKey() }) );
                     return ret;
@@ -956,7 +937,6 @@ class PerlOp {
                     return PlCORE.die(new PlStringLazyError(e));
                 }
             }
-
             return PlCORE.die( "Can't locate object method \"" + method
                 + "\" via Java class \"" + cl.getSimpleName()
                 + "\" (perhaps the parameter types don\'t match?)" );
