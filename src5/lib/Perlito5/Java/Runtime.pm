@@ -8263,6 +8263,17 @@ class PlJavaObject extends PlReference {
         return new PlJavaObject(o);
     }
 
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+        // want same Java class
+        for (Class cl : candidates) {
+            if (cl.equals( this.stuff.getClass() )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.stuff, cl );
+            }
+        }
+        // try other things
+        return super.castToClass(candidates);
+    }
+
     public PlJavaObject(Object stuff) {
         this.stuff = stuff;
     }
