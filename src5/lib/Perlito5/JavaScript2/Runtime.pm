@@ -511,7 +511,7 @@ p5pkg["main"]['v_"'] = " ";     // $"
 p5pkg["main"]["List_#"] = [];   // @#
 p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O
 p5pkg["main"]["List_INC"] = [];
-p5pkg["main"]["Hash_INC"] = {};
+p5pkg["main"]["Hash_INC"] = { "strict.pm" : "strict.pm", "feature.pm" : "feature.pm", "warnings.pm" : "warnings.pm" };
 p5pkg["main"]["List_ARGV"] = [];
 p5pkg["main"]["Hash_ENV"] = {};
 p5pkg["main"]["Hash_SIG"] = {};
