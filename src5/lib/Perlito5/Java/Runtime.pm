@@ -894,6 +894,7 @@ class PerlOp {
 
                 // TODO - process remaining args
                 AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( Arrays.copyOf(candidates, candidateCount) );
+                System.out.println("Choose class " + newArg.getValue().getName());
 
                 Method meth = ((Class<?>)cl).getMethod(method, new Class[]{ newArg.getValue() });
                 ret.set( meth.invoke(obj, new Object[]{ newArg.getKey() }) );
@@ -943,6 +944,7 @@ class PerlOp {
 
                     // TODO - process remaining args
                     AbstractMap.SimpleEntry<Object, Class> newArg = args.aget(1).castToClass( Arrays.copyOf(candidates, candidateCount) );
+                    System.out.println("Choose class " + newArg.getValue().getName());
 
                     Constructor co = ((Class<?>)cl).getConstructor(new Class[]{ newArg.getValue() });
                     ret.set( co.newInstance(new Object[]{ newArg.getKey() }) );
@@ -2770,6 +2772,12 @@ EOT
         for (Class cl : candidates) {
             if (cl.equals( java.lang.Integer.TYPE )) {
                 return new AbstractMap.SimpleEntry<Object, Class>( this.to_int(), cl );
+            }
+        }
+        // want boolean
+        for (Class cl : candidates) {
+            if (cl.equals( java.lang.Boolean.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_boolean(), cl );
             }
         }
         // default: return the Perl class
@@ -5168,6 +5176,17 @@ class PlLvalue extends PlObject {
         this.o = o.scalar();
     }
 
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+        // want PlLvalue
+        for (Class cl : candidates) {
+            if (cl.equals( this.getClass() )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this, cl );
+            }
+        }
+        // try other things
+        return this.get().castToClass(candidates);
+    }
+
     public Iterator<PlObject> iterator() {
         return new PlLvalueIterator(this); 
     }
@@ -7366,6 +7385,18 @@ class PlBool extends PlObject {
     public PlBool(boolean i) {
         this.i = i;
     }
+
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+        // want boolean
+        for (Class cl : candidates) {
+            if (cl.equals( java.lang.Boolean.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_boolean(), cl );
+            }
+        }
+        // try other things
+        return super.castToClass(candidates);
+    }
+
     public long to_long() {
         if (this.i) {
             return 1;
@@ -7449,6 +7480,26 @@ class PlInt extends PlObject {
     public PlInt(int i) {
         this.i = (long)i;
     }
+
+    public AbstractMap.SimpleEntry<Object, Class> castToClass(Class[] candidates) {
+        // TODO - byte -> short -> int -> long -> float -> double
+
+        // want long
+        for (Class cl : candidates) {
+            if (cl.equals( java.lang.Long.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_long(), cl );
+            }
+        }
+        // want int
+        for (Class cl : candidates) {
+            if (cl.equals( java.lang.Integer.TYPE )) {
+                return new AbstractMap.SimpleEntry<Object, Class>( this.to_int(), cl );
+            }
+        }
+        // try other things
+        return super.castToClass(candidates);
+    }
+
     public long to_long() {
         return this.i;
     }
