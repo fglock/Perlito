@@ -902,16 +902,10 @@ class PerlOp {
             //   - check Class.getSuperclass()
 
             System.out.println("Methods " + method);
-            Class[] candidates = new Class[params.size()];
-            int candidateCount = 0;
             for(int i = 0; i < params.size(); i++) {
-                Class[] mArgs = params.get(i);
                 System.out.println("  params:");
-                for(int j = 0; j < mArgs.length; j++) {
-                    System.out.println("    " + mArgs[j].getName());
-                    if (j == 0) {
-                        candidates[candidateCount++] = mArgs[j];
-                    }
+                for(Class c : params.get(i)) {
+                    System.out.println("    " + c.getName());
                 }
             }
 
