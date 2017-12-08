@@ -910,9 +910,30 @@ class PerlOp {
             ArrayList<Object> objArgs = new ArrayList<Object>();
             PerlArgumentLookupResult newArg;
 
+          ARGS:
             while (args.to_int() > 0) {
-                newArg = args.shift().castToClass( params, paramPos );
+                PlObject v = args.shift();
+                newArg = v.castToClass( params, paramPos );
                 System.out.println("Closest class " + newArg.cl.getName());
+
+                if (newArg.arg == null && newArg.cl.isArray()) {
+                    System.out.println("Start varargs");
+                    Class varargsClass = newArg.cl.getComponentType();
+                    params = new ArrayList<Class[]>();
+                    params.add( new Class[]{ varargsClass } );
+                    paramPos = 0;
+                    // cast the same argument again
+                    args.unshift(v);
+                    while (args.to_int() > 0) {
+                        v = args.shift();
+                        newArg = v.castToClass( params, paramPos );
+                        System.out.println("varargs: Closest class " + newArg.cl.getName());
+                        classArgs.add(newArg.cl);
+                        objArgs.add(newArg.arg);
+                    }
+                    break ARGS;
+                }
+
                 classArgs.add(newArg.cl);
                 objArgs.add(newArg.arg);
 
@@ -2796,6 +2817,13 @@ EOT
         for (Class[] cl : params) {
             if (cl[pos].equals( java.lang.Float.TYPE )) {
                 return new PerlArgumentLookupResult( this.to_float(), cl[pos] );
+            }
+        }
+        // want array
+        for (Class[] cl : params) {
+            if (cl[pos].isArray() && pos == (cl.length - 1)) {
+                // varargs
+                return new PerlArgumentLookupResult( null, cl[pos] );
             }
         }
 
