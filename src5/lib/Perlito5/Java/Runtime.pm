@@ -914,23 +914,27 @@ class PerlOp {
             while (args.to_int() > 0) {
                 PlObject v = args.shift();
                 newArg = v.castToClass( params, paramPos );
-                System.out.println("Closest class " + newArg.cl.getName());
+                // System.out.println("Closest class " + newArg.cl.getName());
 
                 if (newArg.arg == null && newArg.cl.isArray()) {
-                    System.out.println("Start varargs");
-                    Class varargsClass = newArg.cl.getComponentType();
+                    // varargs
+                    // System.out.println("Start varargs");
+                    args.unshift(v);    // cast the argument again
+                    Class varargsArrayClass = newArg.cl;
+                    Class varargsClass = varargsArrayClass.getComponentType();
+                    Object[] varargs = (Object[])java.lang.reflect.Array.newInstance(varargsClass, args.to_int());
                     params = new ArrayList<Class[]>();
                     params.add( new Class[]{ varargsClass } );
                     paramPos = 0;
-                    // cast the same argument again
-                    args.unshift(v);
+                    int varargsPos = 0;
                     while (args.to_int() > 0) {
                         v = args.shift();
                         newArg = v.castToClass( params, paramPos );
-                        System.out.println("varargs: Closest class " + newArg.cl.getName());
-                        classArgs.add(newArg.cl);
-                        objArgs.add(newArg.arg);
+                        // System.out.println("varargs: Closest class " + newArg.cl.getName());
+                        varargs[varargsPos++] = newArg.arg;
                     }
+                    classArgs.add(varargsArrayClass);
+                    objArgs.add(varargs);
                     break ARGS;
                 }
 
@@ -947,13 +951,13 @@ class PerlOp {
                 params = param2;
                 paramPos++;
 
-                System.out.println("Candidate methods " + method);
-                for(int i = 0; i < params.size(); i++) {
-                    System.out.println("  params:");
-                    for(Class c : params.get(i)) {
-                        System.out.println("    " + c.getName());
-                    }
-                }
+                // System.out.println("Candidate methods " + method);
+                // for(int i = 0; i < params.size(); i++) {
+                //     System.out.println("  params:");
+                //     for(Class c : params.get(i)) {
+                //         System.out.println("    " + c.getName());
+                //     }
+                // }
             }
 
             try {
