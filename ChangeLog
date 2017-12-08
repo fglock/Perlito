@@ -33,6 +33,9 @@ backends.
 -- new operators '|.', '|.=', '&.', '&.=', '^.', '^.=', '~.'
 -- "\N{U+263D}", "\N{YIN YANG}" string escape sequence
 
+- JavaScript:
+-- fix some special cases with "$#" sigil
+
 - Java:
 -- javax.script API registers "Perl5" interpreter
 	example at misc/Java/Script.java
