@@ -63,6 +63,15 @@ sub perl5_to_java {
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+
+    # TODO - process type annotations like:
+    #   package Java::Object { import => 'java.lang.Object' }
+    #
+    # for my $ann ( @Perlito::ANNOTATION ) {
+    #     my $str = Perlito5::AST::CompUnit::process_java_import_statement(@$ann);
+    #     warn "ANNOTATION: [[[\n$str\n]]]\n";
+    # }
+
     return ($java_code, $constants);
 }
 
@@ -81,6 +90,14 @@ sub eval_ast {
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+
+    # TODO - process type annotations like:
+    #   package Java::Object { import => 'java.lang.Object' }
+    #
+    # for my $ann ( @Perlito::ANNOTATION ) {
+    #     my $str = Perlito5::AST::CompUnit::process_java_import_statement(@$ann);
+    #     warn "ANNOTATION: [[[\n$str\n]]]\n";
+    # }
 
     my $constants = "";
     for my $s ( @Perlito5::Java::Java_constants ) {
