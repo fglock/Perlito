@@ -400,14 +400,18 @@ package Perlito5::AST::CompUnit;
         # we need the parameter list as Perl data, so we need to evaluate the AST
         # - wrap the "list AST into a "hashref" AST
         my $args_ast = $annotation_ast;
-        # - transform the AST back into Perl code
-        my $out = [];
-        Perlito5::Perl5::PrettyPrinter::pretty_print( [$args_ast->emit_perl5()], 0, $out );
-        my $args_perl5 = join( '', @$out );
 
         # - eval the Perl code and store the arguments to use later
-        $Java_class->{$class} = eval $args_perl5
-            or die "error in arguments to generate Java class:\n$@\n${args_perl5}";
+        my $ast = 
+            Perlito5::AST::Block->new(
+                stmts => [$args_ast],
+            );
+        # warn Perlito5::Dumper::Dumper( $ast );
+        my @data = Perlito5::eval_ast($ast);
+        # warn Perlito5::Dumper::Dumper( \@data );
+
+        $Java_class->{$class} = Perlito5::eval_ast($ast)
+            or die "error in arguments to generate Java class: $@";
 
 
         if ($Java_class->{$class}->{java_path}) {

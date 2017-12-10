@@ -67,7 +67,8 @@ sub perl5_to_java {
     # TODO - process type annotations like:
     #   package Java::Object { import => 'java.lang.Object' }
     #
-    # for my $ann ( @Perlito::ANNOTATION ) {
+    # while ( @Perlito::ANNOTATION ) {
+    #     my $ann = shift(@Perlito::ANNOTATION);
     #     my $str = Perlito5::AST::CompUnit::process_java_import_statement(@$ann);
     #     warn "ANNOTATION: [[[\n$str\n]]]\n";
     # }
@@ -94,7 +95,8 @@ sub eval_ast {
     # TODO - process type annotations like:
     #   package Java::Object { import => 'java.lang.Object' }
     #
-    # for my $ann ( @Perlito::ANNOTATION ) {
+    # while ( @Perlito::ANNOTATION ) {
+    #     my $ann = shift(@Perlito::ANNOTATION);
     #     my $str = Perlito5::AST::CompUnit::process_java_import_statement(@$ann);
     #     warn "ANNOTATION: [[[\n$str\n]]]\n";
     # }
