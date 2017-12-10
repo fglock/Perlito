@@ -11,6 +11,10 @@ use Perlito5::Perl5::Emitter;       # TODO - cleanup the dependency on Perl5 emi
 use Perlito5::Perl5::PrettyPrinter; # TODO - cleanup the dependency on Perl5 emitter
 use strict;
 
+sub init {
+    Perlito5::Java::init_java_class();
+}
+
 my %label;
 
 # 'The::Class' => {

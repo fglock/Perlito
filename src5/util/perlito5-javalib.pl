@@ -20,6 +20,7 @@ use Time::HiRes;
 $Perlito5::JAVA_EVAL = 1;
 $Perlito5::CODE_TOO_LARGE = 1;  # work around java code size limitation
 
+Perlito5::Java::init();
 Perlito5::Java::Lib::init();
 
 1;

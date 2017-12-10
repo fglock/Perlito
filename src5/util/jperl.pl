@@ -358,6 +358,7 @@ elsif ($backend) {
     # TODO - reset information about the current compilation process,
     #        this should happen before the eval-string below is *compiled*.
 
+    Perlito5::Java::init();
     Perlito5::Java::Lib::init()
         if $backend eq 'java';
     Perlito5::JavaScript2::Lib::init()

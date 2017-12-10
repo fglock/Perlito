@@ -481,7 +481,6 @@ package Perlito5::AST::CompUnit;
         $str .= Perlito5::Compiler::do_not_edit("//");
 
         # look for special 'Java' packages
-        Perlito5::Java::init_java_class();
         for my $ann ( @Perlito::ANNOTATION ) {
             $str .= process_java_import_statement(@$ann);
         }
