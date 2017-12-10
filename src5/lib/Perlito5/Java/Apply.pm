@@ -72,7 +72,7 @@ package Perlito5::AST::Apply;
                 $modifier =~ s/g//g;
             }
             $str = 'PerlOp.replace('
-                    . $var->emit_java($level, 'scalar') . ', '
+                    . $var->emit_java($level, 'scalar', 'lvalue') . ', '
                     . emit_qr_java( $regex_args->[0], $modifier, $level ) . ', '
                     . $replace_java . ', '
                     . Perlito5::Java::to_context($wantarray) . ', '
