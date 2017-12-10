@@ -423,23 +423,41 @@ Java extensions in eval-string (work in progress)
 
   - Java objects can be assigned to Perl scalar variables, array elements, or hash elements.
 
-  - These extensions are allowed in pre-compilation mode, but not in eval-string mode:
+  - TODO - type information is lost for `Byte`, `Character` values - these are converted to `long`, `String`
 
-    - TODO - syntax for dereferencing scalars (Java objects are stored as references)
+  - TODO - Array and Hash dereference syntax is not supported; this should work:
 
-    - TODO - native Java variables (typed variables)
+    ```
+    my $v = Java->type("int[]")->new(10);
+    $v->[0] = 123;
+    for (@$v) { ... }
+    for my Integer $x (@$v) { ... }
+    ```
 
-    - TODO - assign to array, assign to hash
+  - TODO - Some extensions are allowed in pre-compilation mode, but not in eval-string mode
 
-    - TODO - syntax for "import" Java class
+  - TODO - syntax for dereferencing scalars (Java objects are stored as references)
 
-    - TODO - syntax for Java method calls - typed argument lists are work in progress
+    ```
+    my $v = Java->type("int[]")->new(10);
+    my Integer::Array $i = $$v;
+    ```
 
-    - TODO - syntax for creating new Java subclass ("extends" and "implements")
+  - TODO - native Java variables (typed variables)
+
+  - TODO - assign to array, assign to hash
+
+  - TODO - syntax for "import" Java class
+
+  - TODO - syntax for Java method calls - typed argument lists are work in progress
+
+  - TODO - syntax for creating new Java subclass ("extends" and "implements")
 
   - Perl modules using extensions can be precompiled ahead-of-time in `perlito5.jar`, by adding a `use` statement in `src5/util/jperl.pl`
 
     - TODO - interoperation of "ahead-of-time" compiler extensions and "eval-string" extensions is untested
+
+    - TODO - @Perlito::ANNOTATION is not processed at eval-string
 
 
 Java extensions in ahead-of-time (pre-compilation) mode
