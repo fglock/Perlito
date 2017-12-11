@@ -482,8 +482,6 @@ Java extensions in eval-string (work in progress)
 
     - TODO - interoperation of "ahead-of-time" compiler extensions and "eval-string" extensions is untested
 
-    - TODO - @Perlito::ANNOTATION is not processed at eval-string
-
 
 Java extensions in ahead-of-time (pre-compilation) mode
 -------------------------------------------------------
