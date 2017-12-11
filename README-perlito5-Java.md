@@ -451,6 +451,20 @@ Java extensions in eval-string (work in progress)
 
   - Java objects can be assigned to Perl scalar variables, array elements, or hash elements.
 
+  - Assign from Perl scalar to typed variables requires explicit coercion (or unboxing).
+
+    Example: use the `Java` package to create a boxed Java array;
+    use a typed variable declaration to create an unboxed Java array:
+
+    ```
+    $ jrunscript -cp . -l Perl5 
+    perl> push @INC, "src5/lib";
+    perl> use Java
+    perl> package Java::Array::Of::Int { import => "java.lang.Integer", java_type => "int[]" }  
+    perl> my Java::Array::Of::Int $aa; $aa = Java->type("int[]")->new(10);
+    error: incompatible types: PlObject cannot be converted to int[]
+    ```
+
   - TODO - type information is lost for `Byte`, `Character` values - these are converted to `long`, `String`
 
     - Note that casting an argument to Byte in a method call would not work, because the 
