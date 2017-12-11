@@ -731,9 +731,18 @@ conditionals should work fine, because these are not usually implemented as clos
   - workaround: store the Java value in a Perl variable
 
 - Java methods with type "void" should not be in the last line of a Perl block.
-This is because Perl blocks return the last value, and "void" is not acceptable as a value.
+  This is because Perl blocks return the last value, and "void" is not acceptable as a value.
+
+  ```
+  perl> package System { import => "java.lang.System" }
+  import
+  perl> System->gc()
+  /PlEval3.java:15: error: 'void' type not allowed here
+                      return PerlOp.context(want, System.gc());
+  ```
 
   - workaround: add a plain-perl line, such as "return", "undef", or "1".
+
 
 Extending a Java class with Perl
 --------------------------------
