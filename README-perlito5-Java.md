@@ -1042,16 +1042,16 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
   - TODO: capture typed variables in closures
 
-    maybe TODO: allow typed variables in parameter list
-        but they would probably lose the type information
+    maybe TODO: allow typed variables in parameter list;
+    but they would probably lose the type information
 
-        possible workaround:
+    possible workaround:
 
-        `my Int $x = $y;     # automatically insert a call to $y->toInt()`
+    `my Int $x = $y;     # automatically insert a call to $y->toInt()`
 
   - maybe TODO: call Perl subroutines with native parameters
 
-        `print $x->to_Sample();`
+    `print $x->to_Sample();`
 
   - TODO: (wip) call Java methods with Perl parameters
 
