@@ -218,7 +218,8 @@ Perlito5-Java work-in-progress
 
   - `local @_` doesn't work yet, because `@_` is special
 
-  - smartmatch `~~` operator not implemented; also `when` and `given` not implemented.
+  - smartmatch `~~` operator partially implemented
+    - `when` and `given` not implemented.
 
   - incomplete CORE function implementations
       - open()
@@ -432,39 +433,42 @@ Java extensions in eval-string (work in progress)
     - https://wiki.python.org/jython/UserGuide#interaction-with-java-packages
   
 
+  - TODO - Some extensions are allowed in pre-compilation mode, but not in eval-string mode
+
+    - TODO - native Java variables (typed variables)
+
+    - TODO - syntax for "import" Java class
+
+    - TODO - syntax for creating new Java subclass ("extends" and "implements")
+
   - Java objects can be assigned to Perl scalar variables, array elements, or hash elements.
 
   - TODO - type information is lost for `Byte`, `Character` values - these are converted to `long`, `String`
 
-  - TODO - Array and Hash dereference syntax is not supported; this should work:
+    - Note that casting an argument to Byte in a method call would not work, because the 
+      "argument list" object is a Perl list: it would convert the Byte to a Perl integer.
+
+  - TODO - Array and Hash dereference syntax is not supported
+  - TODO - assign to array, assign to hash
 
     ```
     my $v = Java->type("int[]")->new(10);
-    $v->[0] = 123;
-    for (@$v) { ... }
-    for my Integer $x (@$v) { ... }
+    $v->[0] = 123;      # TODO
+    @$v = (1..3);       # TODO
+    for (@$v) { ... }   # TODO
+    for my Integer $x (@$v) { ... }     # TODO
     ```
 
   - TODO - test varargs call with 0 arguments
-
-  - TODO - Some extensions are allowed in pre-compilation mode, but not in eval-string mode
 
   - TODO - syntax for dereferencing scalars (Java objects are stored as references)
 
     ```
     my $v = Java->type("int[]")->new(10);
-    my Integer::Array $i = $$v;
+    my Integer::Array $i = $$v;     # TODO
     ```
 
-  - TODO - native Java variables (typed variables)
-
-  - TODO - assign to array, assign to hash
-
-  - TODO - syntax for "import" Java class
-
   - TODO - syntax for Java method calls - typed argument lists are work in progress
-
-  - TODO - syntax for creating new Java subclass ("extends" and "implements")
 
   - Perl modules using extensions can be precompiled ahead-of-time in `perlito5.jar`, by adding a `use` statement in `src5/util/jperl.pl`
 
