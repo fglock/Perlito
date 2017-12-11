@@ -421,6 +421,17 @@ int[](0x2787de58)
 Java extensions in eval-string (work in progress)
 -------------------------------------------------
 
+  - Syntax
+  
+    Jython, JRuby, Groovy and Nashorn provide some examples.
+  
+    Alternately, our own "pre-compile" mode introduced some syntax we could reuse.
+  
+    See also http://search.cpan.org/dist/Inline-Java/Java.pod
+  
+    - https://wiki.python.org/jython/UserGuide#interaction-with-java-packages
+  
+
   - Java objects can be assigned to Perl scalar variables, array elements, or hash elements.
 
   - TODO - type information is lost for `Byte`, `Character` values - these are converted to `long`, `String`
@@ -433,6 +444,8 @@ Java extensions in eval-string (work in progress)
     for (@$v) { ... }
     for my Integer $x (@$v) { ... }
     ```
+
+  - TODO - test varargs call with 0 arguments
 
   - TODO - Some extensions are allowed in pre-compilation mode, but not in eval-string mode
 
@@ -889,26 +902,6 @@ XS support using libperl.so
     - http://bsfperl.sourceforge.net/tutorial/
   
     - https://sourceforge.net/p/bsfperl/discussion/307607/
-
-Perlito5-Java extensibility in "eval-string" mode
-------------------------------------
-
-- Introspection container
-
-  When a new Java class is introduced inside "eval-string", it is too late to create a (static) type
-  that is recognizable by the already compiled code.
-
-  In this case we could use a container "PlJavaObject" and call methods using introspection.
-
-- Syntax
-
-  Jython, JRuby, Groovy and Nashorn provide some examples.
-
-  Alternately, our own "pre-compile" mode introduced some syntax we could reuse.
-
-  See also http://search.cpan.org/dist/Inline-Java/Java.pod
-
-  - https://wiki.python.org/jython/UserGuide#interaction-with-java-packages
 
 Perlito5-Java extensibility in "pre-compile" mode
 ------------------------------------
