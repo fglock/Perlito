@@ -985,23 +985,29 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Sample { import => "misc.Java.Sample" }; my $x = Sample->new(); $x->to_Sample() ' > Test.java ; javac Test.java
     ```
 
+    ```
     my $p_put = Sample->new();
     my $p_put = new Sample();
+    ```
+
+  - TODO - list assignment
+
+    `my Integer ($i, $j) = (123, 456);`
 
   - creates a boxed Java variable           (DONE)
 
-    $x->to_Sample()
+    `$x->to_Sample()`
 
     retrieves the native Sample object      (DONE)
     allow conversion of primitive types - to_Int(), to_String()
                                             (TODO: generate primitive types in emitter)
   - this only works if $x is a Perl variable that contains a value of type "Sample"
 
-    "$x"      # Sample<0x1234567>
+    `"$x"      # Sample<0x1234567>`
 
     $x is a Perl variable that contains a native "Sample"; it behaves like a Perl object
 
-    my $x = $p_put;
+    `my $x = $p_put;`
 
   - puts the boxed object into a Perl scalar  (DONE)
 
@@ -1010,17 +1016,17 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   - creates a native Java variable          (DONE)
                                             (TODO: allow Int, String types)
 
-    my Int $val = Sample->VAL;
+    `my Int $val = Sample->VAL;`
 
   - "method call without parenthesis"
 
     read a class or instance variable
 
-    my $x = $put;
+    `my $x = $put;`
 
   - puts the unboxed object into a Perl scalar  (DONE)
 
-    my $x = Sample->new()
+    `my $x = Sample->new()`
 
   - stores the boxed pSample object in a Perl scalar (DONE)
 
@@ -1041,11 +1047,11 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
         possible workaround:
 
-        my Int $x = $y;     # automatically insert a call to $y->toInt()
+        `my Int $x = $y;     # automatically insert a call to $y->toInt()`
 
   - maybe TODO: call Perl subroutines with native parameters
 
-        print $x->to_Sample();
+        `print $x->to_Sample();`
 
   - TODO: (wip) call Java methods with Perl parameters
 
