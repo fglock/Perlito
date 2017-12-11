@@ -437,11 +437,17 @@ Java extensions in eval-string (work in progress)
 
   - TODO - Some extensions are allowed in pre-compilation mode, but not in eval-string mode
 
-    - TODO - native Java variables (typed variables)
+  - native Java variables (typed variables)
 
-    - TODO - syntax for "import" Java class
+    ```
+    $ jrunscript -cp . -l Perl5 
+    perl> package Java::Object { import => 'java.lang.Object' };    # import Java class
+    import
+    perl> my Java::Object $obj = Java::Object->new();
+    Object(0x4b44655e)
+    ```
 
-    - TODO - syntax for creating new Java subclass ("extends" and "implements")
+    - TODO - test syntax for creating new Java subclass ("extends" and "implements")
 
   - Java objects can be assigned to Perl scalar variables, array elements, or hash elements.
 
