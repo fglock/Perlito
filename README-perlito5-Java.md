@@ -93,6 +93,8 @@ Perlito5-Java work-in-progress
 
       - `pmc` files could be plain `jar` files.
 
+  - add `src5/lib` Perl files to `perlito5.jar`, instead of setting `-I src5/lib` or `PERL5LIB=src5/lib`.
+
   - bootstrapping using `perlito5-lib.jar`
 
       - bootstrapping is not possible with perlito5.jar, because it is built without the grammar modules.
