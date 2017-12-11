@@ -718,6 +718,8 @@ $j = $var->to_long();   # get Java value from Perl variable
 
 Typed variables generate efficient, native Java. The catch is that there are a few restrictions:
 
+- Only `my` variables can be typed.
+
 - Java variables are not captured by Perl closures. This means that a variable declared in a context
 will not be seen inside inner subroutine declarations (named or anonymous) and eval blocks. Loops and
 conditionals should work fine, because these are not usually implemented as closures.
