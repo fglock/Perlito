@@ -88,6 +88,12 @@ sub _dumper {
     };
     return $res if $res;
 
+    $res = eval {
+        # blessed SCALAR
+        "bless(\\" . _dumper($$obj, $tab1, $seen, $pos) . ", '$ref')";
+    };
+    return $res if $res;
+
     # assume it's a blessed HASH
     for my $i ( sort keys %$obj ) {
         my $here = $pos . '->{' . $i . '}';

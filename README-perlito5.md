@@ -173,7 +173,7 @@ Parser
       $ perl perlito5.pl -Isrc5/lib -I. -It -Cperl5  -e ' use strict; BEGIN { my $y = 123; my $z = 456;for my $x (1..3) { no strict "refs"; *{"x$x"} = sub { print "here\n"; eval q{ print "y $y\n" }; $y; return $x } } }  x1(); '
       ```
 
-    - blessed scalar/code is not supported (also in Data::Dumper)
+    - blessed regex/code/glob is not supported (also in Data::Dumper)
 
     - subroutine predeclaration needs tests
 

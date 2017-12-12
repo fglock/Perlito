@@ -195,8 +195,18 @@ sub dump_to_ast {
     };
     return $res if $res;
 
-    # assume it's a blessed HASH
+    $res = eval {
+        # blessed SCALAR
+        return Perlito5::AST::Apply->new(
+            code => 'bless',
+            arguments => [
+                Perlito5::AST::Apply->new(code => 'prefix:<\\>', arguments => [ dump_to_ast($$obj) ]),
+            ],
+        );
+    };
+    return $res if $res;
 
+    # assume it's a blessed HASH
     my @out;
     for my $i ( sort keys %$obj ) {
         my $here = Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) );

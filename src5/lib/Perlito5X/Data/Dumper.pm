@@ -78,6 +78,7 @@ sub _dumper {
     my @out;
     my $res;
     $res = eval {
+        # blessed ARRAY
         for my $i ( 0 .. $#$obj ) {
             my $here = $pos . '->[' . $i . ']';
             push @out, 
@@ -86,6 +87,12 @@ sub _dumper {
                 ",\n";
         }
         join('', "bless([\n", @out, $tab, "], '$ref')");
+    };
+    return $res if $res;
+
+    $res = eval {
+        # blessed SCALAR
+        "bless(\\" . _dumper($$obj, $tab1, $seen, $pos) . ", '$ref')";
     };
     return $res if $res;
 
