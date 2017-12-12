@@ -504,8 +504,11 @@ Add tests for fixed bugs
     indirect object notation
 
       http://lwn.net/Articles/451486/
+
       http://www.modernperlbooks.com/mt/2009/08/the-problems-with-indirect-object-notation.html
+
       http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
+
       http://perlbuzz.com/mechanix/2008/02/the-perils-of-perl-5s-indirect.html
 
     - not indirect object:
