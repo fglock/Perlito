@@ -73,7 +73,7 @@ sub _dumper {
         return '\\' . *$obj;    # \*main::x
     }
 
-    # local $@;
+    local $@;
     
     my @out;
     my $res;

@@ -164,38 +164,35 @@ sub dump_to_ast {
     }
 
     # TODO find out what kind of reference this is (ARRAY, HASH, ...)
-    # $@ = '';
+    local $@ = '';
     
-    # TODO - fixme - the ARRAY/SCALAR test breaks 
-    #        $ java -jar perlito5.jar -Isrc5/lib  t5/op/index_eval.t
-    #
-    # $res = eval {
-    #     my @out;
-    #     for my $i ( 0 .. $#$obj ) {
-    #         my $here = Perlito5::AST::Index::INDEX( $pos, Perlito5::AST::Int->new(int => $i) );
-    #         push @out, 
-    #             dump_to_ast($obj->[$i], $seen, $here);
-    #     }
-    #     return Perlito5::AST::Apply->new(
-    #         code => 'bless',
-    #         arguments => [
-    #             Perlito5::AST::Apply->new(code => 'circumfix:<[ ]>', arguments => \@out),
-    #             Perlito5::AST::Buf->new(buf => $ref),
-    #         ],
-    #     );
-    # };
-    # return $res if $res;
-    #
-    # $res = eval {
-    #     # blessed SCALAR
-    #     return Perlito5::AST::Apply->new(
-    #         code => 'bless',
-    #         arguments => [
-    #             Perlito5::AST::Apply->new(code => 'prefix:<\\>', arguments => [ dump_to_ast($$obj) ]),
-    #         ],
-    #     );
-    # };
-    # return $res if $res;
+    $res = eval {
+        my @out;
+        for my $i ( 0 .. $#$obj ) {
+            my $here = Perlito5::AST::Index::INDEX( $pos, Perlito5::AST::Int->new(int => $i) );
+            push @out, 
+                dump_to_ast($obj->[$i], $seen, $here);
+        }
+        return Perlito5::AST::Apply->new(
+            code => 'bless',
+            arguments => [
+                Perlito5::AST::Apply->new(code => 'circumfix:<[ ]>', arguments => \@out),
+                Perlito5::AST::Buf->new(buf => $ref),
+            ],
+        );
+    };
+    return $res if $res;
+
+    $res = eval {
+        # blessed SCALAR
+        return Perlito5::AST::Apply->new(
+            code => 'bless',
+            arguments => [
+                Perlito5::AST::Apply->new(code => 'prefix:<\\>', arguments => [ dump_to_ast($$obj) ]),
+            ],
+        );
+    };
+    return $res if $res;
 
     # assume it's a blessed HASH
     my @out;
