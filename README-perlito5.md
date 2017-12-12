@@ -502,20 +502,43 @@ Add tests for fixed bugs
   - add "print", "printf", "say" special parsing - note this is related to indirect object notation
 
     indirect object notation
-    http://lwn.net/Articles/451486/
-    http://www.modernperlbooks.com/mt/2009/08/the-problems-with-indirect-object-notation.html
-    http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
-    http://perlbuzz.com/mechanix/2008/02/the-perils-of-perl-5s-indirect.html
+
+      http://lwn.net/Articles/451486/
+      http://www.modernperlbooks.com/mt/2009/08/the-problems-with-indirect-object-notation.html
+      http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
+      http://perlbuzz.com/mechanix/2008/02/the-perils-of-perl-5s-indirect.html
+
+    - not indirect object:
+
+      ```
+      $ perl -e ' package x { sub new { print "A @_\n" }}; $v = new x(123); use Data::Dumper; print Dumper $v '
+      ```
+
+    - indirect object:
+
+      ```
+      $ perl -e ' package xz { sub new { print "A @_\n" }}; $v = new xz(123); use Data::Dumper; print Dumper $v '
+      ```
+
+    - not indirect object:
+
+      ```
+      $ perl -e ' sub x { print "A @_\n" } $v = new x(123); use Data::Dumper; print Dumper $v '
+      ```
+
+    - indirect object:
+
+      ```
+      $ perl perlito5.pl -I src5/lib -Cperl5 -e '  YO { x();z } ' 
+      Missing right curly or square bracket near 20 at -e line 2
+      $ perl -MO=Deparse -e '  YO { x();z } ' 
+      do {
+          x();
+          'z'
+      }->YO;
+      ```
 
     ```
-    $ perl perlito5.pl -I src5/lib -Cperl5 -e '  YO { x();z } ' 
-    Missing right curly or square bracket near 20 at -e line 2
-    $ perl -MO=Deparse -e '  YO { x();z } ' 
-    do {
-        x();
-        'z'
-    }->YO;
-
     method Module $param;
     new Class( arg => $value );
     new Class::($args);
@@ -534,8 +557,10 @@ Add tests for fixed bugs
     ```
 
     sbertrang++ noted this is also valid:
-    print( STDERR "123" )
 
+    ```
+    print( STDERR "123" )
+    ```
 
   - add tests for signatures: "empty" _ $ ;$
 
