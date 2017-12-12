@@ -178,8 +178,25 @@ sub dump_to_ast {
     # };
     # $@ = '';
     
+    $res = eval {
+        my @out;
+        for my $i ( 0 .. $#$obj ) {
+            my $here = Perlito5::AST::Index::INDEX( $pos, Perlito5::AST::Int->new(int => $i) );
+            push @out, 
+                dump_to_ast($obj->[$i], $seen, $here);
+        }
+        return Perlito5::AST::Apply->new(
+            code => 'bless',
+            arguments => [
+                Perlito5::AST::Apply->new(code => 'circumfix:<[ ]>', arguments => \@out),
+                Perlito5::AST::Buf->new(buf => $ref),
+            ],
+        );
+    };
+    return $res if $res;
+
     # assume it's a blessed HASH
-    
+
     my @out;
     for my $i ( sort keys %$obj ) {
         my $here = Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) );
