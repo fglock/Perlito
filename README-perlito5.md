@@ -591,15 +591,19 @@ Add tests for fixed bugs
 
   - add test for filetest operators special case:
 
+    ```
     ' -f($file).".bak" ' should be equivalent to -f "$file.bak"
     parses as -(f($file)).".bak"
     but: ' -f ($file).".bak" '
     parses correctly
+    ```
 
     This seems to be because there is a rule that \w followed by '(' is a function call;
+    ```
     this needs more testing: ' ... and(2) '
     Test: redefine 'and', 'not' and check what works.
     TODO - "-f" without arguments
+    ```
 
     '  $s111++ + $s222 '
     parses as  (+$s222)++
@@ -624,7 +628,8 @@ Add tests for fixed bugs
     # same as m/abc/
     ```
 
-  - $ perl -e ' my @things= map {  no warnings; 123 } @list; '
+  - `$ perl -e ' my @things= map {  no warnings; 123 } @list; '`
+
     "no" not allowed in expression
     (DONE) no longer a bug, this now works in perl5.22.0
 
@@ -668,7 +673,9 @@ Add tests for fixed bugs
 
 - fix regex delimiters, or escape the regexes
 
+    ```
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cperl5 -e ' s/\$a$a/b$b/g; tr/\$c$c/d$d/; m/\$e$e/; ' 
+    ```
 
 - compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
 
@@ -702,17 +709,22 @@ Add tests for fixed bugs
 
 - test lvalue substr()
 
+    ```
     $ perl -e ' use Data::Dumper; sub x { $_[0] = "x"; print Dumper(\@_) }  $v = "abcdef"; x( substr($v,1,3), substr($v,1,4) ); '
     $VAR1 = [
           'x',
           'xef'
         ];
+    ```
+
+    ```
     $ perl -e ' use Data::Dumper; sub x { $_[0] = "123456"; print Dumper(\@_) }  $v = "abcdef"; x( $v, substr($v,1,3), substr($v,1,4) ); '
     $VAR1 = [
           '123456',
           '234',
           '2345'
         ];
+    ```
 
 - test lvalue ternary `?:`
 
@@ -760,13 +772,17 @@ Perl6 backend
 
 - context: wantarray, return-comma
 
+    ```
         sub x { return 7, 8 }
     vs. sub x { return (7, 8) }
+    ```
 
   use an "out-of-band" parameter to set the call context, like:
 
+    ```
     $v = x( :scalar )   # 8
     $v = x( :list   )   # 2
+    ```
 
 - <> is lines()
 
@@ -785,15 +801,19 @@ Perl6 backend
 
 - placeholder
 
+    ```
     my ($a, $, $c) = 1..3;
     ($a, *, $c) = 1..3;
+    ```
 
 - `__PACKAGE__`
 
 - specialized refactoring for packages that introduce syntax
 
     Try::Tiny
+
     List::MoreUtils
+
     Moose
 
 - no strict
@@ -854,10 +874,12 @@ Nice to Have
 - proper "use strict" and "use warnings"
 - use the same error messages and warnings as 'perl'
 
+    ```
     $ perl -e ' my @x = $x %x '
     Operator or semicolon missing before %x at -e line 1.
     Ambiguous use of % resolved as operator % at -e line 1.
     Illegal modulus zero at -e line 1.
+    ```
 
 - no warnings 'redefine';
 
@@ -874,18 +896,19 @@ Nice to Have
 - `local $SIG{__WARN__};`
 
 - bug https://github.com/fglock/Perlito/issues/10
+
     "Perlito 5 JS has syntax errors"
 
   Tried
 
-    YUI Compressor online
-    and
-    Google Closure Compiler
-    http://closure-compiler.appspot.com/home
+    - YUI Compressor online
+    - Google Closure Compiler
+      http://closure-compiler.appspot.com/home
 
   Both failed with syntax errors.
 
 - parse the regexes
+
     Note: implemented in Perlito5::Grammar::Regex5
     create an AST for regexes
 
@@ -898,17 +921,23 @@ Oddities
 
     - you can give subs numeric names if you use symbolic references
 
+    ```
     $ perl -lwe '*4 = sub { print "yes" }; 4->()'
     yes
+    ```
 
+    ```
     $ perl -e ' sub x { print 123 } x->() '
     Undefined subroutine &main::1 called at -e line 1.
     123
+    ```
 
 - return value of continue-block
 
+    ```
     $ perl -e ' sub x {  { 456 } continue { 789 } } print "@{[ x() ]}\n" '
     456 789
+    ```
 
 Deprecate
 ---------
