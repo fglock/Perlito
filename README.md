@@ -62,10 +62,10 @@ CPAN distribution:
 Source code
 -----------
 
-The source code for Perlito5 can be found in the 'src5' directory.
+The source code for Perlito5 can be found in the '[src5](src5)' directory.
 Perlito5 is written mostly in Perl 5 (the grammar uses its own mini-language.)
 
-The source code for Perlito6 can be found in the 'src6' directory.
+The source code for Perlito6 can be found in the '[src6](src6)' directory.
 Perlito6 is written in Perl 6.
 
 See Also
