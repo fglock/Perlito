@@ -325,7 +325,7 @@ TODO - investigate using the Nashorn convention for "Using Java from Scripts", s
   $ jrunscript -cp . -l Perl5 
   perl> my $x = Java::inline " new Object() "; say ref($x); say $x; say ($x ? "true" : "false" );
   Object
-  Object(0x34f22f9d)
+  java.lang.Object@6680f714
   true
   ```
 
@@ -335,7 +335,7 @@ TODO - investigate using the Nashorn convention for "Using Java from Scripts", s
   $ jrunscript -cp . -l Perl5 
   perl> eval { my $x = Java::inline q{ Class.forName("java.lang.Thread") }; say ref($x); say $x; }
   Class
-  Class(0x3047254d)
+  class java.lang.Thread
   ```
 
   - only fully qualified class names are supported.
@@ -373,9 +373,9 @@ Java fields, methods and constructors
     perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Integer") } }; say $x->MAX_VALUE
     2147483647
     perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Thread") } }; say $x->currentThread()
-    Thread(0x262b2c86)
+    Thread[main,5,main]
     perl> $x[10] = eval { Java::inline q{ Class.forName("java.lang.Thread") } }; say $x[10]->currentThread()
-    Thread(0x5ed828d)
+    Thread[main,5,main]
     ```
 
   - `new` invokes a constructor
@@ -407,9 +407,9 @@ perl> push @INC, "src5/lib";
 perl> use Java
 
 perl> Java->type("java.lang.Thread")
-Class(0x704b2127)
+class java.lang.Thread
 perl> $Thread = Java->type("java.lang.Thread"); $Thread->new();
-Thread(0x7ff2b8d2)
+Thread[Thread-0,5,main]
 perl> $Thread->new( sub { say "123" } )->start()
 
 perl> sub UUID () { Java->type("java.util.UUID") }
@@ -417,7 +417,7 @@ perl> UUID->randomUUID()->toString()
 9e8aadb3-4d81-41c6-af85-7ab7213a9945
 
 perl> Java->type("int[]")->new(10)
-int[](0x2787de58)
+[I@2cc75074
 ```
 
 
@@ -444,7 +444,7 @@ Java extensions in eval-string (work in progress)
     perl> package Java::Object { import => 'java.lang.Object' };    # import Java class
     import
     perl> my Java::Object $obj = Java::Object->new();
-    Object(0x4b44655e)
+    java.lang.Object@4fe533ff
     ```
 
     - TODO - test syntax for creating new Java subclass ("extends" and "implements")
@@ -788,7 +788,7 @@ package main;
 # Perl implementation for My::Date->toString()
 sub my_date_string {
     my $self = shift;
-    print "date_string: self is $self\n";       # prints date_string: self is My::Date(0x27ce2dd4)
+    print "date_string: self is $self\n";
     return "Hello";
 }
 

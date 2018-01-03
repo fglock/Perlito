@@ -8420,6 +8420,9 @@ class PlJavaObject extends PlReference {
         // Scalar::Util::reftype()
         return ref();
     }
+    public String toString() {
+        return this.stuff.toString();
+    }
     public boolean is_JavaObject() {
         return true;
     }
