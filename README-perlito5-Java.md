@@ -558,6 +558,11 @@ Calling a Perl subroutine from Java
   perl> $Perlito5::Java::DEBUG=1   # enable debugging output
   ```
 
+  ```
+  perl> push @INC, "src5/lib";     # initialize @INC to load Perl modules (alternately, set PERL5LIB env variable)
+  perl> use Java
+  ```
+
 - older API (deprecated)
 
   - using `Main.apply()`
