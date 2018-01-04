@@ -650,25 +650,25 @@ $arr->add($p->toString());
 
 - native arrays
 
-Perl arrays can be assigned a native array:
-
-```perl
-package Byte { };
-@perl_array = JavaCall->toBytes();
-```
-
-Native array variables can not be created directly.
-As a workaround, use "Java::inline" or "Java->type()".
-
-```perl
-package String { };
-my @arr = Java::inline ' new String[]{ "a", "b" } ';
-print "arr[0] $arr[0], arr[1] $arr[1]\n";
-```
-
-```perl
-my $arr = Java->type("int[]")->new(10);
-```
+  Perl arrays can be assigned a native array:
+  
+  ```perl
+  package Byte { };
+  @perl_array = JavaCall->toBytes();
+  ```
+  
+  Native array variables can not be created directly.
+  As a workaround, use "Java::inline" or "Java->type()".
+  
+  ```perl
+  package String { };
+  my @arr = Java::inline ' new String[]{ "a", "b" } ';
+  print "arr[0] $arr[0], arr[1] $arr[1]\n";
+  ```
+  
+  ```perl
+  my $arr = Java->type("int[]")->new(10);
+  ```
 
 - Constants
 
