@@ -867,6 +867,15 @@ class PerlOp {
                     return ret;
                 }
                 catch (NoSuchFieldException e) {
+                    // Array "length" is special
+                    if (method.equals("length")) {
+                        try {
+                            ret.set(Array.getLength(obj));
+                            return ret;
+                        }
+                        catch (Exception e2) {
+                        }
+                    }
                 }
                 catch (Exception e) {
                     return PlCORE.die(new PlStringLazyError(e));
@@ -886,7 +895,7 @@ class PerlOp {
 
                 if (cl.isArray() && args.to_int() == 1) {
                     // $ArrayClass->new(10)
-                    ret.set( java.lang.reflect.Array.newInstance(cl.getComponentType(), args.to_int()) );
+                    ret.set( java.lang.reflect.Array.newInstance(cl.getComponentType(), args.aget(0).to_int()) );
                     return ret;
                 }
 
