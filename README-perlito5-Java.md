@@ -658,12 +658,16 @@ package Byte { };
 ```
 
 Native array variables can not be created directly.
-As a workaround, see "Java::inline".
+As a workaround, use "Java::inline" or "Java->type()".
 
 ```perl
 package String { };
-my @arr2 = Java::inline ' new String[]{ "a", "b" } ';
-print "arr2[0] $arr2[0], arr2[1] $arr2[1]\n";
+my @arr = Java::inline ' new String[]{ "a", "b" } ';
+print "arr[0] $arr[0], arr[1] $arr[1]\n";
+```
+
+```perl
+my $arr = Java->type("int[]")->new(10);
 ```
 
 - Constants
