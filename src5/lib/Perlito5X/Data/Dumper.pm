@@ -110,7 +110,7 @@ sub _dumper {
     };
     return $res if $res;
 
-    return join('', "bless(" . escape_string("opaque data " . $obj) . ", '$ref')");
+    return join('', "bless(\\" . escape_string("opaque data " . $obj) . ", '$ref')");
 }
 
 our %safe_char = (
