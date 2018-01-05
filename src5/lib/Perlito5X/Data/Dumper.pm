@@ -96,16 +96,21 @@ sub _dumper {
     };
     return $res if $res;
 
-    # assume it's a blessed HASH
-    for my $i ( sort keys %$obj ) {
-        my $here = $pos . '->{' . $i . '}';
-        push @out, 
-            $tab1,
-            "'$i' => ",
-            _dumper($obj->{$i}, $tab1, $seen, $here), 
-            ",\n";
-    }
-    return join('', "bless({\n", @out, $tab, "}, '$ref')");
+    $res = eval {
+        # blessed HASH
+        for my $i ( sort keys %$obj ) {
+            my $here = $pos . '->{' . $i . '}';
+            push @out, 
+                $tab1,
+                "'$i' => ",
+                _dumper($obj->{$i}, $tab1, $seen, $here), 
+                ",\n";
+        }
+        join('', "bless({\n", @out, $tab, "}, '$ref')");
+    };
+    return $res if $res;
+
+    return join('', "bless(" . escape_string("opaque data " . $obj) . ", '$ref')");
 }
 
 our %safe_char = (
