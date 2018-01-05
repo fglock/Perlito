@@ -7078,7 +7078,13 @@ class PlHash extends PlObject implements Iterable<PlObject> {
                 j++;
                 PlObject value;
                 if ( j >= array_size ) {
-                    // TODO - emit warning about odd number of arguments
+                    // odd number of arguments
+                    if (array_size == 1 && s.aget(0).is_ref()) {
+                        PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Reference found where even-sized list expected")));
+                    }
+                    else {
+                        PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Odd number of elements in hash assignment")));
+                    }
                     value = PlCx.UNDEF;
                 }
                 else {
@@ -7089,6 +7095,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         }
         else {
             // TODO - emit warning about odd number of arguments
+            PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Odd number of elements in hash assignment")));
             this.hset(s, PlCx.UNDEF);
         }
         this.each_iterator.reset();
