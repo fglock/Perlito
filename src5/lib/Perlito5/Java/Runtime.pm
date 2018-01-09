@@ -4022,6 +4022,8 @@ class PlRegex extends PlReference {
                 sb.append("i");
             if ((flags & Pattern.COMMENTS) != 0)
                 sb.append("x");
+            if (flag_xx)
+                sb.append("x");
             if ((flags & Pattern.DOTALL) != 0)
                 sb.append("s");
             if ((flags & Pattern.MULTILINE) != 0)
@@ -4033,9 +4035,6 @@ class PlRegex extends PlReference {
                 sb.append("i");
             if ((flags & Pattern.COMMENTS) == 0)
                 sb.append("x");
-            if (flag_xx) {
-                sb.append("x");
-            }
             if ((flags & Pattern.DOTALL) == 0)
                 sb.append("s");
             if ((flags & Pattern.MULTILINE) == 0)
