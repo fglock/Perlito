@@ -1767,3 +1767,12 @@ Modules
   - TODO: DBI.pm
 
 
+Attributes
+----------
+
+  ```
+  $ perl -e ' sub MODIFY_CODE_ATTRIBUTES { print "called with (@_)\n"; return }  sub xxx :Integer { print 123 } '
+  called with (main CODE(0x7fb99a02db18) Integer)
+  ```
+
+
