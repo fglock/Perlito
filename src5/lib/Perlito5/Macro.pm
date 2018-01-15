@@ -701,7 +701,9 @@ sub preprocess_regex {
     if ($regex->isa('Perlito5::AST::Apply') && $regex->{code} eq 'circumfix:<( )>') {
         # $x =~ ( ... )
         ($regex) = @{ $regex->{arguments} };
+        return preprocess_regex($regex);
     }
+
     if ( $regex->isa('Perlito5::AST::Buf')   # $x =~ '\w'
       || $regex->isa('Perlito5::AST::Var')   # $x =~ $regex
       || ($regex->isa('Perlito5::AST::Apply') && $regex->{code} eq 'list:<.>')    # $x =~ ($r1 . $r2)

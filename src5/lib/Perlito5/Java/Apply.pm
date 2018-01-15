@@ -115,7 +115,13 @@ package Perlito5::AST::Apply;
                   . ")",
         }
         else {
-            die "Error: regex emitter - unknown operator $code";
+            # assume the expression returns a qr//
+            $str = 'PerlOp.match('
+                    . $var->emit_java($level) . ', '
+                    . $regex->emit_java($level) . ', '
+                    . Perlito5::Java::to_context($wantarray) . ', '
+                    . 'false, false'
+                  . ")";
         }
 
         if ($op eq '=~') {
