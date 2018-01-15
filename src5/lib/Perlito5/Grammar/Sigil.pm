@@ -362,20 +362,29 @@ sub term_sigil {
         #  $$ ...
         my $m2 = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
         my $p2 = $m2->{to};
-        my $c2 = $str->[$p2];
-        if ( $c2 eq '_' || $c2 eq '$' || !exists $special_var{ '$' . $c2 } ) {
-            # not '$$;' not '$$,' not '$$+1'
-            $m = term_sigil( $str, $p );
-            if ($m) {
-                $m->{capture} = [ 'term',  
-                        Perlito5::AST::Apply->new( 
-                                arguments  => [ $m->{capture}[1] ],
-                                code       => 'prefix:<' . $sigil . '>', 
-                                namespace  => '',
-                                _strict_refs => ( $^H & $Perlito5::STRICT_REFS ),
-                            )
-                    ];
-                return $m;
+        my $is_space = ( $p2 - $p ) > 1;
+        my $is_statement_modifier = 0;
+        if ( $is_space ) {
+            # $$ unless ...
+            $is_statement_modifier = 1
+                if Perlito5::Grammar::Statement::statement_modifier( $str, $p2 );
+        }
+        if (!$is_statement_modifier) {
+            my $c2 = $str->[$p2];
+            if ( $c2 eq '_' || $c2 eq '$' || !exists $special_var{ '$' . $c2 } ) {
+                # not '$$;' not '$$,' not '$$+1'
+                $m = term_sigil( $str, $p );
+                if ($m) {
+                    $m->{capture} = [ 'term',  
+                            Perlito5::AST::Apply->new( 
+                                    arguments  => [ $m->{capture}[1] ],
+                                    code       => 'prefix:<' . $sigil . '>', 
+                                    namespace  => '',
+                                    _strict_refs => ( $^H & $Perlito5::STRICT_REFS ),
+                                )
+                        ];
+                    return $m;
+                }
             }
         }
     }
