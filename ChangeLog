@@ -21,7 +21,7 @@ backends.
 	FindBin
 	IO, IO::Handle, IO::Seekable, IO::File,
 	Class::Struct, Perl::OSType
-	integer, if, parent, subs
+	integer, if, parent, subs, mro
 -- syntax fixes for hash vs. block, and ${var->{index}}
 -- CORE:: prefix (CORE::print, CORE::tr)
 -- CORE::GLOBAL special namespace
