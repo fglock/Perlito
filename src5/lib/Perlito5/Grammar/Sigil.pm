@@ -360,16 +360,9 @@ sub term_sigil {
     }
     if ( $c1 eq '$' ) {
         #  $$ ...
-        my $m2 = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
-        my $p2 = $m2->{to};
-        my $is_space = ( $p2 - $p ) > 1;
-        my $is_statement_modifier = 0;
-        if ( $is_space ) {
-            # $$ unless ...
-            $is_statement_modifier = 1
-                if Perlito5::Grammar::Statement::statement_modifier( $str, $p2 );
-        }
-        if (!$is_statement_modifier) {
+        my $m2 = Perlito5::Grammar::Space::ws($str, $p + 1);
+        if (!$m2) {
+            my $p2 = $p + 1;
             my $c2 = $str->[$p2];
             if ( $c2 eq '_' || $c2 eq '$' || !exists $special_var{ '$' . $c2 } ) {
                 # not '$$;' not '$$,' not '$$+1'
