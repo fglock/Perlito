@@ -1625,7 +1625,7 @@ package Perlito5::AST::Call;
 
         # "Perl" method call
 
-        if ( ref($meth) eq 'Perlito5::AST::Var' ) {
+        if ( ref($meth) ) {
             $meth = $meth->emit_java($level, 'scalar');
         }
         else {

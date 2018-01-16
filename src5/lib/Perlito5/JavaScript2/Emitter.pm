@@ -1404,7 +1404,7 @@ package Perlito5::AST::Call;
         }
 
         my $invocant = $self->{invocant}->emit_javascript2($level, 'scalar');
-        if ( ref($meth) eq 'Perlito5::AST::Var' ) {
+        if ( ref($meth) ) {
             $meth = $meth->emit_javascript2($level, 'scalar');
         }
         else {
