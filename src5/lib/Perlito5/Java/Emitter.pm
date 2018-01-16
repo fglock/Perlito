@@ -1719,18 +1719,23 @@ package Perlito5::AST::If;
         }
         push @str, '}';
         if ($otherwise) {
-            if ( @{ $otherwise->{block} } == 1 
-               && ref($otherwise->{block}[0]) eq 'Perlito5::AST::If'
-               )
-            {
-                push @str, ( 'else', $otherwise->{block}[0]->emit_java( $level, $wantarray ) );
-            }
-            else {
-                push @str, 
-                    'else {',
-                      [ $otherwise->emit_java( $level + 1, $wantarray ) ],
-                    '}';
-            }
+            # TODO - this breaks if a variable is declared in the "elsif" condition
+            # if ( @{ $otherwise->{block} } == 1 
+            #    && ref($otherwise->{block}[0]) eq 'Perlito5::AST::If'
+            #    )
+            # {
+            #     push @str, ( 'else', $otherwise->{block}[0]->emit_java( $level, $wantarray ) );
+            # }
+            # else {
+            #     push @str, 
+            #         'else {',
+            #           [ $otherwise->emit_java( $level + 1, $wantarray ) ],
+            #         '}';
+            # }
+            push @str, 
+                'else {',
+                  [ $otherwise->emit_java( $level + 1, $wantarray ) ],
+                '}';
         }
         return Perlito5::Java::emit_wrap_java($level, @str);
     }
