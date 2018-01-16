@@ -400,30 +400,6 @@ token term_arrow {
               { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{curly_parse})   ] }
             ]
 
-        | '$' <Perlito5::Grammar::ident> <.Perlito5::Grammar::Space::opt_ws>
-            [ '(' <paren_parse> ')'
-              { $MATCH->{capture} = [ 'postfix_or_term',
-                       'methcall',
-                       Perlito5::AST::Var->new(
-                               sigil       => '$',
-                               namespace   => '',    # TODO - namespace
-                               name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}),
-                           ),
-                       Perlito5::Match::flat($MATCH->{paren_parse}),
-                     ]
-              }
-            | { $MATCH->{capture} = [ 'postfix_or_term',
-                       'methcall_no_params',
-                       Perlito5::AST::Var->new(
-                               sigil       => '$',
-                               namespace   => '',    # TODO - namespace
-                               name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}),
-                           ),
-                      ]
-              }
-            ]
-
-
         | <Perlito5::Grammar::full_ident> <.Perlito5::Grammar::Space::opt_ws>
             [ '(' <paren_parse> ')'
               { $MATCH->{capture} = [ 'postfix_or_term',
@@ -436,6 +412,21 @@ token term_arrow {
                         'methcall_no_params',
                         Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"})   # TODO - split namespace
                       ]
+              }
+            ]
+
+        | <before '$' > <Perlito5::Grammar::Sigil::term_sigil> <.Perlito5::Grammar::Space::opt_ws>
+            [ '(' <paren_parse> ')'
+              { $MATCH->{capture} = [ 'postfix_or_term',
+                       'methcall',
+                       Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1],
+                       Perlito5::Match::flat($MATCH->{paren_parse}),
+                    ]
+              }
+            | { $MATCH->{capture} = [ 'postfix_or_term',
+                       'methcall_no_params',
+                       Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1],
+                    ]
               }
             ]
 
