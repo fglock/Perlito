@@ -214,7 +214,7 @@ package Perlito5::AST::Call;
         if  ($meth eq 'postcircumfix:<( )>')  {
             $meth = '';
         }
-        if ( ref($meth) eq 'Perlito5::AST::Var' ) {
+        if ( ref($meth) ) {
             $meth = $meth->emit_perl5();
         }
         if ( $meth ) {
