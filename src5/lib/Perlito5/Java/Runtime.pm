@@ -2409,6 +2409,8 @@ class PlV {
         PlV.sset("main::/", new PlString( System.getProperty("line.separator", "\n") ));
         // $; = \034
         PlV.sset("main::;", new PlString((char)28));
+        // $^T = time at start
+        PlV.sset("main::" + (char)20, PlCORE.time(PlCx.SCALAR, new PlArray()));
 
         PlV.STDIN.inputStream   = System.in;
         PlV.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
