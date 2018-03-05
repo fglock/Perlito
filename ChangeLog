@@ -52,7 +52,7 @@ backends.
 -- strict refs
 -- srand() returns true, warns on overflow
 -- fix read-only values
--- "$\", "$;"
+-- "$\", "$;", "$^T"
 -- caller() now works "natively", decoding the Java stack trace
 -- symbol tables like %:: and typeglobs support
 -- file tests: "-e", "-l", "-r", "-w", "-x"
