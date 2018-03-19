@@ -1709,6 +1709,15 @@ See:
   - related, pure perl module
     - http://search.cpan.org/~ilyaz/FreezeThaw-0.5001/
 
+Memory management
+-----------------
+
+  - Experiment implementing DESTROY with java.lang.ref.Cleaner
+
+    - https://docs.oracle.com/javase/9/docs/api/java/lang/ref/Cleaner.html
+
+    - http://www.enyo.de/fw/notes/java-finalization-revisited.html
+
 Threads
 -------
 
