@@ -82,7 +82,11 @@ package Perlito5::Java::LexicalBlock;
             # These expressions cannot be used in statement position in Java:
             #   x, y
             #   x => y
-            push @str, 'PerlOp.statement(' . $decl->emit_java( $level+1, 'void' ) . ');';
+            if ($decl->{code} eq "infix:<=>>") {
+                $decl->{arguments}[0] = Perlito5::AST::Lookup->autoquote($decl->{arguments}[0]);
+            }
+            push @str, emit_body_statement($_)
+                for @{$decl->{arguments}};
         }
         elsif ( $decl->isa('Perlito5::AST::CompUnit')
               || $decl->isa('Perlito5::AST::For' )
