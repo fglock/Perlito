@@ -71,22 +71,17 @@ package Perlito5::Java::LexicalBlock;
         if ( looks_like_dead_code( $decl ) ) {
             # this looks like dead code
         }
-        elsif ( $decl->isa('Perlito5::AST::Apply')
-          && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
-          && !( $Perlito5::Java::valid_java_statement{ $decl->{code} } ) 
-          && !( $decl->{namespace} ne "" && $decl->{namespace} ne "CORE" ) 
-          && !( $decl->{code} eq "infix:<&&>" )
-          && !( $decl->{code} eq "infix:<||>" )
-          && !( $decl->{code} eq "infix:<and>" )
-          && !( $decl->{code} eq "infix:<or>" )
-          && !( $decl->{code} eq "ternary:<? :>" )
-          && !( $decl->{code} eq "infix:<+=>" )
-          && !( $decl->{code} eq "infix:<-=>" )
-          && !( $decl->{code} eq "infix:<*=>" )
-          && !( $decl->{code} eq "infix:</=>" )
+        elsif (
+             $decl->isa('Perlito5::AST::Apply')
+          && (  $decl->{code} eq "list:<,>"
+             || $decl->{code} eq "infix:<=>>"
+             )
           )
         {
             # workaround for "Error: not a statement"
+            # These expressions cannot be used in statement position in Java:
+            #   x, y
+            #   x => y
             push @str, 'PerlOp.statement(' . $decl->emit_java( $level+1, 'void' ) . ');';
         }
         elsif ( $decl->isa('Perlito5::AST::CompUnit')
