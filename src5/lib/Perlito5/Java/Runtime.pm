@@ -1718,20 +1718,6 @@ EOT
         return sb.toString();
     }
 
-    // ****** pos()
-    // TODO - optimize: we are adding "pos" (Integer) to all PlLvalue objects
-
-    public static final PlObject pos(PlObject vv) {
-        if (!vv.is_lvalue()) {
-            return PlCx.UNDEF;
-        }
-        PlLvalue var = (PlLvalue)vv;
-        Integer pos = var.pos;
-        if (pos == null) {
-            return PlCx.UNDEF;
-        }
-        return new PlInt(pos);
-    }
     public static final PlObject set_pos(PlObject vv, PlObject value) {
         PlLvalue var = (PlLvalue)vv;
         var.regex_zero_length_flag = false;
@@ -1758,7 +1744,7 @@ EOT
         int pos = value.to_int();
 
         // check for zero-length match
-        int old_pos = pos(var).to_int();
+        int old_pos = var.pos().to_int();
 
         if (old_pos == pos) {
             // PlCORE.say("zero length match");
@@ -1871,7 +1857,7 @@ EOT
             Matcher matcher = pat.p.matcher(str);
             if (global) {
                 // scalar context, global match
-                PlObject pos = pos(input);
+                PlObject pos = input.pos();
                 boolean find;
                 if (pos.is_undef()) {
                     find = matcher.find();
@@ -2913,6 +2899,9 @@ EOT
     }
     public char to_char() {
         return (char)(this.to_int());
+    }
+    public PlObject pos() {
+        return PlCx.UNDEF;
     }
     public PlObject end_of_array_index() {
         return PlCORE.die("Not an ARRAY reference");
@@ -5333,6 +5322,14 @@ class PlLvalue extends PlObject {
             return (PlLvalue)this.o.scalar_deref("main");
         }
         return (PlLvalue)PlCORE.die("Not a SCALAR reference");
+    }
+
+    public PlObject pos() {
+        // TODO - optimize: we are adding "pos" (Integer) to all PlLvalue objects
+        if (this.pos == null) {
+            return PlCx.UNDEF;
+        }
+        return new PlInt(this.pos);
     }
 
     public PlObject get() {

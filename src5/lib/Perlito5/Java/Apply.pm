@@ -1335,9 +1335,7 @@ package Perlito5::AST::Apply;
             if (!@arguments) {
                 push @arguments, Perlito5::AST::Var::SCALAR_ARG();
             }
-            'PerlOp.pos('
-             .      $arguments[0]->emit_java($level, 'scalar')
-             . ')';
+            return $arguments[0]->emit_java($level, 'scalar') . '.pos()';
         },
         'tie' => sub {
             my ($self, $level, $wantarray) = @_;
