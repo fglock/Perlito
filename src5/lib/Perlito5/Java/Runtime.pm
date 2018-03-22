@@ -1718,17 +1718,6 @@ EOT
         return sb.toString();
     }
 
-    public static final PlObject set_pos(PlObject vv, PlObject value) {
-        PlLvalue var = (PlLvalue)vv;
-        var.regex_zero_length_flag = false;
-        if (value.is_undef()) {
-            var.pos = null;
-        }
-        else {
-            var.pos = value.to_int();
-        }
-        return value;
-    }
     public static final PlObject set_pos(PlObject vv, PlObject value, PlRegexResult matcher, String str) {
         if (!vv.is_lvalue()) {
             return value;
@@ -2903,6 +2892,10 @@ EOT
     public PlObject pos() {
         return PlCx.UNDEF;
     }
+    public PlObject set_pos(PlObject value) {
+        return PlCORE.die("Can't modify constant item in match position");
+    }
+
     public PlObject end_of_array_index() {
         return PlCORE.die("Not an ARRAY reference");
     }
@@ -5330,6 +5323,16 @@ class PlLvalue extends PlObject {
             return PlCx.UNDEF;
         }
         return new PlInt(this.pos);
+    }
+    public PlObject set_pos(PlObject value) {
+        this.regex_zero_length_flag = false;
+        if (value.is_undef()) {
+            this.pos = null;
+        }
+        else {
+            this.pos = value.to_int();
+        }
+        return value;
     }
 
     public PlObject get() {

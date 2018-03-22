@@ -164,8 +164,7 @@ package Perlito5::AST::Apply;
             if (!@lvalue) {
                 push @lvalue, Perlito5::AST::Var::SCALAR_ARG();
             }
-            return 'PerlOp.set_pos('
-             .      $lvalue[0]->emit_java($level, 'scalar') . ', '
+            return $lvalue[0]->emit_java($level, 'scalar') . '.set_pos('
              .      $arguments->emit_java($level, 'scalar')
              . ')';
         }
