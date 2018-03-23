@@ -988,6 +988,17 @@ sub to_runtime_context {
     return $s[0]
         if @s == 1 && is_scalar($items->[0]);
 
+
+    if ( @s == 1 && $items->[0]->isa( 'Perlito5::AST::Apply' ) 
+       && ( $items->[0]->{code} && $items->[0]->{namespace} )
+       )
+    {
+        # this looks like a plain-perl subroutine call
+        return $s[0];
+    }
+
+    # TODO - indentify plain-perl method calls
+
     'PerlOp.context(' . to_context($wantarray) . ', ' 
         .   join(', ', @s)
         . ')'
