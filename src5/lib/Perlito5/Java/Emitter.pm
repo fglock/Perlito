@@ -2117,9 +2117,14 @@ package Perlito5::AST::Sub;
             push @js_block, 'return PerlOp.context(want);';
         }
 
+        my $captures = 'null';
+        if (@captures_java) {
+            $captures = "new PlObject[]{ " . join(', ', @captures_java) . " }";
+        }
+
         my @closure_args = (
               $prototype,
-              "new PlObject[]{ " . join(', ', @captures_java) . " }",
+              $captures,
               Perlito5::Java::pkg,
               $is_defined,
         );
