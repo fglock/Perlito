@@ -6305,6 +6305,22 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return (PlLvalue)PlCORE.die("Not a SCALAR reference");
     }
 
+    public static PlArray construct_list_of_aliases(PlString s) {
+        PlArrayList aa = new PlArrayList();
+        aa.add(s);  // store lvalue as-is
+        return new PlArray(aa);
+    }
+    public static PlArray construct_list_of_aliases(PlLvalue s) {
+        PlArrayList aa = new PlArrayList();
+        aa.add(s);  // store lvalue as-is
+        return new PlArray(aa);
+    }
+    public static PlArray construct_list_of_aliases(PlLvalue s1, PlLvalue s2) {
+        PlArrayList aa = new PlArrayList();
+        aa.add(s1);  // store lvalue as-is
+        aa.add(s2);  // store lvalue as-is
+        return new PlArray(aa);
+    }
     public static PlArray construct_list_of_aliases(PlObject s) {
         PlArrayList aa = new PlArrayList();
         if (s.is_lvalue()) {
@@ -6361,9 +6377,15 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         }
         return result;
     }
-    public static PlObject static_list_set(int want, PlObject src, PlObject... args) {
-        src = new PlArray(src);
-        int size = src.to_int();
+
+    public static void static_list_set(PlObject src, PlLvalue... args) {
+        int count = 0;
+        for (PlLvalue s : args) {
+            s.set(src.aget(count++));
+        }
+    }
+    public static void static_list_set(PlObject src_list, PlObject... args) {
+        PlArray src = new PlArray(src_list);
         for (PlObject s : args) {
             if (s.is_hash()) {
                 // ( %x );
@@ -6393,10 +6415,59 @@ class PlArray extends PlObject implements Iterable<PlObject> {
                 PlCORE.die("Can't modify constant item in list assignment");
             }
         }
+    }
+
+    public static PlObject static_list_set(int want, PlObject src, PlLvalue... args) {
+        int count = 0;
+        for (PlLvalue s : args) {
+            s.set(src.aget(count++));
+        }
+        if (want == PlCx.VOID) {
+            return PlCx.UNDEF;
+        }
         if (want == PlCx.LIST) {
             return PlArray.construct_list_of_aliases(args);
         }
-        return new PlInt(size);
+        return src.scalar();
+    }
+    public static PlObject static_list_set(int want, PlObject src_list, PlObject... args) {
+        PlArray src = new PlArray(src_list);
+        for (PlObject s : args) {
+            if (s.is_hash()) {
+                // ( %x );
+                ((PlHash)s).set(PlCx.VOID, src);
+                src = new PlArray();
+            }
+            else if (s.is_slice()) {
+                // ( @x[3,4] ); - "slice" is not "slurpy"
+                int s_size = s.to_int();
+                for (int i = 0; i < s_size; i++) {
+                    s.aset(i, src.shift());
+                }
+            }
+            else if (s.is_array()) {
+                // ( @x ); - "array" is "slurpy"
+                s.set(src);
+                src = new PlArray();
+            }
+            else if (s.is_lvalue()) {
+                PlObject o = src.shift();
+                s.set(o);
+            }
+            else if (s.is_undef()) {
+                src.shift();   // skip
+            }
+            else {
+                PlCORE.die("Can't modify constant item in list assignment");
+            }
+        }
+        if (want == PlCx.VOID) {
+            return PlCx.UNDEF;
+        }
+        if (want == PlCx.LIST) {
+            return PlArray.construct_list_of_aliases(args);
+        }
+        return src_list.scalar();
     }
     public PlObject list_set(int want, PlArray s) {
         // @x[3,4] = ( @x, @y );

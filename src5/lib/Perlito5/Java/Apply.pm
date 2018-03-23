@@ -151,6 +151,14 @@ package Perlito5::AST::Apply;
             # my ($x, $y) = ...
             # local ($x, $y) = ...
             # ($x, $y) = ...
+            if ($wantarray eq 'void') {
+                return 'PlArray.static_list_set('
+                    . join( ', ',
+                        Perlito5::Java::to_list([$arguments], $level),
+                        map( $_->emit_java( $level, 'list', 'lvalue' ), @{ $self->{arguments} } ),
+                    )
+                . ')'
+            }
             return 'PlArray.static_list_set('
                 . join( ', ',
                     Perlito5::Java::to_context($wantarray),
