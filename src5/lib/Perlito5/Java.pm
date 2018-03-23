@@ -279,6 +279,25 @@ our %op_to_num = map +($_ => 1), qw(
     infix:<|>
     infix:<&>
 );
+# these operators always return "scalar"
+our %op_to_scalar = map +($_ => 1), (
+    keys %op_to_str,
+    keys %op_to_num,
+    keys %op_to_boolean,
+    'circumfix:<[ ]>',
+    'circumfix:<{ }>',
+    qw(
+        infix:<cmp>
+        infix:<<=>>
+        postfix:<++>
+        postfix:<-->
+        prefix:<++>
+        prefix:<-->
+    ),
+    # exceptions:
+    #   'prefix:<\\>' because '\(@a)' is a list
+    #   'infix:<=>'   depends on the sigil
+);
 # these operators will generate native Java code when possible
 our %native_op = qw(
     infix:<->   -
@@ -815,14 +834,7 @@ sub is_scalar {
      || Perlito5::AST::Sub::is_anon_sub($_[0])
      || ($_[0]->isa( 'Perlito5::AST::Var' ) && $_[0]->{sigil} eq '$')
      || ($_[0]->isa( 'Perlito5::AST::Apply' ) 
-        && (  exists($op_to_str{ $_[0]->{code} })
-           || exists($op_to_num{ $_[0]->{code} })
-           || exists($op_to_boolean{ $_[0]->{code} })
-           || $_[0]->{code} eq 'infix:<cmp>'
-           || $_[0]->{code} eq 'infix:<<=>>'
-           || $_[0]->{code} eq 'circumfix:<[ ]>'    # array ref
-           || $_[0]->{code} eq 'circumfix:<{ }>'    # hash ref
-           #  || $_[0]->{code} eq 'prefix:<\\>'    -- \(@a) is a list
+        && (  exists($op_to_scalar{ $_[0]->{code} })
            )
         )
 }
