@@ -820,6 +820,8 @@ sub is_scalar {
            || exists($op_to_boolean{ $_[0]->{code} })
            || $_[0]->{code} eq 'infix:<cmp>'
            || $_[0]->{code} eq 'infix:<<=>>'
+           || $_[0]->{code} eq 'circumfix:<[ ]>'    # array ref
+           || $_[0]->{code} eq 'circumfix:<{ }>'    # hash ref
            #  || $_[0]->{code} eq 'prefix:<\\>'    -- \(@a) is a list
            )
         )
