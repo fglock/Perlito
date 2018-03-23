@@ -818,6 +818,8 @@ sub is_scalar {
         && (  exists($op_to_str{ $_[0]->{code} })
            || exists($op_to_num{ $_[0]->{code} })
            || exists($op_to_boolean{ $_[0]->{code} })
+           || $_[0]->{code} eq 'infix:<cmp>'
+           || $_[0]->{code} eq 'infix:<<=>>'
            #  || $_[0]->{code} eq 'prefix:<\\>'    -- \(@a) is a list
            )
         )
