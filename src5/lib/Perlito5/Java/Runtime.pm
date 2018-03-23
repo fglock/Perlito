@@ -1767,7 +1767,7 @@ EOT
     }
 
     // ****** regex variables
-    // class PlRegexResult extends PlObject {
+    // class PlRegexResult extends PlScalarObject {
     //     public Matcher matcher;      // regex captures
     //     public String  regex_string; // last string used in a regex
 
@@ -3664,7 +3664,11 @@ EOT
 
     , <<'EOT'
 }
-class PlReference extends PlObject {
+class PlScalarObject extends PlObject {
+    public PlScalarObject() {
+    }
+}
+class PlReference extends PlScalarObject {
     public static final PlStringConstant REF = new PlStringConstant("REF");
     public PlClass bless;
 
@@ -3850,7 +3854,7 @@ class PlStringReader extends Reader{
     }
 }
 
-class PlFileHandle extends PlObject {
+class PlFileHandle extends PlScalarObject {
     // public static final PlStringConstant REF = new PlStringConstant("GLOB");
     public String  typeglob_name;
     public OutputStream outputStream;    // System.out, System.err
@@ -4042,7 +4046,7 @@ class PlRegex extends PlReference {
         return true;
     }
 }
-class PlRegexResult extends PlObject {
+class PlRegexResult extends PlScalarObject {
     public Matcher matcher;      // regex captures
     public String  regex_string; // last string used in a regex
 
@@ -5161,7 +5165,7 @@ class PlLazyScalarref extends PlLazyLvalue {
     }
 }
 
-class PlTieScalar extends PlObject {
+class PlTieScalar extends PlScalarObject {
     public PlObject tied;
     public PlObject old_var;
 
@@ -5230,7 +5234,7 @@ class PlLazyLvalue extends PlLvalue {
         return llv.set(o);
     }
 }
-class PlLvalue extends PlObject {
+class PlLvalue extends PlScalarObject {
     public PlObject o;
     public Integer pos;
     public boolean regex_zero_length_flag;
@@ -7516,7 +7520,7 @@ EOT
         return this.h.scalar();
     }
 }
-class PlUndef extends PlObject {
+class PlUndef extends PlScalarObject {
     public PlUndef() {
     }
     public PlObject apply(int want, PlArray List__) {
@@ -7557,7 +7561,7 @@ class PlUndef extends PlObject {
     }
 
 }
-class PlBool extends PlObject {
+class PlBool extends PlScalarObject {
     private final boolean i;
     public PlBool(boolean i) {
         this.i = i;
@@ -7649,7 +7653,7 @@ class PlBool extends PlObject {
         }
     }
 }
-class PlInt extends PlObject {
+class PlInt extends PlScalarObject {
     private final long i;
     public PlInt(long i) {
         this.i = i;
@@ -7733,7 +7737,7 @@ class PlInt extends PlObject {
         return new PlInt(v * i);
     }
 }
-class PlDouble extends PlObject {
+class PlDouble extends PlScalarObject {
     private final double i;
     public PlDouble(double i) {
         this.i = i;
@@ -7952,7 +7956,7 @@ class PlStringConstant extends PlString {
         return this.codeRef.apply(want, List__);
     }
 }
-class PlString extends PlObject {
+class PlString extends PlScalarObject {
     public java.lang.String s;
     private PlObject numericValue;
 
