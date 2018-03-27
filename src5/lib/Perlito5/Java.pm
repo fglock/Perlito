@@ -803,15 +803,25 @@ sub to_boolean {
                            . to_native_str($cond->{arguments}->[1], $level, 'scalar') . ') > 0)'
             }
             if (  $cond->code eq 'defined' ) {
-                if (@{$cond->{arguments}} == 1) {
-                    my $arg = $cond->{arguments}[0];
-                    if (  ref( $arg ) eq 'Perlito5::AST::Var' 
-                       && $arg->{sigil} eq '$'
-                       )
-                    {
-                        return '!' . $arg->emit_java($level, 'scalar') . '.is_undef()';
-                    }
+                my $arg = $cond->{arguments}[0];
+                if (  ref( $arg ) eq 'Perlito5::AST::Apply' 
+                   && $arg->{code} eq 'prefix:<&>'
+                   )
+                {
+                    my $arg2   = $arg->{arguments}->[0];
+                    return '!PlV.code_lookup_by_name_no_autoload(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg2->emit_java($level) . ').is_undef()';
                 }
+                elsif (  ref( $arg ) eq 'Perlito5::AST::Var' 
+                   && $arg->{sigil} eq '&'
+                   )
+                {
+                    my $name = $arg->{name};
+                    my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
+                    return '!PlV.cget_no_autoload(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ').is_undef()';
+                }
+                # TODO - use this code for typed variables:
+                #   $invocant . ' != null' 
+                return '!' . $arg->emit_java($level, 'scalar') . '.is_undef()';
             }
         }
 
