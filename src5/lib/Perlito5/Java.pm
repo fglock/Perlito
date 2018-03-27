@@ -270,6 +270,7 @@ our %op_to_num = map +($_ => 1), qw(
     rindex
     ord
     oct
+    int
     infix:<->
     infix:<+>
     infix:<*>
@@ -293,6 +294,7 @@ our %op_to_scalar = map +($_ => 1), (
         postfix:<-->
         prefix:<++>
         prefix:<-->
+        bless
     ),
     # exceptions:
     #   'prefix:<\\>' because '\(@a)' is a list
