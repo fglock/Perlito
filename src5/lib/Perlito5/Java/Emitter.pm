@@ -2045,7 +2045,7 @@ package Perlito5::AST::Sub;
         my $block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts}, not_a_loop => 1 );
 
         # get list of captured variables, including inner blocks
-        my @captures_ast = @Perlito5::CAPTURES;
+        my @captures_ast = (); # @Perlito5::CAPTURES;
 
         {
             my @captured;
