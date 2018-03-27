@@ -1025,7 +1025,13 @@ sub to_runtime_context {
         return $s[0];
     }
 
-    # TODO - indentify plain-perl method calls
+    if ( @s == 1 && $items->[0]->isa( 'Perlito5::AST::Call' ) 
+       )
+    {
+        # TODO - indentify java-native method calls
+        # this looks like a plain-perl subroutine call
+        return $s[0];
+    }
 
     'PerlOp.context(' . to_context($wantarray) . ', ' 
         .   join(', ', @s)
