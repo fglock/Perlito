@@ -1093,6 +1093,11 @@ class PerlOp {
         PlV.cset_alias(name, newValue);
         return newValue;
     }
+    public static final void push_local_special_var_Scalar__() {
+        PlV.local_stack.a.add(PlV.Scalar__);
+        PlV.local_stack.a.add(PlCx.INT4);
+        PlV.Scalar__ = new PlLvalue();
+    }
 
     public static final int local_length() {
         return PlV.local_stack.to_int();
@@ -1120,6 +1125,9 @@ class PerlOp {
                 case 3:
                     index     = PlV.local_stack.pop();
                     PlV.cset_alias(index.toString(), (PlLvalue)v);
+                    break;
+                case 4:
+                    PlV.Scalar__ = (PlLvalue)v;
                     break;
             }
         }
@@ -1476,7 +1484,7 @@ EOT
     public static final PlObject grep(PlClosure c, PlArray a, PlArray list__, int wantarray) {
         PlArray ret = new PlArray();
         int size = a.to_int();
-        PlLvalue v__ref = (PlLvalue)PlV.sget("main::_");
+        PlLvalue v__ref = PlV.Scalar__;
         PlObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
             boolean result;
@@ -1494,7 +1502,7 @@ EOT
         if (wantarray == PlCx.LIST ) {
             PlArray ret = new PlArray();
             int size = a.to_int();
-            PlLvalue v__ref = (PlLvalue)PlV.sget("main::_");
+            PlLvalue v__ref = PlV.Scalar__;
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
@@ -1506,7 +1514,7 @@ EOT
         else {
             int ret = 0;
             int size = a.to_int();
-            PlLvalue v__ref = (PlLvalue)PlV.sget("main::_");
+            PlLvalue v__ref = PlV.Scalar__;
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
@@ -2368,6 +2376,7 @@ class PlV {
     public static PlFileHandle STDOUT = new PlFileHandle();
     public static PlFileHandle STDERR = new PlFileHandle();
 
+    public static PlLvalue Scalar__ = new PlLvalue();    // $_
     public static PlObject boolean_stack;
     public static PlArray local_stack = new PlArray();
     public static Random random = new Random();
@@ -2378,8 +2387,6 @@ class PlV {
         PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
         // %ENV
         PlV.hash_set("main::ENV",   new PlArray(System.getenv()));    // env  is Map<String, String>
-        // $_
-        PlV.sset("main::_", PlCx.UNDEF);
         // $" = " "
         PlV.sset("main::" + (char)34, new PlString(" "));
         // $^O = "Unix"; default = "perlito5"
@@ -2483,6 +2490,25 @@ class PlV {
     }
     public static final void sset_alias(String name, PlLvalue v) {
         svar.hset_alias(name, v);
+    }
+
+    // special variables
+    public static final PlLvalue sget_Scalar__() {
+        return Scalar__;
+    }
+    public static final PlLvalue sget_local_Scalar__() {
+        PerlOp.push_local_special_var_Scalar__();
+        return Scalar__;
+    }
+    public static final PlObject sset_Scalar__(PlObject v) {
+        return Scalar__.set(v);
+    }
+    public static final PlObject sset_local_Scalar__(PlObject v) {
+        PerlOp.push_local_special_var_Scalar__();
+        return Scalar__.set(v);
+    }
+    public static final void sset_alias_Scalar__(PlLvalue v) {
+        Scalar__ = v;
     }
 
     public static final PlLvalue cget(String name) {
@@ -7997,6 +8023,9 @@ class PlString extends PlScalarObject {
     }
     public PlObject scalar_deref(String namespace) {
         if (s.length() == 1) {
+            if (s.equals("_")) {
+                return PlV.Scalar__;
+            }
             if (this._looks_like_non_negative_integer()) {
                 return PerlOp.regex_var(this.to_int());
             }
@@ -8010,14 +8039,25 @@ class PlString extends PlScalarObject {
         if (s.indexOf("::") == -1) {
             return PlV.sget( namespace + "::" + s );
         }
+        if (s.equals("main::_")) {
+            return PlV.Scalar__;
+        }
         return PlV.sget(s);
     }
     public PlObject scalar_deref_strict() {
         return PlCORE.die("Can't use string (\"" + this.s + "\") as a SCALAR ref while \"strict refs\" in use");
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
+        if (s.length() == 1) {
+            if (s.equals("_")) {
+                return PlV.Scalar__.set(v);
+            }
+        }
         if (s.indexOf("::") == -1) {
             return PlV.sset( namespace + "::" + s, v );
+        }
+        if (s.equals("main::_")) {
+            return PlV.Scalar__.set(v);
         }
         return PlV.sset(s, v);
     }

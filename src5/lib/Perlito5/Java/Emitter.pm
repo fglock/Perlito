@@ -1162,6 +1162,12 @@ package Perlito5::AST::Var;
                 # regex captures
                 return 'PerlOp.regex_var(' . (0 + $self->{name}) . ')'
             }
+            if ($self->{name} eq '_' && $namespace eq 'main') {
+                # $_
+                # return 'PlV.Scalar__';
+                return "PlV.Scalar__" if !$local;
+                return "PlV.sget${local}_Scalar__()";
+            }
             if ($self->{name} eq '&' || $self->{name} eq '`' || $self->{name} eq "'") {
                 # regex match $&
                 return 'PerlOp.regex_var(' . Perlito5::Java::escape_string($self->{name}) . ')'
@@ -1246,6 +1252,10 @@ package Perlito5::AST::Var;
 
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
+            if ($index eq '"main::_"') {
+                return "PlV.Scalar__.set(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")" if !$local;
+                return "PlV.sset${local}_Scalar__(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")";
+            }
             return "PlV.sset$local(" . $index . ', ' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
         }
         if ( $sigil eq '@' ) {
@@ -1286,7 +1296,12 @@ package Perlito5::AST::Var;
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         $arguments = Perlito5::Java::to_scalar([$arguments], $level+1)
             if ref($arguments);
-        return "PlV.sset_alias(" . $index . ', ' . $arguments . ")" if $sigil eq '$';
+        if ( $sigil eq '$' ) {
+            if ($index eq '"main::_"') {
+                return "PlV.sset_alias_Scalar__(" . $arguments . ")";
+            }
+            return "PlV.sset_alias(" . $index . ', ' . $arguments . ")";
+        }
         return "PlV.aset_alias(" . $index . ', ' . $arguments . ")" if $sigil eq '@';
         return "PlV.hset_alias(" . $index . ', ' . $arguments . ")" if $sigil eq '%';
         die "can't emit_java_global_set_alias() for sigil '$sigil'";

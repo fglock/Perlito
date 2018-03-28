@@ -1285,7 +1285,7 @@ EOT
         }
         StringBuilder sb = new StringBuilder();
         if (List__.to_int() == 0) {
-            sb.append( PlV.sget("main::_") );
+            sb.append( PlV.Scalar__.get() );
         }
         else {
             for (int i = 0; i < List__.to_int(); i++) {
