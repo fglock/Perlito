@@ -5196,6 +5196,10 @@ class PlTieScalar extends PlScalarObject {
         PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
         return this;
     }
+    public PlObject set(PlLvalue o) {
+        PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
+        return this;
+    }
 }
 class PlLazyLvalue extends PlLvalue {
     public  PlLvalue llv;   // $$lv
@@ -5228,6 +5232,12 @@ class PlLazyLvalue extends PlLvalue {
         return llv.set(o);
     }
     public PlObject set(PlInt o) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.set(o);
+    }
+    public PlObject set(PlLvalue o) {
         if (llv == null) {
             create_scalar();
         }
@@ -5645,9 +5655,13 @@ class PlLvalue extends PlScalarObject {
         this.o = o;
         return this;
     }
-
     public PlObject set(PlLvalue o) {
-        return this.set(o.get());
+        if (this.o.is_tiedScalar()) {
+            ((PlTieScalar)this.o).set(o.get());
+            return this;
+        }
+        this.o = o.get();
+        return this;
     }
     public PlObject set(PlArray o) {
         // $a = @x
@@ -5941,6 +5955,9 @@ class PlROvalue extends PlLvalue {
         return PlCORE.die("Modification of a read-only value attempted");
     }
     public PlObject set(PlInt o) {
+        return PlCORE.die("Modification of a read-only value attempted");
+    }
+    public PlObject set(PlLvalue o) {
         return PlCORE.die("Modification of a read-only value attempted");
     }
 
