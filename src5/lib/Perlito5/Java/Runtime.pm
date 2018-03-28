@@ -2374,8 +2374,12 @@ class PlV {
     public static String lastStat = null;
 
     public static final void init(String[] args) {
+        // @ARGV
         PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
+        // %ENV
         PlV.hash_set("main::ENV",   new PlArray(System.getenv()));    // env  is Map<String, String>
+        // $_
+        PlV.sset("main::_", PlCx.UNDEF);
         // $" = " "
         PlV.sset("main::" + (char)34, new PlString(" "));
         // $^O = "Unix"; default = "perlito5"
