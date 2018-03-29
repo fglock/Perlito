@@ -2433,14 +2433,17 @@ class PlV {
         PlV.STDIN.eof           = false;
         PlV.STDIN.typeglob_name = "main::STDIN";
         PlV.STDIN.charset       = "UTF-8";
+        PlFileHandle.allOpenFiles.add(PlV.STDIN);
 
         PlV.STDOUT.outputStream = System.out;
         PlV.STDOUT.typeglob_name = "main::STDOUT";
         PlV.STDOUT.charset       = "UTF-8";
+        PlFileHandle.allOpenFiles.add(PlV.STDOUT);
 
         PlV.STDERR.outputStream = System.err;
         PlV.STDERR.typeglob_name = "main::STDERR";
         PlV.STDERR.charset       = "UTF-8";
+        PlFileHandle.allOpenFiles.add(PlV.STDERR);
 
         try {
             PlV.path = Paths.get(".").toRealPath();
@@ -2500,6 +2503,9 @@ class PlV {
         });
 
         PerlOp.reset_match();
+    }
+    public static final void teardown() {
+        PlFileHandle.close_all_files();
     }
 
     // scalar
@@ -3926,21 +3932,73 @@ class PlFileHandle extends PlScalarObject {
     public DirectoryStream<Path> directoryStream;
     public Reader  reader;       // Console.reader
     public StringBuilder readlineBuffer;
+    public StringBuilder printBuffer;
     public boolean eof;
     public boolean is_argv;
     public Path    path;     // filename
     public String  mode;     // ">", "+<"
     public String  charset;  // "UTF-8"
     public boolean binmode;
+    public boolean output_autoflush;
+
+    public static HashSet<PlFileHandle> allOpenFiles = new HashSet<PlFileHandle>();
 
     public PlFileHandle() {
         this.readlineBuffer = new StringBuilder();
+        this.printBuffer = new StringBuilder();
         this.eof = true;
         this.is_argv = false;
         this.binmode = false;
+        this.output_autoflush = false;
     }
     public boolean is_filehandle() {
         return true;
+    }
+
+    public static void close_all_files() {
+        // called at teardown - program finish, die() or exit()
+        // Note: this is also called when the compiler finishes loading (the compiler is a Perl program)
+        // System.out.println("PlFileHandle.close_all_files");
+        for ( PlFileHandle fh : allOpenFiles ) {
+            try {
+                fh.flush();     // not sure if we should close STDOUT and STDERR
+            }
+            catch(Exception e) {
+                PlV.sset("main::!", new PlStringLazyError(e));
+            }
+        }
+    }
+    public void flush() throws IOException, UnsupportedEncodingException {
+        // System.out.println("PlFileHandle.flush " + typeglob_name);
+        if (this.outputStream == null) {
+            return;
+        }
+        String s = this.printBuffer.toString();
+        if (this.binmode) {
+            byte[] bytes = new byte[s.length()];
+            for (int i2 = 0; i2 < s.length(); i2++) {
+                bytes[i2] = (byte)(s.charAt(i2));
+            }
+            this.outputStream.write(bytes);
+        }
+        else {
+            byte[] bytes = s.getBytes(this.charset);
+            this.outputStream.write(bytes);
+        }
+        this.printBuffer = new StringBuilder();
+        this.outputStream.flush();
+    }
+    public void close() throws IOException {
+        this.readlineBuffer = new StringBuilder();
+        this.eof = true;
+        if (this.outputStream != null) {
+            this.flush();
+            this.outputStream.close();
+        }
+        if (this.reader != null) {
+            this.reader.close();
+        }
+        PlFileHandle.allOpenFiles.remove(this);
     }
     public String toString() {
         if (this.typeglob_name == null) {
@@ -3956,6 +4014,15 @@ class PlFileHandle extends PlScalarObject {
         // PlCORE.say( "PlFileHandle.setUndef " + typeglob_name);
 
         PlString name = new PlString(typeglob_name);
+
+        try {
+            // close filehandle if needed
+            this.close();
+        }
+        catch(Exception e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+        }
+
         PlV.cvar.hdelete(PlCx.VOID, name);
         PlV.svar.hdelete(PlCx.VOID, name);
         PlV.avar.hdelete(PlCx.VOID, name);

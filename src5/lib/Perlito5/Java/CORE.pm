@@ -16,7 +16,9 @@ my %FileFunc = (
         String mode = "";
         String s = "";
         try {
+            PlFileHandle.allOpenFiles.add(fh);
             fh.readlineBuffer = new StringBuilder();
+            fh.flush();
             fh.eof = false;
             if (fh.outputStream != null) {
                 fh.outputStream.close();
@@ -212,14 +214,7 @@ my %FileFunc = (
 EOT
     close => <<'EOT',
         try {
-            fh.readlineBuffer = new StringBuilder();
-            fh.eof = true;
-            if (fh.outputStream != null) {
-                fh.outputStream.close();
-            }
-            if (fh.reader != null) {
-                fh.reader.close();
-            }
+            fh.close();
 
             // success
             return PlCx.INT1;
@@ -283,6 +278,7 @@ EOT
     closedir => <<'EOT',
         try {
             fh.readlineBuffer = new StringBuilder();
+            fh.flush();
             fh.eof = true;
             if (fh.directoryStream != null) {
                 fh.directoryStream.close();
@@ -296,41 +292,22 @@ EOT
 EOT
     print => <<'EOT',
         try {
-
             int size = List__.to_int();
             for (int i = 0; i < size; i++) {
-                String s = List__.aget(i).toString();
-
-                if (fh.binmode) {
-                    byte[] bytes = new byte[s.length()];
-                    for (int i2 = 0; i2 < s.length(); i2++) {
-                        bytes[i2] = (byte)(s.charAt(i2));
-                    }
-                    fh.outputStream.write(bytes);
-                }
-                else {
-                    byte[] bytes = s.getBytes(fh.charset);
-                    fh.outputStream.write(bytes);
-                }
+                fh.printBuffer.append(List__.aget(i).toString());
             }
- 
             if (!PlV.Scalar_OUTPUT_RECORD_SEPARATOR.is_undef()) {
-                String s = PlV.Scalar_OUTPUT_RECORD_SEPARATOR.toString();
-
-                if (fh.binmode) {
-                    byte[] bytes = new byte[s.length()];
-                    for (int i2 = 0; i2 < s.length(); i2++) {
-                        bytes[i2] = (byte)(s.charAt(i2));
-                    }
-                    fh.outputStream.write(bytes);
-                }
-                else {
-                    byte[] bytes = s.getBytes(fh.charset);
-                    fh.outputStream.write(bytes);
+                fh.printBuffer.append(PlV.Scalar_OUTPUT_RECORD_SEPARATOR.toString());
+            }
+            if (fh.output_autoflush) {
+                // $| autoflush is active
+                fh.flush();
+            }
+            else {
+                if (fh.printBuffer.length() > 100) {
+                    fh.flush();
                 }
             }
-
-            fh.outputStream.flush();
             return PlCx.INT1;
         }
         catch(Exception e) {
@@ -763,7 +740,7 @@ EOT
         for (PlObject tmp : PlArray.construct_list_of_aliases(PlV.array_get("Perlito5::END_BLOCK"))) {
             tmp.apply(PlCx.VOID, new PlArray());
         }
-
+        PlV.teardown();
         System.exit(arg);
         return PlCx.UNDEF;
     }
