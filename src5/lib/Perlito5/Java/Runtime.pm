@@ -339,6 +339,12 @@ EOT
     #   str_and             &.
     #   str_xor             ^.
 
+    my %special_var_index = (
+        # this is used by the variable localization methods
+        '_'  => 4,
+        '\\' => 5,
+    );
+
     return (
         <<'EOT'
 // start Perl-Java runtime
@@ -1093,11 +1099,23 @@ class PerlOp {
         PlV.cset_alias(name, newValue);
         return newValue;
     }
-    public static final void push_local_special_var_Scalar_ARG() {
-        PlV.local_stack.a.add(PlV.Scalar_ARG);
-        PlV.local_stack.a.add(PlCx.INT4);
-        PlV.Scalar_ARG = new PlLvalue();
+
+    // localizers for special variables like $_ $\
+EOT
+    , (( map {
+                my $java_name = $Perlito5::Java::special_scalar{$_};
+                my $index     = $special_var_index{$_};
+"
+    public static final void push_local_special_var_${java_name}() {
+        PlV.local_stack.a.add(PlV.${java_name});
+        PlV.local_stack.a.add(PlCx.INT${index});
+        PlV.${java_name} = new PlLvalue();
     }
+"
+            }
+            sort keys %Perlito5::Java::special_scalar
+      ))
+    , <<'EOT'
 
     public static final int local_length() {
         return PlV.local_stack.to_int();
@@ -1126,9 +1144,20 @@ class PerlOp {
                     index     = PlV.local_stack.pop();
                     PlV.cset_alias(index.toString(), (PlLvalue)v);
                     break;
-                case 4:
-                    PlV.Scalar_ARG = (PlLvalue)v;
+EOT
+    , (( map {
+                my $java_name = $Perlito5::Java::special_scalar{$_};
+                my $index     = $special_var_index{$_};
+"
+                case ${index}:
+                    PlV.${java_name} = (PlLvalue)v;
                     break;
+"
+            }
+            sort keys %Perlito5::Java::special_scalar
+      ))
+    , <<'EOT'
+
             }
         }
         return ret;
@@ -2493,24 +2522,27 @@ class PlV {
         svar.hset_alias(name, v);
     }
 
-    // special variables
-    public static final PlLvalue sget_Scalar_ARG() {
-        return Scalar_ARG;
+    // accessors for special variables like $_ $\
+EOT
+    , (( map {
+                my $java_name = $Perlito5::Java::special_scalar{$_};
+"
+    public static final PlLvalue sget_local_${java_name}() {
+        PerlOp.push_local_special_var_${java_name}();
+        return ${java_name};
     }
-    public static final PlLvalue sget_local_Scalar_ARG() {
-        PerlOp.push_local_special_var_Scalar_ARG();
-        return Scalar_ARG;
+    public static final PlObject sset_local_${java_name}(PlObject v) {
+        PerlOp.push_local_special_var_${java_name}();
+        return ${java_name}.set(v);
     }
-    public static final PlObject sset_Scalar_ARG(PlObject v) {
-        return Scalar_ARG.set(v);
+    public static final void sset_alias_${java_name}(PlLvalue v) {
+        ${java_name} = v;
     }
-    public static final PlObject sset_local_Scalar_ARG(PlObject v) {
-        PerlOp.push_local_special_var_Scalar_ARG();
-        return Scalar_ARG.set(v);
-    }
-    public static final void sset_alias_Scalar_ARG(PlLvalue v) {
-        Scalar_ARG = v;
-    }
+"
+            }
+            sort keys %Perlito5::Java::special_scalar
+      ))
+    , <<'EOT'
 
     public static final PlLvalue cget(String name) {
         // this implements " \&name "
@@ -8037,6 +8069,9 @@ class PlString extends PlScalarObject {
             if (s.equals("_")) {
                 return PlV.Scalar_ARG;
             }
+            if (s.equals("\\")) {
+                return PlV.Scalar_OUTPUT_RECORD_SEPARATOR;
+            }
             if (this._looks_like_non_negative_integer()) {
                 return PerlOp.regex_var(this.to_int());
             }
@@ -8053,6 +8088,9 @@ class PlString extends PlScalarObject {
         if (s.equals("main::_")) {
             return PlV.Scalar_ARG;
         }
+        if (s.equals("main::\\")) {
+            return PlV.Scalar_OUTPUT_RECORD_SEPARATOR;
+        }
         return PlV.sget(s);
     }
     public PlObject scalar_deref_strict() {
@@ -8063,12 +8101,18 @@ class PlString extends PlScalarObject {
             if (s.equals("_")) {
                 return PlV.Scalar_ARG.set(v);
             }
+            if (s.equals("\\")) {
+                return PlV.Scalar_OUTPUT_RECORD_SEPARATOR.set(v);
+            }
         }
         if (s.indexOf("::") == -1) {
             return PlV.sset( namespace + "::" + s, v );
         }
         if (s.equals("main::_")) {
             return PlV.Scalar_ARG.set(v);
+        }
+        if (s.equals("main::\\")) {
+            return PlV.Scalar_OUTPUT_RECORD_SEPARATOR.set(v);
         }
         return PlV.sset(s, v);
     }

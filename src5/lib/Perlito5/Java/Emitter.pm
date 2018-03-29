@@ -1162,11 +1162,13 @@ package Perlito5::AST::Var;
                 # regex captures
                 return 'PerlOp.regex_var(' . (0 + $self->{name}) . ')'
             }
-            if ($self->{name} eq '_' && $namespace eq 'main') {
-                # $_
-                # return 'PlV.Scalar_ARG';
-                return "PlV.Scalar_ARG" if !$local;
-                return "PlV.sget${local}_Scalar_ARG()";
+            if ($namespace eq 'main') {
+                my $java_name = $Perlito5::Java::special_scalar{$self->{name}};
+                if ($java_name) {
+                    # $_ ==> PlV.Scalar_ARG
+                    return "PlV.$java_name" if !$local;
+                    return "PlV.sget${local}_${java_name}()";
+                }
             }
             if ($self->{name} eq '&' || $self->{name} eq '`' || $self->{name} eq "'") {
                 # regex match $&
@@ -1252,9 +1254,15 @@ package Perlito5::AST::Var;
 
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
-            if ($index eq '"main::_"') {
-                return "PlV.Scalar_ARG.set(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")" if !$local;
-                return "PlV.sset${local}_Scalar_ARG(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")";
+
+
+            if ($namespace eq 'main') {
+                my $java_name = $Perlito5::Java::special_scalar{$self->{name}};
+                if ($java_name) {
+                    # $_ ==> PlV.Scalar_ARG
+                    return "PlV.${java_name}.set(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")" if !$local;
+                    return "PlV.sset${local}_${java_name}(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")";
+                }
             }
             return "PlV.sset$local(" . $index . ', ' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
         }
@@ -1297,8 +1305,14 @@ package Perlito5::AST::Var;
         $arguments = Perlito5::Java::to_scalar([$arguments], $level+1)
             if ref($arguments);
         if ( $sigil eq '$' ) {
-            if ($index eq '"main::_"') {
-                return "PlV.sset_alias_Scalar_ARG(" . $arguments . ")";
+
+
+            if ($namespace eq 'main') {
+                my $java_name = $Perlito5::Java::special_scalar{$self->{name}};
+                if ($java_name) {
+                    # $_ ==> PlV.Scalar_ARG
+                    return "PlV.sset_alias_${java_name}(" . $arguments . ")";
+                }
             }
             return "PlV.sset_alias(" . $index . ', ' . $arguments . ")";
         }

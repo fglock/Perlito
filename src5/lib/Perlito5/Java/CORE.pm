@@ -297,7 +297,7 @@ EOT
     print => <<'EOT',
         try {
             String s = List__.toString();
-            PlObject plsep = PlV.sget("main::\\");
+            PlObject plsep = PlV.Scalar_OUTPUT_RECORD_SEPARATOR;
             if (!plsep.is_undef()) {
                 s = s + plsep.toString();
             }
