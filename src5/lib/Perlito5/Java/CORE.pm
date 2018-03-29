@@ -296,21 +296,36 @@ EOT
 EOT
     print => <<'EOT',
         try {
-            String s = List__.toString();
-            PlObject plsep = PlV.Scalar_OUTPUT_RECORD_SEPARATOR;
-            if (!plsep.is_undef()) {
-                s = s + plsep.toString();
-            }
 
-            if (fh.binmode) {
-                for (int i = 0; i < s.length(); i++) {
-                    fh.outputStream.write(s.charAt(i));
+            int size = List__.to_int();
+            for (int i = 0; i < size; i++) {
+                String s = List__.aget(i).toString();
+
+                if (fh.binmode) {
+                    for (int i2 = 0; i2 < s.length(); i2++) {
+                        fh.outputStream.write(s.charAt(i2));
+                    }
+                }
+                else {
+                    byte[] bytes = s.getBytes(fh.charset);
+                    fh.outputStream.write(bytes);
                 }
             }
-            else {
-                byte[] bytes = s.getBytes(fh.charset);
-                fh.outputStream.write(bytes);
+ 
+            if (!PlV.Scalar_OUTPUT_RECORD_SEPARATOR.is_undef()) {
+                String s = PlV.Scalar_OUTPUT_RECORD_SEPARATOR.toString();
+
+                if (fh.binmode) {
+                    for (int i3 = 0; i3 < s.length(); i3++) {
+                        fh.outputStream.write(s.charAt(i3));
+                    }
+                }
+                else {
+                    byte[] bytes = s.getBytes(fh.charset);
+                    fh.outputStream.write(bytes);
+                }
             }
+
             fh.outputStream.flush();
             return PlCx.INT1;
         }
