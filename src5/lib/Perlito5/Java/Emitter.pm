@@ -583,6 +583,7 @@ package Perlito5::AST::CompUnit;
                      'for (PlObject code : PlV.array_get("Perlito5::END_BLOCK")) {',
                          [ 'code.apply(PlCx.VOID, new PlArray());' ],
                      '}',
+                     'PlV.teardown();',
                      # return error code
                      'if (ee != null) {',
                          [ 'System.exit(1);' ],
