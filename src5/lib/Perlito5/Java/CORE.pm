@@ -897,6 +897,13 @@ EOT
         int limit = plCount.to_int();
         PlArray res = new PlArray();
         if (limit == 0) {
+
+            // TODO - possible optimization for: split("", $str)
+            // if (plReg.is_string() && plReg.toString().length() == 0) {
+            //     // split "", $string, 0
+            //     return new PlArray(plArg.toString().toCharArray());
+            // }
+
             // strip trailing empty strings and undef
             res = (PlArray)PlCORE.split(PlCx.LIST, plReg, plArg, PlCx.MIN1);
             while (res.to_int() > 0) {
@@ -1285,7 +1292,7 @@ EOT
         }
         StringBuilder sb = new StringBuilder();
         if (List__.to_int() == 0) {
-            sb.append( PlV.Scalar__.get() );
+            sb.append( PlV.Scalar_ARG.get() );
         }
         else {
             for (int i = 0; i < List__.to_int(); i++) {

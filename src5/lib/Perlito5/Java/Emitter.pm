@@ -1164,9 +1164,9 @@ package Perlito5::AST::Var;
             }
             if ($self->{name} eq '_' && $namespace eq 'main') {
                 # $_
-                # return 'PlV.Scalar__';
-                return "PlV.Scalar__" if !$local;
-                return "PlV.sget${local}_Scalar__()";
+                # return 'PlV.Scalar_ARG';
+                return "PlV.Scalar_ARG" if !$local;
+                return "PlV.sget${local}_Scalar_ARG()";
             }
             if ($self->{name} eq '&' || $self->{name} eq '`' || $self->{name} eq "'") {
                 # regex match $&
@@ -1253,8 +1253,8 @@ package Perlito5::AST::Var;
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
             if ($index eq '"main::_"') {
-                return "PlV.Scalar__.set(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")" if !$local;
-                return "PlV.sset${local}_Scalar__(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")";
+                return "PlV.Scalar_ARG.set(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")" if !$local;
+                return "PlV.sset${local}_Scalar_ARG(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")";
             }
             return "PlV.sset$local(" . $index . ', ' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
         }
@@ -1298,7 +1298,7 @@ package Perlito5::AST::Var;
             if ref($arguments);
         if ( $sigil eq '$' ) {
             if ($index eq '"main::_"') {
-                return "PlV.sset_alias_Scalar__(" . $arguments . ")";
+                return "PlV.sset_alias_Scalar_ARG(" . $arguments . ")";
             }
             return "PlV.sset_alias(" . $index . ', ' . $arguments . ")";
         }

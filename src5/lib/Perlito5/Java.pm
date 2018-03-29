@@ -351,6 +351,11 @@ our %valid_java_statement = qw(
     untie           1
     warn            1
 ); 
+# these variables will be optimized
+our %special_scalar = (
+    '_'  => "Scalar_ARG",  # $_
+    '\\' => "Scalar_OUTPUT_RECORD_SEPARATOR",  # $\
+);
 
 my %safe_char = (
     ' ' => 1,

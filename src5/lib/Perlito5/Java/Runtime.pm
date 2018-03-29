@@ -1093,10 +1093,10 @@ class PerlOp {
         PlV.cset_alias(name, newValue);
         return newValue;
     }
-    public static final void push_local_special_var_Scalar__() {
-        PlV.local_stack.a.add(PlV.Scalar__);
+    public static final void push_local_special_var_Scalar_ARG() {
+        PlV.local_stack.a.add(PlV.Scalar_ARG);
         PlV.local_stack.a.add(PlCx.INT4);
-        PlV.Scalar__ = new PlLvalue();
+        PlV.Scalar_ARG = new PlLvalue();
     }
 
     public static final int local_length() {
@@ -1127,7 +1127,7 @@ class PerlOp {
                     PlV.cset_alias(index.toString(), (PlLvalue)v);
                     break;
                 case 4:
-                    PlV.Scalar__ = (PlLvalue)v;
+                    PlV.Scalar_ARG = (PlLvalue)v;
                     break;
             }
         }
@@ -1484,7 +1484,7 @@ EOT
     public static final PlObject grep(PlClosure c, PlArray a, PlArray list__, int wantarray) {
         PlArray ret = new PlArray();
         int size = a.to_int();
-        PlLvalue v__ref = PlV.Scalar__;
+        PlLvalue v__ref = PlV.Scalar_ARG;
         PlObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
             boolean result;
@@ -1502,7 +1502,7 @@ EOT
         if (wantarray == PlCx.LIST ) {
             PlArray ret = new PlArray();
             int size = a.to_int();
-            PlLvalue v__ref = PlV.Scalar__;
+            PlLvalue v__ref = PlV.Scalar_ARG;
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
@@ -1514,7 +1514,7 @@ EOT
         else {
             int ret = 0;
             int size = a.to_int();
-            PlLvalue v__ref = PlV.Scalar__;
+            PlLvalue v__ref = PlV.Scalar_ARG;
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
@@ -2376,7 +2376,8 @@ class PlV {
     public static PlFileHandle STDOUT = new PlFileHandle();
     public static PlFileHandle STDERR = new PlFileHandle();
 
-    public static PlLvalue Scalar__ = new PlLvalue();    // $_
+    public static PlLvalue Scalar_ARG                     = new PlLvalue();    // $_
+    public static PlLvalue Scalar_OUTPUT_RECORD_SEPARATOR = new PlLvalue();    // $\
     public static PlObject boolean_stack;
     public static PlArray local_stack = new PlArray();
     public static Random random = new Random();
@@ -2493,22 +2494,22 @@ class PlV {
     }
 
     // special variables
-    public static final PlLvalue sget_Scalar__() {
-        return Scalar__;
+    public static final PlLvalue sget_Scalar_ARG() {
+        return Scalar_ARG;
     }
-    public static final PlLvalue sget_local_Scalar__() {
-        PerlOp.push_local_special_var_Scalar__();
-        return Scalar__;
+    public static final PlLvalue sget_local_Scalar_ARG() {
+        PerlOp.push_local_special_var_Scalar_ARG();
+        return Scalar_ARG;
     }
-    public static final PlObject sset_Scalar__(PlObject v) {
-        return Scalar__.set(v);
+    public static final PlObject sset_Scalar_ARG(PlObject v) {
+        return Scalar_ARG.set(v);
     }
-    public static final PlObject sset_local_Scalar__(PlObject v) {
-        PerlOp.push_local_special_var_Scalar__();
-        return Scalar__.set(v);
+    public static final PlObject sset_local_Scalar_ARG(PlObject v) {
+        PerlOp.push_local_special_var_Scalar_ARG();
+        return Scalar_ARG.set(v);
     }
-    public static final void sset_alias_Scalar__(PlLvalue v) {
-        Scalar__ = v;
+    public static final void sset_alias_Scalar_ARG(PlLvalue v) {
+        Scalar_ARG = v;
     }
 
     public static final PlLvalue cget(String name) {
@@ -6299,6 +6300,16 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         this.a = aa;
     }
 
+    // TODO - this is part of a possible optimization to: split("", $str)
+    // public PlArray(char... args) {
+    //     PlArrayList aa = new PlArrayList();
+    //     for (char s : args) {
+    //         aa.add(new PlString(s));
+    //     }
+    //     this.each_iterator = 0;
+    //     this.a = aa;
+    // }
+
     // tie hash
     public PlObject tie(PlArray args) {
         if (this.a.is_tiedArray()) {
@@ -8024,7 +8035,7 @@ class PlString extends PlScalarObject {
     public PlObject scalar_deref(String namespace) {
         if (s.length() == 1) {
             if (s.equals("_")) {
-                return PlV.Scalar__;
+                return PlV.Scalar_ARG;
             }
             if (this._looks_like_non_negative_integer()) {
                 return PerlOp.regex_var(this.to_int());
@@ -8040,7 +8051,7 @@ class PlString extends PlScalarObject {
             return PlV.sget( namespace + "::" + s );
         }
         if (s.equals("main::_")) {
-            return PlV.Scalar__;
+            return PlV.Scalar_ARG;
         }
         return PlV.sget(s);
     }
@@ -8050,14 +8061,14 @@ class PlString extends PlScalarObject {
     public PlObject scalar_deref_set(String namespace, PlObject v) {
         if (s.length() == 1) {
             if (s.equals("_")) {
-                return PlV.Scalar__.set(v);
+                return PlV.Scalar_ARG.set(v);
             }
         }
         if (s.indexOf("::") == -1) {
             return PlV.sset( namespace + "::" + s, v );
         }
         if (s.equals("main::_")) {
-            return PlV.Scalar__.set(v);
+            return PlV.Scalar_ARG.set(v);
         }
         return PlV.sset(s, v);
     }
