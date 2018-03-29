@@ -353,7 +353,7 @@ our %valid_java_statement = qw(
 ); 
 # these variables will be optimized
 our %special_scalar = (
-    '_'  => "Scalar_ARG",  # $_
+    '_'  => "Scalar_ARG",           # $_
     '\\' => "Scalar_OUTPUT_RECORD_SEPARATOR",  # $\
 );
 

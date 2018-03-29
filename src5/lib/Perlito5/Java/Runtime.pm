@@ -3970,6 +3970,10 @@ class PlFileHandle extends PlScalarObject {
             }
         }
     }
+    public PlObject set_autoflush(PlObject o) {
+        this.output_autoflush = o.to_boolean();
+        return o;
+    }
     public void flush() throws IOException, UnsupportedEncodingException {
         // System.out.println("PlFileHandle.flush " + typeglob_name);
         if (this.outputStream == null) {
@@ -8135,12 +8139,6 @@ class PlString extends PlScalarObject {
     }
     public PlObject scalar_deref(String namespace) {
         if (s.length() == 1) {
-            if (s.equals("_")) {
-                return PlV.Scalar_ARG;
-            }
-            if (s.equals("\\")) {
-                return PlV.Scalar_OUTPUT_RECORD_SEPARATOR;
-            }
             if (this._looks_like_non_negative_integer()) {
                 return PerlOp.regex_var(this.to_int());
             }
@@ -8149,6 +8147,9 @@ class PlString extends PlScalarObject {
             }
             if (s.equals("$")) {
                 return PerlOp.getPID();
+            }
+            if (s.equals("_") || s.equals("\\") || s.equals("|")) {
+                s = "main::" + s;
             }
         }
         if (s.indexOf("::") == -1) {
@@ -8160,6 +8161,9 @@ class PlString extends PlScalarObject {
         if (s.equals("main::\\")) {
             return PlV.Scalar_OUTPUT_RECORD_SEPARATOR;
         }
+        if (s.equals("main::|")) {
+            return new PlBool(PlV.STDOUT.output_autoflush);
+        }
         return PlV.sget(s);
     }
     public PlObject scalar_deref_strict() {
@@ -8167,11 +8171,8 @@ class PlString extends PlScalarObject {
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
         if (s.length() == 1) {
-            if (s.equals("_")) {
-                return PlV.Scalar_ARG.set(v);
-            }
-            if (s.equals("\\")) {
-                return PlV.Scalar_OUTPUT_RECORD_SEPARATOR.set(v);
+            if (s.equals("_") || s.equals("\\") || s.equals("|")) {
+                s = "main::" + s;
             }
         }
         if (s.indexOf("::") == -1) {
@@ -8182,6 +8183,9 @@ class PlString extends PlScalarObject {
         }
         if (s.equals("main::\\")) {
             return PlV.Scalar_OUTPUT_RECORD_SEPARATOR.set(v);
+        }
+        if (s.equals("main::|")) {
+            return PlV.STDOUT.set_autoflush(v);
         }
         return PlV.sset(s, v);
     }

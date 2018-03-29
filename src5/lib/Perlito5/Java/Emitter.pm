@@ -1164,6 +1164,9 @@ package Perlito5::AST::Var;
                 return 'PerlOp.regex_var(' . (0 + $self->{name}) . ')'
             }
             if ($namespace eq 'main') {
+                if ($self->{name} eq '|') {
+                    return 'new PlBool(PlV.STDOUT.output_autoflush)'
+                }
                 my $java_name = $Perlito5::Java::special_scalar{$self->{name}};
                 if ($java_name) {
                     # $_ ==> PlV.Scalar_ARG
@@ -1255,9 +1258,10 @@ package Perlito5::AST::Var;
 
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
-
-
             if ($namespace eq 'main') {
+                if ($self->{name} eq '|') {
+                    return 'PlV.STDOUT.set_autoflush(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')' if !$local;
+                }
                 my $java_name = $Perlito5::Java::special_scalar{$self->{name}};
                 if ($java_name) {
                     # $_ ==> PlV.Scalar_ARG
@@ -1306,8 +1310,6 @@ package Perlito5::AST::Var;
         $arguments = Perlito5::Java::to_scalar([$arguments], $level+1)
             if ref($arguments);
         if ( $sigil eq '$' ) {
-
-
             if ($namespace eq 'main') {
                 my $java_name = $Perlito5::Java::special_scalar{$self->{name}};
                 if ($java_name) {
