@@ -302,9 +302,11 @@ EOT
                 String s = List__.aget(i).toString();
 
                 if (fh.binmode) {
+                    byte[] bytes = new byte[s.length()];
                     for (int i2 = 0; i2 < s.length(); i2++) {
-                        fh.outputStream.write(s.charAt(i2));
+                        bytes[i2] = (byte)(s.charAt(i2));
                     }
+                    fh.outputStream.write(bytes);
                 }
                 else {
                     byte[] bytes = s.getBytes(fh.charset);
@@ -316,9 +318,11 @@ EOT
                 String s = PlV.Scalar_OUTPUT_RECORD_SEPARATOR.toString();
 
                 if (fh.binmode) {
-                    for (int i3 = 0; i3 < s.length(); i3++) {
-                        fh.outputStream.write(s.charAt(i3));
+                    byte[] bytes = new byte[s.length()];
+                    for (int i2 = 0; i2 < s.length(); i2++) {
+                        bytes[i2] = (byte)(s.charAt(i2));
                     }
+                    fh.outputStream.write(bytes);
                 }
                 else {
                     byte[] bytes = s.getBytes(fh.charset);
