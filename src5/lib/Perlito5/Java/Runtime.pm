@@ -3972,6 +3972,14 @@ class PlFileHandle extends PlScalarObject {
     }
     public PlObject set_autoflush(PlObject o) {
         this.output_autoflush = o.to_boolean();
+        if (this.output_autoflush) {
+            try {
+                this.flush();
+            }
+            catch(Exception e) {
+                PlV.sset("main::!", new PlStringLazyError(e));
+            }
+        }
         return o;
     }
     public void flush() throws IOException, UnsupportedEncodingException {
