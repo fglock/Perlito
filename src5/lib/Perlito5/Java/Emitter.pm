@@ -571,18 +571,6 @@ package Perlito5::AST::CompUnit;
                          ],
                      '}',
                      # execute END blocks
-
-                     # TODO - catch error in END
-                     # Perlito5::set_global_phase("END");
-                     # eval {
-                     #     $_->() for @Perlito5::END_BLOCK;
-                     #     1;
-                     # }
-                     # or warn "$@\nEND failed--call queue aborted.\n"
-
-                     'for (PlObject code : PlV.array_get("Perlito5::END_BLOCK")) {',
-                         [ 'code.apply(PlCx.VOID, new PlArray());' ],
-                     '}',
                      'PlV.teardown();',
                      # return error code
                      'if (ee != null) {',

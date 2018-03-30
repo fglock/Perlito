@@ -734,12 +734,6 @@ EOT
     public static final PlObject exit(int want, PlArray List__) {
         int arg = List__.aget(0).to_int();
 
-        // Perlito5::set_global_phase("END");
-        new PlStringConstant("Perlito5::set_global_phase").apply(PlCx.VOID, PlArray.construct_list_of_aliases(new PlStringConstant("END")));
-        // $_->() for @Perlito5::END_BLOCK;
-        for (PlObject tmp : PlArray.construct_list_of_aliases(PlV.array_get("Perlito5::END_BLOCK"))) {
-            tmp.apply(PlCx.VOID, new PlArray());
-        }
         PlV.teardown();
         System.exit(arg);
         return PlCx.UNDEF;
