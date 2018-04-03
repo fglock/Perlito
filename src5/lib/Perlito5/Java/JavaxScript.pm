@@ -120,8 +120,8 @@ public final class Perlito5ScriptEngineFactory implements javax.script.ScriptEng
         org.perlito.Perlito5.Main.main(new String[]{"-Cinit"});
 
         // turn on autoflush
-        PlV.STDOUT.output_autoflush = true;
-        PlV.STDERR.output_autoflush = true;
+        PlV.STDOUT.set_autoflush(PlCx.TRUE);
+        PlV.STDERR.set_autoflush(PlCx.TRUE);
 
         Perlito5ScriptEngine e = new Perlito5ScriptEngine();
         e.setFactory(this);

@@ -2407,6 +2407,7 @@ class PlV {
 
     public static PlLvalue Scalar_ARG                     = new PlLvalue();    // $_
     public static PlLvalue Scalar_OUTPUT_RECORD_SEPARATOR = new PlLvalue();    // $\
+    public static PlLvalueSpecialVarAutoflush Scalar_AUTOFLUSH = new PlLvalueSpecialVarAutoflush();  // $|
     public static PlObject boolean_stack;
     public static PlArray local_stack = new PlArray();
     public static Random random = new Random();
@@ -4118,6 +4119,28 @@ class PlFileHandle extends PlScalarObject {
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
         return PlV.sset(typeglob_name, v);
+    }
+}
+
+EOT
+    ,   # list break
+<<'EOT'
+
+class PlLvalueSpecialVarAutoflush extends PlLvalue {
+    // the $| variable
+    public PlObject set(PlObject o) {
+        // System.out.println("Set autoflush " + (o.to_boolean() ? "1" : "0"));
+        PlV.STDOUT.set_autoflush(o);
+        return super.set(o);
+    }
+    public PlObject set(PlString o) {
+        return this.set((PlObject)o);
+    }
+    public PlObject set(PlInt o) {
+        return this.set((PlObject)o);
+    }
+    public PlObject set(PlLvalue o) {
+        return this.set((PlObject)o.get());
     }
 }
 
@@ -8186,7 +8209,7 @@ class PlString extends PlScalarObject {
             return PlV.Scalar_OUTPUT_RECORD_SEPARATOR;
         }
         if (s.equals("main::|")) {
-            return new PlBool(PlV.STDOUT.output_autoflush);
+            return PlV.Scalar_AUTOFLUSH;
         }
         return PlV.sget(s);
     }
@@ -8209,7 +8232,7 @@ class PlString extends PlScalarObject {
             return PlV.Scalar_OUTPUT_RECORD_SEPARATOR.set(v);
         }
         if (s.equals("main::|")) {
-            return PlV.STDOUT.set_autoflush(v);
+            return PlV.Scalar_AUTOFLUSH.set(v);
         }
         return PlV.sset(s, v);
     }
