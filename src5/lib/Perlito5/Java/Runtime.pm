@@ -3193,6 +3193,10 @@ EOT
         PlCORE.die("Not an ARRAY reference");
         return this;
     }
+    public boolean length_of_array_boolean() {
+        PlCORE.die("Not an ARRAY reference");
+        return false;
+    }
     public int length_of_array_int() {
         return 1;
     }
@@ -7096,6 +7100,9 @@ EOT
     }
     public PlObject length_of_array() {
         return new PlInt(this.a.size());
+    }
+    public boolean length_of_array_boolean() {
+        return ( this.a.size() > 0 );
     }
     public int length_of_array_int() {
         return this.a.size();

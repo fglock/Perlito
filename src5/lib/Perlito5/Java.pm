@@ -832,6 +832,17 @@ sub to_boolean {
                 #   $invocant . ' != null' 
                 return '!' . $arg->emit_java($level, 'scalar') . '.is_undef()';
             }
+            # if (  $cond->code eq 'prefix:<@>'
+            #    )
+            # {
+            #     if (@{$cond->{arguments}} == 1) {
+            #         return $cond->{arguments}->[0]->emit_java($level, $wantarray) . '.length_of_array_boolean()';
+            #     }
+            # }
+        }
+
+        if (  $class eq 'Perlito5::AST::Var' && $cond->{sigil} eq '@' ) {
+            return $cond->emit_java($level, "list") . '.length_of_array_boolean()';
         }
 
         if  (  ($class eq 'Perlito5::AST::Int' )
