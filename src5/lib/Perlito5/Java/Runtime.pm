@@ -341,8 +341,10 @@ EOT
 
     my %special_var_index = (
         # this is used by the variable localization methods
-        '_'  => 4,
-        '\\' => 5,
+        '_'  => [ 4, 'PlLvalue' ],
+        '\\' => [ 5, 'PlLvalue' ],
+        '|'  => [ 6, 'PlLvalueSpecialVarAutoflush' ],
+        '@'  => [ 7, 'PlLvalue' ],
     );
 
     return (
@@ -1104,12 +1106,13 @@ class PerlOp {
 EOT
     , (( map {
                 my $java_name = $Perlito5::Java::special_scalar{$_};
-                my $index     = $special_var_index{$_};
+                my $index     = $special_var_index{$_}[0];
+                my $class     = $special_var_index{$_}[1];
 "
     public static final void push_local_special_var_${java_name}() {
         PlV.local_stack.a.add(PlV.${java_name});
         PlV.local_stack.a.add(PlCx.INT${index});
-        PlV.${java_name} = new PlLvalue();
+        PlV.${java_name} = new $class();
     }
 "
             }
@@ -1147,10 +1150,11 @@ EOT
 EOT
     , (( map {
                 my $java_name = $Perlito5::Java::special_scalar{$_};
-                my $index     = $special_var_index{$_};
+                my $index     = $special_var_index{$_}[0];
+                my $class     = $special_var_index{$_}[1];
 "
                 case ${index}:
-                    PlV.${java_name} = (PlLvalue)v;
+                    PlV.${java_name} = ($class)v;
                     break;
 "
             }
@@ -2405,9 +2409,20 @@ class PlV {
     public static PlFileHandle STDOUT = new PlFileHandle();
     public static PlFileHandle STDERR = new PlFileHandle();
 
-    public static PlLvalue Scalar_ARG                     = new PlLvalue();    // $_
-    public static PlLvalue Scalar_OUTPUT_RECORD_SEPARATOR = new PlLvalue();    // $\
-    public static PlLvalueSpecialVarAutoflush Scalar_AUTOFLUSH = new PlLvalueSpecialVarAutoflush();  // $|
+    // initialize special variables like $_ $\
+EOT
+    , (( map {
+                my $java_name = $Perlito5::Java::special_scalar{$_};
+                my $index     = $special_var_index{$_}[0];
+                my $class     = $special_var_index{$_}[1];
+"
+    public static $class $java_name = new $class();    // \$$_
+"
+            }
+            sort keys %Perlito5::Java::special_scalar
+      ))
+    , <<'EOT'
+
     public static PlObject boolean_stack;
     public static PlArray local_stack = new PlArray();
     public static Random random = new Random();
@@ -2550,6 +2565,8 @@ class PlV {
 EOT
     , (( map {
                 my $java_name = $Perlito5::Java::special_scalar{$_};
+                my $index     = $special_var_index{$_}[0];
+                my $class     = $special_var_index{$_}[1];
 "
     public static final PlLvalue sget_local_${java_name}() {
         PerlOp.push_local_special_var_${java_name}();
@@ -2559,7 +2576,7 @@ EOT
         PerlOp.push_local_special_var_${java_name}();
         return ${java_name}.set(v);
     }
-    public static final void sset_alias_${java_name}(PlLvalue v) {
+    public static final void sset_alias_${java_name}(${class} v) {
         ${java_name} = v;
     }
 "
@@ -4942,7 +4959,7 @@ EOT
 
     , ((map {
             my $perl = $_;
-            $native = $perl;
+            my $native = $perl;
             $native = "++"      if $perl eq "_incr";
             $native = "--"      if $perl eq "_decr";
 "    public static PlObject overload_${perl}(PlObject o) {
@@ -4990,7 +5007,7 @@ EOT
 
     , ((map {
             my $perl = $_;
-            $native = $perl;
+            my $native = $perl;
             $native = "int"     if $perl eq "op_int";
             $native = "~"       if $perl eq "complement";
 "    public static PlObject overload_${perl}(PlObject o) {
@@ -8203,15 +8220,23 @@ class PlString extends PlScalarObject {
         if (s.indexOf("::") == -1) {
             return PlV.sget( namespace + "::" + s );
         }
-        if (s.equals("main::_")) {
-            return PlV.Scalar_ARG;
+
+        // special variables like $_ $\
+EOT
+    , (( map {
+                my $java_name = $Perlito5::Java::special_scalar{$_};
+                my $perl_name = $_;
+                $perl_name = "\\\\" if $perl_name eq "\\";
+"
+        if (s.equals(\"main::${perl_name}\")) {
+            return PlV.${java_name};
         }
-        if (s.equals("main::\\")) {
-            return PlV.Scalar_OUTPUT_RECORD_SEPARATOR;
-        }
-        if (s.equals("main::|")) {
-            return PlV.Scalar_AUTOFLUSH;
-        }
+"
+            }
+            sort keys %Perlito5::Java::special_scalar
+      ))
+    , <<'EOT'
+
         return PlV.sget(s);
     }
     public PlObject scalar_deref_strict() {
@@ -8226,15 +8251,23 @@ class PlString extends PlScalarObject {
         if (s.indexOf("::") == -1) {
             return PlV.sset( namespace + "::" + s, v );
         }
-        if (s.equals("main::_")) {
-            return PlV.Scalar_ARG.set(v);
+
+        // special variables like $_ $\
+EOT
+    , (( map {
+                my $java_name = $Perlito5::Java::special_scalar{$_};
+                my $perl_name = $_;
+                $perl_name = "\\\\" if $perl_name eq "\\";
+"
+        if (s.equals(\"main::${perl_name}\")) {
+            return PlV.${java_name}.set(v);
         }
-        if (s.equals("main::\\")) {
-            return PlV.Scalar_OUTPUT_RECORD_SEPARATOR.set(v);
-        }
-        if (s.equals("main::|")) {
-            return PlV.Scalar_AUTOFLUSH.set(v);
-        }
+"
+            }
+            sort keys %Perlito5::Java::special_scalar
+      ))
+    , <<'EOT'
+
         return PlV.sset(s, v);
     }
     public PlArray array_deref_lvalue() {

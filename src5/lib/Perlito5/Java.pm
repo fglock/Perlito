@@ -355,6 +355,8 @@ our %valid_java_statement = qw(
 our %special_scalar = (
     '_'  => "Scalar_ARG",           # $_
     '\\' => "Scalar_OUTPUT_RECORD_SEPARATOR",  # $\
+    '|'  => "Scalar_AUTOFLUSH",     # $|
+    '@'  => "Scalar_EVAL_ERROR",    # $@
 );
 
 my %safe_char = (

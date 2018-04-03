@@ -148,7 +148,7 @@ class PlJavaCompiler {
             source5.append("        catch(Exception e) {\n");
             // source5.append("            e.printStackTrace();\n");
             source5.append("            String message = e.getMessage();\n");
-            source5.append("            PlV.sset(\"main::@\", new PlString(\"\" + message));\n");
+            source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
             source5.append("            return PerlOp.context(want);\n");
             source5.append("        }\n");
             source5.append("    }\n");
@@ -185,7 +185,7 @@ class PlJavaCompiler {
             // e.printStackTrace();
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
-            PlV.sset("main::@", new PlString("" + message));
+            PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
         }
         return PlCx.UNDEF;
     }
@@ -235,7 +235,7 @@ class PlJavaCompiler {
             // e.printStackTrace();
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
-            PlV.sset("main::@", new PlString("" + message));
+            PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
             PlV.sset("main::" + (char)8, tmp_scalar_hints);     // restore $^H
             PlV.hash_set("main::" + (char)8, tmp_hash_hints);   // restore %^H
             return PlCx.UNDEF;
@@ -246,7 +246,7 @@ class PlJavaCompiler {
         // return eval_java_string(outJava.toString());
 
         if (source.equals("")) {
-            PlV.sset("main::@", PlCx.EMPTY);
+            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             return PlCx.UNDEF;
         }
 
@@ -283,29 +283,29 @@ class PlJavaCompiler {
             }
             source5.append("        try {\n");
             source5.append("            PlObject ret = " + outJava + ";\n");
-            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
+            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
             source5.append("            return ret;\n");
             source5.append("        }\n");
             source5.append("        catch(PlReturnException e) {\n");
-            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
+            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
             source5.append("            return e.ret;\n");
             source5.append("        }\n");
             source5.append("        catch(PlNextException e) {\n");
-            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
+            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
             source5.append("            throw(e);\n");
             source5.append("        }\n");
             source5.append("        catch(PlLastException e) {\n");
-            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
+            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
             source5.append("            throw(e);\n");
             source5.append("        }\n");
             source5.append("        catch(PlRedoException e) {\n");
-            source5.append("            PlV.sset(\"main::@\", PlCx.EMPTY);\n");
+            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
             source5.append("            throw(e);\n");
             source5.append("        }\n");
             source5.append("        catch(Exception e) {\n");
             // source5.append("            e.printStackTrace();\n");
             source5.append("            String message = e.getMessage();\n");
-            source5.append("            PlV.sset(\"main::@\", new PlString(\"\" + message));\n");
+            source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
             source5.append("            return PerlOp.context(want);\n");
             source5.append("        }\n");
             source5.append("    }\n");
@@ -342,7 +342,7 @@ class PlJavaCompiler {
             // e.printStackTrace();
             String message = e.getMessage();
             // System.out.println("Exception in eval_string: " + message);
-            PlV.sset("main::@", new PlString("" + message));
+            PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
         }
         return PlCx.UNDEF;
     }

@@ -258,7 +258,7 @@ class Perlito5ScriptEngine implements javax.script.ScriptEngine {
     }
     public Object eval(String script, ScriptContext ctxt) throws ScriptException {
         Object[] ret = org.perlito.Perlito5.Main.apply( "Perlito5::eval_string", script );
-        PlObject perlErr = PlV.sget("main::@");
+        PlObject perlErr = PlV.Scalar_EVAL_ERROR;
         if (perlErr.to_boolean()) {
             throw new ScriptException(perlErr.toString());
         }

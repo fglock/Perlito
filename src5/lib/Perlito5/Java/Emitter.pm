@@ -231,12 +231,12 @@ package Perlito5::Java::LexicalBlock;
                     [ "throw e;" ],
                 "}",
                 "catch(PlDieException e) {",
-                    [ 'PlV.sset("main::@", e.ret);',
+                    [ 'PlV.Scalar_EVAL_ERROR.set(e.ret);',
                       "return PlCx.UNDEF;",
                     ],
                 "}",
                 "catch(Exception e) {",
-                    [ 'PlV.sset("main::@", new PlStringLazyError(e));',
+                    [ 'PlV.Scalar_EVAL_ERROR.set(new PlStringLazyError(e));',
                       "return PlCx.UNDEF;",
                     ],
                 "}",
@@ -1152,9 +1152,6 @@ package Perlito5::AST::Var;
                 return 'PerlOp.regex_var(' . (0 + $self->{name}) . ')'
             }
             if ($namespace eq 'main') {
-                if ($self->{name} eq '|') {
-                    return 'PlV.Scalar_AUTOFLUSH'
-                }
                 my $java_name = $Perlito5::Java::special_scalar{$self->{name}};
                 if ($java_name) {
                     # $_ ==> PlV.Scalar_ARG
@@ -1247,9 +1244,6 @@ package Perlito5::AST::Var;
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
             if ($namespace eq 'main') {
-                if ($self->{name} eq '|') {
-                    return 'PlV.Scalar_AUTOFLUSH.set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')' if !$local;
-                }
                 my $java_name = $Perlito5::Java::special_scalar{$self->{name}};
                 if ($java_name) {
                     # $_ ==> PlV.Scalar_ARG
