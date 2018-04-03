@@ -706,16 +706,16 @@ package Perlito5::AST::Apply;
                 }
             }
             if ( $arg->isa('Perlito5::AST::Var') ) {
-                if ( $arg->sigil eq '@' ) {
+                if ( $arg->{sigil} eq '@' ) {
                     return 'new PlArrayRef(' . $arg->emit_java($level) . ')';
                 }
-                if ( $arg->sigil eq '%' ) {
+                if ( $arg->{sigil} eq '%' ) {
                     return 'new PlHashRef(' . $arg->emit_java($level) . ')';
                 }
-                if ( $arg->sigil eq '*' ) {
+                if ( $arg->{sigil} eq '*' ) {
                     return 'new PlGlobRef(' . $arg->emit_java($level) . ')';
                 }
-                if ( $arg->sigil eq '&' ) {
+                if ( $arg->{sigil} eq '&' ) {
                     my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
                     return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $arg->{name} ) . ')'
                 }
@@ -904,7 +904,7 @@ package Perlito5::AST::Apply;
                 }
             }
             if (  $arg->isa('Perlito5::AST::Var')
-               && $arg->sigil eq '&'
+               && $arg->{sigil} eq '&'
                )
             {
                 die 'TODO delete &code';
@@ -1611,7 +1611,7 @@ package Perlito5::AST::Apply;
             if ($arg->isa( 'Perlito5::AST::Lookup' )) {
                 my $v = $arg->obj;
                 if (  $v->isa('Perlito5::AST::Var')
-                   && $v->sigil eq '$'
+                   && $v->{sigil} eq '$'
                    )
                 {
                     # $v->{sigil} = '%';
@@ -1640,7 +1640,7 @@ package Perlito5::AST::Apply;
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
                 if (  $v->isa('Perlito5::AST::Var')
-                   && $v->sigil eq '$'
+                   && $v->{sigil} eq '$'
                    )
                 {
                     return $v->emit_java($level, 'array') . '.aexists(' . $arg->{index_exp}->emit_java($level) . ')';
@@ -1673,7 +1673,7 @@ package Perlito5::AST::Apply;
                 }
             }
             if (  $arg->isa('Perlito5::AST::Var')
-               && $arg->sigil eq '&'
+               && $arg->{sigil} eq '&'
                )
             {
                 # TODO exist() + 'my sub'
@@ -1797,7 +1797,7 @@ package Perlito5::AST::Apply;
         if (ref $code ne '') {
             my $items = Perlito5::Java::to_list_preprocess( $self->{arguments} );
 
-            if ( ref($code) eq 'Perlito5::AST::Apply' && $code->code eq "prefix:<&>") {
+            if ( ref($code) eq 'Perlito5::AST::Apply' && $code->{code} eq "prefix:<&>") {
                 # &$c()
                 my $invocant = $code->{arguments}->[0]->emit_java($level);
                 if ( !$code->{_strict_refs} ) {

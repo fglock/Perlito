@@ -8,7 +8,7 @@ use Perlito5::Grammar::Statement;
 sub expand_list_fat_arrow {
     # convert "=>" AST into an array of AST
     my $param_list = shift;
-    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->code eq 'infix:<=>>') {
+    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'infix:<=>>') {
         return ( Perlito5::AST::Lookup->autoquote( $param_list->{arguments}[0] ),
                  expand_list_fat_arrow( $param_list->{arguments}[1] ),
                );
@@ -19,13 +19,13 @@ sub expand_list_fat_arrow {
 sub expand_list {
     # convert internal 'list:<,>' AST into an array of AST
     my $param_list = shift;
-    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->code eq 'list:<,>') {
+    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<,>') {
         return [  map { expand_list_fat_arrow($_) }
                  grep {defined}
                       @{$param_list->arguments}
                ];
     }
-    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->code eq 'infix:<=>>') {
+    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'infix:<=>>') {
         return [ expand_list_fat_arrow( $param_list ) ];
     }
     elsif ($param_list eq '*undef*') {
@@ -62,10 +62,10 @@ sub block_or_hash {
         # say "#  not Perlito5::AST::Apply -- not hash";
         return $o
     }
-    if (   $stmt->code eq 'infix:<=>>'
-        || $stmt->code eq 'prefix:<%>'
-        || $stmt->code eq 'prefix:<@>'
-        || $stmt->code eq 'list:<,>' )
+    if (   $stmt->{code} eq 'infix:<=>>'
+        || $stmt->{code} eq 'prefix:<%>'
+        || $stmt->{code} eq 'prefix:<@>'
+        || $stmt->{code} eq 'list:<,>' )
     {
 
         if ( @{ $stmt->{arguments} } ) {
@@ -191,7 +191,7 @@ sub reduce_postfix {
             $value->{arguments} = $param_list;
             return $value;
         }
-        if ( ref($value) eq 'Perlito5::AST::Var' && $value->sigil eq "&") {
+        if ( ref($value) eq 'Perlito5::AST::Var' && $value->{sigil} eq "&") {
             # &c()
             $v = Perlito5::AST::Apply->new(
                 ignore_proto => 1,
@@ -202,7 +202,7 @@ sub reduce_postfix {
             );
             return $v;
         }
-        if ( ref($value) eq 'Perlito5::AST::Apply' && $value->code eq "prefix:<&>") {
+        if ( ref($value) eq 'Perlito5::AST::Apply' && $value->{code} eq "prefix:<&>") {
             # &$c()
             $v = Perlito5::AST::Apply->new(
                 ignore_proto => 1,
@@ -240,7 +240,7 @@ sub reduce_postfix {
     if ($v->[1] eq '.( )') {
         my $param_list = expand_list($v->[2]);
 
-        # if ( ref($value) eq 'Perlito5::AST::Var' && $value->sigil eq "&") {
+        # if ( ref($value) eq 'Perlito5::AST::Var' && $value->{sigil} eq "&") {
         #     # &c->() means: &c()->()
         #     $value = Perlito5::AST::Apply->new(
         #         ignore_proto => 1,
@@ -298,11 +298,11 @@ sub reduce_to_ast {
         my $arg;
         if (scalar(@$num_stack) < 2) {
             my $v2 = pop_term($num_stack);
-            if ( ref($v2) eq 'Perlito5::AST::Apply' && $v2->code eq ('list:<' . $last_op->[1] . '>')) {
+            if ( ref($v2) eq 'Perlito5::AST::Apply' && $v2->{code} eq ('list:<' . $last_op->[1] . '>')) {
                 push @$num_stack,
                     Perlito5::AST::Apply->new(
                         namespace => $v2->namespace,
-                        code      => $v2->code,
+                        code      => $v2->{code},
                         arguments => [ @{ $v2->arguments } ],
                       );
             }
@@ -322,13 +322,13 @@ sub reduce_to_ast {
         }
         if  (  ref($arg->[0]) eq 'Perlito5::AST::Apply'
             && $last_op->[0] eq 'infix'
-            && ($arg->[0]->code eq 'list:<' . $last_op->[1] . '>')
+            && ($arg->[0]->{code} eq 'list:<' . $last_op->[1] . '>')
             )
         {
             push @$num_stack,
                 Perlito5::AST::Apply->new(
                     namespace => '',
-                    code      => ($arg->[0])->code,
+                    code      => ($arg->[0])->{code},
                     arguments => [ @{ ($arg->[0])->arguments }, $arg->[1] ],
                   );
             return;

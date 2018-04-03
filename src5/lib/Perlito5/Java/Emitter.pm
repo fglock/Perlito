@@ -33,7 +33,7 @@ package Perlito5::Java::LexicalBlock;
             # dead code     (my $x, undef)
             return 1 if !grep {  !looks_like_dead_code($_)  } @{$decl->{arguments}};
         }
-        if ( $decl->isa('Perlito5::AST::Apply') && ($decl->code eq 'my' || $decl->code eq 'our') ) {
+        if ( $decl->isa('Perlito5::AST::Apply') && ($decl->{code} eq 'my' || $decl->{code} eq 'our') ) {
             # dead code     my ($x)
             return 1;
         }
@@ -45,7 +45,7 @@ package Perlito5::Java::LexicalBlock;
            || ( $decl->isa('Perlito5::AST::Num') )
            || ( $decl->isa('Perlito5::AST::Buf') )
            || ( $decl->isa('Perlito5::AST::Var') && $decl->{sigil} ne '&' )
-           || ( $decl->isa('Perlito5::AST::Apply') && $decl->code eq 'undef' && !@{$decl->{arguments}} )
+           || ( $decl->isa('Perlito5::AST::Apply') && $decl->{code} eq 'undef' && !@{$decl->{arguments}} )
            )
         {
             # dead code     123
@@ -59,7 +59,7 @@ package Perlito5::Java::LexicalBlock;
         my ($decl, $level, $wantarray ) = @_;
         my @str;
 
-        if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
+        if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->{code} eq 'package' ) {
             $Perlito5::PKG_NAME = $decl->{namespace};
         }
 
@@ -119,7 +119,7 @@ package Perlito5::Java::LexicalBlock;
             push @str, $_->emit_java($level, 'statement') . ';';
         }
 
-        if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
+        if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->{code} eq 'return' ) {
             if ( $self->{top_level} || $last_statement->{_return_from_block} || $Perlito5::JAVA_CAN_RETURN ) {
                 if (!@{$last_statement->{arguments}}) {
                     push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
@@ -170,7 +170,7 @@ package Perlito5::Java::LexicalBlock;
 
                 # TODO - test for "if" with "return" in both sides
 
-                if ( $stmt->isa( 'Perlito5::AST::Apply' ) && $stmt->code eq 'return' ) {
+                if ( $stmt->isa( 'Perlito5::AST::Apply' ) && $stmt->{code} eq 'return' ) {
                     last STMT;
                 }
             }
@@ -263,7 +263,7 @@ package Perlito5::Java::LexicalBlock;
         if ($self->{not_a_loop}) {
             # if (1) { ... } simple lexical block
             if ($has_local && !$last_statement) {
-                if (@block && $block[-1]->isa( 'Perlito5::AST::Apply' ) && $block[-1]->code eq 'return' ) {
+                if (@block && $block[-1]->isa( 'Perlito5::AST::Apply' ) && $block[-1]->{code} eq 'return' ) {
                 }
                 else {
                     push @str, 'PerlOp.cleanup_local(' . $local_label . ', PlCx.UNDEF);';
@@ -734,10 +734,10 @@ package Perlito5::AST::Index;
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '@'
+              && $self->{obj}->{sigil} eq '@'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Apply')
-              && $self->{obj}->code eq 'circumfix:<( )>'
+              && $self->{obj}->{code} eq 'circumfix:<( )>'
               )
            )
         {
@@ -752,7 +752,7 @@ package Perlito5::AST::Index;
               && $self->{obj}->{code} eq 'prefix:<%>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '%'
+              && $self->{obj}->{sigil} eq '%'
               )
            )
         {
@@ -799,7 +799,7 @@ package Perlito5::AST::Index;
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '@'
+              && $self->{obj}->{sigil} eq '@'
               )
            )
         {
@@ -814,7 +814,7 @@ package Perlito5::AST::Index;
               && $self->{obj}->{code} eq 'prefix:<%>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '%'
+              && $self->{obj}->{sigil} eq '%'
               )
            )
         {
@@ -865,14 +865,14 @@ package Perlito5::AST::Index;
             return $v->emit_java($level);
         }
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
-           && $self->{obj}->code eq 'circumfix:<( )>'
+           && $self->{obj}->{code} eq 'circumfix:<( )>'
            )
         {
             # the expression inside () returns a list
             return Perlito5::Java::to_list([$self->{obj}], $level);
         }
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+           && $self->{obj}->{sigil} eq '$'
            )
         {
             my $obj = $self->{obj}->clone();
@@ -902,7 +902,7 @@ package Perlito5::AST::Lookup;
               && $self->{obj}->{code} eq 'prefix:<$>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '$'
+              && $self->{obj}->{sigil} eq '$'
               )
            )
         {
@@ -928,7 +928,7 @@ package Perlito5::AST::Lookup;
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '@'
+              && $self->{obj}->{sigil} eq '@'
               )
            )
         {
@@ -950,7 +950,7 @@ package Perlito5::AST::Lookup;
               && $self->{obj}->{code} eq 'prefix:<%>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '%'
+              && $self->{obj}->{sigil} eq '%'
               )
            )
         {
@@ -1004,7 +1004,7 @@ package Perlito5::AST::Lookup;
               && $self->{obj}->{code} eq 'prefix:<$>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '$'
+              && $self->{obj}->{sigil} eq '$'
               )
            )
         {
@@ -1030,7 +1030,7 @@ package Perlito5::AST::Lookup;
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '@'
+              && $self->{obj}->{sigil} eq '@'
               )
            )
         {
@@ -1045,7 +1045,7 @@ package Perlito5::AST::Lookup;
               && $self->{obj}->{code} eq 'prefix:<%>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '%'
+              && $self->{obj}->{sigil} eq '%'
               )
            )
         {
@@ -1093,7 +1093,7 @@ package Perlito5::AST::Lookup;
             return $v->emit_java($level);
         }
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+           && $self->{obj}->{sigil} eq '$'
            )
         {
             # my $v = $self->{obj};   HERE
@@ -1424,10 +1424,10 @@ package Perlito5::AST::Decl;
             return '';
         }
         if ($self->{decl} eq 'my' || $self->{decl} eq 'state') {
-            if ($self->{var}->sigil eq '%') {
+            if ($self->{var}->{sigil} eq '%') {
                 return 'PlHash ' . $self->{var}->emit_java($level) . ' = new PlHash();';
             }
-            elsif ($self->{var}->sigil eq '@') {
+            elsif ($self->{var}->{sigil} eq '@') {
                 return 'PlArray ' . $self->{var}->emit_java($level) . ' = new PlArray();';
             }
             else {
