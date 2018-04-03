@@ -2516,7 +2516,8 @@ class PlV {
         // or warn "$@\nEND failed--call queue aborted.\n"
 
         // Perlito5::set_global_phase("END");
-        new PlStringConstant("Perlito5::set_global_phase").apply(PlCx.VOID, PlArray.construct_list_of_aliases(new PlStringConstant("END")));
+        PlV.sset("main::" + (char)7 + "LOBAL_PHASE", new PlStringConstant("END"));
+
         // $_->() for @Perlito5::END_BLOCK;
         for (PlObject tmp : PlArray.construct_list_of_aliases(PlV.array_get("Perlito5::END_BLOCK"))) {
             tmp.apply(PlCx.VOID, new PlArray());
