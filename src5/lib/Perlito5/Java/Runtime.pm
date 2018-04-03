@@ -29,7 +29,7 @@ sub perl5_to_java {
 
     my $match = Perlito5::Grammar::exp_stmts( $source, 0 );
 
-    if ( !$match || $match->{to} != length($source) ) {
+    if ( !$match || $match->{to} < length($source) ) {
         die "Syntax error in eval near pos ", $match->{to};
     }
 
