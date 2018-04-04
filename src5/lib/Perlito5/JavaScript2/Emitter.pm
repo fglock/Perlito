@@ -157,6 +157,9 @@ package Perlito5::JavaScript2;
             {
                 $tmp = $tmp . $c;
             }
+            elsif ($c eq '\\') {
+                $tmp = $tmp . '\\\\';
+            }
             else {
                 push @out, "'$tmp'" if $tmp ne '';
                 push @out, "String.fromCharCode(" . ord($c) . ")";
