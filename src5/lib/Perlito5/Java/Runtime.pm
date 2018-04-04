@@ -6560,6 +6560,14 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         aa.add(s2);  // store lvalue as-is
         return new PlArray(aa);
     }
+    public static PlArray construct_list_of_aliases(PlArray s) {
+        PlArrayList aa = new PlArrayList();
+        int ll = s.to_int();
+        for (int i = 0; i < ll; i++) {
+            aa.add(s.aget_lvalue(i));
+        }
+        return new PlArray(aa);
+    }
     public static PlArray construct_list_of_aliases(PlObject s) {
         PlArrayList aa = new PlArrayList();
         if (s.is_lvalue()) {
@@ -6574,7 +6582,8 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         }
         else if (s.is_array()) {
             // ( @x, @y );
-            for (int i = 0; i < s.to_long(); i++) {
+            int ll = s.to_int();
+            for (int i = 0; i < ll; i++) {
                 aa.add(s.aget_lvalue(i));
             }
         }
@@ -6598,7 +6607,8 @@ class PlArray extends PlObject implements Iterable<PlObject> {
             }
             else if (s.is_array()) {
                 // ( @x, @y );
-                for (int i = 0; i < s.to_long(); i++) {
+                int ll = s.to_int();
+                for (int i = 0; i < ll; i++) {
                     aa.add(s.aget_lvalue(i));
                 }
             }
