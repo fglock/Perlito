@@ -304,8 +304,15 @@ EOT
                 fh.flush();
             }
             else {
-                if (fh.printBuffer.length() > PlFileHandle.BUFFER_THRESHOLD) {
-                    fh.flush();
+                int s_length = fh.printBuffer.length();
+                if (s_length > 0) {
+                    char cc = fh.printBuffer.charAt(s_length-1);
+                    if (cc == '\n' || cc == '\r') {
+                        fh.flush();
+                    }
+                    else if (s_length > PlFileHandle.BUFFER_THRESHOLD) {
+                        fh.flush();
+                    }
                 }
             }
             return PlCx.INT1;
