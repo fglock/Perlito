@@ -4038,8 +4038,9 @@ class PlFileHandle extends PlScalarObject {
             byte[] bytes = s.getBytes(this.charset);
             this.outputStream.write(bytes);
         }
-        this.printBuffer = new StringBuilder(PlFileHandle.BUFFER_SIZE);
-        this.outputStream.flush();
+        // this.printBuffer = new StringBuilder(PlFileHandle.BUFFER_SIZE);
+        // this.outputStream.flush();   // no need to flush when using write()
+        this.printBuffer.setLength(0);
     }
     public void close() throws IOException {
         this.readlineBuffer = new StringBuilder();

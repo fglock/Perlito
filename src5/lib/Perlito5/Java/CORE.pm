@@ -292,21 +292,22 @@ EOT
 EOT
     print => <<'EOT',
         try {
+            StringBuilder printBuffer = fh.printBuffer;
             int size = List__.to_int();
             for (int i = 0; i < size; i++) {
-                fh.printBuffer.append(List__.aget(i).toString());
+                printBuffer.append(List__.aget(i).toString());
             }
             if (!PlV.Scalar_OUTPUT_RECORD_SEPARATOR.is_undef()) {
-                fh.printBuffer.append(PlV.Scalar_OUTPUT_RECORD_SEPARATOR.toString());
+                printBuffer.append(PlV.Scalar_OUTPUT_RECORD_SEPARATOR.toString());
             }
             if (fh.output_autoflush) {
                 // $| autoflush is active
                 fh.flush();
             }
             else {
-                int s_length = fh.printBuffer.length();
+                int s_length = printBuffer.length();
                 if (s_length > 0) {
-                    char cc = fh.printBuffer.charAt(s_length-1);
+                    char cc = printBuffer.charAt(s_length-1);
                     if (cc == '\n' || cc == '\r') {
                         fh.flush();
                     }
