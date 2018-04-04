@@ -75,6 +75,7 @@ package Perlito5::Java::LexicalBlock;
              $decl->isa('Perlito5::AST::Apply')
           && (  $decl->{code} eq "list:<,>"
              || $decl->{code} eq "infix:<=>>"
+             || $decl->{code} eq "circumfix:<( )>"
              )
           )
         {
