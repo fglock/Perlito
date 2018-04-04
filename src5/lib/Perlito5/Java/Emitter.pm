@@ -63,6 +63,20 @@ package Perlito5::Java::LexicalBlock;
             $Perlito5::PKG_NAME = $decl->{namespace};
         }
 
+        # if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->{code} eq 'infix:<=>' ) {
+        #     # my $x = ... (untyped scalar)
+        #     my $arg0 = $decl->{arguments}[0];
+        #     if ( ref($arg0) eq 'Perlito5::AST::Decl' && $arg0->{decl} eq 'my' && $arg0->{type} eq '' ) {
+        #         my $var = $arg0->{var};
+        #         if (!$var->is_begin_scratchpad()) {
+        #             if ($var->{sigil} eq '$') {
+        #                 my $arg = $decl->{arguments}[1];
+        #                 return "PlLvalue " . $var->emit_java($level) . " = new PlLvalue(" . $arg->emit_java($level, "scalar") . ");";
+        #             }
+        #         }
+        #     }
+        # }
+
         my @var_decl = $decl->emit_java_get_decl();
         for my $arg (@var_decl) {
             push @str, $arg->emit_java_init($level, $wantarray);
