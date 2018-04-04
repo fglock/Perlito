@@ -4026,15 +4026,17 @@ class PlFileHandle extends PlScalarObject {
         if (this.outputStream == null) {
             return;
         }
-        String s = this.printBuffer.toString();
         if (this.binmode) {
-            byte[] bytes = new byte[s.length()];
-            for (int i2 = 0; i2 < s.length(); i2++) {
+            StringBuilder s = this.printBuffer;
+            int ll = s.length();
+            byte[] bytes = new byte[ll];
+            for (int i2 = 0; i2 < ll; i2++) {
                 bytes[i2] = (byte)(s.charAt(i2));
             }
             this.outputStream.write(bytes);
         }
         else {
+            String s = this.printBuffer.toString();
             byte[] bytes = s.getBytes(this.charset);
             this.outputStream.write(bytes);
         }
