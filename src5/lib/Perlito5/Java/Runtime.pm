@@ -8220,9 +8220,23 @@ class PlString extends PlScalarObject {
             if (s.equals("$")) {
                 return PerlOp.getPID();
             }
-            if (s.equals("_") || s.equals("\\") || s.equals("|")) {
-                s = "main::" + s;
+
+            // special variables like $_ $\
+EOT
+    , (( map {
+                my $java_name = $Perlito5::Java::special_scalar{$_};
+                my $perl_name = $_;
+                $perl_name = "\\\\" if $perl_name eq "\\";
+"
+            if (s.equals(\"${perl_name}\")) {
+                return PlV.${java_name};
             }
+"
+            }
+            sort keys %Perlito5::Java::special_scalar
+      ))
+    , <<'EOT'
+
         }
         if (s.indexOf("::") == -1) {
             return PlV.sget( namespace + "::" + s );
@@ -8251,9 +8265,23 @@ EOT
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
         if (s.length() == 1) {
-            if (s.equals("_") || s.equals("\\") || s.equals("|")) {
-                s = "main::" + s;
+
+            // special variables like $_ $\
+EOT
+    , (( map {
+                my $java_name = $Perlito5::Java::special_scalar{$_};
+                my $perl_name = $_;
+                $perl_name = "\\\\" if $perl_name eq "\\";
+"
+            if (s.equals(\"${perl_name}\")) {
+                return PlV.${java_name}.set(v);
             }
+"
+            }
+            sort keys %Perlito5::Java::special_scalar
+      ))
+    , <<'EOT'
+
         }
         if (s.indexOf("::") == -1) {
             return PlV.sset( namespace + "::" + s, v );
