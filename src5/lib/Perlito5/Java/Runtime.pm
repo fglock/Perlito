@@ -6906,13 +6906,13 @@ EOT
         for (int i = 0; i < args.length; i++) {
             this.push(args[i]);
         }
-        return this.length_of_array();
+        return new PlInt(this.a.size());
     }
     public PlObject unshift(PlObject... args) {
         for (int i = args.length-1; i >= 0; i--) {
             this.unshift(args[i]);
         }
-        return this.length_of_array();
+        return new PlInt(this.a.size());
     }
     public PlObject aset(int s, Object o) {
         return this.aset(s, PlJavaObject.fromObject(o));
@@ -6953,11 +6953,11 @@ EOT
             return this.push( (PlArray)v );
         }
         this.a.add(v.scalar());
-        return this.length_of_array();
+        return new PlInt(this.a.size());
     }
     public PlObject push(PlLvalue v) {
         this.a.add(v.get());
-        return this.length_of_array();
+        return new PlInt(this.a.size());
     }
     public PlObject push(PlArray args) {
         int size = args.a.size();
@@ -6974,7 +6974,7 @@ EOT
                 this.a.add(s);
             }
         }
-        return this.length_of_array();
+        return new PlInt(this.a.size());
     }
 
     // Note: multiple versions of unshift()
@@ -6983,11 +6983,11 @@ EOT
             return this.unshift( (PlArray)v );
         }
         this.a.add(0, v.scalar());
-        return this.length_of_array();
+        return new PlInt(this.a.size());
     }
     public PlObject unshift(PlLvalue v) {
         this.a.add(0, v.get());
-        return this.length_of_array();
+        return new PlInt(this.a.size());
     }
     public PlObject unshift(PlArray args) {
         args = new PlArray(args);   // allow "unshift @x, @x" - TODO: optimize
@@ -7005,7 +7005,7 @@ EOT
                 this.a.add(0, s);
             }
         }
-        return this.length_of_array();
+        return new PlInt(this.a.size());
     }
 
     public PlObject pop() {
@@ -7083,13 +7083,13 @@ EOT
         return (this.a.size() > 0);
     }
     public PlObject to_num() {
-        return this.scalar();
+        return new PlInt(this.a.size());
     }
     public boolean is_array() {
         return true;
     }
     public PlObject scalar() {
-        return this.length_of_array();
+        return new PlInt(this.a.size());
     }
 }
 
