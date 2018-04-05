@@ -6840,10 +6840,10 @@ EOT
     public PlObject get_scalar(PlObject s) {
         // $$x
         int i = s.to_int();
-        PlObject o = this.aget(i);
+        PlObject o = this.a.aget(i);
         if (o.is_undef()) {
             PlLvalue a = new PlLvalue();
-            this.aset(i, new PlLvalueRef(a));
+            this.a.aset(i, new PlLvalueRef(a));
             return a;
         }
         else if (o.is_scalarref()) {
@@ -6854,7 +6854,7 @@ EOT
         return o;
     }
     public PlObject aget_scalarref(int i) {
-        PlObject o = this.aget(i);
+        PlObject o = this.a.aget(i);
         if (o.is_undef()) {
             return new PlLvalueRef(new PlLazyScalarref(new PlLazyIndex(this, i)));
         }
@@ -6862,30 +6862,30 @@ EOT
     }
 
     public PlObject aget_arrayref(int i) {
-        PlObject o = this.aget(i);
+        PlObject o = this.a.aget(i);
         if (o.is_undef()) {
             PlArrayRef ar = new PlArrayRef();
-            this.aset(i, ar);
+            this.a.aset(i, ar);
             return ar;
         }
         return o;
     }
 
     public PlObject aget_hashref(int i) {
-        PlObject o = this.aget(i);
+        PlObject o = this.a.aget(i);
         if (o.is_undef()) {
             PlHashRef hr = new PlHashRef();
-            this.aset(i, hr);
+            this.a.aset(i, hr);
             return hr;
         }
         return o;
     }
 
     public PlObject get_hash(int i) {
-        PlObject o = this.aget(i);
+        PlObject o = this.a.aget(i);
         if (o.is_undef()) {
             PlHashRef hr = new PlHashRef();
-            this.aset(i, hr);
+            this.a.aset(i, hr);
             return hr;
         }
         else if (o.is_hashref()) {
@@ -7037,7 +7037,7 @@ EOT
         int size = this.to_int();
         if (this.each_iterator < size) {
             aa.push(new PlInt(this.each_iterator));
-            aa.push(this.aget(this.each_iterator));
+            aa.push(this.a.aget(this.each_iterator));
             this.each_iterator++;
         }
         else {
@@ -7050,7 +7050,7 @@ EOT
         StringBuilder sb = new StringBuilder();
         int size = this.to_int();
         for (int i = 0; i < size; i++) {
-            String item = this.aget(i).toString();
+            String item = this.a.aget(i).toString();
             sb.append(item);
         }
         return sb.toString();
