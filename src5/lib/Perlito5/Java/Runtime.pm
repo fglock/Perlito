@@ -3195,15 +3195,6 @@ EOT
         return this;
     }
 
-    public PlObject aget(PlObject i) {
-        return this.aget(i.to_int());
-    }
-    public PlObject aget(PlLvalue i) {
-        return this.aget(i.get().to_int());
-    }
-    public PlObject aget(PlInt i) {
-        return this.aget(i.to_int());
-    }
     public PlObject aget(int i) {
         PlCORE.die("Not an ARRAY reference");
         return this;
@@ -3212,18 +3203,7 @@ EOT
         PlCORE.die("Not an ARRAY reference");
         return this;
     }
-    public PlObject aset(PlObject i, PlObject v) {
-        return this.aset(i.to_int(), v);
-    }
-    public PlObject aset(PlLvalue i, PlObject v) {
-        return this.aset(i.get().to_int(), v);
-    }
-    public PlObject aset(PlLvalue i, PlLvalue v) {
-        return this.aset(i.get().to_int(), v.get());
-    }
-    public PlObject aset(PlInt i, PlObject v) {
-        return this.aset(i.to_int(), v);
-    }
+
     public PlObject to_array() {
         PlCORE.die("Not an ARRAY reference");
         return this;
@@ -4527,9 +4507,6 @@ class PlArrayRef extends PlReference {
     public PlObject aget(int i) {
         return this.ar.aget(i);
     }
-    public PlObject aget(PlObject i) {
-        return this.ar.aget(i);
-    }
     public PlObject aget_lvalue(int i) {
         return this.ar.aget_lvalue(i);
     }
@@ -4546,9 +4523,6 @@ class PlArrayRef extends PlReference {
         return this.ar.aget_arrayref(i);
     }
     public PlObject aset(int i, PlObject v) {
-        return this.ar.aset(i, v);
-    }
-    public PlObject aset(PlObject i, PlObject v) {
         return this.ar.aset(i, v);
     }
  
@@ -5642,13 +5616,6 @@ class PlLvalue extends PlScalarObject {
         }
         return PlCORE.die("Not a HASH reference");
     }
-    public PlObject aget(PlObject i) {
-        PlObject o = this.get();
-        if (o.is_undef()) {
-            o = this.set(new PlArrayRef());
-        }
-        return o.aget(i);
-    }
     public PlObject aget(int i) {
         PlObject o = this.get();
         if (o.is_undef()) {
@@ -5687,13 +5654,6 @@ class PlLvalue extends PlScalarObject {
     }
 
     public PlObject aset(int i, PlObject v) {
-        PlObject o = this.get();
-        if (o.is_undef()) {
-            o = this.set(new PlArrayRef());
-        }
-        return o.aset(i, v);
-    }
-    public PlObject aset(PlObject i, PlObject v) {
         PlObject o = this.get();
         if (o.is_undef()) {
             o = this.set(new PlArrayRef());
@@ -6844,9 +6804,6 @@ EOT
             sort keys %native_to_perl ))
 
     , <<'EOT'
-    public PlObject aget(PlObject i) {
-        return this.a.aget(i.to_int());
-    }
     public PlObject aget(int i) {
         return this.a.aget(i);
     }
@@ -6909,8 +6866,9 @@ EOT
         return result.pop();
     }
 
-    public PlObject get_scalar(PlObject i) {
+    public PlObject get_scalar(PlObject s) {
         // $$x
+        int i = s.to_int();
         PlObject o = this.aget(i);
         if (o.is_undef()) {
             PlLvalue a = new PlLvalue();
@@ -6966,14 +6924,8 @@ EOT
     }
 
     // Note: multiple versions of set()
-    public PlObject aset(PlObject i, PlObject v) {
-        return this.a.aset(i.to_int(), v);
-    }
     public PlObject aset(int i, PlObject v) {
         return this.a.aset(i, v);
-    }
-    public PlObject aset(PlObject i, PlLvalue v) {
-        return this.a.aset(i.to_int(), v.get());
     }
     public PlObject aset(int i, PlLvalue v) {
         return this.a.aset(i, v.get());
@@ -6991,9 +6943,6 @@ EOT
         }
         return this.length_of_array();
     }
-    public PlObject aset(PlObject s, Object o) {
-        return this.aset(s, PlJavaObject.fromObject(o));
-    }
     public PlObject aset(int s, Object o) {
         return this.aset(s, PlJavaObject.fromObject(o));
     }
@@ -7009,10 +6958,7 @@ EOT
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ?
-"    public PlObject aset(PlObject i, $native s) {
-        return this.aset(i, new $perl(s));
-    }
-    public PlObject aset(int i, $native s) {
+"    public PlObject aset(int i, $native s) {
         return this.aset(i, new $perl(s));
     }
     public PlObject push($native s) {

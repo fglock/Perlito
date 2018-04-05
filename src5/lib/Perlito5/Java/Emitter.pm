@@ -798,7 +798,7 @@ package Perlito5::AST::Index;
                 'arguments' => $self->{index_exp},
             )->emit_java($level, $wantarray, $autovivification_type);
         }
-        my $s = Perlito5::Java::to_array_index( $self->{index_exp}, $level + 1, 'scalar' );
+        my $s = Perlito5::Java::to_int( $self->{index_exp}, $level + 1 );
         return $self->emit_java_container($level) . '.' . $method . '(' . $s . ')';
     }
     sub emit_java_set {
@@ -838,7 +838,7 @@ package Perlito5::AST::Index;
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
             . ')';
         }
-        my $s = Perlito5::Java::to_array_index( $self->{index_exp}, $level + 1, 'scalar' );
+        my $s = Perlito5::Java::to_int( $self->{index_exp}, $level + 1 );
 
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
@@ -1489,7 +1489,7 @@ package Perlito5::AST::Call;
             $method = 'aget_lvalue'    if $autovivification_type eq 'lvalue';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
                 . '.' . $method . '('
-                .       Perlito5::Java::to_array_index( $self->{arguments}, $level + 1, 'scalar' )
+                .       Perlito5::Java::to_int( $self->{arguments}, $level + 1 )
                 . ')';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
@@ -1666,7 +1666,7 @@ package Perlito5::AST::Call;
         if ( $self->{method} eq 'postcircumfix:<[ ]>' ) {
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
                     . '.aset(' 
-                        . Perlito5::Java::to_num($self->{arguments}, $level+1) . ', ' 
+                        . Perlito5::Java::to_int($self->{arguments}, $level+1) . ', ' 
                         . Perlito5::Java::to_scalar([$arguments], $level+1)
                     . ')';
         }

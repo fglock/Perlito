@@ -682,15 +682,15 @@ sub to_native_str {
         }
 }
 
-sub to_array_index {
+sub to_int {
         my $cond = shift;
         my $level = shift;
-        my $wantarray = shift;
+        my $wantarray = 'scalar';
         if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
            && $cond->{arguments} && @{$cond->{arguments}}
            )
         {
-            return to_array_index( $cond->{arguments}[0], $level, $wantarray )
+            return to_int( $cond->{arguments}[0], $level )
         }
         if ($cond->isa( 'Perlito5::AST::Buf' )) {
             return int( 0 + $cond->{buf} );
@@ -702,7 +702,7 @@ sub to_array_index {
             return int( 0 + $cond->{num} );
         }
         else {
-            return $cond->emit_java($level, $wantarray);
+            return $cond->emit_java($level, $wantarray) . '.to_int()';
         }
 }
 
