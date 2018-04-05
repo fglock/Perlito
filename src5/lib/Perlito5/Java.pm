@@ -1071,7 +1071,7 @@ sub autoquote {
     my $index = shift;
     my $level = shift;
     $index = Perlito5::AST::Lookup->autoquote($index);
-    return to_str($index, $level);
+    return to_native_str($index, $level);
 }
 
 sub emit_java_autovivify {
