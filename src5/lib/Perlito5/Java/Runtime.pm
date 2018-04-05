@@ -3164,10 +3164,6 @@ EOT
         return this;
     }
 
-    public PlObject hget(PlObject i) {
-        PlCORE.die("Not a HASH reference");
-        return this;
-    }
     public PlObject hget(String i) {
         PlCORE.die("Not a HASH reference");
         return this;
@@ -3187,9 +3183,6 @@ EOT
         return this;
     }
 
-    public PlObject hset(PlObject s, PlObject v) {
-        return this.hset(s.toString(), v);
-    }
     public PlObject hset(String s, PlObject v) {
         PlCORE.die("Not a HASH reference");
         return this;
@@ -4591,9 +4584,6 @@ class PlHashRef extends PlReference {
         return v;
     }
 
-    public PlObject hget(PlObject i) {
-        return this.ha.hget(i);
-    }
     public PlObject hget(String i) {
         return this.ha.hget(i);
     }
@@ -4623,13 +4613,7 @@ class PlHashRef extends PlReference {
         return this.ha.hget_hashref(i);
     }
 
-    public PlObject hset(PlObject i, PlObject v) {
-        return this.ha.hset(i, v);
-    }
     public PlObject hset(String i, PlObject v) {
-        return this.ha.hset(i, v);
-    }
-    public PlObject hset(PlObject i, PlLvalue v) {
         return this.ha.hset(i, v);
     }
     public PlObject hset(String i, PlLvalue v) {
@@ -5660,13 +5644,6 @@ class PlLvalue extends PlScalarObject {
         }
         return o.aset(i, v);
     }
-    public PlObject hget(PlObject i) {
-        PlObject o = this.get();
-        if (o.is_undef()) {
-            o = this.set(new PlHashRef());
-        }
-        return o.hget(i);
-    }
     public PlObject hget(String i) {
         PlObject o = this.get();
         if (o.is_undef()) {
@@ -5718,13 +5695,6 @@ class PlLvalue extends PlScalarObject {
         return o.hget_hashref(i);
     }
 
-    public PlObject hset(PlObject s, PlObject v) {
-        PlObject o = this.get();
-        if (o.is_undef()) {
-            o = this.set(new PlHashRef());
-        }
-        return o.hset(s, v);
-    }
     public PlObject hset(String s, PlObject v) {
         PlObject o = this.get();
         if (o.is_undef()) {
@@ -6113,6 +6083,7 @@ EOT
                 'is_integer_range',
             )),
             [ 'toString'      => 'String'   ],
+            [ 'to_int'        => 'int'      ],
             [ 'to_long'       => 'long'     ],
             [ 'to_double'     => 'double'   ],
             [ 'to_boolean'    => 'boolean'  ],
@@ -7288,7 +7259,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
                 // %x = ( @x, @y );
                 int array_size = s.to_int();
                 for (int j = 0; j < array_size; j++) {
-                    PlObject key = s.aget(j);
+                    String key = s.aget(j).toString();
                     j++;
                     PlObject value;
                     if ( j >= array_size ) {
@@ -7311,7 +7282,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
                 else {
                     value = args[i];
                 }
-                this.hset(s, value);
+                this.hset(s.toString(), value);
             }
         }
         this.each_iterator.reset();
@@ -7377,7 +7348,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
             // %x = ( @x, @y );
             int array_size = s.to_int();
             for (int j = 0; j < array_size; j++) {
-                PlObject key = s.aget(j);
+                String key = s.aget(j).toString();
                 j++;
                 PlObject value;
                 if ( j >= array_size ) {
@@ -7399,7 +7370,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         else {
             // TODO - emit warning about odd number of arguments
             PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Odd number of elements in hash assignment")));
-            this.hset(s, PlCx.UNDEF);
+            this.hset(s.toString(), PlCx.UNDEF);
         }
         this.each_iterator.reset();
         if (want == PlCx.LIST) {
@@ -7431,13 +7402,6 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         return result;
     }
 
-    public PlObject hget(PlObject i) {
-        PlObject o = this.h.get(i.toString());
-        if (o == null) {
-            return PlCx.UNDEF;
-        }
-        return o;
-    }
     public PlObject hget(String i) {
         PlObject o = this.h.get(i);
         if (o == null) {
@@ -7506,12 +7470,13 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         return PerlOp.push_local(this, i);
     }
 
-    public PlObject get_scalar(PlObject i) {
+    public PlObject get_scalar(PlObject arg) {
         // $$x
-        PlObject o = this.hget(i);
+        String s = arg.toString();
+        PlObject o = this.hget(s);
         if (o.is_undef()) {
             PlLvalue a = new PlLvalue();
-            this.hset(i, new PlLvalueRef(a));
+            this.hset(s, new PlLvalueRef(a));
             return a;
         }
         else if (o.is_scalarref()) {
@@ -7535,10 +7500,11 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     }
 
     public PlObject hget_arrayref(PlObject i) {
-        PlObject o = this.hget(i);
+        String s = i.toString();
+        PlObject o = this.hget(s);
         if (o.is_undef()) {
             PlArrayRef ar = new PlArrayRef();
-            this.hset(i, ar);
+            this.hset(s, ar);
             return ar;
         }
         else if (o.is_arrayref()) {
@@ -7560,10 +7526,11 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     }
 
     public PlObject hget_hashref(PlObject i) {
-        PlObject o = this.hget(i);
+        String s = i.toString();
+        PlObject o = this.hget(s);
         if (o.is_undef()) {
             PlHashRef hr = new PlHashRef();
-            this.hset(i, hr);
+            this.hset(s, hr);
             return hr;
         }
         else if (o.is_hashref()) {
@@ -7585,18 +7552,6 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     }
 
     // Note: multiple versions of set()
-    public PlObject hset(PlObject s, PlObject v) {
-        String key = s.toString();
-        PlObject value = v.scalar();
-        PlObject o = this.h.get(key);
-        if (o != null && o.is_lvalue()) {
-            o.set(value);
-        }
-        else {
-            this.h.put(key, value);
-        }
-        return v;
-    }
     public PlObject hset(String key, PlObject v) {
         PlObject value = v.scalar();
         PlObject o = this.h.get(key);
@@ -7608,9 +7563,6 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         }
         return v;
     }
-    public PlObject hset(PlObject s, PlLvalue v) {
-        return this.hset(s, v.get());
-    }
     public PlObject hset(String s, PlLvalue v) {
         return this.hset(s, v.get());
     }
@@ -7618,7 +7570,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         PlArray aa = new PlArray();
 
         for (int i = 0; i < v.to_int(); i++){
-            aa.push(this.hset(v.aget(i), s.aget(i)));
+            aa.push(this.hset(v.aget(i).toString(), s.aget(i)));
         };
         if (want == PlCx.LIST) {
             return aa;
@@ -7697,9 +7649,6 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         }
         return aa;
     }
-    public PlObject hset(PlObject s, Object o) {
-        return this.hset(s, PlJavaObject.fromObject(o));
-    }
     public PlObject hset(String s, Object o) {
         return this.hset(s, PlJavaObject.fromObject(o));
     }
@@ -7708,10 +7657,7 @@ EOT
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ?
-"    public PlObject hset(PlObject s, $native v) {
-        return this.hset(s, new $perl(v));
-    }
-    public PlObject hset(String s, $native v) {
+"    public PlObject hset(String s, $native v) {
         return this.hset(s, new $perl(v));
     }
 " : ()
