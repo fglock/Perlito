@@ -3069,10 +3069,22 @@ EOT
     public PlObject aget_lvalue(PlObject i) {
         return this.aget_lvalue(i.to_int());
     }
+    public PlObject aget_lvalue(PlLvalue i) {
+        return this.aget_lvalue(i.get().to_int());
+    }
+    public PlObject aget_lvalue(PlInt i) {
+        return this.aget_lvalue(i.to_int());
+    }
     public PlObject aget_lvalue(int i) {
         return PlCORE.die("Not an ARRAY reference");
     }
     public PlObject aget_scalarref(PlObject i) {
+        return this.aget_scalarref(i.to_int());
+    }
+    public PlObject aget_scalarref(PlLvalue i) {
+        return this.aget_scalarref(i.get().to_int());
+    }
+    public PlObject aget_scalarref(PlInt i) {
         return this.aget_scalarref(i.to_int());
     }
     public PlObject aget_scalarref(int i) {
@@ -3115,11 +3127,23 @@ EOT
     public PlObject aget_arrayref(PlObject i) {
         return this.aget_arrayref(i.to_int());
     }
+    public PlObject aget_arrayref(PlLvalue i) {
+        return this.aget_arrayref(i.get().to_int());
+    }
+    public PlObject aget_arrayref(PlInt i) {
+        return this.aget_arrayref(i.to_int());
+    }
     public PlObject aget_arrayref(int i) {
         PlCORE.die("Not an ARRAY reference");
         return this;
     }
     public PlObject aget_hashref(PlObject i) {
+        return this.aget_hashref(i.to_int());
+    }
+    public PlObject aget_hashref(PlLvalue i) {
+        return this.aget_hashref(i.get().to_int());
+    }
+    public PlObject aget_hashref(PlInt i) {
         return this.aget_hashref(i.to_int());
     }
     public PlObject aget_hashref(int i) {
@@ -3174,6 +3198,12 @@ EOT
     public PlObject aget(PlObject i) {
         return this.aget(i.to_int());
     }
+    public PlObject aget(PlLvalue i) {
+        return this.aget(i.get().to_int());
+    }
+    public PlObject aget(PlInt i) {
+        return this.aget(i.to_int());
+    }
     public PlObject aget(int i) {
         PlCORE.die("Not an ARRAY reference");
         return this;
@@ -3183,6 +3213,15 @@ EOT
         return this;
     }
     public PlObject aset(PlObject i, PlObject v) {
+        return this.aset(i.to_int(), v);
+    }
+    public PlObject aset(PlLvalue i, PlObject v) {
+        return this.aset(i.get().to_int(), v);
+    }
+    public PlObject aset(PlLvalue i, PlLvalue v) {
+        return this.aset(i.get().to_int(), v.get());
+    }
+    public PlObject aset(PlInt i, PlObject v) {
         return this.aset(i.to_int(), v);
     }
     public PlObject to_array() {
@@ -3830,6 +3869,9 @@ class PlReference extends PlScalarObject {
     }
     public PlObject to_num() {
         return PlClass.overload_to_number(this);
+    }
+    public int to_int() {
+        return PlClass.overload_to_number(this).to_int();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
@@ -6887,10 +6929,7 @@ EOT
         if (o.is_undef()) {
             return new PlLvalueRef(new PlLazyScalarref(new PlLazyIndex(this, i)));
         }
-        else if (o.is_scalarref()) {
-            return o;
-        }
-        return PlCORE.die("Not a SCALAR reference");
+        return o;
     }
 
     public PlObject aget_arrayref(int i) {
@@ -6900,10 +6939,7 @@ EOT
             this.aset(i, ar);
             return ar;
         }
-        else if (o.is_arrayref()) {
-            return o;
-        }
-        return PlCORE.die("Not an ARRAY reference");
+        return o;
     }
 
     public PlObject aget_hashref(int i) {
@@ -6913,10 +6949,7 @@ EOT
             this.aset(i, hr);
             return hr;
         }
-        else if (o.is_hashref()) {
-            return o;
-        }
-        return PlCORE.die("Not a HASH reference");
+        return o;
     }
 
     public PlObject get_hash(int i) {
@@ -7745,6 +7778,10 @@ EOT
         // TODO
         return "" + this.hashCode();
     }
+    public int to_int() {
+        // TODO
+        return this.hashCode();
+    }
     public long to_long() {
         // TODO
         return this.hashCode();
@@ -7778,6 +7815,9 @@ class PlUndef extends PlScalarObject {
     }
     public PlObject length() {
         return PlCx.UNDEF;
+    }
+    public int to_int() {
+        return 0;
     }
     public long to_long() {
         return 0;
@@ -7826,6 +7866,14 @@ class PlBool extends PlScalarObject {
         return super.castToClass(params, pos);
     }
 
+    public int to_int() {
+        if (this.i) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
     public long to_long() {
         if (this.i) {
             return 1;
@@ -7941,6 +7989,9 @@ class PlInt extends PlScalarObject {
         return super.castToClass(params, pos);
     }
 
+    public int to_int() {
+        return (int)this.i;
+    }
     public long to_long() {
         return this.i;
     }
@@ -8022,6 +8073,9 @@ class PlDouble extends PlScalarObject {
         return super.castToClass(params, pos);
     }
 
+    public int to_int() {
+        return (int)(this.i);
+    }
     public long to_long() {
         return (long)(this.i);
     }
@@ -8555,6 +8609,9 @@ EOT
             offset++;
         }
         return PlCx.INT0;
+    }
+    public int to_int() {
+        return this.parse().to_int();
     }
     public long to_long() {
         return this.parse().to_long();
