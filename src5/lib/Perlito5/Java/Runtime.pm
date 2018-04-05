@@ -2864,6 +2864,7 @@ EOT
 }
 class PlObject implements Cloneable, Iterable<PlObject> {
     public static final PlStringConstant REF = new PlStringConstant("");
+    public static boolean is_tiedScalar = false;
 
     public Iterator<PlObject> iterator() {
         // if (this.is_array()) {
@@ -3358,9 +3359,6 @@ EOT
         return false;
     }
     public boolean is_lvalue() {
-        return false;
-    }
-    public boolean is_tiedScalar() {
         return false;
     }
     public boolean is_regex_result() {
@@ -5377,10 +5375,9 @@ class PlTieScalar extends PlScalarObject {
     public PlObject tied;
     public PlObject old_var;
 
+    public static boolean is_tiedScalar = true;
+
     public PlTieScalar() {
-    }
-    public boolean is_tiedScalar() {
-        return true;
     }
     public PlObject tied() {
         return tied;
@@ -5496,7 +5493,7 @@ class PlLvalue extends PlScalarObject {
 
     // tie scalar
     public PlObject tie(PlArray args) {
-        if (this.o.is_tiedScalar()) {
+        if (this.o.is_tiedScalar) {
             this.untie();
         }
         PlTieScalar v = new PlTieScalar();
@@ -5508,7 +5505,7 @@ class PlLvalue extends PlScalarObject {
     }
 
     public PlObject untie() {
-        if (this.o.is_tiedScalar()) {
+        if (this.o.is_tiedScalar) {
             PlObject tied = this.o.tied();
             PlObject untie = PerlOp.call("can", new PlArray(tied, new PlString("UNTIE")), PlCx.SCALAR);
             if (untie.to_boolean()) {
@@ -5520,7 +5517,7 @@ class PlLvalue extends PlScalarObject {
         return this;
     }
     public PlObject tied() {
-        if (this.o.is_tiedScalar()) {
+        if (this.o.is_tiedScalar) {
             return o.tied();
         }
         return PlCx.UNDEF;
@@ -5558,7 +5555,7 @@ class PlLvalue extends PlScalarObject {
     }
 
     public PlObject get() {
-        if (this.o.is_tiedScalar()) {
+        if (this.o.is_tiedScalar) {
             return this.o.get();
         }
         return this.o;
@@ -5812,7 +5809,7 @@ class PlLvalue extends PlScalarObject {
         if (o.is_lvalue()) {
             o = o.get();
         }
-        if (this.o.is_tiedScalar()) {
+        if (this.o.is_tiedScalar) {
             ((PlTieScalar)this.o).set(o);
             return this;
         }
@@ -5820,7 +5817,7 @@ class PlLvalue extends PlScalarObject {
         return this;
     }
     public PlObject set(PlString o) {
-        if (this.o.is_tiedScalar()) {
+        if (this.o.is_tiedScalar) {
             ((PlTieScalar)this.o).set(o);
             return this;
         }
@@ -5828,7 +5825,7 @@ class PlLvalue extends PlScalarObject {
         return this;
     }
     public PlObject set(PlInt o) {
-        if (this.o.is_tiedScalar()) {
+        if (this.o.is_tiedScalar) {
             ((PlTieScalar)this.o).set(o);
             return this;
         }
@@ -5836,7 +5833,7 @@ class PlLvalue extends PlScalarObject {
         return this;
     }
     public PlObject set(PlLvalue o) {
-        if (this.o.is_tiedScalar()) {
+        if (this.o.is_tiedScalar) {
             ((PlTieScalar)this.o).set(o.get());
             return this;
         }
