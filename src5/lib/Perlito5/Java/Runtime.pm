@@ -7473,8 +7473,8 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     public PlObject get_scalar(PlObject arg) {
         // $$x
         String s = arg.toString();
-        PlObject o = this.hget(s);
-        if (o.is_undef()) {
+        PlObject o = this.h.get(s);
+        if (o == null || o.is_undef()) {
             PlLvalue a = new PlLvalue();
             this.hset(s, new PlLvalueRef(a));
             return a;
@@ -7488,8 +7488,8 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     }
 
     public PlObject hget_scalarref(String i) {
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
+        PlObject o = this.h.get(i);
+        if (o == null || o.is_undef()) {
             return new PlLvalueRef(new PlLazyScalarref(new PlLazyLookup(this, i)));
         }
         else if (o.is_scalarref()) {
@@ -7501,8 +7501,8 @@ class PlHash extends PlObject implements Iterable<PlObject> {
 
     public PlObject hget_arrayref(PlObject i) {
         String s = i.toString();
-        PlObject o = this.hget(s);
-        if (o.is_undef()) {
+        PlObject o = this.h.get(s);
+        if (o == null || o.is_undef()) {
             PlArrayRef ar = new PlArrayRef();
             this.hset(s, ar);
             return ar;
@@ -7513,8 +7513,8 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         return PlCORE.die("Not an ARRAY reference");
     }
     public PlObject hget_arrayref(String i) {
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
+        PlObject o = this.h.get(i);
+        if (o == null || o.is_undef()) {
             PlArrayRef ar = new PlArrayRef();
             this.hset(i, ar);
             return ar;
@@ -7527,8 +7527,8 @@ class PlHash extends PlObject implements Iterable<PlObject> {
 
     public PlObject hget_hashref(PlObject i) {
         String s = i.toString();
-        PlObject o = this.hget(s);
-        if (o.is_undef()) {
+        PlObject o = this.h.get(s);
+        if (o == null || o.is_undef()) {
             PlHashRef hr = new PlHashRef();
             this.hset(s, hr);
             return hr;
@@ -7539,8 +7539,8 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         return PlCORE.die("Not a HASH reference");
     }
     public PlObject hget_hashref(String i) {
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
+        PlObject o = this.h.get(i);
+        if (o == null || o.is_undef()) {
             PlHashRef hr = new PlHashRef();
             this.hset(i, hr);
             return hr;
