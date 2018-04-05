@@ -798,14 +798,7 @@ package Perlito5::AST::Index;
                 'arguments' => $self->{index_exp},
             )->emit_java($level, $wantarray, $autovivification_type);
         }
-        my $arg = $self->{index_exp};
-        my $s;
-        if ($arg->isa('Perlito5::AST::Int')) {
-            $s = $arg->{int};
-        }
-        else {
-            $s = $arg->emit_java($level, 'scalar');
-        }
+        my $s = Perlito5::Java::to_array_index( $self->{index_exp}, $level + 1, 'scalar' );
         return $self->emit_java_container($level) . '.' . $method . '(' . $s . ')';
     }
     sub emit_java_set {
