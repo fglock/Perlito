@@ -4190,10 +4190,7 @@ class PlLvalueSpecialVarAutoflush extends PlLvalue {
         PlV.STDOUT.set_autoflush(o);
         return super.set(o);
     }
-    public PlObject set(PlString o) {
-        return this.set((PlObject)o);
-    }
-    public PlObject set(PlInt o) {
+    public PlObject set(PlScalarImmutable o) {
         return this.set((PlObject)o);
     }
     public PlObject set(PlLvalue o) {
@@ -5413,11 +5410,7 @@ class PlTieScalar extends PlScalarObject {
         PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
         return this;
     }
-    public PlObject set(PlString o) {
-        PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
-        return this;
-    }
-    public PlObject set(PlInt o) {
+    public PlObject set(PlScalarImmutable o) {
         PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
         return this;
     }
@@ -5450,13 +5443,7 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.set(o);
     }
-    public PlObject set(PlString o) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.set(o);
-    }
-    public PlObject set(PlInt o) {
+    public PlObject set(PlScalarImmutable o) {
         if (llv == null) {
             create_scalar();
         }
@@ -5843,15 +5830,7 @@ class PlLvalue extends PlScalarObject {
         this.o = o;
         return this;
     }
-    public PlObject set(PlString o) {
-        if (this.o.is_tiedScalar()) {
-            ((PlTieScalar)this.o).set(o);
-            return this;
-        }
-        this.o = o;
-        return this;
-    }
-    public PlObject set(PlInt o) {
+    public PlObject set(PlScalarImmutable o) {
         if (this.o.is_tiedScalar()) {
             ((PlTieScalar)this.o).set(o);
             return this;
@@ -6156,10 +6135,7 @@ class PlROvalue extends PlLvalue {
         PlCORE.die("Modification of a read-only value attempted");
         return this;
     }
-    public PlObject set(PlString o) {
-        return PlCORE.die("Modification of a read-only value attempted");
-    }
-    public PlObject set(PlInt o) {
+    public PlObject set(PlScalarImmutable o) {
         return PlCORE.die("Modification of a read-only value attempted");
     }
     public PlObject set(PlLvalue o) {
