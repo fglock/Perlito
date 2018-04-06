@@ -3029,7 +3029,7 @@ EOT
         return PlCORE.die("Undefined subroutine &" + name + " called");
     }
 
-    public PlObject length() {
+    public PlScalarImmutable length() {
         return new PlInt(this.toString().length());
     }
     public PlObject get_arrayref() {
@@ -3208,9 +3208,9 @@ EOT
         PlCORE.die("Not an ARRAY reference");
         return this;
     }
-    public PlObject length_of_array() {
+    public PlScalarImmutable length_of_array() {
         PlCORE.die("Not an ARRAY reference");
-        return this;
+        return PlCx.UNDEF;
     }
     public boolean length_of_array_boolean() {
         PlCORE.die("Not an ARRAY reference");
@@ -5872,7 +5872,7 @@ EOT
             sort keys %native_to_perl ))
 
     , <<'EOT'
-    public PlObject length() {
+    public PlScalarImmutable length() {
         return this.get().length();
     }
     public PlObject apply(int want, PlArray List__) {
@@ -7100,7 +7100,7 @@ EOT
     public int to_int() {
         return this.a.size();
     }
-    public PlObject length_of_array() {
+    public PlScalarImmutable length_of_array() {
         return new PlInt(this.a.size());
     }
     public boolean length_of_array_boolean() {
@@ -7752,7 +7752,7 @@ class PlUndef extends PlScalarImmutable {
         PlCORE.die("Can't use an undefined value as a subroutine reference");
         return this;
     }
-    public PlObject length() {
+    public PlScalarImmutable length() {
         return PlCx.UNDEF;
     }
     public int to_int() {
@@ -8582,7 +8582,7 @@ EOT
     public int int_length() {
         return this.s.length();
     }
-    public PlObject length() {
+    public PlScalarImmutable length() {
         return new PlInt(this.s.length());
     }
     public PlObject _decr() {
