@@ -2648,6 +2648,9 @@ EOT
     public static final PlObject hset(String name, PlObject v) {
         return hvar.hset(name, v);
     }
+    public static final PlObject hset(String name, PlLvalue v) {
+        return hvar.hset(name, v.get());
+    }
     public static final PlObject hset_local(String name, PlObject v) {
         return hvar.hget_lvalue_local(name).set(v);
     }
@@ -3184,6 +3187,10 @@ EOT
     }
 
     public PlObject hset(String s, PlObject v) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hset(String s, PlLvalue v) {
         PlCORE.die("Not a HASH reference");
         return this;
     }
@@ -3936,6 +3943,9 @@ class PlGlobRef extends PlReference {
     public PlObject hset(String s, PlObject v) {
         return this.filehandle.hset(s, v);
     }
+    public PlObject hset(String s, PlLvalue v) {
+        return this.filehandle.hset(s, v.get());
+    }
 }
 
 class PlStringReader extends Reader{
@@ -4152,6 +4162,9 @@ class PlFileHandle extends PlScalarObject {
         return PlCx.UNDEF;
     }
     public PlObject hset(String s, PlObject v) {
+        return PlCORE.die("Can't modify glob elem in scalar assignment");
+    }
+    public PlObject hset(String s, PlLvalue v) {
         return PlCORE.die("Can't modify glob elem in scalar assignment");
     }
     public PlObject hget_scalarref(String i) {
@@ -4617,7 +4630,7 @@ class PlHashRef extends PlReference {
         return this.ha.hset(i, v);
     }
     public PlObject hset(String i, PlLvalue v) {
-        return this.ha.hset(i, v);
+        return this.ha.hset(i, v.get());
     }
     public PlObject hset(int want, PlArray i, PlArray v) {
         return this.ha.hset(want, i, v);
@@ -5701,6 +5714,13 @@ class PlLvalue extends PlScalarObject {
             o = this.set(new PlHashRef());
         }
         return o.hset(s, v);
+    }
+    public PlObject hset(String s, PlLvalue v) {
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            o = this.set(new PlHashRef());
+        }
+        return o.hset(s, v.get());
     }
 
     public PlObject scalar_deref(String namespace) {
@@ -7602,8 +7622,16 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         }
         return v;
     }
-    public PlObject hset(String s, PlLvalue v) {
-        return this.hset(s, v.get());
+    public PlObject hset(String key, PlLvalue v) {
+        PlObject value = v.get();
+        PlObject o = this.h.get(key);
+        if (o != null && o.is_lvalue()) {
+            o.set(value);
+        }
+        else {
+            this.h.put(key, value);
+        }
+        return v;
     }
     public PlObject hset(int want, PlArray s, PlArray v) {
         PlArray aa = new PlArray();
