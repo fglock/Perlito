@@ -938,7 +938,13 @@ package Perlito5::AST::Apply;
             my @out;
             if ($arg) {
                 for my $arg (@args) {
-                    push @out, $arg->emit_java( $level, 'void' );
+                    if ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'push' ) {
+                        # workaround: because push in void context returns void, this breaks PerlOp.context()
+                        push @out, $arg->emit_java( $level, 'scalar' );
+                    }
+                    else {
+                        push @out, $arg->emit_java( $level, 'void' );
+                    }
                 }
                 push @out, $arg->emit_java( $level, 'scalar', $autovivification_type );
             }
@@ -1315,11 +1321,13 @@ package Perlito5::AST::Apply;
             my @arguments = @{$self->{arguments}};
             my $v = shift @arguments;     # TODO - this argument can also be a 'Decl' instead of 'Var'
 
+            my $method  = $wantarray eq 'void' || $wantarray eq 'statement' ? 'push_void' : 'push';
+
             if (@arguments == 1 && ref($arguments[0]) eq "Perlito5::AST::Var" && $arguments[0]->{sigil} eq '$') {
-                return $v->emit_java( $level ) . '.push(' . $arguments[0]->emit_java( $level ) . ')';
+                return $v->emit_java( $level ) . ".$method(" . $arguments[0]->emit_java( $level ) . ')';
             }
 
-            return $v->emit_java( $level ) . '.push(' . Perlito5::Java::to_list_for_push(\@arguments, $level) . ')';
+            return $v->emit_java( $level ) . ".$method(" . Perlito5::Java::to_list_for_push(\@arguments, $level) . ')';
         },
         'splice' => sub {
             my ($self, $level, $wantarray) = @_;

@@ -1525,7 +1525,7 @@ EOT
             v__ref.set(temp);
             result = c.apply(PlCx.SCALAR, list__).to_boolean();
             if (result) {
-                ret.push(temp);
+                ret.push_void(temp);
             }
         }
         v__ref.set(v__val);
@@ -1539,7 +1539,7 @@ EOT
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
-                ret.push(c.apply(PlCx.LIST, list__));
+                ret.push_void(c.apply(PlCx.LIST, list__));
             }
             v__ref.set(v__val);
             return ret;
@@ -1934,20 +1934,20 @@ EOT
                     for (int i = 1; i <= count; i++) {
                         String cap = matcher.group(i);
                         if (cap == null) {
-                            ret.push(PlCx.UNDEF);
+                            ret.push_void(PlCx.UNDEF);
                         }
                         else {
-                            ret.push(cap);
+                            ret.push_void(cap);
                         }
                     }
                 }
                 else {
                     String cap = matcher.group();
                     if (cap == null) {
-                        ret.push(PlCx.UNDEF);
+                        ret.push_void(PlCx.UNDEF);
                     }
                     else {
-                        ret.push(cap);
+                        ret.push_void(cap);
                     }
                 }
             }
@@ -1967,10 +1967,10 @@ EOT
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     String cap = matcher.group(i);
                     if (cap == null) {
-                        ret.push(PlCx.UNDEF);
+                        ret.push_void(PlCx.UNDEF);
                     }
                     else {
-                        ret.push(cap);
+                        ret.push_void(cap);
                     }
                 }
             }
@@ -3703,7 +3703,7 @@ EOT
             for (PlObject aa : arg2) {
                 PlObject rr = this.smartmatch(aa);
                 if (rr.to_boolean()) {
-                    ret.push(rr);
+                    ret.push_void(rr);
                 }
             }
             return ret;
@@ -6595,7 +6595,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         PlArray aa = PlArray.construct_list_of_aliases(args);
         PlArray result = new PlArray();
         for (PlObject s : aa) {
-            result.push(new PlLvalueRef(s));
+            result.push_void(new PlLvalueRef(s));
         }
         return result;
     }
@@ -6904,10 +6904,16 @@ EOT
 
     public PlObject push(PlObject... args) {
         for (int i = 0; i < args.length; i++) {
-            this.push(args[i]);
+            this.push_void(args[i]);
         }
         return new PlInt(this.a.size());
     }
+    public void push_void(PlObject... args) {
+        for (int i = 0; i < args.length; i++) {
+            this.push_void(args[i]);
+        }
+    }
+
     public PlObject unshift(PlObject... args) {
         for (int i = args.length-1; i >= 0; i--) {
             this.unshift(args[i]);
@@ -6919,6 +6925,9 @@ EOT
     }
     public PlObject push(Object o) {
         return this.push(PlJavaObject.fromObject(o));
+    }
+    public void push_void(Object o) {
+        this.push_void(PlJavaObject.fromObject(o));
     }
     public PlObject unshift(Object o) {
         return this.unshift(PlJavaObject.fromObject(o));
@@ -6934,6 +6943,9 @@ EOT
     }
     public PlObject push($native s) {
         return this.push(new $perl(s));
+    }
+    public void push_void($native s) {
+        this.push_void(new $perl(s));
     }
     public PlObject unshift($native s) {
         return this.unshift(new $perl(s));
@@ -6955,9 +6967,20 @@ EOT
         this.a.add(v.scalar());
         return new PlInt(this.a.size());
     }
+    public void push_void(PlObject v) {
+        if (v.is_array()) {
+            this.push_void( (PlArray)v );
+            return;
+        }
+        this.a.add(v.scalar());
+    }
+
     public PlObject push(PlLvalue v) {
         this.a.add(v.get());
         return new PlInt(this.a.size());
+    }
+    public void push_void(PlLvalue v) {
+        this.a.add(v.get());
     }
     public PlObject push(PlArray args) {
         int size = args.a.size();
@@ -6968,13 +6991,29 @@ EOT
                 s = s.to_array();
             }
             if (s.is_array()) {
-                this.push(s);
+                this.push_void(s);
             }
             else {
                 this.a.add(s);
             }
         }
         return new PlInt(this.a.size());
+    }
+    public void push_void(PlArray args) {
+        int size = args.a.size();
+        for (int i = 0; i < size; i++) {
+            PlObject s = args.aget(i);
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
+            if (s.is_array()) {
+                this.push_void(s);
+            }
+            else {
+                this.a.add(s);
+            }
+        }
     }
 
     // Note: multiple versions of unshift()
@@ -7028,7 +7067,7 @@ EOT
         PlArray aa = new PlArray();
         int size = this.to_int();
         for (int i = 0; i < size; i++) {
-            aa.push(new PlInt(i));
+            aa.push_void(new PlInt(i));
         }
         return aa;
     }
@@ -7036,8 +7075,8 @@ EOT
         PlArray aa = new PlArray();
         int size = this.to_int();
         if (this.each_iterator < size) {
-            aa.push(new PlInt(this.each_iterator));
-            aa.push(this.a.aget(this.each_iterator));
+            aa.push_void(new PlInt(this.each_iterator));
+            aa.push_void(this.a.aget(this.each_iterator));
             this.each_iterator++;
         }
         else {
@@ -7384,8 +7423,8 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         for (Map.Entry<String, PlObject> entry : this.h) {
             String key = entry.getKey();
             PlObject value = entry.getValue();
-            aa.push(new PlString(key));
-            aa.push(value);
+            aa.push_void(new PlString(key));
+            aa.push_void(value);
         }
         return aa;
     }
@@ -7570,7 +7609,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         PlArray aa = new PlArray();
 
         for (int i = 0; i < v.to_int(); i++){
-            aa.push(this.hset(v.aget(i).toString(), s.aget(i)));
+            aa.push_void(this.hset(v.aget(i).toString(), s.aget(i)));
         };
         if (want == PlCx.LIST) {
             return aa;
@@ -7598,7 +7637,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
 
         for (int i = 0; i < a.to_int(); i++) {
             PlObject r = this.hdelete(want, a.aget(i));
-            aa.push(r);
+            aa.push_void(r);
         }
         if (want == PlCx.LIST) {
             return aa;
@@ -7607,19 +7646,19 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     }
     public PlObject hdelete(int want, PlString a) {
         PlArray aa = new PlArray();
-        aa.push(a);
+        aa.push_void(a);
         return this.hdelete(want, aa);
     }
     public PlObject hdelete(int want, PlLvalue a) {
         PlArray aa = new PlArray();
-        aa.push(a);
+        aa.push_void(a);
         return this.hdelete(want, aa);
     }
     public PlObject values() {
         PlArray aa = new PlArray();
         for (Map.Entry<String, PlObject> entry : this.h) {
             PlObject value = entry.getValue();
-            aa.push(value);
+            aa.push_void(value);
         }
         return aa;
     }
@@ -7627,7 +7666,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         PlArray aa = new PlArray();
         for (Map.Entry<String, PlObject> entry : this.h) {
             String key = entry.getKey();
-            aa.push(new PlString(key));
+            aa.push_void(new PlString(key));
         }
         return aa;
     }
@@ -7639,9 +7678,9 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         if (this.each_iterator.iterator.hasNext()) {
             Map.Entry<String, PlObject> entry = this.each_iterator.iterator.next();
             String key = entry.getKey();
-            aa.push(new PlString(key));
+            aa.push_void(new PlString(key));
             PlObject value = entry.getValue();
-            aa.push(value);
+            aa.push_void(value);
         }
         else {
             // return empty list

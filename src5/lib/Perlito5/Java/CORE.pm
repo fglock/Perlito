@@ -263,10 +263,10 @@ EOT
             // read all lines
             PlArray res = new PlArray();
             while (iter.hasNext()) {
-                res.push(new PlString(iter.next().getFileName().toString()));
+                res.push_void(new PlString(iter.next().getFileName().toString()));
             }
-            res.push(new PlString("."));
-            res.push(new PlString(".."));
+            res.push_void(new PlString("."));
+            res.push_void(new PlString(".."));
             return res;
         }
         if (!iter.hasNext()) {
@@ -366,7 +366,7 @@ EOT
         return PlCORE.die("write() not implemented");
 EOT
     say => <<'EOT',
-        List__.push( new PlString("\n") );
+        List__.push_void( new PlString("\n") );
         return PlCORE.print(want, fh, List__);
 EOT
     readline => <<'EOT',
@@ -375,7 +375,7 @@ EOT
             PlArray res = new PlArray();
             PlObject s;
             while (!(s = PlCORE.readline(PlCx.SCALAR, fh, List__)).is_undef()) {
-                res.push(s);
+                res.push_void(s);
             }
             return res;
         }
@@ -750,7 +750,7 @@ EOT
         try {
             int arg_count = List__.length_of_array_int();
             if (arg_count == 0) {
-                List__.push("Warning: something's wrong");
+                List__.push_void("Warning: something's wrong");
             }
             if (arg_count != 1 || !List__.aget(0).is_ref()) {
                 String s = List__.toString();
@@ -789,7 +789,7 @@ EOT
     public static final PlObject die(int want, PlArray List__) {
         int arg_count = List__.length_of_array_int();
         if (arg_count == 0) {
-            List__.push("Died");
+            List__.push_void("Died");
         }
         if (arg_count != 1 || !List__.aget(0).is_ref()) {
             String s = List__.toString();
@@ -981,7 +981,7 @@ EOT
             }
             if (matched) {
                 cap = arg.substring(pos, matcher.start());
-                res.push(cap);
+                res.push_void(cap);
                 pos = matcher.end();
                 next = pos;
                 // PlCORE.say("match: match [" + cap + "] next pos " + pos);
@@ -989,10 +989,10 @@ EOT
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     cap = matcher.group(i);
                     if (cap == null) {
-                        res.push(PlCx.UNDEF);
+                        res.push_void(PlCx.UNDEF);
                     }
                     else {
-                        res.push(cap);
+                        res.push_void(cap);
                     }
                 }
             }
@@ -1003,7 +1003,7 @@ EOT
         else {
             cap = arg.substring(pos);
         }
-        res.push(cap);
+        res.push_void(cap);
         return res;
     }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {
@@ -1054,7 +1054,7 @@ EOT
         int diff = last - pos;
         PlArray res = new PlArray();
         for (int i = pos; i < last; i++) {
-            res.push(List__.a.get(i));
+            res.push_void(List__.a.get(i));
         }
         for (int i = pos; i < (size - diff); i++) {
             List__.a.set(i, List__.a.get(i+diff));
@@ -1098,7 +1098,7 @@ EOT
         PlArray res = new PlArray();
 
         for (int i = pos; i < last; i++) {
-            res.push(List__.a.get(i));
+            res.push_void(List__.a.get(i));
         }
         for (int i = pos; i < (size - diff); i++) {
             List__.a.set(i, List__.a.get(i+diff));
@@ -1575,25 +1575,25 @@ EOT
             case 'a':
             {
                 // TODO
-                // result.push(unpack_a(List__.shift().toString(), size));
+                // result.push_void(unpack_a(List__.shift().toString(), size));
                 break;
             }
             case 'A':
             {
                 // TODO
-                // result.push(unpack_A(List__.shift().toString(), size));
+                // result.push_void(unpack_A(List__.shift().toString(), size));
                 break;
             }
             case 'Z':
             {
                 // TODO
-                // result.push(unpack_Z(List__.shift().toString(), size));
+                // result.push_void(unpack_Z(List__.shift().toString(), size));
                 break;
             }
             case 'b':
             {
                 // TODO
-                // result.push(unpack_b(List__.shift().toString(), size));
+                // result.push_void(unpack_b(List__.shift().toString(), size));
                 break;
             }
 
@@ -1605,13 +1605,13 @@ EOT
                 }
                 if (size < 0) {
                         while (inputIndex < input.length()) {
-                            result.push( new PlInt( input.charAt(inputIndex++) & 0xFF ) );
+                            result.push_void( new PlInt( input.charAt(inputIndex++) & 0xFF ) );
                         }
                 }
                 else {
                     for (int j = 0; j < size; j++) {
                         if (inputIndex < input.length()) {
-                            result.push( new PlInt( input.charAt(inputIndex++) & 0xFF ) );
+                            result.push_void( new PlInt( input.charAt(inputIndex++) & 0xFF ) );
                         }
                     }
                 }
@@ -1655,7 +1655,7 @@ EOT
                             while (internalIndex < internal.length()) {
                                 int ichar = internal.charAt(internalIndex++);
                                 sb.appendCodePoint(ichar);
-                                result.push( new PlInt(ichar) );
+                                result.push_void( new PlInt(ichar) );
                             }
                     }
                     else {
@@ -1663,7 +1663,7 @@ EOT
                             if (internalIndex < internal.length()) {
                                 int ichar = internal.charAt(internalIndex++);
                                 sb.appendCodePoint(ichar);
-                                result.push( new PlInt(ichar) );
+                                result.push_void( new PlInt(ichar) );
                             }
                         }
                     }
@@ -1678,13 +1678,13 @@ EOT
                     // U0 mode
                     if (size < 0) {
                             while (inputIndex < input.length()) {
-                                result.push( new PlInt( input.charAt(inputIndex++) ) );
+                                result.push_void( new PlInt( input.charAt(inputIndex++) ) );
                             }
                     }
                     else {
                         for (int j = 0; j < size; j++) {
                             if (inputIndex < input.length()) {
-                                result.push( new PlInt( input.charAt(inputIndex++) ) );
+                                result.push_void( new PlInt( input.charAt(inputIndex++) ) );
                             }
                         }
                     }
@@ -2033,15 +2033,15 @@ EOT
         }
         //      0    1    2     3     4    5     6     7     8
         //   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
-		res.push(date.getSecond());
-		res.push(date.getMinute());
-		res.push(date.getHour());
-		res.push(date.getDayOfMonth());
-		res.push(date.getMonth().getValue() - 1);
-		res.push(date.getYear() - 1900);
-		res.push(date.getDayOfWeek().getValue());
-		res.push(date.getDayOfYear() - 1);
-		res.push(
+		res.push_void(date.getSecond());
+		res.push_void(date.getMinute());
+		res.push_void(date.getHour());
+		res.push_void(date.getDayOfMonth());
+		res.push_void(date.getMonth().getValue() - 1);
+		res.push_void(date.getYear() - 1900);
+		res.push_void(date.getDayOfWeek().getValue());
+		res.push_void(date.getDayOfYear() - 1);
+		res.push_void(
             date.getZone().getRules().isDaylightSavings(date.toInstant()) ? PlCx.INT1 : PlCx.INT0
         );
         return res;
@@ -2061,15 +2061,15 @@ EOT
         }
         //      0    1    2     3     4    5     6     7     8
         //   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
-		res.push(date.getSecond());
-		res.push(date.getMinute());
-		res.push(date.getHour());
-		res.push(date.getDayOfMonth());
-		res.push(date.getMonth().getValue() - 1);
-		res.push(date.getYear() - 1900);
-		res.push(date.getDayOfWeek().getValue());
-		res.push(date.getDayOfYear() - 1);
-		res.push(
+		res.push_void(date.getSecond());
+		res.push_void(date.getMinute());
+		res.push_void(date.getHour());
+		res.push_void(date.getDayOfMonth());
+		res.push_void(date.getMonth().getValue() - 1);
+		res.push_void(date.getYear() - 1900);
+		res.push_void(date.getDayOfWeek().getValue());
+		res.push_void(date.getDayOfYear() - 1);
+		res.push_void(
             date.getZone().getRules().isDaylightSavings(date.toInstant()) ? PlCx.INT1 : PlCx.INT0
         );
         return res;
@@ -2143,7 +2143,7 @@ EOT
             // System.out.println("STDOUT\n");
             while ((s = stdInput.readLine()) != null) {
                 // System.out.println("  " + s);
-                res.push(s + "\n");
+                res.push_void(s + "\n");
             }
             // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             // System.out.println("STDERR\n");
@@ -2229,8 +2229,8 @@ EOT
                             //     elem.getLineNumber()
                             // );
                             // PlCORE.say("\tPerl sub &" + perlSubName.toString());
-                            callerName.push(perlSubName);
-                            codeRef.push(value);
+                            callerName.push_void(perlSubName);
+                            codeRef.push_void(value);
                             break SCAN_SUBNAME;
                         }
                     }
