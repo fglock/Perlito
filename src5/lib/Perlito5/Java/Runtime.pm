@@ -1808,7 +1808,7 @@ EOT
     }
 
     // ****** regex variables
-    // class PlRegexResult extends PlScalarObject {
+    // class PlRegexResult
     //     public Matcher matcher;      // regex captures
     //     public String  regex_string; // last string used in a regex
 
@@ -3795,7 +3795,11 @@ class PlScalarObject extends PlObject {
     public PlScalarObject() {
     }
 }
-class PlReference extends PlScalarObject {
+class PlScalarImmutable extends PlScalarObject {
+    public PlScalarImmutable() {
+    }
+}
+class PlReference extends PlScalarImmutable {
     public static final PlStringConstant REF = new PlStringConstant("REF");
     public PlClass bless;
 
@@ -3987,7 +3991,7 @@ class PlStringReader extends Reader{
     }
 }
 
-class PlFileHandle extends PlScalarObject {
+class PlFileHandle extends PlScalarImmutable {
     // public static final PlStringConstant REF = new PlStringConstant("GLOB");
     public String  typeglob_name;
     public OutputStream outputStream;    // System.out, System.err
@@ -4282,7 +4286,7 @@ class PlRegex extends PlReference {
         return true;
     }
 }
-class PlRegexResult extends PlScalarObject {
+class PlRegexResult extends PlScalarImmutable {
     public Matcher matcher;      // regex captures
     public String  regex_string; // last string used in a regex
 
@@ -7764,7 +7768,7 @@ EOT
         return this.h.scalar();
     }
 }
-class PlUndef extends PlScalarObject {
+class PlUndef extends PlScalarImmutable {
     public PlUndef() {
     }
     public PlObject apply(int want, PlArray List__) {
@@ -7808,7 +7812,7 @@ class PlUndef extends PlScalarObject {
     }
 
 }
-class PlBool extends PlScalarObject {
+class PlBool extends PlScalarImmutable {
     private final boolean i;
     public PlBool(boolean i) {
         this.i = i;
@@ -7908,7 +7912,7 @@ class PlBool extends PlScalarObject {
         }
     }
 }
-class PlInt extends PlScalarObject {
+class PlInt extends PlScalarImmutable {
     private final long i;
     public PlInt(long i) {
         this.i = i;
@@ -7995,7 +7999,7 @@ class PlInt extends PlScalarObject {
         return new PlInt(v * i);
     }
 }
-class PlDouble extends PlScalarObject {
+class PlDouble extends PlScalarImmutable {
     private final double i;
     public PlDouble(double i) {
         this.i = i;
@@ -8217,7 +8221,7 @@ class PlStringConstant extends PlString {
         return this.codeRef.apply(want, List__);
     }
 }
-class PlString extends PlScalarObject {
+class PlString extends PlScalarImmutable {
     public java.lang.String s;
     private PlObject numericValue;
 
