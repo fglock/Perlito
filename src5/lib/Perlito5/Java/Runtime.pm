@@ -5470,7 +5470,6 @@ class PlLvalue extends PlScalarObject {
     public PlScalarImmutable o;
     public Integer pos;
     public boolean regex_zero_length_flag;
-    public boolean isTied;
 
     // Note: several versions of PlLvalue()
     public PlLvalue() {
@@ -5514,7 +5513,7 @@ class PlLvalue extends PlScalarObject {
 
     // tie scalar
     public PlObject tie(PlArray args) {
-        if (this.isTied) {
+        if (this.o.is_tiedScalar()) {
             this.untie();
         }
         PlTieScalar v = new PlTieScalar();
@@ -5522,25 +5521,23 @@ class PlLvalue extends PlScalarObject {
         v.tied = self;
         v.old_var = this.o;
         this.set(v);
-        this.isTied = true;
         return self;
     }
 
     public PlObject untie() {
-        if (this.isTied) {
+        if (this.o.is_tiedScalar()) {
             PlObject tied = this.o.tied();
             PlObject untie = PerlOp.call("can", new PlArray(tied, new PlString("UNTIE")), PlCx.SCALAR);
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };
             this.set(((PlTieScalar)o).old_var);
-            this.isTied = false;
             return tied;
         }
         return this;
     }
     public PlObject tied() {
-        if (this.isTied) {
+        if (this.o.is_tiedScalar()) {
             return o.tied();
         }
         return PlCx.UNDEF;
@@ -5578,7 +5575,7 @@ class PlLvalue extends PlScalarObject {
     }
 
     public PlScalarImmutable get() {
-        if (this.isTied) {
+        if (this.o.is_tiedScalar()) {
             return this.o.get();
         }
         return this.o;
@@ -5854,7 +5851,7 @@ class PlLvalue extends PlScalarObject {
         if (o.is_lvalue()) {
             o = o.get();
         }
-        if (this.isTied) {
+        if (this.o.is_tiedScalar()) {
             ((PlTieScalar)this.o).set(o);
             return this;
         }
@@ -5862,7 +5859,7 @@ class PlLvalue extends PlScalarObject {
         return this;
     }
     public PlObject set(PlScalarImmutable o) {
-        if (this.isTied) {
+        if (this.o.is_tiedScalar()) {
             ((PlTieScalar)this.o).set(o);
             return this;
         }
@@ -5870,7 +5867,7 @@ class PlLvalue extends PlScalarObject {
         return this;
     }
     public PlObject set(PlLvalue o) {
-        if (this.isTied) {
+        if (this.o.is_tiedScalar()) {
             ((PlTieScalar)this.o).set(o.get());
             return this;
         }
