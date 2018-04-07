@@ -3333,8 +3333,8 @@ EOT
         }
         return PlCORE.die("Illegal number of bits in vec: " + bits);
     }
-    public PlObject get() {
-        return PlCORE.die("error .get!");
+    public PlScalarImmutable get() {
+        return (PlScalarImmutable)this;
     }
     public PlObject mod(PlObject o) {
         return this.to_num().mod(o);
@@ -3644,8 +3644,8 @@ EOT
     public PlClass blessed_class() {
         return null;
     }
-    public PlObject scalar() {
-        return this;
+    public PlScalarImmutable scalar() {
+        return (PlScalarImmutable)this;
     }
     public PlObject clone() throws CloneNotSupportedException {
         return this;
@@ -3797,6 +3797,13 @@ class PlScalarObject extends PlObject {
 }
 class PlScalarImmutable extends PlScalarObject {
     public PlScalarImmutable() {
+    }
+
+    public PlScalarImmutable get() {
+        return this;
+    }
+    public PlScalarImmutable scalar() {
+        return this;
     }
 }
 class PlReference extends PlScalarImmutable {
@@ -5270,7 +5277,7 @@ class PlLvalueSubstring extends PlLazyLvalue {
         return (PlLvalue)this.lv;
     }
 
-    public PlObject get() {
+    public PlScalarImmutable get() {
         return new PlString( replacement );
     }
 
@@ -5320,8 +5327,8 @@ class PlLazyTiedLookup extends PlLazyLvalue {
         return llv;
     }
 
-    public PlObject get() {
-        return la.hget(i);
+    public PlScalarImmutable get() {
+        return (PlScalarImmutable)la.hget(i);
     }
 
     public PlObject set(PlObject o) {
@@ -5387,7 +5394,10 @@ class PlLazyScalarref extends PlLazyLvalue {
     }
 }
 
-class PlTieScalar extends PlScalarObject {
+class PlTieScalar extends PlScalarImmutable {
+    // this is not immutable, but we do store it in PlLvalue
+    // so it needs to be a "PlScalarImmutable"
+
     public PlObject tied;
     public PlObject old_var;
 
@@ -5400,8 +5410,8 @@ class PlTieScalar extends PlScalarObject {
         return tied;
     }
 
-    public PlObject get() {
-        PlObject v = PerlOp.call("FETCH", new PlArray(tied), PlCx.VOID);
+    public PlScalarImmutable get() {
+        PlScalarImmutable v = PerlOp.call("FETCH", new PlArray(tied), PlCx.VOID).scalar();
         old_var = v;
         return v;
     }
@@ -5429,7 +5439,7 @@ class PlLazyLvalue extends PlLvalue {
         return (PlLvalue)PlCORE.die("internal error: called PlLazyLvalue.create_scalar()");
     }
 
-    public PlObject get() {
+    public PlScalarImmutable get() {
         if (llv == null) {
             return PlCx.UNDEF;
         }
@@ -5457,7 +5467,7 @@ class PlLazyLvalue extends PlLvalue {
     }
 }
 class PlLvalue extends PlScalarObject {
-    public PlObject o;
+    public PlScalarImmutable o;
     public Integer pos;
     public boolean regex_zero_length_flag;
 
@@ -5469,6 +5479,9 @@ class PlLvalue extends PlScalarObject {
         this.o = new PlInt(o);
     }
     public PlLvalue(PlObject o) {
+        this.o = (PlScalarImmutable)o;
+    }
+    public PlLvalue(PlScalarImmutable o) {
         this.o = o;
     }
     public PlLvalue(PlLvalue o) {
@@ -5561,7 +5574,7 @@ class PlLvalue extends PlScalarObject {
         return value;
     }
 
-    public PlObject get() {
+    public PlScalarImmutable get() {
         if (this.o.is_tiedScalar()) {
             return this.o.get();
         }
@@ -5827,7 +5840,7 @@ class PlLvalue extends PlScalarObject {
             ((PlTieScalar)this.o).set(o);
             return this;
         }
-        this.o = o;
+        this.o = (PlScalarImmutable)o;
         return this;
     }
     public PlObject set(PlScalarImmutable o) {
@@ -6009,7 +6022,7 @@ EOT
     public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
     public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
 
-    public PlObject scalar() {
+    public PlScalarImmutable scalar() {
         return this.get();
     }
     public PlObject clone() throws CloneNotSupportedException {
@@ -6117,6 +6130,9 @@ class PlROvalue extends PlLvalue {
         this.o = PlCx.UNDEF;
     }
     public PlROvalue(PlObject o) {
+        this.o = (PlScalarImmutable)o;
+    }
+    public PlROvalue(PlScalarImmutable o) {
         this.o = o;
     }
     public PlROvalue(PlLvalue o) {
@@ -6208,8 +6224,8 @@ class PlTieArrayList extends PlArrayList {
             PerlOp.call("PUSH", new PlArray(tied, v), PlCx.SCALAR);
         }
     }
-    public PlObject get(int i) {
-        return PerlOp.call("FETCH", new PlArray(tied, new PlInt(i)), PlCx.SCALAR);
+    public PlScalarImmutable get(int i) {
+        return PerlOp.call("FETCH", new PlArray(tied, new PlInt(i)), PlCx.SCALAR).scalar();
     }
     public PlObject remove(int i) {
         if (i == 0) {
@@ -6258,8 +6274,8 @@ class PlTieArrayList extends PlArrayList {
         return PerlOp.call("POP", new PlArray(tied), PlCx.SCALAR);
     }
 
-    public PlObject scalar() {
-        return PerlOp.call("SCALAR", new PlArray(this.tied), PlCx.SCALAR);
+    public PlScalarImmutable scalar() {
+        return PerlOp.call("SCALAR", new PlArray(this.tied), PlCx.SCALAR).scalar();
     }
     public boolean is_tiedArray() {
         return true;
@@ -6370,7 +6386,7 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
         }
     }
 
-    public PlObject scalar() {
+    public PlScalarImmutable scalar() {
         return new PlInt(this.hashCode());
     }
     public boolean is_tiedArray() {
@@ -7127,7 +7143,7 @@ EOT
     public boolean is_array() {
         return true;
     }
-    public PlObject scalar() {
+    public PlScalarImmutable scalar() {
         return new PlInt(this.a.size());
     }
 }
@@ -7169,8 +7185,8 @@ class PlTieHashMap extends PlHashMap {
     // clear()
     // entrySet().iterator() == iterator()
 
-    public PlObject get(Object i) {
-        return PerlOp.call("FETCH", new PlArray(this.tied, new PlString((String)i)), PlCx.SCALAR);
+    public PlScalarImmutable get(Object i) {
+        return PerlOp.call("FETCH", new PlArray(this.tied, new PlString((String)i)), PlCx.SCALAR).scalar();
     }
     public PlObject put(String i, PlObject v) {
         return PerlOp.call("STORE", new PlArray(this.tied, new PlString(i), v), PlCx.SCALAR);
@@ -7187,8 +7203,8 @@ class PlTieHashMap extends PlHashMap {
     public Iterator<Map.Entry<String, PlObject>> iterator() {
         return new PlTieHashIterator(this.tied);
     }
-    public PlObject scalar() {
-        return PerlOp.call("SCALAR", new PlArray(this.tied), PlCx.SCALAR);
+    public PlScalarImmutable scalar() {
+        return PerlOp.call("SCALAR", new PlArray(this.tied), PlCx.SCALAR).scalar();
     }
     public boolean is_tiedHash() {
         return true;
@@ -7221,7 +7237,7 @@ class PlHashMap extends HashMap<String, PlObject> implements Iterable<Map.Entry<
     public Iterator<Map.Entry<String, PlObject>> iterator() {
         return this.entrySet().iterator();
     }
-    public PlObject scalar() {
+    public PlScalarImmutable scalar() {
         return new PlInt(this.hashCode());
     }
     public boolean is_tiedHash() {
@@ -7740,7 +7756,7 @@ EOT
     public boolean is_hash() {
         return true;
     }
-    public PlObject scalar() {
+    public PlScalarImmutable scalar() {
         return this.h.scalar();
     }
 }

@@ -871,7 +871,7 @@ EOT
 
         return result;
     }
-    public static final PlObject scalar(int want, PlArray List__) {
+    public static final PlScalarImmutable scalar(int want, PlArray List__) {
         if (List__.to_int() == 0) {
             return PlCx.UNDEF;
         }
@@ -1117,7 +1117,7 @@ EOT
         return res.aget(-1);
     }
 
-    public static final PlObject hex(int want, PlObject List__) {
+    public static final PlInt hex(int want, PlObject List__) {
         String s = List__.toString();
 
         final int length = s.length();
@@ -1144,11 +1144,11 @@ EOT
         }
         return new PlInt(0);
     }
-    public static final PlObject oct(int want, PlObject List__) {
+    public static final PlInt oct(int want, PlObject List__) {
         String s = List__.toString();
         return new PlInt(PerlOp.oct(s));
     }
-    public static final PlObject sprintf(int want, PlObject List__) {
+    public static final PlString sprintf(int want, PlObject List__) {
         String format = List__.aget(0).toString();
         // "%3s"
         int length = format.length();
@@ -1252,7 +1252,7 @@ EOT
         }
         return new PlString(String.format(format, args));
     }
-    public static final PlObject crypt(int want, PlArray List__) {
+    public static final PlString crypt(int want, PlArray List__) {
         if(List__.to_int() < 2) {
             die("Not enough arguments for crypt");
         }
@@ -1268,7 +1268,7 @@ EOT
         
         return new PlString(PlCrypt.crypt(salt, plainText));
     }
-    public static final PlObject join(int want, PlArray List__) {
+    public static final PlString join(int want, PlArray List__) {
         String s = List__.shift().toString();
         StringBuilder sb = new StringBuilder();
         boolean first = true;
@@ -1299,7 +1299,7 @@ EOT
         }
         return new PlString(sb.reverse().toString());
     }
-    public static final PlObject fc(int want,  PlObject Object__) {
+    public static final PlString fc(int want,  PlObject Object__) {
         return new PlString(Object__.toString().toLowerCase());
     }
     public static final PlObject pack(int want, PlArray List__) {
@@ -2074,10 +2074,10 @@ EOT
         );
         return res;
     }
-    public static final PlObject time(int want, PlArray List__) {
+    public static final PlInt time(int want, PlArray List__) {
         return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
     }
-    public static final PlObject sleep(int want, PlArray List__) {
+    public static final PlDouble sleep(int want, PlArray List__) {
         long s = ((Double)(List__.shift().to_double() * 1000)).longValue();
         try {
             TimeUnit.MILLISECONDS.sleep(s);
