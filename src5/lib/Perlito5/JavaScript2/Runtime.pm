@@ -762,6 +762,26 @@ var p5smrt_scalar = function(a1, a2) {
     CORE.die("Not implemented: smartmatch operator with argument type '", (typeof a2), "'");
 };
 
+var p5refaddr = function(o) {
+    if (o == null) {
+        return null;
+    }
+    if (typeof o === "object") {
+        if (o instanceof Array) {
+            return null;
+        }
+        if ( o.hasOwnProperty("_ref_") ) {
+            if (!o._id_) { o._id_ = p5id++ }
+            return o._id_;
+        }
+    }
+    if (typeof o === "function") {
+        if (!o._id_) { o._id_ = p5id++ }
+        return o._id_;
+    }
+    return null;
+};
+
 var p5str = function(o) {
     if (o == null) {
         return "";

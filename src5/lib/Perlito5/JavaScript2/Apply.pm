@@ -1293,6 +1293,13 @@ package Perlito5::AST::Apply;
                     $self->{namespace} = 'Perlito5::JavaScript2::Runtime';
                 }
             }
+
+            if ($self->{namespace} eq 'Scalar::Util') {
+                if ($code eq 'refaddr') {
+                    return 'p5refaddr(' . $self->{arguments}->[0]->emit_javascript2( $level + 1, 'scalar' ) . ')';
+                }
+            }
+
             $code = 'p5pkg[' . Perlito5::JavaScript2::escape_string($self->{namespace} ) . '].' . $code;
         }
         else {
