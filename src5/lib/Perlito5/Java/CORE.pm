@@ -334,11 +334,11 @@ EOT
         }
         else if (argCount == 2) {
             // syswrite(FILEHANDLE,SCALAR,LENGTH)
-            st = List__.aget(0).substr(PlCx.INT0, List__.aget(1));
+            st = List__.aget(0).substr(0, List__.aget(1).to_int());
         }
         else {
             // syswrite(FILEHANDLE,SCALAR,LENGTH,OFFSET)
-            st = List__.aget(0).substr(List__.aget(2), List__.aget(1));
+            st = List__.aget(0).substr(List__.aget(2).to_int(), List__.aget(1).to_int());
         }
         int count = 0;
         try {

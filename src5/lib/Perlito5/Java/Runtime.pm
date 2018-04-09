@@ -3538,10 +3538,10 @@ EOT
         }
         return new PlInt(s.lastIndexOf(s1, i));
     }
-    public PlObject substr(PlObject offset) {
+    public PlObject substr(int offset) {
         // substr EXPR,OFFSET
         String s = this.toString();
-        int ofs = offset.to_int();
+        int ofs = offset;
         if (ofs < 0) {
             ofs = s.length() + ofs;
         }
@@ -3553,11 +3553,11 @@ EOT
         }
         return new PlString(s.substring(ofs));
     }
-    public PlObject substr(PlObject offset, PlObject length) {
+    public PlObject substr(int offset, int length) {
         // substr EXPR,OFFSET,LENGTH
         String s = this.toString();
-        int ofs = offset.to_int();
-        int len = length.to_int();
+        int ofs = offset;
+        int len = length;
         if (ofs < 0) {
             ofs = s.length() + ofs;
         }
@@ -3583,11 +3583,11 @@ EOT
         }
         return new PlString(s.substring(ofs, len));
     }
-    public PlObject substr(PlObject offset, PlObject length, PlObject replacement) {
+    public PlObject substr(int offset, int length, PlObject replacement) {
         // substr EXPR,OFFSET,LENGTH,REPLACEMENT
         String s = this.toString();
-        int ofs = offset.to_int();
-        int len = length.to_int();
+        int ofs = offset;
+        int len = length;
         if (ofs < 0) {
             ofs = s.length() + ofs;
         }
@@ -3625,10 +3625,10 @@ EOT
         this.set( new PlString( start + replacement.toString() + end ) );
         return ret;
     }
-    public PlObject lvalue_substr(PlObject offset) {
-        return this.lvalue_substr(offset, new PlInt(this.toString().length()));
+    public PlObject lvalue_substr(int offset) {
+        return this.lvalue_substr(offset, this.toString().length());
     }
-    public PlObject lvalue_substr(PlObject offset, PlObject length) {
+    public PlObject lvalue_substr(int offset, int length) {
         if (this.is_lvalue()) {
             return new PlLvalueSubstring(this, offset, length);
         }
@@ -5232,13 +5232,13 @@ class PlLvalueSubstring extends PlLazyLvalue {
     private String end;
     private String replacement;
 
-    public PlLvalueSubstring(PlObject lv, PlObject offset, PlObject length) {
+    public PlLvalueSubstring(PlObject lv, int offset, int length) {
         this.lv = lv;
         this.replacement = lv.get().substr(offset, length).toString();
 
         String s = lv.toString();
-        int ofs = offset.to_int();
-        int len = length.to_int();
+        int ofs = offset;
+        int len = length;
         if (ofs < 0) {
             ofs = s.length() + ofs;
         }
