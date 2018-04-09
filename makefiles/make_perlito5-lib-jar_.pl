@@ -88,7 +88,7 @@ import org.perlito.Perlito5.PlString;
 import org.perlito.Perlito5.PlStringReader;
 import org.perlito.Perlito5.PlTieArrayList;
 import org.perlito.Perlito5.PlTieHashMap;
-import org.perlito.Perlito5.PlTieScalar;
+// import org.perlito.Perlito5.PlTieScalar;
 import org.perlito.Perlito5.PlUndef;
 import org.perlito.Perlito5.PlV;
 

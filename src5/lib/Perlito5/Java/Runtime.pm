@@ -3367,9 +3367,6 @@ EOT
     public boolean is_lvalue() {
         return false;
     }
-    public boolean is_tiedScalar() {
-        return false;
-    }
     public boolean is_regex_result() {
         return false;
     }
@@ -5394,41 +5391,6 @@ class PlLazyScalarref extends PlLazyLvalue {
     }
 }
 
-class PlTieScalar extends PlScalarImmutable {
-    // this is not immutable, but we do store it in PlLvalue
-    // so it needs to be a "PlScalarImmutable"
-
-    public PlObject tied;
-    public PlObject old_var;
-
-    public PlTieScalar() {
-    }
-    public boolean is_tiedScalar() {
-        return true;
-    }
-    public PlObject tied() {
-        return tied;
-    }
-
-    public PlScalarImmutable get() {
-        PlScalarImmutable v = PerlOp.call("FETCH", new PlArray(tied), PlCx.VOID).scalar();
-        old_var = v;
-        return v;
-    }
-
-    public PlObject set(PlObject o) {
-        PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
-        return this;
-    }
-    public PlObject set(PlScalarImmutable o) {
-        PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
-        return this;
-    }
-    public PlObject set(PlLvalue o) {
-        PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
-        return this;
-    }
-}
 class PlLazyLvalue extends PlLvalue {
     public  PlLvalue llv;   // $$lv
 
@@ -5470,6 +5432,7 @@ class PlLvalue extends PlScalarObject {
     public PlScalarImmutable o;
     public Integer pos;
     public boolean regex_zero_length_flag;
+    public PlObject tied;
 
     // Note: several versions of PlLvalue()
     public PlLvalue() {
@@ -5513,32 +5476,29 @@ class PlLvalue extends PlScalarObject {
 
     // tie scalar
     public PlObject tie(PlArray args) {
-        if (this.o.is_tiedScalar()) {
+        if (this.tied != null) {
             this.untie();
         }
-        PlTieScalar v = new PlTieScalar();
         PlObject self = PerlOp.call("TIESCALAR", args, PlCx.VOID);
-        v.tied = self;
-        v.old_var = this.o;
-        this.set(v);
+        this.tied = self;
         return self;
     }
 
     public PlObject untie() {
-        if (this.o.is_tiedScalar()) {
-            PlObject tied = this.o.tied();
+        if (this.tied != null) {
+            PlObject tied = this.tied;
             PlObject untie = PerlOp.call("can", new PlArray(tied, new PlString("UNTIE")), PlCx.SCALAR);
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };
-            this.set(((PlTieScalar)o).old_var);
+            this.tied = null;
             return tied;
         }
         return this;
     }
     public PlObject tied() {
-        if (this.o.is_tiedScalar()) {
-            return o.tied();
+        if (this.tied != null) {
+            return this.tied;
         }
         return PlCx.UNDEF;
     }
@@ -5575,8 +5535,10 @@ class PlLvalue extends PlScalarObject {
     }
 
     public PlScalarImmutable get() {
-        if (this.o.is_tiedScalar()) {
-            return this.o.get();
+        if (this.tied != null) {
+            PlScalarImmutable v = PerlOp.call("FETCH", new PlArray(tied), PlCx.VOID).scalar();
+            this.o = v;
+            return v;
         }
         return this.o;
     }
@@ -5851,24 +5813,24 @@ class PlLvalue extends PlScalarObject {
         if (o.is_lvalue()) {
             o = o.get();
         }
-        if (this.o.is_tiedScalar()) {
-            ((PlTieScalar)this.o).set(o);
+        if (this.tied != null) {
+            PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
             return this;
         }
         this.o = (PlScalarImmutable)o;
         return this;
     }
     public PlObject set(PlScalarImmutable o) {
-        if (this.o.is_tiedScalar()) {
-            ((PlTieScalar)this.o).set(o);
+        if (this.tied != null) {
+            PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
             return this;
         }
         this.o = o;
         return this;
     }
     public PlObject set(PlLvalue o) {
-        if (this.o.is_tiedScalar()) {
-            ((PlTieScalar)this.o).set(o.get());
+        if (this.tied != null) {
+            PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
             return this;
         }
         this.o = o.get();
