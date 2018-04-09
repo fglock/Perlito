@@ -6507,11 +6507,25 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return (PlLvalue)PlCORE.die("Not a SCALAR reference");
     }
 
-    public static PlArray construct_list_of_aliases(PlString s) {
+    public static PlArray construct_list_of_aliases(PlScalarImmutable s) {
         PlArrayList aa = new PlArrayList();
-        aa.add(s);  // store lvalue as-is
+        aa.add(new PlROvalue(s));  // store lvalue as read-only
         return new PlArray(aa);
     }
+    public static PlArray construct_list_of_aliases(PlScalarImmutable s1, PlScalarImmutable s2) {
+        PlArrayList aa = new PlArrayList();
+        aa.add(new PlROvalue(s1));  // store lvalue as read-only
+        aa.add(new PlROvalue(s2));  // store lvalue as read-only
+        return new PlArray(aa);
+    }
+    public static PlArray construct_list_of_aliases(PlScalarImmutable... args) {
+        PlArrayList aa = new PlArrayList();
+        for (PlObject s : args) {
+            aa.add(new PlROvalue(s));  // store "read only"
+        }
+        return new PlArray(aa);
+    }
+
     public static PlArray construct_list_of_aliases(PlLvalue s) {
         PlArrayList aa = new PlArrayList();
         aa.add(s);  // store lvalue as-is
@@ -6523,6 +6537,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         aa.add(s2);  // store lvalue as-is
         return new PlArray(aa);
     }
+
     public static PlArray construct_list_of_aliases(PlArray s) {
         PlArrayList aa = new PlArrayList();
         int ll = s.to_int();
