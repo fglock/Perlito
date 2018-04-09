@@ -692,6 +692,13 @@ sub to_int {
         {
             return to_int( $cond->{arguments}[0], $level )
         }
+        if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<+>'
+           && (   $cond->{arguments}[0]->isa( 'Perlito5::AST::Int' )
+              ||  $cond->{arguments}[1]->isa( 'Perlito5::AST::Int' ) )
+           )
+        {
+            return to_int( $cond->{arguments}[0], $level ) . " + " . to_int( $cond->{arguments}[1], $level );
+        }
         if ($cond->isa( 'Perlito5::AST::Buf' )) {
             return int( 0 + $cond->{buf} );
         }
