@@ -37,7 +37,7 @@ package Perlito5::Java::LexicalBlock;
             # dead code     my ($x)
             return 1;
         }
-        if ( $decl->isa('Perlito5::AST::Decl') && ($decl->decl eq 'my' || $decl->decl eq 'our') ) {
+        if ( $decl->isa('Perlito5::AST::Decl') && ($decl->{decl} eq 'my' || $decl->{decl} eq 'our') ) {
             # dead code     my $x
             return 1;
         }
