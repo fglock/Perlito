@@ -125,12 +125,14 @@ sub emit_perl5 {
         return $self->{or_list}[0]->emit_perl5;
     }
 
+    my $pos = '$' . Perlito5::get_label();
+
     '(do { '
-        . 'my $pos1 = $MATCH->{to}; (do { '
-        . join( '}) || (do { $MATCH->{to} = $pos1; ',
+        . 'my ' . $pos . ' = $MATCH->{to}; ('
+        . join( ') || ($MATCH->{to} = ' . $pos . ', ',
               map( $_->emit_perl5, @{$self->{or_list}} )
             )
-    . '}) })';
+    . ') })';
 }
 sub set_captures_to_array {
     my $self = $_[0];
