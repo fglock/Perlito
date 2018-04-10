@@ -3112,15 +3112,9 @@ EOT
         return this;
     }
 
-    public PlObject hget_arrayref(PlObject i) {
-        return this.hget_arrayref(i.toString());
-    }
     public PlObject hget_arrayref(String i) {
         PlCORE.die("Not a HASH reference");
         return this;
-    }
-    public PlObject hget_hashref(PlObject i) {
-        return this.hget_hashref(i.toString());
     }
     public PlObject hget_hashref(String i) {
         PlCORE.die("Not a HASH reference");
@@ -4617,16 +4611,10 @@ class PlHashRef extends PlReference {
         return this.ha.hget_scalarref(i);
     }
 
-    public PlObject hget_arrayref(PlObject i) {
-        return this.ha.hget_arrayref(i);
-    }
     public PlObject hget_arrayref(String i) {
         return this.ha.hget_arrayref(i);
     }
 
-    public PlObject hget_hashref(PlObject i) {
-        return this.ha.hget_hashref(i);
-    }
     public PlObject hget_hashref(String i) {
         return this.ha.hget_hashref(i);
     }
@@ -5662,23 +5650,7 @@ class PlLvalue extends PlScalarObject {
         }
         return o.hget_arrayref(i);
     }
-    public PlObject hget_arrayref(PlObject i) {
-        PlScalarImmutable o = this.get();
-        if (o.is_undef()) {
-            o = new PlHashRef();
-            this.set(o);
-        }
-        return o.hget_arrayref(i);
-    }
     public PlObject hget_hashref(String i) {
-        PlScalarImmutable o = this.get();
-        if (o.is_undef()) {
-            o = new PlHashRef();
-            this.set(o);
-        }
-        return o.hget_hashref(i);
-    }
-    public PlObject hget_hashref(PlObject i) {
         PlScalarImmutable o = this.get();
         if (o.is_undef()) {
             o = new PlHashRef();
@@ -7543,19 +7515,6 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         return o;
     }
 
-    public PlObject hget_arrayref(PlObject i) {
-        String s = i.toString();
-        PlObject o = this.h.get(s);
-        if (o == null || o.is_undef()) {
-            PlArrayRef ar = new PlArrayRef();
-            this.hset(s, ar);
-            return ar;
-        }
-        else if (o.is_arrayref()) {
-            return o;
-        }
-        return PlCORE.die("Not an ARRAY reference");
-    }
     public PlObject hget_arrayref(String i) {
         PlObject o = this.h.get(i);
         if (o == null || o.is_undef()) {
@@ -7569,19 +7528,6 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         return PlCORE.die("Not an ARRAY reference");
     }
 
-    public PlObject hget_hashref(PlObject i) {
-        String s = i.toString();
-        PlObject o = this.h.get(s);
-        if (o == null || o.is_undef()) {
-            PlHashRef hr = new PlHashRef();
-            this.hset(s, hr);
-            return hr;
-        }
-        else if (o.is_hashref()) {
-            return o;
-        }
-        return PlCORE.die("Not a HASH reference");
-    }
     public PlObject hget_hashref(String i) {
         PlObject o = this.h.get(i);
         if (o == null || o.is_undef()) {
