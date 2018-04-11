@@ -148,7 +148,7 @@ Perlito5-Java work-in-progress
 
           - lexical variables are not shared between closures created in BEGIN blocks
 
-      - bug capturing BEGIN variables in eval-string:
+      - FIXED - bug capturing BEGIN variables in eval-string:
 
         ```
         $ time java -jar perlito5.jar -I src5/lib -Cperl5 -e ' my @v; BEGIN { @v = (123); sub x { @v }; eval " sub yy { \@v }  " } x; yy; '
@@ -201,13 +201,15 @@ Perlito5-Java work-in-progress
       - `no overloading` not implemented
       - `overload::constant` not implemented
       - `nomethod` not implemented
+      - some optimizations may cause a lower level overload to be called,
+        for example: call "0+" instead of "+".
 
   - file handles are partially implemented
       - open scalarref works
       - `<DATA>` works
       - open binary mode vs. open utf8 needs more tests
-      - files don't `auto-close`
-      - `$|` and `STDOUT->autoflush` not implemented
+      - files don't `auto-close`, because we use Java memory management
+      - `$|` works, but `STDOUT->autoflush` not implemented
 
   - `tr()` is partially implemented
       - modifier switches needs some tests
