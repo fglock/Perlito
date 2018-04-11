@@ -2866,7 +2866,8 @@ EOT
 
 }
 class PlObject implements Cloneable, Iterable<PlObject> {
-    public static final PlStringConstant REF = new PlStringConstant("");
+    public static final String REF_str = new String("");
+    public static final PlStringConstant REF = new PlStringConstant(REF_str);
 
     public Iterator<PlObject> iterator() {
         // if (this.is_array()) {
@@ -3331,6 +3332,12 @@ EOT
     public PlString ref() {
         return REF;
     }
+    public String ref_str() {
+        return REF_str;
+    }
+    public boolean ref_boolean() {
+        return false;
+    }
     public PlObject refaddr() {
         // Scalar::Util::refaddr()
         return PlCx.UNDEF;
@@ -3344,7 +3351,7 @@ EOT
             StringBuilder sb = new StringBuilder();
             PlClass bless = this.blessed_class();
             if ( bless != null ) {
-                sb.append(this.ref().toString());
+                sb.append(this.ref_str());
                 sb.append("=");
             }
             sb.append(this.reftype().toString());
@@ -3753,7 +3760,8 @@ class PlScalarImmutable extends PlScalarObject {
     }
 }
 class PlReference extends PlScalarImmutable {
-    public static final PlStringConstant REF = new PlStringConstant("REF");
+    public static final String REF_str = new String("REF");
+    public static final PlStringConstant REF = new PlStringConstant(REF_str);
     public PlClass bless;
 
     public boolean is_ref() {
@@ -3774,6 +3782,17 @@ class PlReference extends PlScalarImmutable {
         else {
             return this.bless.plClassName();
         }
+    }
+    public String ref_str() {
+        if ( this.bless == null ) {
+            return this.REF_str;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public boolean ref_boolean() {
+        return true;
     }
 
     public PlInt refaddr() {
@@ -3865,7 +3884,8 @@ EOT
     , <<'EOT'
 }
 class PlGlobRef extends PlReference {
-    public static final PlStringConstant REF = new PlStringConstant("GLOB");
+    public static final String REF_str = new String("GLOB");
+    public static final PlStringConstant REF = new PlStringConstant(REF_str);
     public PlFileHandle filehandle;
 
     public PlGlobRef(PlFileHandle filehandle) {
@@ -3889,6 +3909,18 @@ class PlGlobRef extends PlReference {
             return this.bless.plClassName();
         }
     }
+    public String ref_str() {
+        if ( this.bless == null ) {
+            return REF_str;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public boolean ref_boolean() {
+        return true;
+    }
+
     public PlObject reftype() {
         return REF;
     }
@@ -3945,7 +3977,8 @@ class PlStringReader extends Reader{
 }
 
 class PlFileHandle extends PlScalarImmutable {
-    // public static final PlStringConstant REF = new PlStringConstant("GLOB");
+    // public static final String REF_str = new String("GLOB");
+    // public static final PlStringConstant REF = new PlStringConstant(REF_str);
     public String  typeglob_name;
     public OutputStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
@@ -4160,7 +4193,8 @@ class PlRegex extends PlReference {
     public String  original_string;
     // public Matcher m;
     public boolean flag_xx;
-    public static final PlStringConstant REF = new PlStringConstant("Regexp");
+    public static final String REF_str = new String("Regexp");
+    public static final PlStringConstant REF = new PlStringConstant(REF_str);
 
     public PlRegex(String p, int flags, boolean flag_xx) {
         this.flag_xx = flag_xx;
@@ -4186,6 +4220,18 @@ class PlRegex extends PlReference {
             return this.bless.plClassName();
         }
     }
+    public String ref_str() {
+        if ( this.bless == null ) {
+            return REF_str;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public boolean ref_boolean() {
+        return true;
+    }
+
     public PlObject reftype() {
         return REF;
     }
@@ -4248,7 +4294,8 @@ class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
     public PlObject prototype;   // '$$$'
     public String pkg_name;      // 'main'
-    public static final PlStringConstant REF = new PlStringConstant("CODE");
+    public static final String REF_str = new String("CODE");
+    public static final PlStringConstant REF = new PlStringConstant(REF_str);
     public PlClosure currentSub;
     public boolean is_defined;
     // metadata for caller()
@@ -4355,6 +4402,18 @@ class PlClosure extends PlReference implements Runnable {
             return this.bless.plClassName();
         }
     }
+    public String ref_str() {
+        if ( this.bless == null ) {
+            return REF_str;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public boolean ref_boolean() {
+        return true;
+    }
+
     public PlObject reftype() {
         return REF;
     }
@@ -4370,7 +4429,8 @@ class PlClosure extends PlReference implements Runnable {
 }
 class PlLvalueRef extends PlReference {
     private PlObject o;
-    public static final PlStringConstant REF = new PlStringConstant("SCALAR");
+    public static final String REF_str = new String("SCALAR");
+    public static final PlStringConstant REF = new PlStringConstant(REF_str);
     public static final PlString REF_REF = new PlString("REF");
 
     public PlString ref() {
@@ -4384,6 +4444,21 @@ class PlLvalueRef extends PlReference {
             return this.bless.plClassName();
         }
     }
+    public String ref_str() {
+        if ( this.bless == null ) {
+            if ( this.o.is_ref() ) {
+                return REF_REF.toString();
+            }
+            return REF_str;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public boolean ref_boolean() {
+        return true;
+    }
+
     public PlInt refaddr() {
         // Scalar::Util::refaddr()
         int id = System.identityHashCode(this.o);
@@ -4415,7 +4490,8 @@ class PlLvalueRef extends PlReference {
     }
 }
 class PlArrayRef extends PlReference {
-    public static final PlStringConstant REF = new PlStringConstant("ARRAY");
+    public static final String REF_str = new String("ARRAY");
+    public static final PlStringConstant REF = new PlStringConstant(REF_str);
     public PlArray ar;
 
     public PlArrayRef() {
@@ -4460,6 +4536,18 @@ class PlArrayRef extends PlReference {
             return this.bless.plClassName();
         }
     }
+    public String ref_str() {
+        if ( this.bless == null ) {
+            return REF_str;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public boolean ref_boolean() {
+        return true;
+    }
+
     public PlObject reftype() {
         return REF;
     }
@@ -4501,7 +4589,8 @@ class PlArrayRef extends PlReference {
 }
 
 class PlHashRef extends PlReference {
-    public static final PlStringConstant REF = new PlStringConstant("HASH");
+    public static final String REF_str = new String("HASH");
+    public static final PlStringConstant REF = new PlStringConstant(REF_str);
     public PlHash ha;
 
     public PlHashRef() {
@@ -4529,6 +4618,18 @@ class PlHashRef extends PlReference {
             return this.bless.plClassName();
         }
     }
+    public String ref_str() {
+        if ( this.bless == null ) {
+            return REF_str;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public boolean ref_boolean() {
+        return true;
+    }
+
     public PlObject reftype() {
         return REF;
     }
@@ -6003,6 +6104,8 @@ EOT
             [ 'to_boolean'    => 'boolean'  ],
             [ 'blessed_class' => 'PlClass'  ],
             [ 'ref'           => 'PlString' ],
+            [ 'ref_str'       => 'String'   ],
+            [ 'ref_boolean'   => 'boolean'  ],
 
             # add "unbox" accessors to Java classes that were declared with:  'package MyJavaClass { Java }'
             (map {  my $class = $java_classes{$_};
@@ -6015,6 +6118,7 @@ EOT
       ))
 
     , <<'EOT'
+
 }
 
 EOT
@@ -8615,7 +8719,8 @@ EOT
                     my $java_native_to_perl = $class->{java_native_to_perl};
                     $class->{import} || $class->{extends} || $class->{implements} ? 
 "class ${java_native_to_perl} extends PlJavaObject {
-    public static final PlStringConstant REF = new PlStringConstant(\"${perl_package}\");
+    public static final String REF_str = new String(\"${perl_package}\");
+    public static final PlStringConstant REF = new PlStringConstant(REF_str);
     private ${java_class_name} stuff;
 
     public ${java_native_to_perl}(${java_class_name} stuff) {
@@ -8631,6 +8736,13 @@ EOT
     public PlString ref() {
         return REF;
     }
+    public String ref_str() {
+        return REF_str;
+    }
+    public boolean ref_boolean() {
+        return true;
+    }
+
     public boolean is_JavaObject() {
         return true;
     }
@@ -8719,6 +8831,13 @@ class PlJavaObject extends PlReference {
     public PlString ref() {
         return new PlString(stuff.getClass().getSimpleName());
     }
+    public String ref_str() {
+        return stuff.getClass().getSimpleName();
+    }
+    public boolean ref_boolean() {
+        return true;
+    }
+
     public PlObject reftype() {
         // Scalar::Util::reftype()
         return ref();

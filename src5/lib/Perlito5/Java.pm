@@ -618,6 +618,12 @@ sub to_native_bool {
         {
             return to_native_bool( $cond->{arguments}[0], $level, $wantarray )
         }
+        elsif (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'ref'
+           && $cond->{arguments} && @{$cond->{arguments}}
+           )
+        {
+            return $cond->{arguments}[0]->emit_java( $level, $wantarray ) . '.ref_boolean()';
+        }
         elsif ($cond->isa( 'Perlito5::AST::Int' )) {
             if ($cond->{int} == 0) {
                 return 'false';
@@ -667,6 +673,12 @@ sub to_native_str {
            )
         {
             return to_native_str( $cond->{arguments}[0], $level, $wantarray )
+        }
+        if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'ref'
+           && $cond->{arguments} && @{$cond->{arguments}}
+           )
+        {
+            return $cond->{arguments}[0]->emit_java( $level, $wantarray ) . '.ref_str()';
         }
         if ($cond->isa( 'Perlito5::AST::Buf' )) {
             return Perlito5::Java::escape_string( $cond->{buf} );
@@ -769,6 +781,12 @@ sub to_boolean {
                 if (@{$cond->{arguments}} == 1) {
                     return to_boolean( $cond->{arguments}[0], $level );
                 }
+            }
+            if (  $cond->{code} eq 'ref'
+               && $cond->{arguments} && @{$cond->{arguments}}
+               )
+            {
+                return $cond->{arguments}[0]->emit_java( $level, $wantarray ) . '.ref_boolean()';
             }
 
             # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
