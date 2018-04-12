@@ -245,8 +245,11 @@ sub emit_java {
 
     # This sub returns a list, to avoid the Java error: "constant string too long"
 
+    my %java_classes = %{ $args{java_classes} // {} };
+
     if ($Perlito5::JAVA_EVAL) {
-        return ( <<'EOT' );
+        return (
+            <<'EOT'
 
 // use perlito5-lib.jar
 import org.perlito.Perlito5.*;
@@ -254,11 +257,22 @@ import java.util.regex.Pattern;
 import java.time.*;
 import java.time.format.*;
 import java.lang.management.*;
-
 EOT
-    }
+            # import the Java classes
+            # that were declared with
+            #
+            #   package My::Java { import => "org.My.Java", ... }
+            #
+            , (( map {
+                        my $class = $java_classes{$_};
+                        $class->{import} ? "import $class->{import};\n" : ()
+                }
+                sort keys %java_classes
+              ))
 
-    my %java_classes = %{ $args{java_classes} // {} };
+            , "\n"
+        );
+    }
 
     my @number_unary = qw/ op_int neg complement abs sqrt cos sin exp log /;
 
