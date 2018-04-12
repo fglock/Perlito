@@ -771,8 +771,21 @@ conditionals should work fine, because these are not usually implemented as clos
   - workaround: add a plain-perl line, such as "return", "undef", or "1".
 
 
+BUG: importing Java types fails in `perlito5.jar` with `misc/Java/Calendar.pl`
+
+  ```
+  $ java -jar perlito5.jar -Isrc5/lib -I. -It  misc/Java/Calendar.pl
+  /PlEval5.java:19: error: illegal start of expression
+              calNewYork_102 = .getInstance();
+                               ^
+  /PlEval5.java:22: error: illegal start of expression
+              hour_103.set((calNewYork_102.get(.HOUR_OF_DAY)));
+  ```
+
 Extending a Java class with Perl
 --------------------------------
+
+Extending a Java class with Perl is very experimental, the API is going to change.
 
 ```perl
 # create a Java package
