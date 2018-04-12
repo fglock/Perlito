@@ -782,6 +782,14 @@ BUG: importing Java types fails in `perlito5.jar` with `misc/Java/Calendar.pl`
               hour_103.set((calNewYork_102.get(.HOUR_OF_DAY)));
   ```
 
+  ```
+  $ java -jar perlito5.jar -Isrc5/lib -I. -It misc/Java/CalendarEval.pl
+  /PlEval6.java:23: error: illegal start of expression
+                      calNewYork_119 = .getInstance();
+                                       ^
+  /PlEval6.java:25: error: illegal start of expression
+  ```
+
 Extending a Java class with Perl
 --------------------------------
 
