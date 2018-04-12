@@ -9,8 +9,8 @@ eval {
     my Java::Thread $thread1 = Java::Thread->new(
         sub {
             for my $i ( 0 .. 5 ) {
-                $shared++;                                             # unsafe!
-                $atomic->incrementAndGet();    # safe
+                $shared++;                      # unsafe!
+                $atomic->incrementAndGet();     # safe
                 print "thread 1; shared $shared\n";
                 sleep(1);
             }
@@ -19,8 +19,8 @@ eval {
     my Java::Thread $thread2 = Java::Thread->new(
         sub {
             for my $i ( 0 .. 5 ) {
-                $shared++;                                             # unsafe!
-                $atomic->incrementAndGet();    # safe
+                $shared++;                      # unsafe!
+                $atomic->incrementAndGet();     # safe
                 print "thread 2; shared $shared\n";
                 sleep(1);
             }
