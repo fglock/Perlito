@@ -33,6 +33,15 @@ sub perl5_to_java {
         die "Syntax error in eval near pos ", $match->{to};
     }
 
+    # TODO - process type annotations like:
+    #   package Java::Object { import => 'java.lang.Object' }
+    #
+    while ( @Perlito::ANNOTATION ) {
+        my $ann = shift(@Perlito::ANNOTATION);
+        my $str = Perlito5::AST::CompUnit::process_java_import_statement(@$ann);
+        # warn "ANNOTATION: [[[\n$str\n]]]\n";
+    }
+
     my $ast = 
         Perlito5::AST::Call->new(
             method => "postcircumfix:<( )>",
@@ -86,6 +95,13 @@ sub perl5_to_java {
 
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
 
+    return ($className, $java_code, $constants);
+}
+
+sub eval_ast {
+    my ($ast) = @_;
+    my $want = 0;
+
     # TODO - process type annotations like:
     #   package Java::Object { import => 'java.lang.Object' }
     #
@@ -94,13 +110,6 @@ sub perl5_to_java {
         my $str = Perlito5::AST::CompUnit::process_java_import_statement(@$ann);
         # warn "ANNOTATION: [[[\n$str\n]]]\n";
     }
-
-    return ($className, $java_code, $constants);
-}
-
-sub eval_ast {
-    my ($ast) = @_;
-    my $want = 0;
 
     # warn "AST:\n" . Data::Dumper::Dumper($ast);
 
@@ -113,15 +122,6 @@ sub eval_ast {
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
-
-    # TODO - process type annotations like:
-    #   package Java::Object { import => 'java.lang.Object' }
-    #
-    while ( @Perlito::ANNOTATION ) {
-        my $ann = shift(@Perlito::ANNOTATION);
-        my $str = Perlito5::AST::CompUnit::process_java_import_statement(@$ann);
-        # warn "ANNOTATION: [[[\n$str\n]]]\n";
-    }
 
     my $java_classes = Perlito5::Java::get_java_class_info() // {};
     my $className = "PlEval" . $Perlito5::ID++;
