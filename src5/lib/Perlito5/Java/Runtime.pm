@@ -59,6 +59,18 @@ sub perl5_to_java {
     $constants .= 
             "import org.perlito.Perlito5.*;\n"
           . "import java.util.regex.Pattern;\n"
+          . join("",
+                # import the Java classes
+                # that were declared with
+                #
+                #   package My::Java { import => "org.My.Java", ... }
+                #
+                map {
+                            my $class = $java_classes{$_};
+                            $class->{import} ? "import $class->{import};\n" : ()
+                    }
+                    sort keys %java_classes
+            )
           . "public class " . $className . " {\n";
     for my $s ( @Perlito5::Java::Java_constants ) {
         # say "s: [[$s]] ", ref($s), "\n";
@@ -115,6 +127,18 @@ sub eval_ast {
     $constants .= 
             "import org.perlito.Perlito5.*;\n"
           . "import java.util.regex.Pattern;\n"
+          . join("",
+                # import the Java classes
+                # that were declared with
+                #
+                #   package My::Java { import => "org.My.Java", ... }
+                #
+                map {
+                            my $class = $java_classes{$_};
+                            $class->{import} ? "import $class->{import};\n" : ()
+                    }
+                    sort keys %java_classes
+            )
           . "public class " . $className . " {\n";
     for my $s ( @Perlito5::Java::Java_constants ) {
         # say "s: [[$s]] ", ref($s), "\n";
@@ -123,6 +147,8 @@ sub eval_ast {
     $constants .= 
             "    public " . $className . "() {\n"
           . "    }\n";
+
+    # warn "constants [[\n$constants ]]\n";
 
     @_ = ($className, $java_code, $constants);
     return Java::inline('PlJavaCompiler.eval_java_string(List__)');
