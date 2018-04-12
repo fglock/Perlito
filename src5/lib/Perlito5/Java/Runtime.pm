@@ -54,6 +54,7 @@ sub perl5_to_java {
 
     # warn "in perl_to_java: ", Perlito5::Dumper::Dumper( \@Perlito5::Java::Java_constants );
 
+    my $java_classes = Perlito5::Java::get_java_class_info() // {};
     my $className = "PlEval" . $Perlito5::ID++;
     my $constants = "";
     $constants .= 
@@ -66,10 +67,10 @@ sub perl5_to_java {
                 #   package My::Java { import => "org.My.Java", ... }
                 #
                 map {
-                            my $class = $java_classes{$_};
+                            my $class = $java_classes->{$_};
                             $class->{import} ? "import $class->{import};\n" : ()
                     }
-                    sort keys %java_classes
+                    sort keys %$java_classes
             )
           . "public class " . $className . " {\n";
     for my $s ( @Perlito5::Java::Java_constants ) {
@@ -122,6 +123,7 @@ sub eval_ast {
         # warn "ANNOTATION: [[[\n$str\n]]]\n";
     }
 
+    my $java_classes = Perlito5::Java::get_java_class_info() // {};
     my $className = "PlEval" . $Perlito5::ID++;
     my $constants = "";
     $constants .= 
@@ -134,10 +136,10 @@ sub eval_ast {
                 #   package My::Java { import => "org.My.Java", ... }
                 #
                 map {
-                            my $class = $java_classes{$_};
+                            my $class = $java_classes->{$_};
                             $class->{import} ? "import $class->{import};\n" : ()
                     }
-                    sort keys %java_classes
+                    sort keys %$java_classes
             )
           . "public class " . $className . " {\n";
     for my $s ( @Perlito5::Java::Java_constants ) {
