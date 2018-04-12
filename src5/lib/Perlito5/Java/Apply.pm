@@ -962,7 +962,9 @@ package Perlito5::AST::Apply;
             my @out;
             if ($arg) {
                 for my $arg (@args) {
-                    my $context = ($wantarray eq 'list' || $wantarray eq 'runtime') ? $wantarray : 'void';
+                    my $context = ($wantarray eq 'list' || $wantarray eq 'runtime' || $wantarray eq 'return')
+                        ? $wantarray
+                        : 'void';
                     push @out, $arg->emit_java( $level, $context );
                 }
                 push @out, $arg->emit_java( $level, $wantarray, $autovivification_type );
