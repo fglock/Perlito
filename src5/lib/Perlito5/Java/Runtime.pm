@@ -53,11 +53,20 @@ sub perl5_to_java {
     # say "java-source: [" . $java_code . "]";
 
     # warn "in perl_to_java: ", Perlito5::Dumper::Dumper( \@Perlito5::Java::Java_constants );
+
+    my $className = "PlEval" . $Perlito5::ID++;
     my $constants = "";
+    $constants .= 
+            "import org.perlito.Perlito5.*;\n"
+          . "import java.util.regex.Pattern;\n"
+          . "public class " . $className . " {\n";
     for my $s ( @Perlito5::Java::Java_constants ) {
         # say "s: [[$s]] ", ref($s), "\n";
         $constants .= "    " . $s . ";\n";
     }
+    $constants .= 
+            "    public " . $className . "() {\n"
+          . "    }\n";
 
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
@@ -73,7 +82,7 @@ sub perl5_to_java {
         # warn "ANNOTATION: [[[\n$str\n]]]\n";
     }
 
-    return ($java_code, $constants);
+    return ($className, $java_code, $constants);
 }
 
 sub eval_ast {
@@ -101,13 +110,21 @@ sub eval_ast {
         # warn "ANNOTATION: [[[\n$str\n]]]\n";
     }
 
+    my $className = "PlEval" . $Perlito5::ID++;
     my $constants = "";
+    $constants .= 
+            "import org.perlito.Perlito5.*;\n"
+          . "import java.util.regex.Pattern;\n"
+          . "public class " . $className . " {\n";
     for my $s ( @Perlito5::Java::Java_constants ) {
         # say "s: [[$s]] ", ref($s), "\n";
         $constants .= "    " . $s . ";\n";
     }
+    $constants .= 
+            "    public " . $className . "() {\n"
+          . "    }\n";
 
-    @_ = ($java_code, $constants);
+    @_ = ($className, $java_code, $constants);
     return Java::inline('PlJavaCompiler.eval_java_string(List__)');
 }
 

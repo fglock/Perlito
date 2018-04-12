@@ -54,7 +54,6 @@ class PlJavaCompiler {
     static DynamicClassLoader classLoader;
     static JavaCompiler javac;
     static Boolean initDone;
-    static int invocationCount = 0;
     static List<String> optionList;
 
     public static void init() throws Exception
@@ -103,6 +102,7 @@ class PlJavaCompiler {
     public static PlObject eval_java_string(PlArray List__)
     {
 
+        String className = List__.shift().toString();
         String source    = List__.shift().toString();
         String constants = List__.shift().toString();
 
@@ -118,16 +118,9 @@ class PlJavaCompiler {
             }
 
             // TODO - test local(); initialize local() stack if needed
-            String className = "PlEval" + invocationCount;
-            invocationCount++;
 
             StringBuilder source5 = new StringBuilder();
-            source5.append("import org.perlito.Perlito5.*;\n");
-            source5.append("import java.util.regex.Pattern;\n");
-            source5.append("public class " + className + " {\n");
             source5.append(constants);
-            source5.append("    public " + className + "() {\n");
-            source5.append("    }\n");
             source5.append("    public static PlObject runEval(int want, PlArray List__) {\n");
             source5.append("        int return_context = want;\n");
             source5.append("        try {\n");
@@ -210,6 +203,7 @@ class PlJavaCompiler {
         // System.out.println("eval_string: enter");
         // (new Throwable()).printStackTrace();
 
+        String className;
         String outJava;
         String constants;
         PlObject tmp_scalar_hints = PlV.sget("main::" + (char)8).get();   // save $^H
@@ -226,8 +220,9 @@ class PlJavaCompiler {
                 new PlString(wantarray),
                 scope
             );
-            outJava = code[0].toString();
-            constants = code[1].toString();
+            className = code[0].toString();
+            outJava   = code[1].toString();
+            constants = code[2].toString();
             // System.out.println("eval_string: from Perlito5::Java::JavaCompiler::perl5_to_java \n[[[ " + outJava + " ]]");
             // System.out.println("eval_string: constants \n[[[ " + constants + " ]]");
         }
@@ -258,18 +253,9 @@ class PlJavaCompiler {
             }
 
             // TODO - test local(); initialize local() stack if needed
-            String className = "PlEval" + invocationCount;
-            invocationCount++;
 
             StringBuilder source5 = new StringBuilder();
-            source5.append("import org.perlito.Perlito5.*;\n");
-            source5.append("import java.util.regex.Pattern;\n");
-            source5.append("public class " + className + " {\n");
-
             source5.append(constants);
-
-            source5.append("    public " + className + "() {\n");
-            source5.append("    }\n");
             source5.append("    public static PlObject runEval(int want, Object scalar_val, Object array_val, Object hash_val, PlArray List__) {\n");
             source5.append("        int return_context = want;\n");
             for (int i = 0; i < scalar_name.length; i++) {
