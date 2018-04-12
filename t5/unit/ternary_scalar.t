@@ -1,7 +1,7 @@
 use feature 'say';
 # use Data::Dumper;
 
-say '1..11';
+say '1..14';
 
 sub say_ok {
     say "ok $_[0] - ", ($_[1] ? "list" : defined $_[1] ? "scalar" : "void");
@@ -38,4 +38,6 @@ $v = !arg_scalar(3) ? arg_error(4) : arg_scalar(4);
 @a = !arg_scalar(7) ? arg_error(8) : arg_list(8);
 
 $v = ( arg_void(9), arg_scalar(10) ) ? arg_scalar(11) : arg_error(11);
+
+@a = ( arg_void(12), arg_scalar(13) ) ? arg_list(14) : arg_error(14);
 
