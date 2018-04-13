@@ -57,8 +57,9 @@ sub set_java_class_defaults {
     #
     my $Java_class = Perlito5::Java::get_java_class_info();
     my @parts = split /\./, $java_import;
-    $Java_class->{$perl_package}->{java_type} //= $parts[-1];
-    $Java_class->{$perl_package}->{java_native_to_perl} //= 'p' . $Java_class->{$perl_package}->{java_type};
+    # $Java_class->{$perl_package}->{java_type} //= $parts[-1];
+    $Java_class->{$perl_package}->{java_type} //= $java_import;
+    $Java_class->{$perl_package}->{java_native_to_perl} //= 'p' . $parts[-1];
     # "List<String>" becomes "PlList_String_"
     $Java_class->{$perl_package}->{java_native_to_perl} =~ s/[<>]/_/g;
     my $perl_to_java = $perl_package;
