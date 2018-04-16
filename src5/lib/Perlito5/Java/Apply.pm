@@ -444,8 +444,8 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my @op;
             for my $arg ( @{ $self->{arguments} } ) {
-                if ( ( $arg->isa('Perlito5::AST::Var') && ( $arg->{sigil} eq '@' ) ) 
-                  || ( $arg->isa('Perlito5::AST::Apply') && ( $arg->{code} eq 'prefix:<@>' ) )
+                if ( ( (ref($arg) eq 'Perlito5::AST::Var') && ( $arg->{sigil} eq '@' ) ) 
+                  || ( (ref($arg) eq 'Perlito5::AST::Apply') && ( $arg->{code} eq 'prefix:<@>' ) )
                    )
                 {
                     push @op, $arg->emit_java($level, 'list' );
@@ -564,16 +564,16 @@ package Perlito5::AST::Apply;
         'prefix:<->' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = $self->{arguments}->[0];
-            if ($arg->isa('Perlito5::AST::Int')) {
+            if ((ref($arg) eq 'Perlito5::AST::Int')) {
                 $arg = Perlito5::AST::Int->new( int => -$arg->{int} );
                 return $arg->emit_java( $level, 'scalar' );
             }
-            if ($arg->isa('Perlito5::AST::Num')) {
+            if ((ref($arg) eq 'Perlito5::AST::Num')) {
                 $arg = Perlito5::AST::Num->new( num => -$arg->{num} );
                 return $arg->emit_java( $level, 'scalar' );
             }
             # negation of bareword treated like string
-            if ($arg->isa('Perlito5::AST::Apply') && $arg->{bareword}) {
+            if ((ref($arg) eq 'Perlito5::AST::Apply') && $arg->{bareword}) {
                 $arg = Perlito5::AST::Buf->new( buf => $arg->{code} );
             }
             $arg->emit_java( $level, 'scalar' ) . '.neg()';
@@ -686,7 +686,7 @@ package Perlito5::AST::Apply;
         'prefix:<\\>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            if ( $arg->isa('Perlito5::AST::Apply') ) {
+            if ( (ref($arg) eq 'Perlito5::AST::Apply') ) {
                 if ( $arg->{code} eq 'prefix:<@>' ) {
                     return 'new PlArrayRef(' . $arg->emit_java($level) . ')';
                 }
@@ -705,7 +705,7 @@ package Perlito5::AST::Apply;
                     return 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->{arguments}->[0]->emit_java($level) . ')';
                 }
             }
-            if ( $arg->isa('Perlito5::AST::Var') ) {
+            if ( (ref($arg) eq 'Perlito5::AST::Var') ) {
                 if ( $arg->{sigil} eq '@' ) {
                     return 'new PlArrayRef(' . $arg->emit_java($level) . ')';
                 }
@@ -828,9 +828,9 @@ package Perlito5::AST::Apply;
         'delete' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = $self->{arguments}->[0];
-            if ($arg->isa( 'Perlito5::AST::Lookup' )) {
+            if ((ref($arg) eq 'Perlito5::AST::Lookup' )) {
                 my $v = $arg->obj;
-                if (  $v->isa('Perlito5::AST::Var')
+                if (  (ref($v) eq 'Perlito5::AST::Var')
                    && $v->{_real_sigil} eq '%'
                    )
                 {
@@ -846,7 +846,7 @@ package Perlito5::AST::Apply;
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
-                if (  $v->isa('Perlito5::AST::Apply')
+                if (  (ref($v) eq 'Perlito5::AST::Apply')
                    && $v->{code} eq 'prefix:<$>'
                    )
                 {
@@ -863,9 +863,9 @@ package Perlito5::AST::Apply;
                         . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
             }
-            if ($arg->isa( 'Perlito5::AST::Index' )) {
+            if ((ref($arg) eq 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
-                if (  $v->isa('Perlito5::AST::Var')
+                if (  (ref($v) eq 'Perlito5::AST::Var')
                    && $v->{_real_sigil} eq '@'
                    )
                 {
@@ -874,7 +874,7 @@ package Perlito5::AST::Apply;
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . $arg->{index_exp}->emit_java($level) . ')';
                 }
-                if (  $v->isa('Perlito5::AST::Apply')
+                if (  (ref($v) eq 'Perlito5::AST::Apply')
                    && $v->{code} eq 'prefix:<$>'
                    )
                 {
@@ -891,7 +891,7 @@ package Perlito5::AST::Apply;
                         . $arg->{index_exp}->emit_java($level) . ')';
                 }
             }
-            if ($arg->isa( 'Perlito5::AST::Call' )) {
+            if ((ref($arg) eq 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
                     return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.hdelete('
                         . Perlito5::Java::to_context($wantarray) . ', '
@@ -903,13 +903,13 @@ package Perlito5::AST::Apply;
                         . $arg->{arguments}->emit_java($level) . ')';
                 }
             }
-            if (  $arg->isa('Perlito5::AST::Var')
+            if (  (ref($arg) eq 'Perlito5::AST::Var')
                && $arg->{sigil} eq '&'
                )
             {
                 die 'TODO delete &code';
             }
-            if (  $arg->isa('Perlito5::AST::Apply')
+            if (  (ref($arg) eq 'Perlito5::AST::Apply')
                && $arg->{code} eq 'prefix:<&>'
                )
             {
@@ -1082,7 +1082,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
 
             my $arg = $self->{arguments}->[0];
-            if ($arg->isa( "Perlito5::AST::Block" )) {
+            if ((ref($arg) eq "Perlito5::AST::Block" )) {
                 # do BLOCK
 
                 # this is disabled because we use "do-block" as a way to avoid the java error: "code too large"
@@ -1129,7 +1129,7 @@ package Perlito5::AST::Apply;
 
             my $arg = $self->{arguments}->[0] || Perlito5::AST::Var::SCALAR_ARG();
             my $eval;
-            if ($arg->isa( "Perlito5::AST::Block" )) {
+            if ((ref($arg) eq "Perlito5::AST::Block" )) {
                 # eval BLOCK
                 # rewrite to:   sub {...}->()
 
@@ -1365,8 +1365,8 @@ package Perlito5::AST::Apply;
                  # this argument can be a 'Decl' instead of 'Var'
                 $v = $v->{var};
             }
-            if ( ( $v->isa('Perlito5::AST::Var') && ( $v->{sigil} eq '%' || $v->{sigil} eq '@' ) ) 
-              || ( $v->isa('Perlito5::AST::Apply') && ( $v->{code} eq 'prefix:<@>' || $v->{code} eq 'prefix:<%>' ) )
+            if ( ( (ref($v) eq 'Perlito5::AST::Var') && ( $v->{sigil} eq '%' || $v->{sigil} eq '@' ) ) 
+              || ( (ref($v) eq 'Perlito5::AST::Apply') && ( $v->{code} eq 'prefix:<@>' || $v->{code} eq 'prefix:<%>' ) )
                )
             {
                 return $v->emit_java($level) . '.tie(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
@@ -1621,9 +1621,9 @@ package Perlito5::AST::Apply;
         'exists' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = $self->{arguments}->[0];
-            if ($arg->isa( 'Perlito5::AST::Lookup' )) {
+            if ((ref($arg) eq 'Perlito5::AST::Lookup' )) {
                 my $v = $arg->obj;
-                if (  $v->isa('Perlito5::AST::Var')
+                if (  (ref($v) eq 'Perlito5::AST::Var')
                    && $v->{sigil} eq '$'
                    )
                 {
@@ -1633,7 +1633,7 @@ package Perlito5::AST::Apply;
                         . ')';
                 }
 
-                if (  $v->isa('Perlito5::AST::Apply')
+                if (  (ref($v) eq 'Perlito5::AST::Apply')
                    && $v->{code} eq 'prefix:<$>'
                    )
                 {
@@ -1650,16 +1650,16 @@ package Perlito5::AST::Apply;
                         . ')';
                 }
             }
-            if ($arg->isa( 'Perlito5::AST::Index' )) {
+            if ((ref($arg) eq 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
-                if (  $v->isa('Perlito5::AST::Var')
+                if (  (ref($v) eq 'Perlito5::AST::Var')
                    && $v->{sigil} eq '$'
                    )
                 {
                     return $v->emit_java($level, 'array') . '.aexists(' . $arg->{index_exp}->emit_java($level) . ')';
                 }
 
-                if (  $v->isa('Perlito5::AST::Apply')
+                if (  (ref($v) eq 'Perlito5::AST::Apply')
                    && $v->{code} eq 'prefix:<$>'
                    )
                 {
@@ -1675,7 +1675,7 @@ package Perlito5::AST::Apply;
                 }
             }
 
-            if ($arg->isa( 'Perlito5::AST::Call' )) {
+            if ((ref($arg) eq 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
                     return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.hexists('
                         .   Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($arg->{arguments}), $level)
@@ -1685,7 +1685,7 @@ package Perlito5::AST::Apply;
                     return $arg->invocant->emit_java($level, $wantarray, 'array') . '.aexists(' . $arg->{arguments}->emit_java($level) . ')';
                 }
             }
-            if (  $arg->isa('Perlito5::AST::Var')
+            if (  (ref($arg) eq 'Perlito5::AST::Var')
                && $arg->{sigil} eq '&'
                )
             {
@@ -1694,7 +1694,7 @@ package Perlito5::AST::Apply;
                 my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
                 return 'new PlBool(PlV.cget_no_autoload(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ').is_coderef())';
             }
-            if (  $arg->isa('Perlito5::AST::Apply')
+            if (  (ref($arg) eq 'Perlito5::AST::Apply')
                && $arg->{code} eq 'prefix:<&>'
                )
             {
@@ -1725,7 +1725,7 @@ package Perlito5::AST::Apply;
             my @js;
             my $arg = $arguments[0];
             if ( $arg
-              && $arg->isa('Perlito5::AST::Apply')
+              && (ref($arg) eq 'Perlito5::AST::Apply')
               && $arg->{code} eq 'p5:m'
             ) {
                 # first argument of split() is a regex

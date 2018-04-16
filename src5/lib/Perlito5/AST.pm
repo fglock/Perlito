@@ -98,7 +98,7 @@ sub autoquote {
     # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
     # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
 
-    if ($index->isa('Perlito5::AST::Apply')
+    if ((ref($index) eq 'Perlito5::AST::Apply')
        && $index->{bareword}
        )
     {
@@ -107,7 +107,7 @@ sub autoquote {
             return Perlito5::AST::Buf->new( buf => $full_name );
         }
     }
-    elsif (  $index->isa('Perlito5::AST::Apply')
+    elsif (  (ref($index) eq 'Perlito5::AST::Apply')
           && ($index->code eq 'prefix:<->' || $index->code eq 'prefix:<+>')
           )
     {
@@ -119,7 +119,7 @@ sub autoquote {
                )
             if $arg;
     }
-    elsif (  $index->isa('Perlito5::AST::Apply')
+    elsif (  (ref($index) eq 'Perlito5::AST::Apply')
           && ($index->code eq 'list:<,>')
           )
     {
@@ -327,11 +327,11 @@ sub attributes { $_[0]->{attributes} }
 
 sub is_named_sub {
     my $self = shift;
-    $self->isa('Perlito5::AST::Sub') && $self->{name}
+    (ref($self) eq 'Perlito5::AST::Sub') && $self->{name}
 }
 sub is_anon_sub {
     my $self = shift;
-    $self->isa('Perlito5::AST::Sub') && !$self->{name}
+    (ref($self) eq 'Perlito5::AST::Sub') && !$self->{name}
 }
 
 

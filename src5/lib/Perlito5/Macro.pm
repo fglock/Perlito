@@ -500,7 +500,7 @@ sub while_file {
     return 0
         if ref($self) ne 'Perlito5::AST::While';
     my $cond = $self->{cond};
-    if ($cond->isa('Perlito5::AST::Apply') && ($cond->{code} eq 'readline')) {
+    if ((ref($cond) eq 'Perlito5::AST::Apply') && ($cond->{code} eq 'readline')) {
         # while (<>) ...  is rewritten as  while ( defined($_ = <>) ) { ...
         $self->{cond} = bless({
                 'arguments' => [
@@ -547,13 +547,13 @@ sub insert_return_in_if {
 }
 sub insert_return {
     my $self = $_[0];
-    if ($self->isa('Perlito5::AST::If')) {
+    if ((ref($self) eq 'Perlito5::AST::If')) {
         return insert_return_in_if($self);
     }
-    if ($self->isa('Perlito5::AST::Block')) {
+    if ((ref($self) eq 'Perlito5::AST::Block')) {
         return insert_return_in_block($self);
     }
-    if ($self->isa('Perlito5::AST::For')) {
+    if ((ref($self) eq 'Perlito5::AST::For')) {
         return (
             $self,
             Perlito5::AST::Apply->new(
@@ -564,7 +564,7 @@ sub insert_return {
             ),
         );
     }
-    if ( $self->isa('Perlito5::AST::While') ) {
+    if ( (ref($self) eq 'Perlito5::AST::While') ) {
         if (   $self->{cond}->isa('Perlito5::AST::Int')  && $self->{cond}{int} )
         {
             # do not emit "return" after while(1){...} because "unreachable statement"
@@ -582,7 +582,7 @@ sub insert_return {
             );
         }
     }
-    if ( $self->isa( 'Perlito5::AST::Sub' ) ) {
+    if ( (ref($self) eq 'Perlito5::AST::Sub' ) ) {
         if ( ! $self->{name} )
         {
             return Perlito5::AST::Apply->new(
@@ -604,14 +604,14 @@ sub insert_return {
             );
         }
     }
-    if (   $self->isa( 'Perlito5::AST::Int' )
-        || $self->isa( 'Perlito5::AST::Num' )
-        || $self->isa( 'Perlito5::AST::Buf' )
-        || $self->isa( 'Perlito5::AST::Index' )
-        || $self->isa( 'Perlito5::AST::Lookup' )
-        || $self->isa( 'Perlito5::AST::Call' )
-        || $self->isa( 'Perlito5::AST::Var' )
-        || $self->isa( 'Perlito5::AST::Decl' )
+    if (   (ref($self) eq 'Perlito5::AST::Int' )
+        || (ref($self) eq 'Perlito5::AST::Num' )
+        || (ref($self) eq 'Perlito5::AST::Buf' )
+        || (ref($self) eq 'Perlito5::AST::Index' )
+        || (ref($self) eq 'Perlito5::AST::Lookup' )
+        || (ref($self) eq 'Perlito5::AST::Call' )
+        || (ref($self) eq 'Perlito5::AST::Var' )
+        || (ref($self) eq 'Perlito5::AST::Decl' )
     ) {
         return Perlito5::AST::Apply->new(
                 'arguments' => [ $self ],
@@ -620,7 +620,7 @@ sub insert_return {
                 '_return_from_block' => 1,
             );
     }
-    if ( $self->isa( 'Perlito5::AST::Apply' ) ) {
+    if ( (ref($self) eq 'Perlito5::AST::Apply' ) ) {
         if ( $self->code eq 'return' ) {
             return $self;
         }
@@ -698,15 +698,15 @@ sub split_code_too_large {
 sub preprocess_regex {
     my $regex = shift;
 
-    if ($regex->isa('Perlito5::AST::Apply') && $regex->{code} eq 'circumfix:<( )>') {
+    if ((ref($regex) eq 'Perlito5::AST::Apply') && $regex->{code} eq 'circumfix:<( )>') {
         # $x =~ ( ... )
         ($regex) = @{ $regex->{arguments} };
         return preprocess_regex($regex);
     }
 
-    if ( $regex->isa('Perlito5::AST::Buf')   # $x =~ '\w'
-      || $regex->isa('Perlito5::AST::Var')   # $x =~ $regex
-      || ($regex->isa('Perlito5::AST::Apply') && $regex->{code} eq 'list:<.>')    # $x =~ ($r1 . $r2)
+    if ( (ref($regex) eq 'Perlito5::AST::Buf')   # $x =~ '\w'
+      || (ref($regex) eq 'Perlito5::AST::Var')   # $x =~ $regex
+      || ((ref($regex) eq 'Perlito5::AST::Apply') && $regex->{code} eq 'list:<.>')    # $x =~ ($r1 . $r2)
       )
     {
         $regex = Perlito5::AST::Apply->new(

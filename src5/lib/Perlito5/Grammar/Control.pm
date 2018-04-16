@@ -94,7 +94,7 @@ token when {
 sub is_bareword {
     my $term = shift;
 
-    $term->isa('Perlito5::AST::Apply') and $term->{bareword};
+    (ref($term) eq 'Perlito5::AST::Apply') and $term->{bareword};
 }
 
 token for {

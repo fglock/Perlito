@@ -27,25 +27,25 @@ package Perlito5::Java::LexicalBlock;
     sub looks_like_dead_code {
         my ($decl) = @_;
 
-        if ( $decl->isa('Perlito5::AST::Apply') && $decl->{code} eq 'circumfix:<( )>' ) {
+        if ( (ref($decl) eq 'Perlito5::AST::Apply') && $decl->{code} eq 'circumfix:<( )>' ) {
             # dead code     ()
             return 1 if !@{$decl->{arguments}};
             # dead code     (my $x, undef)
             return 1 if !grep {  !looks_like_dead_code($_)  } @{$decl->{arguments}};
         }
-        if ( $decl->isa('Perlito5::AST::Apply') && ($decl->{code} eq 'my' || $decl->{code} eq 'our') ) {
+        if ( (ref($decl) eq 'Perlito5::AST::Apply') && ($decl->{code} eq 'my' || $decl->{code} eq 'our') ) {
             # dead code     my ($x)
             return 1;
         }
-        if ( $decl->isa('Perlito5::AST::Decl') && ($decl->{decl} eq 'my' || $decl->{decl} eq 'our') ) {
+        if ( (ref($decl) eq 'Perlito5::AST::Decl') && ($decl->{decl} eq 'my' || $decl->{decl} eq 'our') ) {
             # dead code     my $x
             return 1;
         }
-        if (  ( $decl->isa('Perlito5::AST::Int') )
-           || ( $decl->isa('Perlito5::AST::Num') )
-           || ( $decl->isa('Perlito5::AST::Buf') )
-           || ( $decl->isa('Perlito5::AST::Var') && $decl->{sigil} ne '&' )
-           || ( $decl->isa('Perlito5::AST::Apply') && $decl->{code} eq 'undef' && !@{$decl->{arguments}} )
+        if (  ( (ref($decl) eq 'Perlito5::AST::Int') )
+           || ( (ref($decl) eq 'Perlito5::AST::Num') )
+           || ( (ref($decl) eq 'Perlito5::AST::Buf') )
+           || ( (ref($decl) eq 'Perlito5::AST::Var') && $decl->{sigil} ne '&' )
+           || ( (ref($decl) eq 'Perlito5::AST::Apply') && $decl->{code} eq 'undef' && !@{$decl->{arguments}} )
            )
         {
             # dead code     123
@@ -86,7 +86,7 @@ package Perlito5::Java::LexicalBlock;
             # this looks like dead code
         }
         elsif (
-             $decl->isa('Perlito5::AST::Apply')
+             (ref($decl) eq 'Perlito5::AST::Apply')
           && (  $decl->{code} eq "list:<,>"
              || $decl->{code} eq "infix:<=>>"
              || $decl->{code} eq "circumfix:<( )>"
@@ -103,11 +103,11 @@ package Perlito5::Java::LexicalBlock;
             push @str, emit_body_statement($_)
                 for @{$decl->{arguments}};
         }
-        elsif ( $decl->isa('Perlito5::AST::CompUnit')
-              || $decl->isa('Perlito5::AST::For' )
-              || $decl->isa('Perlito5::AST::While' )
-              || $decl->isa('Perlito5::AST::If' )
-              || $decl->isa('Perlito5::AST::Block' )
+        elsif ( (ref($decl) eq 'Perlito5::AST::CompUnit')
+              || (ref($decl) eq 'Perlito5::AST::For' )
+              || (ref($decl) eq 'Perlito5::AST::While' )
+              || (ref($decl) eq 'Perlito5::AST::If' )
+              || (ref($decl) eq 'Perlito5::AST::Block' )
               )
         {
             push @str, $decl->emit_java( $level, 'statement' );
@@ -134,7 +134,7 @@ package Perlito5::Java::LexicalBlock;
             push @str, $_->emit_java($level, 'statement') . ';';
         }
 
-        if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->{code} eq 'return' ) {
+        if ( (ref($last_statement) eq 'Perlito5::AST::Apply' ) && $last_statement->{code} eq 'return' ) {
             if ( $self->{top_level} || $last_statement->{_return_from_block} || $Perlito5::JAVA_CAN_RETURN ) {
                 if (!@{$last_statement->{arguments}}) {
                     push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
@@ -161,9 +161,9 @@ package Perlito5::Java::LexicalBlock;
         else {
             my $s = $last_statement->emit_java($level, 'runtime');
             $s .= ';'
-              unless $last_statement->isa('Perlito5::AST::If')
-              || $last_statement->isa('Perlito5::AST::While')
-              || $last_statement->isa('Perlito5::AST::Block');
+              unless (ref($last_statement) eq 'Perlito5::AST::If')
+              || (ref($last_statement) eq 'Perlito5::AST::While')
+              || (ref($last_statement) eq 'Perlito5::AST::Block');
             push @str, $s;
         }
         return @str;
@@ -185,7 +185,7 @@ package Perlito5::Java::LexicalBlock;
 
                 # TODO - test for "if" with "return" in both sides
 
-                if ( $stmt->isa( 'Perlito5::AST::Apply' ) && $stmt->{code} eq 'return' ) {
+                if ( (ref($stmt) eq 'Perlito5::AST::Apply' ) && $stmt->{code} eq 'return' ) {
                     last STMT;
                 }
             }
@@ -1500,7 +1500,7 @@ package Perlito5::AST::Call;
             $method = 'hget_lvalue'    if $autovivification_type eq 'lvalue';
 
             my $args = $self->{arguments};
-            if (  $args->isa('Perlito5::AST::Apply')
+            if (  (ref($args) eq 'Perlito5::AST::Apply')
                && $args->{code} eq 'list:<,>'
                )
             {
@@ -1673,7 +1673,7 @@ package Perlito5::AST::Call;
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
 
             my $args = $self->{arguments};
-            if (  $args->isa('Perlito5::AST::Apply')
+            if (  (ref($args) eq 'Perlito5::AST::Apply')
                && $args->{code} eq 'list:<,>'
                )
             {
@@ -1935,10 +1935,10 @@ package Perlito5::AST::For;
             my $cond = $self->{cond};
             my $loop_expression;
             my $loop_expression_is_integer = 0;
-            if ( $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'infix:<..>' ) {
+            if ( (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'infix:<..>' ) {
                 my ($arg1, $arg2) = @{ $cond->{arguments} };
 
-                if ($arg1->isa('Perlito5::AST::Int') && $arg2->isa('Perlito5::AST::Int')) {
+                if ((ref($arg1) eq 'Perlito5::AST::Int') && (ref($arg2) eq 'Perlito5::AST::Int')) {
                     $loop_expression_is_integer = 1;
                     $loop_expression = 
                           'long ' . $local_label . ' = ' . $arg1->{int} . '; '
@@ -1953,7 +1953,7 @@ package Perlito5::AST::For;
                         .     ')';
                 }
             }
-            elsif ( $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'list:<,>' ) {
+            elsif ( (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'list:<,>' ) {
                 # TODO - create an iterator over the iterators
                 # TODO - optimization - use to_list() when the topic doesn't need to mutate
                 $loop_expression = 'PlObject ' . $local_label

@@ -333,7 +333,7 @@ sub statement_parse_inner {
 
     # did we just see a label?
     if (  $str->[$res->{to}] eq ':'
-       && $res->{capture}->isa('Perlito5::AST::Apply')
+       && ref($res->{capture}) eq 'Perlito5::AST::Apply'
        && $res->{capture}{bareword}
        )
     {
