@@ -20186,8 +20186,8 @@ use feature 'say';
         (my $perl_package, my $java_import) = @_;
         my $Java_class = Perlito5::Java::get_java_class_info();
         my @parts = split(m/\./, $java_import);
-        $Java_class->{$perl_package}->{"java_type"} //= $parts[-1];
-        $Java_class->{$perl_package}->{"java_native_to_perl"} //= "p" . ($Java_class->{$perl_package}->{"java_type"});
+        $Java_class->{$perl_package}->{"java_type"} //= $java_import;
+        $Java_class->{$perl_package}->{"java_native_to_perl"} //= "p" . $parts[-1];
         $Java_class->{$perl_package}->{"java_native_to_perl"} =~ s/[<>]/_/g;
         my $perl_to_java = $perl_package;
         $perl_to_java =~ s/:://g;
@@ -20436,11 +20436,16 @@ use feature 'say';
         my $cond = shift;
         my $level = shift;
         my $wantarray = shift;
-        if ($cond->isa("Perlito5::AST::Apply") && $cond->{"code"} eq "circumfix:<( )>" && $cond->{"arguments"} && @{$cond->{"arguments"}}) {;
-            return Perlito5::Java::to_native_str($cond->{"arguments"}->[0], $level, $wantarray)
-        }
-        if ($cond->isa("Perlito5::AST::Apply") && $cond->{"code"} eq "ref" && $cond->{"arguments"} && @{$cond->{"arguments"}}) {;
-            return $cond->{"arguments"}->[0]->emit_java($level, $wantarray) . ".ref_str()"
+        if ($cond->isa("Perlito5::AST::Apply") && $cond->{"arguments"} && @{$cond->{"arguments"}}) {
+            if ($cond->{"code"} eq "circumfix:<( )>") {;
+                return Perlito5::Java::to_native_str($cond->{"arguments"}->[0], $level, $wantarray)
+            }
+            if ($cond->{"code"} eq "ref") {;
+                return $cond->{"arguments"}->[0]->emit_java($level, $wantarray) . ".ref_str()"
+            }
+            if ($cond->{"code"} eq "list:<.>") {;
+                return "(" . join(" + ", map(Perlito5::Java::to_native_str($_, $level, "scalar"), @{$cond->{"arguments"}})) . ")"
+            }
         }
         if ($cond->isa("Perlito5::AST::Buf")) {;
             return Perlito5::Java::escape_string($cond->{"buf"})
@@ -24034,13 +24039,7 @@ class SourceCode extends SimpleJavaFileObject {
         my $constants = '';
         $constants .= "import org.perlito.Perlito5.*;
 " . "import java.util.regex.Pattern;
-" . join('', map {
-            my $class = $java_classes->{$_};
-            $class->{"import"} ? "import " . ($class->{"import"}) . ";
-" : ()
-        } sort {;
-            $a cmp $b
-        } keys(%{$java_classes})) . "public class " . $className . " {
+" . "public class " . $className . " {
 ";
         for my $s (@Perlito5::Java::Java_constants) {;
             $constants .= "    " . $s . ";
@@ -24071,13 +24070,7 @@ class SourceCode extends SimpleJavaFileObject {
         my $constants = '';
         $constants .= "import org.perlito.Perlito5.*;
 " . "import java.util.regex.Pattern;
-" . join('', map {
-            my $class = $java_classes->{$_};
-            $class->{"import"} ? "import " . ($class->{"import"}) . ";
-" : ()
-        } sort {;
-            $a cmp $b
-        } keys(%{$java_classes})) . "public class " . $className . " {
+" . "public class " . $className . " {
 ";
         for my $s (@Perlito5::Java::Java_constants) {;
             $constants .= "    " . $s . ";

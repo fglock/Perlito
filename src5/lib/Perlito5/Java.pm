@@ -669,17 +669,16 @@ sub to_native_str {
         my $cond = shift;
         my $level = shift;
         my $wantarray = shift;
-        if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'circumfix:<( )>'
-           && $cond->{arguments} && @{$cond->{arguments}}
-           )
-        {
-            return to_native_str( $cond->{arguments}[0], $level, $wantarray )
-        }
-        if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'ref'
-           && $cond->{arguments} && @{$cond->{arguments}}
-           )
-        {
-            return $cond->{arguments}[0]->emit_java( $level, $wantarray ) . '.ref_str()';
+        if ( $cond->isa('Perlito5::AST::Apply') && $cond->{arguments} && @{$cond->{arguments}} ) {
+            if (  $cond->{code} eq 'circumfix:<( )>' ) {
+                return to_native_str( $cond->{arguments}[0], $level, $wantarray )
+            }
+            if (  $cond->{code} eq 'ref' ) {
+                return $cond->{arguments}[0]->emit_java( $level, $wantarray ) . '.ref_str()';
+            }
+            if (  $cond->{code} eq 'list:<.>' ) {
+                return '(' . join( ' + ', map( Perlito5::Java::to_native_str($_, $level, 'scalar'), @{ $cond->{arguments} } ) ) . ')';
+            }
         }
         if ($cond->isa( 'Perlito5::AST::Buf' )) {
             return Perlito5::Java::escape_string( $cond->{buf} );
