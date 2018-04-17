@@ -13,14 +13,22 @@ use Perlito5::Grammar::Map;
 use Perlito5::Grammar::Attribute;
 use Perlito5::Grammar::Number;
 
+our %is_ident_start = map { $_ => 1 } (
+    'a' .. 'z',
+    'A' .. 'Z',
+    '_'
+);
+our %is_ident_middle = map { $_ => 1 } (
+    'a' .. 'z',
+    'A' .. 'Z',
+    '0' .. '9',
+    '_'
+);
+
 sub word {
     my $str = $_[0];
     my $pos = $_[1];
-    return unless
-           ($str->[$pos] ge "a" && $str->[$pos] le "z")
-        || ($str->[$pos] ge "A" && $str->[$pos] le "Z")
-        || ($str->[$pos] ge "0" && $str->[$pos] le "9")
-        || ($str->[$pos] eq "_");
+    return unless $is_ident_middle{ $str->[$pos] };
     $pos++;
     return {'str' => $_[0], 'from' => $_[1], 'to' => $pos}
 }
@@ -28,17 +36,9 @@ sub word {
 sub ident {
     my $str = $_[0];
     my $pos = $_[1];
-    return unless
-           ($str->[$pos] ge "a" && $str->[$pos] le "z")
-        || ($str->[$pos] ge "A" && $str->[$pos] le "Z")
-        || ($str->[$pos] eq "_");
+    return unless $is_ident_start{ $str->[$pos] };
     $pos++;
-    while (
-           ($str->[$pos] ge "a" && $str->[$pos] le "z")
-        || ($str->[$pos] ge "A" && $str->[$pos] le "Z")
-        || ($str->[$pos] ge "0" && $str->[$pos] le "9")
-        || ($str->[$pos] eq "_")
-    ) {
+    while ( $is_ident_middle{ $str->[$pos] } ) {
         $pos++;
     }
     ($pos - $_[1]) > 251 && die('Identifier too long');

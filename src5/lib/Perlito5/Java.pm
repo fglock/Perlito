@@ -391,6 +391,11 @@ my %safe_char = (
     '|' => 1,
     '}' => 1,
     '~' => 1,
+    map { $_ => 1 } (
+            'A' .. 'Z',
+            'a' .. 'z',
+            '0' .. '9',
+        ),
 );
 
 sub escape_string {
@@ -399,17 +404,11 @@ sub escape_string {
     my $tmp = '';
     my $has_char = 0;
     return '""' if $s eq '';
-    for my $i (0 .. length($s) - 1) {
-        my $c = substr($s, $i, 1);
+    for my $c ( split "", $s ) {
         if ( $c eq '\\' || $c eq '"' ) {
             $tmp = $tmp . '\\' . $c;
         }
-        elsif  (  ($c ge 'a' && $c le 'z')
-            || ($c ge 'A' && $c le 'Z')
-            || ($c ge '0' && $c le '9')
-            || exists( $safe_char{$c} )
-            )
-        {
+        elsif ( exists( $safe_char{$c} ) ) {
             $tmp = $tmp . $c;
         }
         elsif (ord($c) > 65535) {

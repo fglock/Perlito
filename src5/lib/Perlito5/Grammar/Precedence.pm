@@ -21,14 +21,6 @@ sub is_fixity_type {
     return $Operator->{$fixity_type}{$op_name}
 }
 
-sub is_ident_middle {
-    my $c = shift;
-       ($c ge 'a' && $c le 'z')
-    || ($c ge 'A' && $c le 'Z')
-    || ($c ge '0' && $c le '9')
-    || ($c eq '_')
-}
-
 my @Parsed_op_chars = (2, 1);
 my %Parsed_op = (
       # 1 char
@@ -67,7 +59,7 @@ sub op_parse {
         if (exists($End_token->{$term})) {
             my $c1 = $str->[$pos + $len - 1];
             my $c2 = $str->[$pos + $len];
-            if (  !(is_ident_middle($c1) && is_ident_middle($c2) )
+            if (  !($Perlito5::Grammar::is_ident_middle{$c1} && $Perlito5::Grammar::is_ident_middle{$c2} )
                && !($c1 eq '<' && $c2 eq '<')
                )
             {
@@ -89,7 +81,7 @@ sub op_parse {
             if (exists($Term{$term})) {
                 my $c1 = $str->[$pos + $len - 1];
                 my $c2 = $str->[$pos + $len];
-                if ( ($c1 ge '0' && $c1 le '9') || !is_ident_middle($c1) || !is_ident_middle($c2) ) {
+                if ( ($c1 ge '0' && $c1 le '9') || !$Perlito5::Grammar::is_ident_middle{$c1} || !$Perlito5::Grammar::is_ident_middle{$c2} ) {
                     my $m = $Term{$term}->($str, $pos);
                     return $m if $m;
                 }
@@ -111,7 +103,7 @@ sub op_parse {
         if (exists($Op{$op})) {
             my $c1 = $str->[$pos + $len - 1];
             my $c2 = $str->[$pos + $len];
-            if (   (  !(is_ident_middle($c1) && is_ident_middle($c2))   # "and" can't be followed by "_"
+            if (   (  !($Perlito5::Grammar::is_ident_middle{$c1} && $Perlito5::Grammar::is_ident_middle{$c2})   # "and" can't be followed by "_"
                    && !($c1 eq '&' && $c2 eq '&')                       # "&" can't be followed by "&"
                    ) 
                 || (  $c1 eq 'x' && $c2 ge '0' && $c2 le '9'            # "x3" is ok, parses as "x 3"
