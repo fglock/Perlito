@@ -401,7 +401,10 @@ sub escape_string {
     return '""' if $s eq '';
     for my $i (0 .. length($s) - 1) {
         my $c = substr($s, $i, 1);
-        if  (  ($c ge 'a' && $c le 'z')
+        if ( $c eq '\\' || $c eq '"' ) {
+            $tmp = $tmp . '\\' . $c;
+        }
+        elsif  (  ($c ge 'a' && $c le 'z')
             || ($c ge 'A' && $c le 'Z')
             || ($c ge '0' && $c le '9')
             || exists( $safe_char{$c} )
@@ -415,14 +418,14 @@ sub escape_string {
             # new String(Character.toChars((int)(1114109L)))
 
             push @out, "\"$tmp\"" if $tmp ne '';
+            $has_char = 1 if !@out;
             push @out, "new String(Character.toChars(" . ord($c) . "))";
-            $has_char = 1;
             $tmp = '';
         }
         else {
             push @out, "\"$tmp\"" if $tmp ne '';
+            $has_char = 1 if !@out;
             push @out, "(char)" . ord($c) . "";
-            $has_char = 1;
             $tmp = '';
         }
     }
