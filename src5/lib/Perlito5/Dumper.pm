@@ -157,7 +157,7 @@ sub escape_string {
         if ( $c eq '\\' || $c eq '$' || $c eq '@' || $c eq '"' ) {
             $tmp = $tmp . '\\' . $c;
         }
-        if ( exists( $safe_char{$c} ) ) {
+        elsif ( exists( $safe_char{$c} ) ) {
             $tmp = $tmp . $c;
         }
         else {
