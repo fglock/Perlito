@@ -43,8 +43,10 @@ sub term_space {
     my $str = $_[0];
     my $pos = $_[1];
     my $p = $pos;
-    while ( $p <= @$str && $space{ $str->[$p] }) {
-        $p = $space{ $str->[$p] }->($str, $p+1)
+    my $sp = $space{ $str->[$p] };
+    while ( $p <= @$str && $sp) {
+        $p = $sp->($str, $p+1);
+        $sp = $space{ $str->[$p] };
     }
     return { str => $str, from => $pos, to => $p, capture => [ 'space',   ' ' ] }
 }
@@ -169,8 +171,10 @@ sub ws {
     my $str = $_[0];
     my $pos = $_[1];
     my $p = $pos;
-    while ( $p <= @$str && $space{ $str->[$p] }) {
-        $p = $space{ $str->[$p] }->($str, $p+1)
+    my $sp = $space{ $str->[$p] };
+    while ( $p <= @$str && $sp) {
+        $p = $sp->($str, $p+1);
+        $sp = $space{ $str->[$p] };
     }
     if ($p == $pos) {
         return;
@@ -182,10 +186,12 @@ sub opt_ws {
     my $str = $_[0];
     my $pos = $_[1];
     my $p = $pos;
+    my $sp = $space{ $str->[$p] };
     # if ($p == 50) { print STDERR "[[ ", join("", @{$str}), "]]\n"; }
     # print STDERR "$pos: $Perlito5::FILE_NAME $Perlito5::LINE_NUMBER\n";
-    while ( $p <= @$str && $space{ $str->[$p] }) {
-        $p = $space{ $str->[$p] }->($str, $p+1)
+    while ( $p <= @$str && $sp) {
+        $p = $sp->($str, $p+1);
+        $sp = $space{ $str->[$p] };
     }
     return { str => $_[0], from => $pos, to => $p }
 }
