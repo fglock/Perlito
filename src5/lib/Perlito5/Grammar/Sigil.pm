@@ -126,12 +126,10 @@ sub term_special_var {
         my $c0 = $str->[ $pos + $len - 1 ];
         my $c1 = $str->[ $pos + $len ];
         if  ( 
-                ( $c0 eq '$' || $c0 eq '@' || $c0 eq '%' || $c0 eq '*' || $c0 eq '&' )
+                ( $Perlito5::Grammar::is_var_sigil{$c0} )
             &&  
-                ( $c1 eq '$' || $c1 eq '@' || $c1 eq '%' || $c1 eq '*' || $c1 eq '&' 
-                || ( $c1 ge 'a' && $c1 le 'z' )
-                || ( $c1 ge 'A' && $c1 le 'Z' )
-                || ( $c1 ge '0' && $c1 le '9' )
+                ( $Perlito5::Grammar::is_var_sigil{$c1}
+                || $Perlito5::Grammar::is_ident_middle{$c1}
                 )
             ) 
         {
