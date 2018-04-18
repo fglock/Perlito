@@ -24,13 +24,22 @@ our %is_ident_middle = map { $_ => 1 } (
     '0' .. '9',
     '_'
 );
+our %is_var_sigil = map { $_ => 1 } (
+    '$', '%', '@', '&', '*',
+);
 
 sub word {
     my $str = $_[0];
     my $pos = $_[1];
     return unless $is_ident_middle{ $str->[$pos] };
-    $pos++;
-    return {'str' => $_[0], 'from' => $_[1], 'to' => $pos}
+    return {'str' => $str, 'from' => $pos, 'to' => $pos + 1}
+}
+
+sub var_sigil {
+    my $str = $_[0];
+    my $pos = $_[1];
+    return unless $is_var_sigil{ $str->[$pos] };
+    return {'str' => $str, 'from' => $pos, 'to' => $pos + 1}
 }
 
 sub ident {
@@ -42,7 +51,7 @@ sub ident {
         $pos++;
     }
     ($pos - $_[1]) > 251 && die('Identifier too long');
-    return {'str' => $_[0], 'from' => $_[1], 'to' => $pos}
+    return {'str' => $str, 'from' => $_[1], 'to' => $pos}
 }
 
 sub caret_char {
@@ -60,7 +69,7 @@ sub caret_char {
     }
     return if $c lt "\cA" || $c gt "\cZ";
     return {
-             str  => $_[0],
+             str  => $str,
              from => $_[1],
              to   => $pos + 1,
              capture => $c,
@@ -103,8 +112,6 @@ token opt_type {
     |   '::'?  <full_ident>   { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{full_ident}) }
     |   ''                    { $MATCH->{capture} = '' }
 };
-
-token var_sigil     { \$ |\% |\@ |\& | \* };
 
 token var_name      { <full_ident> | <Perlito5::Grammar::Number::digits> };
 
