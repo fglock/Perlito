@@ -361,77 +361,72 @@ our %special_scalar = (
 );
 
 my %safe_char = (
-    ' ' => 1,
-    '!' => 1,
-    '#' => 1,
-    '$' => 1,
-    '%' => 1,
-    '&' => 1,
-    '(' => 1,
-    ')' => 1,
-    '*' => 1,
-    '+' => 1,
-    ',' => 1,
-    '-' => 1,
-    '.' => 1,
-    '/' => 1,
-    ':' => 1,
-    ';' => 1,
-    '<' => 1,
-    '=' => 1,
-    '>' => 1,
-    '?' => 1,
-    '@' => 1,
-    '[' => 1,
-    ']' => 1,
-    '^' => 1,
-    '_' => 1,
-    '`' => 1,
-    '{' => 1,
-    '|' => 1,
-    '}' => 1,
-    '~' => 1,
-    map { $_ => 1 } (
-            'A' .. 'Z',
-            'a' .. 'z',
-            '0' .. '9',
-        ),
+    '\\'    => '\\\\',
+    '"'     => '\\"',
+    chr(10) => '\\n',
+    chr(13) => '\\r',
+    map { $_ => $_ } (
+        'A' .. 'Z',
+        'a' .. 'z',
+        '0' .. '9',
+        ' ',
+        '!',
+        '#',
+        '$',
+        '%',
+        '&',
+        "'",
+        '(',
+        ')',
+        '*',
+        '+',
+        ',',
+        '-',
+        '.',
+        '/',
+        ':',
+        ';',
+        '<',
+        '=',
+        '>',
+        '?',
+        '@',
+        '[',
+        ']',
+        '^',
+        '_',
+        '`',
+        '{',
+        '|',
+        '}',
+        '~',
+    ),
 );
 
 sub escape_string {
     my $s = shift;
-    my @out;
-    my $tmp = '';
+    my @out = '"';
     my $has_char = 0;
     return '""' if $s eq '';
+    my $v;
     for my $c ( split "", $s ) {
-        if ( $c eq '\\' || $c eq '"' ) {
-            $tmp = $tmp . '\\' . $c;
+        $v = $safe_char{$c};
+        if ( !defined $v ) {
+            if (ord($c) > 65535) {
+    
+                # this is necessary to support characters with code > 65535
+                # new String(Character.toChars((int)(1114109L)))
+    
+                $v = $safe_char{$c} = "\" + new String(Character.toChars(" . ord($c) . ")) + \"";
+            }
+            else {
+                $v = $safe_char{$c} = "\" + (char)" . ord($c) . " + \"";
+            }
         }
-        elsif ( exists( $safe_char{$c} ) ) {
-            $tmp = $tmp . $c;
-        }
-        elsif (ord($c) > 65535) {
-
-            # this is necessary to support characters with code > 65535
-            # new String(Character.toChars((int)(1114109L)))
-
-            push @out, "\"$tmp\"" if $tmp ne '';
-            $has_char = 1 if !@out;
-            push @out, "new String(Character.toChars(" . ord($c) . "))";
-            $tmp = '';
-        }
-        else {
-            push @out, "\"$tmp\"" if $tmp ne '';
-            $has_char = 1 if !@out;
-            push @out, "(char)" . ord($c) . "";
-            $tmp = '';
-        }
+        push @out, $v;
     }
-    push @out, "\"$tmp\"" if $tmp ne '';
-    unshift @out, '""' if $has_char;
-    return $out[0] if @out == 1;
-    return '(' . join(' + ', @out) . ')';
+    push @out, "\"";
+    return '(' . join("", @out) . ')';
 }
 
 sub is_native {
