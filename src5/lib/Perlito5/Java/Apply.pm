@@ -470,7 +470,7 @@ package Perlito5::AST::Apply;
             # and1(x) ? y : and3()
             '(PerlOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3())'
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlV.boolean_stack)'
         },
         'infix:<and>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -485,7 +485,7 @@ package Perlito5::AST::Apply;
             # and1(x) ? y : and3()
             '(PerlOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3())'
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlV.boolean_stack)'
         },
         'infix:<||>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -499,7 +499,7 @@ package Perlito5::AST::Apply;
             }
             # or1(x) ? or2() : y
             '(PerlOp.or1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : '
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PlV.boolean_stack : '
                 . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
         },
         'infix:<or>' => sub {
@@ -514,14 +514,14 @@ package Perlito5::AST::Apply;
             }
             # or1(x) ? or2() : y
             '(PerlOp.or1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : '
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PlV.boolean_stack : '
                 . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
         },
         'infix:<//>' => sub { 
             my ($self, $level, $wantarray) = @_;
             # defined_or1(x) ? defined_or2() : y
             '(PerlOp.defined_or1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.defined_or2() : '
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PlV.boolean_stack : '
                 . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
         },
         'infix:<xor>' => sub {
