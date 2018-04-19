@@ -1387,7 +1387,7 @@ package Perlito5::AST::Apply;
         },
         'print' => sub {
             my ($self, $level, $wantarray) = @_;
-            my @in  = @{$self->{arguments}};
+            my @arguments = @{$self->{arguments}};
             my $fun;
             if ( $self->{special_arg} ) {
                 $fun = Perlito5::Java::to_filehandle($self->{special_arg}, $level+1);
@@ -1395,12 +1395,17 @@ package Perlito5::AST::Apply;
             else {
                 $fun  = 'PlV.STDOUT';
             }
-            my $list = Perlito5::Java::to_list(\@in, $level);
-            'PlCORE.print(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
+            return 'PlCORE.print('
+                . join( ', ',
+                    Perlito5::Java::to_context($wantarray),
+                    $fun,
+                    map( Perlito5::Java::to_native_str($_), @arguments )
+                  )
+            . ')';
         },
         'say' => sub {
             my ($self, $level, $wantarray) = @_;
-            my @in  = @{$self->{arguments}};
+            my @arguments = @{$self->{arguments}};
             my $fun;
             if ( $self->{special_arg} ) {
                 $fun = Perlito5::Java::to_filehandle($self->{special_arg}, $level+1);
@@ -1408,8 +1413,13 @@ package Perlito5::AST::Apply;
             else {
                 $fun  = 'PlV.STDOUT';
             }
-            my $list = Perlito5::Java::to_list(\@in, $level);
-            'PlCORE.say(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
+            return 'PlCORE.say('
+                . join( ', ',
+                    Perlito5::Java::to_context($wantarray),
+                    $fun,
+                    map( Perlito5::Java::to_native_str($_), @arguments ),
+                  )
+            . ')';
         },
         'printf' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1421,7 +1431,7 @@ package Perlito5::AST::Apply;
             else {
                 $fun  = 'PlV.STDOUT';
             }
-            my $list = 'new PlArray(PlCORE.sprintf(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list(\@in, $level) . '))';
+            my $list = 'PlCORE.sprintf(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list(\@in, $level) . ').toString()';
             'PlCORE.print(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
         },
         'select' => sub {

@@ -1106,7 +1106,7 @@ class PerlOp {
             // $fh->print() is allowed, even if $fh is unblessed
             if (method.equals("print")) {
                 args.shift();   // TODO - keep filehandle in arg list
-                return PlCORE.print(context, (PlFileHandle)invocant, args);
+                return PlCORE.print(context, (PlFileHandle)invocant, args.toString());
             }
         }
 

@@ -290,39 +290,6 @@ EOT
         }
         return PlCx.INT1;
 EOT
-    print => <<'EOT',
-        try {
-            StringBuilder printBuffer = fh.printBuffer;
-            int size = List__.to_int();
-            for (int i = 0; i < size; i++) {
-                printBuffer.append(List__.aget(i).toString());
-            }
-            if (!PlV.Scalar_OUTPUT_RECORD_SEPARATOR.is_undef()) {
-                printBuffer.append(PlV.Scalar_OUTPUT_RECORD_SEPARATOR.toString());
-            }
-            if (fh.output_autoflush) {
-                // $| autoflush is active
-                fh.flush();
-            }
-            else {
-                int s_length = printBuffer.length();
-                if (s_length > 0) {
-                    char cc = printBuffer.charAt(s_length-1);
-                    if (cc == '\n' || cc == '\r') {
-                        fh.flush();
-                    }
-                    else if (s_length > PlFileHandle.BUFFER_THRESHOLD) {
-                        fh.flush();
-                    }
-                }
-            }
-            return PlCx.INT1;
-        }
-        catch(Exception e) {
-            PlV.sset("main::!", new PlStringLazyError(e));
-            return PlCx.UNDEF;
-        }
-EOT
     syswrite => <<'EOT',
         int argCount = List__.to_int();
         if (argCount < 1) {
@@ -364,10 +331,6 @@ EOT
 EOT
     write => <<'EOT',
         return PlCORE.die("write() not implemented");
-EOT
-    say => <<'EOT',
-        List__.push_void( new PlString("\n") );
-        return PlCORE.print(want, fh, List__);
 EOT
     readline => <<'EOT',
         if (want == PlCx.LIST) {
@@ -573,9 +536,49 @@ EOT
         } sort keys %FileFunc
     ) . <<'EOT'
 
+    public static final PlObject print(int want, PlFileHandle fh, String... args) {
+        try {
+            StringBuilder printBuffer = fh.printBuffer;
+            for (String s : args) {
+                printBuffer.append(s);
+            }
+            if (!PlV.Scalar_OUTPUT_RECORD_SEPARATOR.is_undef()) {
+                printBuffer.append(PlV.Scalar_OUTPUT_RECORD_SEPARATOR.toString());
+            }
+            if (fh.output_autoflush) {
+                // $| autoflush is active
+                fh.flush();
+            }
+            else {
+                int s_length = printBuffer.length();
+                if (s_length > 0) {
+                    char cc = printBuffer.charAt(s_length-1);
+                    if (cc == '\n' || cc == '\r') {
+                        fh.flush();
+                    }
+                    else if (s_length > PlFileHandle.BUFFER_THRESHOLD) {
+                        fh.flush();
+                    }
+                }
+            }
+            return PlCx.INT1;
+        }
+        catch(Exception e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject say(int want, PlFileHandle fh, String... args) {
+        PlCORE.print(want, fh, args);
+        return PlCORE.print(want, fh, "\n");
+    }
+
+EOT
+    . <<'EOT'
+
     // shortcut functions for internal use: say, warn, die
     public static final PlObject say(String s) {
-        return PlCORE.say(PlCx.VOID, PlV.STDOUT, new PlArray(new PlString(s)));
+        return PlCORE.say(PlCx.VOID, PlV.STDOUT, s);
     }
     public static final PlObject warn(String s) {
         return PlCORE.warn(PlCx.VOID, new PlArray(new PlString(s)));
@@ -1116,6 +1119,9 @@ EOT
         }
         return res.aget(-1);
     }
+
+EOT
+    . <<'EOT'
 
     public static final PlInt hex(int want, PlObject List__) {
         String s = List__.toString();
