@@ -524,17 +524,18 @@ EOT
 
 
 sub emit_java {
-    return <<'EOT'
+    return <<'EOT',
 
 class PlCORE {
 EOT
     # emit all file-related functions
-    . join("", map {
+    ( map {
           "    public static final PlObject $_(int want, PlFileHandle fh, PlArray List__) {\n"
         .       $FileFunc{$_}
         . "    }\n"
         } sort keys %FileFunc
-    ) . <<'EOT'
+    ), 
+    <<'EOT',
 
     public static final PlObject print(int want, PlFileHandle fh, String... args) {
         try {
@@ -574,7 +575,7 @@ EOT
     }
 
 EOT
-    . <<'EOT'
+    <<'EOT',
 
     // shortcut functions for internal use: say, warn, die
     public static final PlObject say(String s) {
@@ -1121,7 +1122,7 @@ EOT
     }
 
 EOT
-    . <<'EOT'
+    <<'EOT',
 
     public static final PlInt hex(int want, PlObject List__) {
         String s = List__.toString();
