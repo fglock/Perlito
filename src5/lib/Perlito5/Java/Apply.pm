@@ -1742,6 +1742,18 @@ package Perlito5::AST::Apply;
                   )
             . ')';
         },
+        'join' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @arguments = @{$self->{arguments}};
+            my $arg = shift @arguments;
+            return 'PlCORE.join('
+                . join( ', ',
+                    Perlito5::Java::to_context($wantarray),
+                    Perlito5::Java::to_native_str($arg),
+                    map( $_->emit_java($level, "list"), @arguments )
+                  )
+            . ')';
+        },
     );
 
     for my $op (qw/ binmode close closedir open opendir readdir seek seekdir read sysread
@@ -1778,7 +1790,7 @@ package Perlito5::AST::Apply;
         };
     }
     for my $op (qw/
-        sleep exit warn die system qx pack unpack sprintf crypt join reverse
+        sleep exit warn die system qx pack unpack sprintf crypt reverse
         gmtime localtime time times rename /
     ) {
         $emit_js{$op} = sub {

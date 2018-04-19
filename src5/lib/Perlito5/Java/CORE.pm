@@ -1268,17 +1268,31 @@ EOT
         
         return new PlString(PlCrypt.crypt(salt, plainText));
     }
-    public static final PlString join(int want, PlArray List__) {
-        String s = List__.shift().toString();
+    public static final PlString join(int want, String s1, PlObject... args) {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        for (int i = 0; i < List__.to_int(); i++) {
-            String item = List__.aget(i).toString();
-            if (first)
-                first = false;
-            else
-                sb.append(s);
-            sb.append(item);
+        for (PlObject s : args) {
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
+            if (s.is_array()) {
+                // @x = ( @x, @y );
+                for (int i = 0; i < s.to_long(); i++) {
+                    if (first)
+                        first = false;
+                    else
+                        sb.append(s1);
+                    sb.append(s.aget(i).toString());
+                }
+            }
+            else {
+                if (first)
+                    first = false;
+                else
+                    sb.append(s1);
+                sb.append(s.toString());
+            }
         }
         return new PlString(sb.toString());
     }
@@ -2153,8 +2167,7 @@ EOT
             if (want == PlCx.LIST) {
                 return res;
             }
-            res.unshift(PlCx.EMPTY);
-            return join(want, res);
+            return PlCORE.join(want, "", res);
         }
         catch (IOException e) {
             // System.out.println("IOexception: ");
