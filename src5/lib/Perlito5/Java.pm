@@ -426,7 +426,7 @@ sub escape_string {
         push @out, $v;
     }
     push @out, "\"";
-    return '(' . join("", @out) . ')';
+    return join("", @out);
 }
 
 sub is_native {
