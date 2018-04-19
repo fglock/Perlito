@@ -1717,8 +1717,7 @@ package Perlito5::AST::If;
         if ($cond) {
             my @var_decl = $cond->emit_java_get_decl();
             for my $arg (@var_decl) {
-                $level = $old_level + 1;
-                push @str, $arg->emit_java_init($level, $wantarray);
+                push @str, $arg->emit_java_init($level + 1, $wantarray);
             }
         }
         my $body =
