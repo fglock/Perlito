@@ -300,7 +300,7 @@ package Perlito5::AST::Apply;
             # new String(Character.toChars((int)(1114109L)))
 
               'new PlString(new String(Character.toChars('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())))'
+            . Perlito5::Java::to_native_int($self->{arguments}->[0]) . ')))'
         },
         'vec' => sub {
             my ($self, $level, $wantarray) = @_;
