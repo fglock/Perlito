@@ -691,7 +691,7 @@ sub to_native_str {
         }
 }
 
-sub to_int {
+sub to_native_int {
         my $cond = shift;
         my $level = shift;
         my $wantarray = 'scalar';
@@ -699,14 +699,14 @@ sub to_int {
            && $cond->{arguments} && @{$cond->{arguments}}
            )
         {
-            return to_int( $cond->{arguments}[0], $level )
+            return to_native_int( $cond->{arguments}[0], $level )
         }
         if (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'infix:<+>'
            && (   $cond->{arguments}[0]->isa( 'Perlito5::AST::Int' )
               ||  $cond->{arguments}[1]->isa( 'Perlito5::AST::Int' ) )
            )
         {
-            return to_int( $cond->{arguments}[0], $level ) . " + " . to_int( $cond->{arguments}[1], $level );
+            return to_native_int( $cond->{arguments}[0], $level ) . " + " . to_native_int( $cond->{arguments}[1], $level );
         }
         if ((ref($cond) eq 'Perlito5::AST::Buf' )) {
             return int( 0 + $cond->{buf} );

@@ -1239,8 +1239,8 @@ package Perlito5::AST::Apply;
             my $meth = "substr";
             $meth = "lvalue_substr" if $autovivification_type eq 'lvalue';
             my $arg = shift @{$self->{arguments}};
-            my @arglist = ( Perlito5::Java::to_int( shift @{$self->{arguments}}, $level, 'scalar') );
-            push @arglist, Perlito5::Java::to_int( shift @{$self->{arguments}}, $level, 'scalar') if @{$self->{arguments}};
+            my @arglist = ( Perlito5::Java::to_native_int( shift @{$self->{arguments}}, $level, 'scalar') );
+            push @arglist, Perlito5::Java::to_native_int( shift @{$self->{arguments}}, $level, 'scalar') if @{$self->{arguments}};
             push @arglist, $self->{arguments}[0]->emit_java($level, 'scalar') if @{$self->{arguments}};
             return $arg->emit_java($level, 'scalar') . '.' . $meth . '('
                     .   join(', ', @arglist )
