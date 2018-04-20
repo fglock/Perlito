@@ -258,12 +258,12 @@ package Perlito5::AST::Apply;
         'uc' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlString('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().toUpperCase())'
+            . Perlito5::Java::to_native_str($self->{arguments}->[0], $level, 'scalar') . '.toUpperCase())'
         },
         'lc' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlString('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().toLowerCase())'
+            . Perlito5::Java::to_native_str($self->{arguments}->[0], $level, 'scalar') . '.toLowerCase())'
         },
         'index' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1217,7 +1217,7 @@ package Perlito5::AST::Apply;
             # new PlHash[]{}
 
             return 'PlJavaCompiler.eval_perl_string('
-                . $arg->emit_java( $level, $wantarray ) . '.toString(), '
+                . Perlito5::Java::to_native_str($arg, $level, $wantarray ) . ', '
                 . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
                 . Perlito5::Java::escape_string($wantarray) . ', '
                 . 'new PlInt(' . ( 0 + $self->{_scalar_hints} ) . 'L), '

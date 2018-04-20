@@ -740,7 +740,7 @@ sub to_str {
             return $cond->emit_java($level, $wantarray);
         }
         else {
-            return 'new PlString(' . $cond->emit_java($level, $wantarray) . '.toString())';
+            return 'new PlString(' . to_native_str($cond, $level, $wantarray) . ')';
         }
 }
 sub to_num {
