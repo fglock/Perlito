@@ -570,8 +570,11 @@ EOT
         }
     }
     public static final PlObject say(int want, PlFileHandle fh, String... args) {
-        PlCORE.print(want, fh, args);
-        return PlCORE.print(want, fh, "\n");
+        PlObject sep = PlV.Scalar_OUTPUT_RECORD_SEPARATOR.get();
+        PlV.Scalar_OUTPUT_RECORD_SEPARATOR.set(new PlString("\n"));
+        PlObject ret = PlCORE.print(want, fh, args);
+        PlV.Scalar_OUTPUT_RECORD_SEPARATOR.set(sep);
+        return ret;
     }
 
 EOT
