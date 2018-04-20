@@ -457,66 +457,62 @@ package Perlito5::AST::Apply;
             $op[0] . '.smartmatch(' . $op[1] . ')'
         },
 
-        'infix:<&&>' => sub {
-            my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'statement') {
-                return
-                    Perlito5::AST::If->new(
-                        cond => $self->{arguments}[0],
-                        body => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
-                        otherwise => Perlito5::AST::Block->new( stmts => [] ),
-                    )->emit_java($level, $wantarray);
-            }
-            # and1(x) ? y : and3()
-            '(PerlOp.and1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlV.boolean_stack)'
-        },
-        'infix:<and>' => sub {
-            my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'statement') {
-                return
-                    Perlito5::AST::If->new(
-                        cond => $self->{arguments}[0],
-                        body => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
-                        otherwise => Perlito5::AST::Block->new( stmts => [] ),
-                    )->emit_java($level, $wantarray);
-            }
-            # and1(x) ? y : and3()
-            '(PerlOp.and1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlV.boolean_stack)'
-        },
-        'infix:<||>' => sub {
-            my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'statement') {
-                return
-                    Perlito5::AST::If->new(
-                        cond => $self->{arguments}[0],
-                        body => Perlito5::AST::Block->new( stmts => [] ),
-                        otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
-                    )->emit_java($level, $wantarray);
-            }
-            # or1(x) ? or2() : y
-            '(PerlOp.or1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PlV.boolean_stack : '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
-        },
-        'infix:<or>' => sub {
-            my ($self, $level, $wantarray) = @_;
-            if ($wantarray eq 'statement') {
-                return
-                    Perlito5::AST::If->new(
-                        cond => $self->{arguments}[0],
-                        body => Perlito5::AST::Block->new( stmts => [] ),
-                        otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
-                    )->emit_java($level, $wantarray);
-            }
-            # or1(x) ? or2() : y
-            '(PerlOp.or1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PlV.boolean_stack : '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
-        },
+        ( map {
+                my $op = $_;
+                ( $op => sub {
+                    my ($self, $level, $wantarray) = @_;
+                    if ( $wantarray eq 'statement' ) {
+                        if ( !grep { $_->{decl} eq 'local' } $self->emit_java_get_decl() ) {
+                            return
+                                Perlito5::AST::If->new(
+                                    cond => $self->{arguments}[0],
+                                    body => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
+                                    otherwise => Perlito5::AST::Block->new( stmts => [] ),
+                                )->emit_java($level, $wantarray);
+                        }
+                        return 'PerlOp.context('
+                            . Perlito5::Java::to_context('void') . ', '
+                            . 'PerlOp.and1('
+                                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
+                                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlV.boolean_stack'
+                        . ')';
+                    }
+                    # and1(x) ? y : and3()
+                    '(PerlOp.and1('
+                        . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
+                        . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlV.boolean_stack)'
+                  }
+                )
+            } ( 'infix:<&&>', 'infix:<and>' )
+        ),
+        ( map {
+                my $op = $_;
+                ( $op => sub {
+                    my ($self, $level, $wantarray) = @_;
+                    if ( $wantarray eq 'statement' ) {
+                        if ( !grep { $_->{decl} eq 'local' } $self->emit_java_get_decl() ) {
+                            return
+                                Perlito5::AST::If->new(
+                                    cond => $self->{arguments}[0],
+                                    body => Perlito5::AST::Block->new( stmts => [] ),
+                                    otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
+                                )->emit_java($level, $wantarray);
+                        }
+                        return 'PerlOp.context('
+                            . Perlito5::Java::to_context('void') . ', '
+                            . '(PerlOp.or1('
+                                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PlV.boolean_stack : '
+                                . $self->{arguments}->[1]->emit_java($level, $wantarray)
+                        . ')';
+                    }
+                    # or1(x) ? or2() : y
+                    '(PerlOp.or1('
+                        . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PlV.boolean_stack : '
+                        . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
+                  }
+                )
+            } ( 'infix:<||>', 'infix:<or>' )
+        ),
         'infix:<//>' => sub { 
             my ($self, $level, $wantarray) = @_;
             # defined_or1(x) ? defined_or2() : y
