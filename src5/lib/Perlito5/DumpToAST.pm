@@ -166,7 +166,7 @@ sub dump_to_ast {
     # TODO find out what kind of reference this is (ARRAY, HASH, ...)
     local $@ = '';
     
-    $res = eval {
+    my $res = eval {
         my @out;
         for my $i ( 0 .. $#$obj ) {
             my $here = Perlito5::AST::Index::INDEX( $pos, Perlito5::AST::Int->new(int => $i) );

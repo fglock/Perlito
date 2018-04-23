@@ -635,8 +635,8 @@ sub term_bareword {
                     # sub must be predeclared, unless proto is '*'
                     my $name = $arg->{code};
                     my $namespace = $arg->{namespace};
-                    if ($sig && substr($sig, $i, 1) eq '*') {
-                        # proto is '*'
+                    if ($sig && (substr($sig, $i, 1) eq '*' || substr($sig, $i, 2) eq ';*')) {
+                        # proto is '*' or ';*'
                     }
                     else {
                         Perlito5::Compiler::error( 'Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );

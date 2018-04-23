@@ -9,6 +9,7 @@ our @Perlito_internal_lib_directory = (
     'Perlito5X',
     '',
 );
+our %Perlito_internal_module;
 
 token use_decl { 'use' | 'no' };
 
@@ -255,6 +256,7 @@ sub parse_time_eval {
     else {
         # force "use" code to be inlined instead of eval-ed
         bootstrapping_use($ast);
+        emit_time_eval($ast);
     }
 
     return Perlito5::Grammar::Block::ast_nop();
