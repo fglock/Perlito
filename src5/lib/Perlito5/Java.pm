@@ -1058,6 +1058,14 @@ sub to_runtime_context {
 
 
     if ( @s == 1 && $items->[0]->isa( 'Perlito5::AST::Apply' ) 
+       && ( $items->[0]->{code} eq 'circumfix:<( )>' && @{$items->[0]->{arguments}} == 0 )
+       )
+    {
+        # empty list: return ()
+        return $s[0];
+    }
+
+    if ( @s == 1 && $items->[0]->isa( 'Perlito5::AST::Apply' ) 
        && ( $items->[0]->{code} && $items->[0]->{namespace} )
        )
     {
