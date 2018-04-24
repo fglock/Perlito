@@ -5528,6 +5528,23 @@ class PlLazyLvalue extends PlLvalue {
         return llv.set(o);
     }
 EOT
+    , ((map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return this.get().${perl}(s);
+    }
+    public PlObject ${perl}2(PlObject s) {
+        return s.${perl}(this.get());
+    }
+"
+            }
+            sort (
+                'num_cmp',
+                'mod',
+                keys %number_binop,
+            )
+      ))
+
         # unary operators
         #
     , ((map {
@@ -6140,10 +6157,10 @@ EOT
     , ((map {
             my $perl = $_;
 "    public PlObject ${perl}(PlObject s) {
-        return this.get().${perl}(s);
+        return this.o.${perl}(s);
     }
     public PlObject ${perl}2(PlObject s) {
-        return s.${perl}(this.get());
+        return s.${perl}(this.o);
     }
 "
             }
