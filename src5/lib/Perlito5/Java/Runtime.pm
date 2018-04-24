@@ -6157,9 +6157,17 @@ EOT
     , ((map {
             my $perl = $_;
 "    public PlObject ${perl}(PlObject s) {
+        if (this.tied != null) {
+            PlScalarImmutable v = PerlOp.call(\"FETCH\", new PlArray(tied), PlCx.VOID).scalar();
+            this.o = v;
+        }
         return this.o.${perl}(s);
     }
     public PlObject ${perl}2(PlObject s) {
+        if (this.tied != null) {
+            PlScalarImmutable v = PerlOp.call(\"FETCH\", new PlArray(tied), PlCx.VOID).scalar();
+            this.o = v;
+        }
         return s.${perl}(this.o);
     }
 "
