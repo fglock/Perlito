@@ -6141,7 +6141,11 @@ EOT
     , ((map {
             my ($op, $type) = @$_;
 "    public $type $op() {
-        return this.get().$op();
+        if (this.tied != null) {
+            PlScalarImmutable v = PerlOp.call(\"FETCH\", new PlArray(tied), PlCx.VOID).scalar();
+            this.o = v;
+        }
+        return this.o.$op();
     }
 "
             }
