@@ -4709,7 +4709,11 @@ class PlHashRef extends PlReference {
     }
 
     public PlObject hget(String i) {
-        return this.ha.hget(i);
+        PlObject o = this.ha.h.get(i);
+        if (o == null) {
+            return PlCx.UNDEF;
+        }
+        return o;
     }
 
     public PlObject hget_lvalue(String i) {
