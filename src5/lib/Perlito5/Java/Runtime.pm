@@ -4612,7 +4612,7 @@ class PlArrayRef extends PlReference {
     }
 
     public PlObject aget(int i) {
-        return this.ar.aget(i);
+        return this.ar.a.aget(i);
     }
     public PlObject aget_lvalue(int i) {
         return this.ar.aget_lvalue(i);
