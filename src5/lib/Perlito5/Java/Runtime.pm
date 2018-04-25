@@ -6467,7 +6467,7 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
             this.add(PlCx.UNDEF);
         }
         if (size < this.size() && this.size() > 0) {
-            this.removeRange(size, this.size() - 1);
+            this.removeRange(size, this.size());
         }
         return new PlInt(this.size());
     }
