@@ -1652,11 +1652,14 @@ EOT
         return PlCx.UNDEF;
     }
 
-    private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length, boolean flag_xx) {
+    private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length, boolean flag_xx,
+        StringBuilder rejected)
+    {
         // inside [ ... ]
         //      space    becomes: "\ " unless the /xx flag is used (flag_xx)
         //      \120     becomes: \0120 - Java requires octal sequences to start with zero
         //      \0       becomes: \00 - Java requires the extra zero
+        //      \b       is rejected, Java doesn't support \b inside [...]
         boolean first = true;
         for ( ; offset < length; ) {
             final int c = s.codePointAt(offset);
@@ -1674,6 +1677,15 @@ EOT
                     sb.append("\\[");
                     break;
                 case '\\':  // escape - \[ \120
+
+                    if (offset < length) {
+                        if (s.codePointAt(offset + 1) == 'b') {
+                            rejected.append("\\b");      // Java doesn't support \b inside [...]
+                            offset++;
+                            break;
+                        }
+                    }
+
                     sb.append(Character.toChars(c));
                     if (offset < length) {
                         offset++;
@@ -1739,11 +1751,13 @@ EOT
     // \120     becomes: \0120 - Java requires octal sequences to start with zero
     // \0       becomes: \00 - Java requires the extra zero
     // (?#...)  inline comment is removed
+    // [xx \b xx]  becomes: (?:[xx xx]|\b) - java doesn't support \b as a character
     //
     public static String regex_escape(String s, boolean flag_xx) {
         // escape spaces in character classes
         final int length = s.length();
         StringBuilder sb = new StringBuilder();
+        StringBuilder rejected = new StringBuilder();
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
             switch (c) {
@@ -1771,9 +1785,24 @@ EOT
                             }
                             break;
                 case '[':   // character class
+                            int len = sb.length();
                             sb.append(Character.toChars(c));
                             offset++;
-                            offset = _regex_character_class_escape(offset, s, sb, length, flag_xx);
+                            offset = _regex_character_class_escape(offset, s, sb, length, flag_xx, rejected);
+                            if (rejected.length() > 0) {
+                                // process \b inside character class
+                                String subseq;
+                                if ((sb.length() - len) == 2) {
+                                    subseq = "(?:" + rejected.toString() + ")";
+                                }
+                                else {
+                                    subseq = "(?:" + sb.substring(len) + "|" + rejected.toString() + ")";
+                                }
+                                // PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Rejected: " + subseq)));
+                                rejected.setLength(0);
+                                sb.setLength(len);
+                                sb.append(subseq);
+                            }
                             break;
                 case '(':   
                             boolean append = true;
