@@ -115,6 +115,7 @@ clean ::
 	-rm -rf t5-js/
 	-rm -rf t5-jar/
 	-rm -rf t5-5to5/
+	-rm -rf org/perlito/Perlito5/*.class
 
 # :set tabstop=4
 # :set noexpandtab	  " Use tabs, not spaces
