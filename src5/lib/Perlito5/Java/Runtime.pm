@@ -1629,6 +1629,15 @@ EOT
         v_b_ref.set(v_b_val);
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
+    public static final PlObject sort(PlObject c, PlArray a, PlArray list__, int wantarray) {
+        if (c.is_coderef()) {
+            if (c.is_lvalue()) {
+                c = c.get();
+            }
+            return sort((PlClosure)c, a, list__, wantarray);
+        }
+        return PlCORE.die("Not implemented: first argument to sort() is not a closure");
+    }
 
     public static PlObject prototype(PlObject arg, String packageName) {
         if (arg.is_coderef()) {

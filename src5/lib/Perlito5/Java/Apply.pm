@@ -1395,7 +1395,7 @@ package Perlito5::AST::Apply;
                 . join( ', ',
                     Perlito5::Java::to_context($wantarray),
                     $fun,
-                    map( Perlito5::Java::to_native_str($_), @arguments )
+                    map( Perlito5::Java::to_native_str($_, $level, "list"), @arguments )
                   )
             . ')';
         },
@@ -1602,16 +1602,16 @@ package Perlito5::AST::Apply;
                 }
             }
 
+            my $sub;
             if (ref($fun) eq 'Perlito5::AST::Block') {
                 # the sort function is optional
                 $fun = $fun->{stmts};
+                $sub = Perlito5::AST::Sub->new( block => Perlito5::AST::Block->new( stmts => $fun ) );
             }
             else {
-                die "TODO: sort without block not implemented yet";
+                $sub = $fun;
             }
             $list = Perlito5::Java::to_list(\@in, $level);
-
-            my $sub = Perlito5::AST::Sub->new( block => Perlito5::AST::Block->new( stmts => $fun ) );
 
             'PerlOp.sort(' . $sub->emit_java( $level + 1 ) . ', '
                 . $list . ', '
