@@ -28,5 +28,14 @@ sub downgrade {
 	return $_[0];
 }
 
+is_utf8 {
+    # TODO
+    if ((0 + $_[0]) eq $_[0]) {
+        # looks like number, not utf8
+        return 0;
+    }
+    return 1;
+}
+
 1;
 
