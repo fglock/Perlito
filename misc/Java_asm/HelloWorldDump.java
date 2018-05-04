@@ -18,6 +18,7 @@
 //  - add java.lang.reflect imports
 //  - add reflection calls
 //
+//  $ cp misc/Java_asm/HelloWorldDump.java .
 //  $ javac -cp asm-6.1.1.jar HelloWorldDump.java 
 //  $ java -cp asm-6.1.1.jar:. HelloWorldDump
 //
