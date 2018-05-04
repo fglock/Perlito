@@ -110,23 +110,15 @@ public class HelloWorldDump implements Opcodes {
         try {
             PlJavaCompiler.init();
 
-
-            // Class<?> class5 = compileClassInMemory(
-            //     className,
-            //     cls5
-            // );
-
             String className = "HelloWorld";
 
             byte[] myBytecode = dump();
             PlJavaCompiler.classLoader.customCompiledCode.put(className, new CompiledCode(className, myBytecode));
 
-            // Class class1 = Class.forName(className);
-            Class class1 = PlJavaCompiler.classLoader.loadClass(className);
+            Class<?> class1 = PlJavaCompiler.classLoader.loadClass(className);
             System.out.println("got class " + class1.toString());
 
-            Method method5 = Class.forName(className).getMethod("myMethod", new Class[]{});
-
+            Method method5 = class1.getMethod("myMethod", new Class[]{});
             System.out.println("got method " + method5.toString());
 
             method5.invoke(null);
