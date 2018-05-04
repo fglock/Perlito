@@ -17,6 +17,7 @@
 //
 //  - add java.lang.reflect imports
 //  - add reflection calls
+//  - add classLoader
 //
 //  $ cp misc/Java_asm/HelloWorldDump.java .
 //  $ javac -cp asm-6.1.1.jar HelloWorldDump.java 
@@ -38,24 +39,10 @@ import org.objectweb.asm.TypePath;
 
 import java.lang.reflect.Method;
 
-// Java compiler and Classloader
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.tools.FileObject;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-
-
 public class HelloWorldDump implements Opcodes {
+
+    static String className;
+    static byte[] classByteCode;
 
     public static byte[] dump () throws Exception {
     
@@ -64,9 +51,9 @@ public class HelloWorldDump implements Opcodes {
         MethodVisitor methodVisitor;
         AnnotationVisitor annotationVisitor0;
         
-        classWriter.visit(V9, ACC_PUBLIC | ACC_SUPER, "HelloWorld", null, "java/lang/Object", null);
+        classWriter.visit(V9, ACC_PUBLIC | ACC_SUPER, className, null, "java/lang/Object", null);
         
-        classWriter.visitSource("HelloWorld.java", null);
+        classWriter.visitSource(className + ".java", null);
         
         {
         methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
@@ -105,13 +92,19 @@ public class HelloWorldDump implements Opcodes {
 
     public static void main(String[] args) {
         try {
-            DynamicClassLoader classLoader = new DynamicClassLoader( new String().getClass().getClassLoader() );
+            ClassLoader classLoader = new ClassLoader( new String().getClass().getClassLoader() ) {
+                @Override
+                protected Class<?> findClass(String name) throws ClassNotFoundException {
+                    if (!name.equals(className)) {
+                        return super.findClass(name);
+                    }
+                    byte[] byteCode = classByteCode;
+                    return defineClass(name, byteCode, 0, byteCode.length);
+                }
+            };
 
-            String className = "HelloWorld";
-
-            byte[] myBytecode = dump();
-            classLoader.customCompiledCode.put(className, new CompiledCode(className, myBytecode));
-
+            className = "HelloWorld";
+            classByteCode = dump();
             Class<?> class1 = classLoader.loadClass(className);
             System.out.println("got class " + class1.toString());
 
@@ -123,51 +116,6 @@ public class HelloWorldDump implements Opcodes {
         catch (Exception e) {
             System.out.println("got error " + e.toString());
         }
-    }
-
-}
-
-class CompiledCode extends SimpleJavaFileObject {
-    private String className;
-    private byte[] classByteCode;
-
-    public CompiledCode(String className, byte[] byteCode) throws Exception {
-        super(new URI(className), Kind.CLASS);
-        this.className = className;
-        this.classByteCode = byteCode;
-    }
-    
-    public String getClassName() {
-        return className;
-    }
-
-    public byte[] getByteCode() {
-        // return baos.toByteArray();
-        return this.classByteCode;
-    }
-}
-
-class DynamicClassLoader extends ClassLoader {
-    public Map<String, CompiledCode> customCompiledCode = new HashMap<String, CompiledCode>();
-
-    public DynamicClassLoader(ClassLoader parent) {
-        super(parent);
-    }
-
-    public void addCode(CompiledCode cc) {
-        // System.out.println("DynamicClassLoader.addCode: name=" + cc.getName());
-        customCompiledCode.put(cc.getName(), cc);
-    }
-
-    @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
-        // System.out.println("DynamicClassLoader.findClass: name=" + name);
-        CompiledCode cc = customCompiledCode.get(name);
-        if (cc == null) {
-            return super.findClass(name);
-        }
-        byte[] byteCode = cc.getByteCode();
-        return defineClass(name, byteCode, 0, byteCode.length);
     }
 }
 
