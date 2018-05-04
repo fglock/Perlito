@@ -40,51 +40,51 @@ import java.lang.reflect.Method;
 
 public class HelloWorldDump implements Opcodes {
 
-public static byte[] dump () throws Exception {
-
-ClassWriter classWriter = new ClassWriter(0);
-FieldVisitor fieldVisitor;
-MethodVisitor methodVisitor;
-AnnotationVisitor annotationVisitor0;
-
-classWriter.visit(V9, ACC_PUBLIC | ACC_SUPER, "HelloWorld", null, "java/lang/Object", null);
-
-classWriter.visitSource("HelloWorld.java", null);
-
-{
-methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-methodVisitor.visitCode();
-Label label0 = new Label();
-methodVisitor.visitLabel(label0);
-methodVisitor.visitLineNumber(1, label0);
-methodVisitor.visitVarInsn(ALOAD, 0);
-methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-methodVisitor.visitInsn(RETURN);
-methodVisitor.visitMaxs(1, 1);
-methodVisitor.visitEnd();
-}
-
-{
-methodVisitor = classWriter.visitMethod(ACC_PUBLIC | ACC_STATIC, "myMethod", "()V", null, null);
-methodVisitor.visitCode();
-Label label0 = new Label();
-methodVisitor.visitLabel(label0);
-methodVisitor.visitLineNumber(3, label0);
-methodVisitor.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-methodVisitor.visitLdcInsn("Hello, World");
-methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-Label label1 = new Label();
-methodVisitor.visitLabel(label1);
-methodVisitor.visitLineNumber(4, label1);
-methodVisitor.visitInsn(RETURN);
-methodVisitor.visitMaxs(2, 0);
-methodVisitor.visitEnd();
-}
-
-classWriter.visitEnd();
-
-return classWriter.toByteArray();
-}
+    public static byte[] dump () throws Exception {
+    
+        ClassWriter classWriter = new ClassWriter(0);
+        FieldVisitor fieldVisitor;
+        MethodVisitor methodVisitor;
+        AnnotationVisitor annotationVisitor0;
+        
+        classWriter.visit(V9, ACC_PUBLIC | ACC_SUPER, "HelloWorld", null, "java/lang/Object", null);
+        
+        classWriter.visitSource("HelloWorld.java", null);
+        
+        {
+        methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        methodVisitor.visitCode();
+        Label label0 = new Label();
+        methodVisitor.visitLabel(label0);
+        methodVisitor.visitLineNumber(1, label0);
+        methodVisitor.visitVarInsn(ALOAD, 0);
+        methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        methodVisitor.visitInsn(RETURN);
+        methodVisitor.visitMaxs(1, 1);
+        methodVisitor.visitEnd();
+        }
+        
+        {
+        methodVisitor = classWriter.visitMethod(ACC_PUBLIC | ACC_STATIC, "myMethod", "()V", null, null);
+        methodVisitor.visitCode();
+        Label label0 = new Label();
+        methodVisitor.visitLabel(label0);
+        methodVisitor.visitLineNumber(3, label0);
+        methodVisitor.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        methodVisitor.visitLdcInsn("Hello, World");
+        methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+        Label label1 = new Label();
+        methodVisitor.visitLabel(label1);
+        methodVisitor.visitLineNumber(4, label1);
+        methodVisitor.visitInsn(RETURN);
+        methodVisitor.visitMaxs(2, 0);
+        methodVisitor.visitEnd();
+        }
+        
+        classWriter.visitEnd();
+        
+        return classWriter.toByteArray();
+    }
 
     public static void main(String[] args) {
         try {
