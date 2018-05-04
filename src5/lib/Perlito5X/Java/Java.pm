@@ -28,11 +28,13 @@ sub type ($$) {
 }
 
 sub _type ($) {
+    my $class;
     eval {
-        Java::inline q{
+        $class = Java::inline q{
             Class.forName( List__.aget(0).toString() )
         }
     };
+    return $class;
 }
 
 1;

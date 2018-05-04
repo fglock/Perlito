@@ -51,7 +51,7 @@ class PlJavaCompiler {
 
     static ArrayList<SourceCode> compilationUnits;
     static ExtendedStandardJavaFileManager fileManager;
-    static DynamicClassLoader classLoader;
+    static public DynamicClassLoader classLoader;
     static JavaCompiler javac;
     static Boolean initDone;
     static List<String> optionList;
