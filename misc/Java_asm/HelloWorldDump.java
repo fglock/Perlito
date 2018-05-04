@@ -116,13 +116,16 @@ public class HelloWorldDump implements Opcodes {
             //     cls5
             // );
 
+            String className = "HelloWorld";
 
             byte[] myBytecode = dump();
+            PlJavaCompiler.classLoader.customCompiledCode.put(className, new CompiledCode(className, myBytecode));
 
-            Class class1 = Class.forName("HelloWorld");
+            // Class class1 = Class.forName(className);
+            Class class1 = PlJavaCompiler.classLoader.loadClass(className);
             System.out.println("got class " + class1.toString());
 
-            Method method5 = Class.forName("HelloWorld").getMethod("myMethod", new Class[]{});
+            Method method5 = Class.forName(className).getMethod("myMethod", new Class[]{});
 
             System.out.println("got method " + method5.toString());
 
@@ -172,32 +175,25 @@ class PlJavaCompiler {
             cp.append(systemCp);
         }
         optionList.addAll(Arrays.asList("-classpath", cp.toString()));
-    }
-
-    static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
-    {
-        SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
-        // System.out.println("PlJavaCompiler.compileClassInMemory: name=" + className);
-        classLoader.customCompiledCode.put(className, new CompiledCode(className));
-        if (fileManager == null) {
-            // initializing the file manager
-            compilationUnits.add(sourceCodeObj);
-            fileManager = new ExtendedStandardJavaFileManager(
+        fileManager = new ExtendedStandardJavaFileManager(
                     javac.getStandardFileManager(null, null, null), classLoader);
-        }
-        else {
-            // reusing the file manager; replace the source code
-            compilationUnits.set(0, sourceCodeObj);
-        }
-
-        // run the compiler
-        JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
-                null, optionList, null, compilationUnits);
-        boolean result = task.call();
-        if (!result)
-            throw new RuntimeException("Unknown error during compilation.");
-        return classLoader.loadClass(className);
     }
+
+    // static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
+    // {
+    //     SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
+    //     // System.out.println("PlJavaCompiler.compileClassInMemory: name=" + className);
+    //     classLoader.customCompiledCode.put(className, new CompiledCode(className));
+    //     compilationUnits.set(0, sourceCodeObj);
+
+    //     // run the compiler
+    //     JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
+    //             null, optionList, null, compilationUnits);
+    //     boolean result = task.call();
+    //     if (!result)
+    //         throw new RuntimeException("Unknown error during compilation.");
+    //     return classLoader.loadClass(className);
+    // }
 
 }
 
@@ -211,7 +207,7 @@ class ExtendedStandardJavaFileManager extends ForwardingJavaFileManager<JavaFile
 
     @Override
     public JavaFileObject getJavaFileForOutput(JavaFileManager.Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
-        // System.out.println("ExtendedStandardJavaFileManager.getJavaFileForOutput: name=" + className);
+        System.out.println("ExtendedStandardJavaFileManager.getJavaFileForOutput: name=" + className);
         CompiledCode cc = cl.customCompiledCode.get(className);
         if (cc != null) {
             return cc;
@@ -237,10 +233,16 @@ class ExtendedStandardJavaFileManager extends ForwardingJavaFileManager<JavaFile
 class CompiledCode extends SimpleJavaFileObject {
     private ByteArrayOutputStream baos = new ByteArrayOutputStream();
     private String className;
+    private byte[] classByteCode;
 
     public CompiledCode(String className) throws Exception {
         super(new URI(className), Kind.CLASS);
         this.className = className;
+    }
+    public CompiledCode(String className, byte[] byteCode) throws Exception {
+        super(new URI(className), Kind.CLASS);
+        this.className = className;
+        this.classByteCode = byteCode;
     }
     
     public String getClassName() {
@@ -255,7 +257,8 @@ class CompiledCode extends SimpleJavaFileObject {
     }
 
     public byte[] getByteCode() {
-        return baos.toByteArray();
+        // return baos.toByteArray();
+        return this.classByteCode;
     }
 }
 
