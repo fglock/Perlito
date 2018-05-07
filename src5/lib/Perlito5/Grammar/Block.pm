@@ -334,6 +334,9 @@ token named_sub_def {
                )
             {
                 # looks like a constant declaration
+
+                # TODO - "Constant subroutine xx redefined"
+
                 # print STDERR "maybe constant $namespace :: $name ($sig)\n";
                 $Perlito5::CONSTANT{"${namespace}::$name"} = $expr;
             }
