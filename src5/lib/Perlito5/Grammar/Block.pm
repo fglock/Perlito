@@ -325,6 +325,20 @@ token named_sub_def {
             pos        => Perlito5::Compiler::compiler_pos(),
         );
 
+        if ($name && defined $sig && $sig eq '' && $sub->{block} && @{ $sub->{block}{stmts} } == 1 ) {
+            my $expr = $sub->{block}{stmts}[0];
+            my $ref = ref($expr);
+            if (   $ref eq 'Perlito5::AST::Int'
+                || $ref eq 'Perlito5::AST::Num'
+                || $ref eq 'Perlito5::AST::Buf'
+               )
+            {
+                # looks like a constant declaration
+                # print STDERR "maybe constant $namespace :: $name ($sig)\n";
+                $Perlito5::CONSTANT{"${namespace}::$name"} = $expr;
+            }
+        }
+
         if ( $Perlito5::EXPAND_USE && $name ) {
             # named sub in the normal compiler (not "bootstrapping")
             my $full_name = "${namespace}::$name";
