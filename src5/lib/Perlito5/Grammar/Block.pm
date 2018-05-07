@@ -5,6 +5,7 @@ use Perlito5::Grammar::Expression;
 use Perlito5::Grammar::Scope;
 use Perlito5::AST::BeginScratchpad;
 use Perlito5::AST::Captures;
+use Perlito5::FoldConstant;
 use strict;
 
 our %Named_block = (
@@ -327,6 +328,7 @@ token named_sub_def {
 
         if ($name && defined $sig && $sig eq '' && $sub->{block} && @{ $sub->{block}{stmts} } == 1 ) {
             my $expr = $sub->{block}{stmts}[0];
+            $expr = Perlito5::FoldConstant::fold_constant($expr);
             my $ref = ref($expr);
             if (   $ref eq 'Perlito5::AST::Int'
                 || $ref eq 'Perlito5::AST::Num'

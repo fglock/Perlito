@@ -48,18 +48,21 @@ sub stmts { $_[0]->{stmts} }
 package Perlito5::AST::Int;
 sub new { my $class = shift; bless {@_}, $class }
 sub int { $_[0]->{int} }
+sub value { $_[0]->{int} }
 
 
 
 package Perlito5::AST::Num;
 sub new { my $class = shift; bless {@_}, $class }
 sub num { $_[0]->{num} }
+sub value { $_[0]->{num} }
 
 
 
 package Perlito5::AST::Buf;
 sub new { my $class = shift; bless {@_}, $class }
 sub buf { $_[0]->{buf} }
+sub value { $_[0]->{buf} }
 
 
 
