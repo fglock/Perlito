@@ -2757,7 +2757,13 @@ EOT
 
     // array
     public static final PlArray array_get(String name) {
-        return (PlArray)avar.hget_arrayref(name).array_deref_strict();
+        // inline from: hget_arrayref(String name)
+        PlObject o = avar.h.get(name);
+        if (o == null || o.is_undef()) {
+            o = new PlArrayRef();
+            avar.hset(name, o);
+        }
+        return o.array_deref_strict();
     }
     public static final PlArray array_get_local(String name) {
         PlLvalue o = (PlLvalue)avar.hget_lvalue_local(name);
