@@ -1161,7 +1161,11 @@ package Perlito5::AST::Apply;
             my %vars;
             for my $var (@{ $self->{_scope}{block} }, @Perlito5::CAPTURES) {
                 if ( $var->{_decl} && $var->{_decl} ne 'global' && $var->{_decl} ne 'our' ) {
-                    $vars{ $var->{_real_sigil} || $var->{sigil} }{ $var->emit_java(0) } = $var;
+                    $var = Perlito5::AST::Var->new(
+                        %$var,
+                        sigil => ( $var->{_real_sigil} || $var->{sigil} ),
+                    );
+                    $vars{ $var->{sigil} }{ $var->emit_java(0) } = $var;
                 }
             }
 
