@@ -151,7 +151,7 @@ Perlito5-Java work-in-progress
       - FIXED - bug capturing BEGIN variables in eval-string:
 
         ```
-        $ time java -jar perlito5.jar -I src5/lib -Cperl5 -e ' my @v; BEGIN { @v = (123); sub x { @v }; eval " sub yy { \@v }  " } x; yy; '
+        $ java -jar perlito5.jar -I src5/lib -Cperl5 -e ' my @v; BEGIN { @v = (123); sub x { @v }; eval " sub yy { \@v }  " } x; yy; '
         *main::x = do {;
             sub {;
                 @Perlito5::BEGIN::_100_v
@@ -162,6 +162,17 @@ Perlito5-Java work-in-progress
                 @v      # <--- this should be @Perlito5::BEGIN::_100_v
             }
         };
+        ```
+
+      - bug capturing BEGIN variables in eval-string:
+
+        Variables created during runtime are not captured by BEGIN blocks in eval-string.
+
+        In this example, the named sub declaration is compiled at BEGIN time in eval:
+
+        ```
+        $ java -jar perlito5.jar -I src5/lib -e ' my @v = (123); sub yy; eval " sub yy { \@v }  "; print yy(); '
+        [empty string; expected: 123]
         ```
 
   - runtime error messages sometimes do not include the line number in the Perl code
