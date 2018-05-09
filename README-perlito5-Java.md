@@ -175,6 +175,9 @@ Perlito5-Java work-in-progress
         [empty string; expected: 123]
         ```
 
+        Anonymous subs are not affected by this bug, because anon subs are not BEGIN time.
+
+
   - runtime error messages sometimes do not include the line number in the Perl code
 
       - also caller() is only partially implemented
@@ -190,7 +193,8 @@ Perlito5-Java work-in-progress
 
   - signals are partially implemented
       - `$SIG{__WARN__}` and `$SIG{__DIE__}` are implemented
-      - other signals are not yet implemented.
+      - other signals are not yet implemented
+      - `$SIG{ALRM}` and `alarm()` not implemented
 
   - object system is partially implemented
       - method resolution order is not selectable
@@ -213,10 +217,10 @@ Perlito5-Java work-in-progress
       - `overload::constant` not implemented
       - `nomethod` not implemented
       - some optimizations may cause a lower level overload to be called,
-        for example: call "0+" instead of "+".
+        for example: call "0+" instead of "+", call '""' instead of "."
 
   - file handles are partially implemented
-      - open scalarref works
+      - `open()` scalarref works
       - `<DATA>` works
       - open binary mode vs. open utf8 needs more tests
       - files don't `auto-close`, because we use Java memory management
