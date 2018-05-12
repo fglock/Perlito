@@ -308,14 +308,13 @@ EOT
             #
             #   package My::Java { import => "org.My.Java", ... }
             #
-            , (( map {
-                        my $class = $java_classes{$_};
-                        $class->{import} ? "import $class->{import};\n" : ()
-                }
-                sort keys %java_classes
-              ))
-
-            , "\n"
+            # , (( map {
+            #             my $class = $java_classes{$_};
+            #             $class->{import} ? "import $class->{import};\n" : ()
+            #     }
+            #     sort keys %java_classes
+            #   ))
+            # , "\n"
         );
     }
 
@@ -435,12 +434,12 @@ EOT
         #
         #   package My::Java { import => "org.My.Java", ... }
         #
-    , (( map {
-                    my $class = $java_classes{$_};
-                    $class->{import} ? "import $class->{import};\n" : ()
-            }
-            sort keys %java_classes
-      ))
+    , # (( map {
+      #               my $class = $java_classes{$_};
+      #               $class->{import} ? "import $class->{import};\n" : ()
+      #       }
+      #       sort keys %java_classes
+      # ))
         # extends the imported Java classes
         # that were declared with
         #

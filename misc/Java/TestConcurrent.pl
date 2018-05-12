@@ -3,8 +3,7 @@ package Java::Thread {
 };
 
 package ConcurrentLinkedQueue::Of::String {
-    import    => "java.util.concurrent.ConcurrentLinkedQueue",
-    java_type => "ConcurrentLinkedQueue<PlObject>",
+    import    => "java.util.concurrent.ConcurrentLinkedQueue<PlObject>",
 };
 
 my $global_queue = ConcurrentLinkedQueue::Of::String->new();

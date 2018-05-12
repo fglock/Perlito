@@ -9,8 +9,7 @@ package  Button       { import => "javafx.scene.control.Button" }
 package  StackPane    { import => "javafx.scene.layout.StackPane" }
 package  Stage        { import => "javafx.stage.Stage" }
 package  EventHandler::ActionEvent {
-    import    => "javafx.event.EventHandler",
-    java_type => "EventHandler<ActionEvent>",
+    import    => "javafx.event.EventHandler<ActionEvent>",
 }
  
 package MainGui {

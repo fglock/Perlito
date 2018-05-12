@@ -607,8 +607,7 @@ package Sample {
 };
 
 package Array::Of::String {
-    import => "java.util.ArrayList",
-    java_type => "ArrayList<String>",
+    import => "java.util.ArrayList<String>",
 }
 
 my Array::Of::String $x = Array::Of::String->new();
@@ -655,10 +654,7 @@ Other value types can be imported:
 ```perl
 package Java::Object { import => "java.lang.Object" };
 package Java::Date   { import => "java.util.Date" };
-package Java::Array::Of::String {
-    import => "java.util.ArrayList",
-    java_type => "ArrayList<String>",
-}
+package Java::Array::Of::String { import => "java.util.ArrayList<String>" }
 
 my Java::Object $obj = Java::Object->new();
 
@@ -977,8 +973,8 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
   ```perl
   package The::Class {
-      import           => 'full.path.Class',  # mandatory
-      java_type        => 'Class',            # auto generated, can be overridden: 'Class<String>'
+      import           => 'full.path.Class',  # mandatory, can contain a type argument
+      java_type        => 'full.path.Class',  # auto generated, can be overridden
       perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overridden
       # perl_package   => 'The::Class',       # auto generated, Perl package name
   }
@@ -992,8 +988,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   };
 
   package Array::Of::String {
-      import => "java.util.ArrayList",
-      java_type => "ArrayList<String>",
+      import => "java.util.ArrayList<String>",
   }
   ```
 
@@ -1354,12 +1349,10 @@ Value types
 
   ```perl
   package Iterator::Of::String {
-      import => "java.util.Iterator",
-      java_type => "Iterator<String>",
+      import => "java.util.Iterator<String>",
   };
   package ArrayList::Of::String {
-     import => "java.util.ArrayList",
-     java_type => "ArrayList<String>",
+     import => "java.util.ArrayList<String>",
   }
   
   sub foo {

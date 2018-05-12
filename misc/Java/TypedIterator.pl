@@ -1,10 +1,8 @@
 package Iterator::Of::String {
-    import => "java.util.Iterator",
-    java_type => "Iterator<String>",
+    import => "java.util.Iterator<String>",
 };
 package ArrayList::Of::String {
-   import => "java.util.ArrayList",
-   java_type => "ArrayList<String>",
+   import => "java.util.ArrayList<String>",
 }
 
 sub foo {

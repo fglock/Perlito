@@ -3,13 +3,11 @@ use strict;
 package Byte { }
 
 package ByteList {
-    import    => "java.util.ArrayList",
-    java_type => "ArrayList<Byte>",
+    import    => "java.util.ArrayList<Byte>",
 } 
 
 package ByteIterator {
-    import    => "java.util.Iterator",
-    java_type => "Iterator<Byte>",
+    import    => "java.util.Iterator<Byte>",
 }
 
 # create java ArrayList<Byte>

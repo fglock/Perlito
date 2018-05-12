@@ -55,6 +55,8 @@ sub set_java_class_defaults {
     # perl_to_java        => 'to_TheClass',       # generated, can be overridden
     # java_native_to_perl => 'pClass',            # generated
     #
+    # import              => 'full.path.Class<String>',   # Java class path + type argument
+    #
     my $Java_class = Perlito5::Java::get_java_class_info();
     my @parts = split /\./, $java_import;
     # $Java_class->{$perl_package}->{java_type} //= $parts[-1];
