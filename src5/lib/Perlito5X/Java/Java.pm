@@ -9,6 +9,10 @@ sub type ($$) {
     # from Nashorn: var HashMap = Java.type("java.util.HashMap")
     my ( $class, $type ) = @_;
     my $array = "";
+    while ( index($type, "<") != -1 ) {
+        # class instances always represent raw types; remove a type argument if present
+        $type =~ s/<[^<>]*>//;
+    }
     while ( substr( $type, -2, 2 ) eq "[]" ) {
         # int[][]  => [[I
         # Object[] => [Ljava.lang.Object;
