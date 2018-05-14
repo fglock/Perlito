@@ -2639,7 +2639,19 @@ EOT
 
     // scalar
     public static final PlLvalue sget(String name) {
-        return (PlLvalue)svar.hget_lvalue(name);
+        // inline from: hget_lvalue(String name)
+        PlObject o = svar.h.get(name);
+        if (o == null) {
+            PlLvalue a = new PlLvalue();
+            svar.h.put(name, a);
+            return a;
+        }
+        if (o.is_lvalue()) {
+            return (PlLvalue)o;
+        }
+        PlLvalue a = new PlLvalue(o);
+        svar.h.put(name, a);
+        return a;
     }
     public static final PlLvalue sget_local(String name) {
         return (PlLvalue)svar.hget_lvalue_local(name);
@@ -2721,7 +2733,13 @@ EOT
 
     // hash
     public static final PlHash hash_get(String name) {
-        return (PlHash)hvar.hget_hashref(name).hash_deref_strict();
+        // inline from: hget_hashref(String name)
+        PlObject o = hvar.h.get(name);
+        if (o == null || o.is_undef()) {
+            o = new PlHashRef();
+            hvar.hset(name, o);
+        }
+        return (PlHash)o.hash_deref_strict();
     }
     public static final PlHash hash_get_local(String name) {
         PlLvalue o = (PlLvalue)hvar.hget_lvalue_local(name);
