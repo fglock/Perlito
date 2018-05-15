@@ -10,7 +10,7 @@ eval {
         sub {
             for my $i ( 0 .. 5 ) {
                 $shared++;                                             # unsafe!
-                $atomic->to_JavaAtomicInteger()->incrementAndGet();    # safe
+                $atomic->incrementAndGet();    # safe
                 print "thread 1; shared $shared\n";
                 sleep(1);
             }
@@ -20,7 +20,7 @@ eval {
         sub {
             for my $i ( 0 .. 5 ) {
                 $shared++;                                             # unsafe!
-                $atomic->to_JavaAtomicInteger()->incrementAndGet();    # safe
+                $atomic->incrementAndGet();    # safe
                 print "thread 2; shared $shared\n";
                 sleep(1);
             }
@@ -36,7 +36,6 @@ eval {
 }
   or die $@;
 
-my $value =
-  $atomic->to_JavaAtomicInteger()->get();   # transform from 'Java::AtomicInteger' into plain scalar
+my $value = $atomic->get();   # transform from 'Java::AtomicInteger' into plain scalar
 print "done. shared $shared (unsafe) - $value (safe)\n";
 
