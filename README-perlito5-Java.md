@@ -710,19 +710,10 @@ $arr->add($p->toString());
 
   - Long
 
-    Perlito can't represent native `Long` values (only Int):
-
     ```perl
     package Long {};
     my Long $b = 100;
-    # error: incompatible types: int cannot be converted to Long
-    ```
-
-  - workaround:
-
-    ```perl
-    package Long {};
-    my Long $b = Long->new(100.0);
+    my Long $b = Long->new(100);
     my Long $b = $v;    # cast from scalar to Long is automatic
     ```
 

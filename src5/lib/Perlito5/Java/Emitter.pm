@@ -1413,9 +1413,11 @@ package Perlito5::AST::Var;
                             }
                         }
                     }
+                    my $java_type = $class_info->{$type}{java_type};
+                    return $self->emit_java($level) . ' = ' . Perlito5::Java::to_native_args([$arguments], $level+1, $java_type);
                 }
 
-                return $self->emit_java($level) . ' = ' . Perlito5::Java::to_native_args([$arguments]);
+                return $self->emit_java($level) . ' = ' . Perlito5::Java::to_native_args([$arguments], $level+1);
             }
             return $self->emit_java($level) . '.set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')'
         }

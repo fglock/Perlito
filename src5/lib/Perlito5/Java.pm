@@ -70,7 +70,7 @@ sub set_java_class_defaults {
     $Java_class->{$perl_package}->{perl_package} = $perl_package;
 }
 
-our %long_type = (
+our %is_long_type = (
     'long' => 1,
     'Long' => 1,
     'java.lang.Long' => 1,
@@ -519,7 +519,10 @@ sub is_native_bool {
 sub to_native_arg {
         my $cond = shift;
         my $level = shift;
+        my $java_type = shift // '';
         my $wantarray = 'scalar';
+
+        return to_native_int($cond, $level, $java_type) if $is_long_type{$java_type};
 
         my $is_apply = (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{arguments} && @{$cond->{arguments}};
 
@@ -554,13 +557,14 @@ sub to_native_arg {
 sub to_native_args {
         my $args = shift;
         my $level = shift;
+        my $java_type = shift;
         my @out;
         for my $cond (@$args) {
             if ( ref($cond) eq 'Perlito5::AST::Apply' && $cond->{arguments} && $cond->{code} eq 'circumfix:<( )>') {
-                push @out, to_native_args( $cond->{arguments}, $level )
+                push @out, to_native_args( $cond->{arguments}, $level, $java_type )
             }
             else {
-                push @out, to_native_arg( $cond, $level );
+                push @out, to_native_arg( $cond, $level, $java_type );
             }
         }
         return join(', ', @out);
@@ -726,21 +730,21 @@ sub to_native_int {
         }
         if ((ref($cond) eq 'Perlito5::AST::Buf' )) {
             my $type_spec = '';
-            $type_spec = 'L' if $long_type{$java_type};
+            $type_spec = 'L' if $is_long_type{$java_type};
             return int( 0 + $cond->{buf} ) . $type_spec;
         }
         elsif ((ref($cond) eq 'Perlito5::AST::Int' )) {
             my $type_spec = '';
-            $type_spec = 'L' if $long_type{$java_type};
+            $type_spec = 'L' if $is_long_type{$java_type};
             return int( 0 + $cond->{int} ) . $type_spec;
         }
         elsif ((ref($cond) eq 'Perlito5::AST::Num' )) {
             my $type_spec = '';
-            $type_spec = 'L' if $long_type{$java_type};
+            $type_spec = 'L' if $is_long_type{$java_type};
             return int( 0 + $cond->{num} ) . $type_spec;
         }
         else {
-            return $cond->emit_java($level, $wantarray) . '.to_long()' if $long_type{$java_type};
+            return $cond->emit_java($level, $wantarray) . '.to_long()' if $is_long_type{$java_type};
             return $cond->emit_java($level, $wantarray) . '.to_int()';
         }
 }
