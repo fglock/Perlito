@@ -1389,6 +1389,18 @@ package Perlito5::AST::Var;
                                 if $arg_id && $Java_var->{ $arg_id }{type};
                             if ($arg_type eq 'PlLvalue') {
                                 # left type is typed, right type is Perl
+
+                                # print STDERR Perlito5::Dumper::Dumper($class_info->{$type});
+
+                                # TODO - cast the result from toJava()
+
+                                # if (exists $class_info->{$type}{java_type}) {
+                                #     my $t = $class_info->{$type}{java_type};
+                                #     return $self->emit_java($level)
+                                #         . ' = ' . '(' . $t . ')('
+                                #                 . Perlito5::Java::to_scalar([$arguments], $level+1) . '.toJava())';
+                                # }
+
                                 if (exists $class_info->{$type}{perl_to_java}) {
                                     return $self->emit_java($level)
                                         . ' = ' . Perlito5::Java::to_scalar([$arguments], $level+1)

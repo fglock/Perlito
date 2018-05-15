@@ -3425,6 +3425,10 @@ EOT
     public boolean is_JavaObject() {
         return false;
     }
+    public Object toJava() {
+        return this;
+    }
+ 
     public boolean is_hash() {
         return false;
     }
@@ -6175,7 +6179,14 @@ EOT
     public boolean is_lvalue() {
         return true;
     }
-
+    public Object toJava() {
+        PlScalarImmutable res = this.get();
+        if ( res.is_JavaObject() ) {
+            return res.toJava();
+        }
+        return res;
+    }
+ 
     public PlObject pre_decr() {
         // --$x
         PlScalarImmutable res = this.get();
