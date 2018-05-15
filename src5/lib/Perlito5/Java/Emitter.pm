@@ -1383,8 +1383,10 @@ package Perlito5::AST::Var;
                     if (ref($arguments) eq "Perlito5::AST::Var") {
                         my $arg_sigil = $arguments->{_real_sigil} || $arguments->{sigil};
                         my $arg_id    = $arguments->{_id};
-                        if ( $arg_sigil eq '$' && $arg_id ) {
-                            my $arg_type = $Java_var->{ $arg_id }{type} || 'PlLvalue';
+                        if ( $arg_sigil eq '$' ) {
+                            my $arg_type = 'PlLvalue';
+                            $arg_type = $Java_var->{ $arg_id }{type}
+                                if $arg_id && $Java_var->{ $arg_id }{type};
                             if ($arg_type eq 'PlLvalue') {
                                 # left type is typed, right type is Perl
                                 if (exists $class_info->{$type}{perl_to_java}) {
