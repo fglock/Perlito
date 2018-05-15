@@ -18,10 +18,9 @@ sub foo {
     return $x;
 }
 
-
 my $bar = foo();
 
-my ArrayList::Of::String $arr = $bar->to_ArrayListOfString();
+my ArrayList::Of::String $arr = $bar;
 my Iterator::Of::String $iterator = $arr->iterator();
 
 while($iterator->hasNext()) {

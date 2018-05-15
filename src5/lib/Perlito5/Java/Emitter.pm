@@ -1394,18 +1394,22 @@ package Perlito5::AST::Var;
 
                                 # TODO - cast the result from toJava()
 
-                                # if (exists $class_info->{$type}{java_type}) {
-                                #     my $t = $class_info->{$type}{java_type};
-                                #     return $self->emit_java($level)
-                                #         . ' = ' . '(' . $t . ')('
-                                #                 . Perlito5::Java::to_scalar([$arguments], $level+1) . '.toJava())';
-                                # }
-
                                 if (exists $class_info->{$type}{perl_to_java}) {
+                                    # $v.toString()
                                     return $self->emit_java($level)
                                         . ' = ' . Perlito5::Java::to_scalar([$arguments], $level+1)
                                                 . '.' . $class_info->{$type}{perl_to_java} . '()';
                                 }
+
+                                if (exists $class_info->{$type}{java_type}) {
+                                    # (MyClass)($v.toJava())
+                                    # - this runs with @SuppressWarnings("unchecked")
+                                    my $t = $class_info->{$type}{java_type};
+                                    return $self->emit_java($level)
+                                        . ' = ' . '(' . $t . ')('
+                                                . Perlito5::Java::to_scalar([$arguments], $level+1) . '.toJava())';
+                                }
+
                             }
                         }
                     }
@@ -2234,6 +2238,7 @@ package Perlito5::AST::Sub;
                     [ "return PlCx.mainThread.getStackTrace()[1];",
                     ],
                   "}",
+                  '@SuppressWarnings("unchecked")',
                   $method_decl . " {",
                     [ @js_block ],
                   "}",

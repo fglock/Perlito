@@ -369,8 +369,10 @@ EOT
         String  => 'PlString',
     );
     for (values %java_classes) {
-        if ( $_->{import} || $_->{extends} || $_->{implements} ) {
-            $native_to_perl{$_->{java_type}} = $_->{java_native_to_perl};
+        if ( $_->{perl_to_java} ) {
+            if ( $_->{import} || $_->{extends} || $_->{implements} ) {
+                $native_to_perl{$_->{java_type}} = $_->{java_native_to_perl};
+            }
         }
     }
 
@@ -3020,6 +3022,7 @@ EOT
                   . "        return null;\n"
                   . "    }\n" : ()
             }
+            grep { $java_classes{$_}{perl_to_java} }
             sort keys %java_classes
       ))
     , <<'EOT'
@@ -5650,6 +5653,7 @@ EOT
                       ? [ $class->{perl_to_java}, $class->{java_type} ]
                       : ()
                  }
+                 grep { $java_classes{$_}{perl_to_java} }
                  sort keys %java_classes
             ),
       ))
@@ -6320,6 +6324,7 @@ EOT
                       ? [ $class->{perl_to_java}, $class->{java_type} ]
                       : ()
                  }
+                 grep { $java_classes{$_}{perl_to_java} }
                  sort keys %java_classes
             ),
       ))
@@ -8963,6 +8968,7 @@ EOT
 }
 " : ()
             }
+            grep { $java_classes{$_}{perl_to_java} }
             sort keys %java_classes
       ))
 

@@ -30,8 +30,7 @@ my $scan_result = $resultScanner->next();
 while (defined $scan_result) {
 
     # cast perl object to java object
-    my Result $java_obj_result =
-        $scan_result->to_Result();
+    my Result $java_obj_result = $scan_result;
 
     # TODO: autoamatic casting (my Result $java_obj = $scan_result;)
     my $scanned_max_price =

@@ -64,9 +64,9 @@ sub set_java_class_defaults {
     $Java_class->{$perl_package}->{java_native_to_perl} //= 'p' . $parts[-1];
     # "List<String>" becomes "PlList_String_"
     $Java_class->{$perl_package}->{java_native_to_perl} =~ s/[<>]/_/g;
-    my $perl_to_java = $perl_package;
-    $perl_to_java =~ s/:://g;
-    $Java_class->{$perl_package}->{perl_to_java} //= "to_${perl_to_java}";
+    # my $perl_to_java = $perl_package;
+    # $perl_to_java =~ s/:://g;
+    # $Java_class->{$perl_package}->{perl_to_java} //= "to_${perl_to_java}";
     $Java_class->{$perl_package}->{perl_package} = $perl_package;
 }
 sub init_java_class {
