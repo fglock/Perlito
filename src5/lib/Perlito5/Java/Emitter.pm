@@ -1354,18 +1354,17 @@ package Perlito5::AST::Var;
         my $open  = $wantarray eq 'void' || $wantarray eq 'statement' ? '' : '(';
         my $close = $wantarray eq 'void' || $wantarray eq 'statement' ? '' : ')';
         my $sigil = $self->{_real_sigil} || $self->{sigil};
-        if ( $sigil eq '$' ) {
-            my $id = $self->{_id};
+        my $id    = $self->{_id};
+        if ( $sigil eq '$' && $id ) {
             my $Java_var = Perlito5::Java::get_java_var_info();
             my $type = $Java_var->{ $id }{type} || 'PlLvalue';
             if ($type ne 'PlLvalue') {
-                # set a typed variable - there is no .set() method
-                # the arguments are not boxed
+                # "set" a typed variable - there is no .set() method
 
                 my $class_info = Perlito5::Java::get_java_class_info();
                 if (exists $class_info->{$type}) {
 
-                    # TODO - cast the argument to java_type
+                    # cast the argument to java_type
                     #
                     #    use Data::Dumper;
                     #    print STDERR Dumper Perlito5::Java::get_java_class_info()->{$type};
@@ -1379,12 +1378,23 @@ package Perlito5::AST::Var;
                     #      'perl_to_java' => 'to_XYZ'
                     #    };
 
-                    # TODO - right side can be native
+                    # TODO - right side can be a native var or expression
 
-                    # if (exists $class_info->{$type}{perl_to_java}) {
-                    #     return $self->emit_java($level) . ' = ' . Perlito5::Java::to_scalar([$arguments], $level+1)  . $class_info->{$type}{perl_to_java} . '()'
-                    # }
-
+                    if (ref($arguments) eq "Perlito5::AST::Var") {
+                        my $arg_sigil = $arguments->{_real_sigil} || $arguments->{sigil};
+                        my $arg_id    = $arguments->{_id};
+                        if ( $arg_sigil eq '$' && $arg_id ) {
+                            my $arg_type = $Java_var->{ $arg_id }{type} || 'PlLvalue';
+                            if ($arg_type eq 'PlLvalue') {
+                                # left type is typed, right type is Perl
+                                if (exists $class_info->{$type}{perl_to_java}) {
+                                    return $self->emit_java($level)
+                                        . ' = ' . Perlito5::Java::to_scalar([$arguments], $level+1)
+                                                . '.' . $class_info->{$type}{perl_to_java} . '()';
+                                }
+                            }
+                        }
+                    }
                 }
 
                 return $self->emit_java($level) . ' = ' . Perlito5::Java::to_native_args([$arguments]);

@@ -14,35 +14,23 @@
     {
         my Byte $b = 100;
         my $pb = $b;
-        $b = $pb->to_byte();
-
-      # TODO: automatic coercion from Perl to Java
-      # $b = $pb;
+        $b = $pb;
     }
     {
         my Short $b = 100;
         my $pb = $b;
-        $b = $pb->to_short();
-
-      # TODO: automatic coercion from Perl to Java
-      # $b = $pb;
+        $b = $pb;
     }
     {
         my $v = 100;
-        my Float $b = $v->to_float();
+        my Float $b = $v;
         my $pb = $b;
-        $b = $pb->to_float();
-
-      # TODO: automatic coercion from Perl to Java
-      # $b = $pb;
+        $b = $pb;
     }
     {
         my $v = 100;
-        my Long  $b = $v->to_long();
+        my Long  $b = $v;
         my $pb = $b;
-        $b = $pb->to_long();
-
-      # TODO: automatic coercion from Perl to Java
-      # $b = $pb;
+        $b = $pb;
     }
 
