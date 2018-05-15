@@ -1364,9 +1364,8 @@ package Perlito5::AST::Var;
 
                 my $class_info = Perlito5::Java::get_java_class_info();
                 if (exists $class_info->{$type}) {
-                    my $java_type = $class_info->{$type}{java_type};
 
-                    # TODO - cast the argument to $java_type
+                    # TODO - cast the argument to java_type
                     #
                     #    use Data::Dumper;
                     #    print STDERR Dumper Perlito5::Java::get_java_class_info()->{$type};
@@ -1379,6 +1378,12 @@ package Perlito5::AST::Var;
                     #      'import' => 'a.b.C',
                     #      'perl_to_java' => 'to_XYZ'
                     #    };
+
+                    # TODO - right side can be native
+
+                    # if (exists $class_info->{$type}{perl_to_java}) {
+                    #     return $self->emit_java($level) . ' = ' . Perlito5::Java::to_scalar([$arguments], $level+1)  . $class_info->{$type}{perl_to_java} . '()'
+                    # }
 
                 }
 
