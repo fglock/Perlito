@@ -217,7 +217,7 @@ Perlito5-Java work-in-progress
       - `overload::constant` not implemented
       - `nomethod` not implemented
       - some optimizations may cause a lower level overload to be called,
-        for example: call "0+" instead of "+", call '""' instead of "."
+        for example: call `0+` instead of `+`, call `""` instead of `.`
 
   - file handles are partially implemented
       - `open()` scalarref works
@@ -264,12 +264,12 @@ Regex differences
 -----------------
 
   - regex modifiers /ismxgec work the same as Perl; other modifiers are not yet implemented.
-      - /xx works
-      - /ee works
-      - /r not implemented
-      - /g has problems in certain backtracking zero-length-matches
+      - `/xx` works
+      - `/ee` works
+      - `/r` not implemented
+      - `/g` has problems in certain backtracking zero-length-matches
 
-  - regex variables $1, $2, ... and $&, $', $` work; other variables are not yet implemented.
+  - regex variables `$1`, `$2`, ... and `$&`, `$'`, `` $` `` work; other variables are not yet implemented.
 
   - capturing in zero-length-match has problems. Failing tests:
 
@@ -300,7 +300,7 @@ Limitations
 
 Possible workarounds for slow compilation:
 
-  - `ASM`
+  - Java `ASM`
       - TODO: prototype eval-string with ASM
 
   - write a tiny interpreter for simple expressions
@@ -527,6 +527,8 @@ package Sample { import => "misc.Java.Sample" };
 
   - an empty package works for importing builtin types or primitives (`String`, `Long`, `long`)
 
+These extensions are experimental and may be deprecated:
+
   - an `import` specification works for importing Java classes
 
   - an `extends` specification works for adding methods to an existing class
@@ -689,7 +691,7 @@ $arr->add($p->toString());
 
   - Character
 
-    Perlito can't represent native `Character` values (only String)
+    (TODO) Perlito can't represent native `Character` values (only String)
 
     ```perl
     package Character { };
@@ -975,7 +977,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   package The::Class {
       import           => 'full.path.Class',  # mandatory, can contain a type argument
       java_type        => 'full.path.Class',  # auto generated, can be overridden
-      perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overridden
+      perl_to_java     => 'to_TheClass',      # (deprecated) auto generated from Perl package name, can be overridden
       # perl_package   => 'The::Class',       # auto generated, Perl package name
   }
   ```
@@ -992,7 +994,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   }
   ```
 
-  - generates:
+  - (this is deprecated) generates:
     - import misc.java.Sample;              (DONE)
     - adds a pObject coercion `to_Sample`   (DONE)
     - adds a pObject variant `pSample`      (DONE)
@@ -1346,7 +1348,7 @@ Value types
   }
   
   my $bar = foo();
-  my ArrayList::Of::String $arr = $bar->to_ArrayListOfString();     # not implemented
+  my ArrayList::Of::String $arr = $bar;
   my Iterator::Of::String $iterator = $arr->iterator();
   while($iterator->hasNext()) {
     my $element = $iterator->next();
@@ -1720,7 +1722,7 @@ Threads
 
     closure can use that thread id to get/set the value from globals hash.
 
-  - TODO - per-thread: "local" stack, "boolean" stack, regex_result
+  - TODO - per-thread: "local" stack, "boolean" stack, `regex_result`
 
 Optimizations
 -------------
@@ -1734,7 +1736,7 @@ Optimizations
 
   - replace regex with index
 
-  - use 'continue' and 'break' when possible (in place of Perl 'next', 'last')
+  - use `continue` and `break` when possible (in place of Perl `next`, `last`)
 
   - identify variables that don't need a true `lvalue` container;
     store in a `PerlObject` instead of `PerlLvalue`,
