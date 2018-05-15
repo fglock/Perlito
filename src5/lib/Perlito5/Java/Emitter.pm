@@ -1361,6 +1361,27 @@ package Perlito5::AST::Var;
             if ($type ne 'PlLvalue') {
                 # set a typed variable - there is no .set() method
                 # the arguments are not boxed
+
+                my $class_info = Perlito5::Java::get_java_class_info();
+                if (exists $class_info->{$type}) {
+                    my $java_type = $class_info->{$type}{java_type};
+
+                    # TODO - cast the argument to $java_type
+                    #
+                    #    use Data::Dumper;
+                    #    print STDERR Dumper Perlito5::Java::get_java_class_info()->{$type};
+                    #
+                    #    $ perl perlito5.pl -Isrc5/lib -Cjava -e ' package XYZ { import => "a.b.C" } my XYZ $xx = $v ' > x.txt
+                    #    $VAR1 = {
+                    #      'java_type' => 'a.b.C',
+                    #      'java_native_to_perl' => 'pC',
+                    #      'perl_package' => 'XYZ',
+                    #      'import' => 'a.b.C',
+                    #      'perl_to_java' => 'to_XYZ'
+                    #    };
+
+                }
+
                 return $self->emit_java($level) . ' = ' . Perlito5::Java::to_native_args([$arguments]);
             }
             return $self->emit_java($level) . '.set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')'
