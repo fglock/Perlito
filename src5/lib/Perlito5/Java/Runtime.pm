@@ -1086,7 +1086,7 @@ class PerlOp {
                 }
             }
             return PlCORE.die( "Can't locate object method \"" + method
-                + "\" via Java class \"" + cl.getSimpleName()
+                + "\" via Java class \"" + cl.getCanonicalName()
                 + "\" (perhaps the parameter types don\'t match?)" );
         }
         if ( invocant.is_undef() ) {
@@ -8351,7 +8351,7 @@ class PlStringLazyError extends PlString {
     }
     public String toString() {
         if (this.s == null) {
-            this.s = e.getClass().getSimpleName() + ": " + e.getMessage() + "\n" + java.util.Arrays.toString(e.getStackTrace());
+            this.s = e.getClass().getCanonicalName() + ": " + e.getMessage() + "\n" + java.util.Arrays.toString(e.getStackTrace());
         }
         return this.s;
     }
@@ -9042,10 +9042,10 @@ class PlJavaObject extends PlReference {
         return this.stuff;
     }
     public PlString ref() {
-        return new PlString(stuff.getClass().getSimpleName());
+        return new PlString(stuff.getClass().getCanonicalName());
     }
     public String ref_str() {
-        return stuff.getClass().getSimpleName();
+        return stuff.getClass().getCanonicalName();
     }
     public boolean ref_boolean() {
         return true;

@@ -341,7 +341,7 @@ TODO - investigate using the Nashorn convention for "Using Java from Scripts", s
   ```
   $ jrunscript -cp . -l Perl5 
   perl> my $x = Java::inline " new Object() "; say ref($x); say $x; say ($x ? "true" : "false" );
-  Object
+  java.lang.Object
   java.lang.Object@6680f714
   true
   ```
@@ -351,7 +351,7 @@ TODO - investigate using the Nashorn convention for "Using Java from Scripts", s
   ```
   $ jrunscript -cp . -l Perl5 
   perl> eval { my $x = Java::inline q{ Class.forName("java.lang.Thread") }; say ref($x); say $x; }
-  Class
+  java.lang.Class
   class java.lang.Thread
   ```
 
