@@ -100,6 +100,21 @@ our %is_char_type = (
     'Character'           => 1,
     'java.lang.Character' => 1,
 );
+our %is_int_type = (
+    'int'               => 1,
+    'Integer'           => 1,
+    'java.lang.Integer' => 1,
+);
+our %is_short_type = (
+    'short'           => 1,
+    'Short'           => 1,
+    'java.lang.Short' => 1,
+);
+our %is_byte_type = (
+    'byte'           => 1,
+    'Byte'           => 1,
+    'java.lang.Byte' => 1,
+);
 
 sub init_java_class {
     my $Java_class = Perlito5::Java::get_java_class_info();
@@ -547,10 +562,14 @@ sub to_native_arg {
         my $java_type = shift // '';
         my $wantarray = 'scalar';
 
-        return to_native_int($cond, $level, $java_type)  if $is_long_type{$java_type};
-        return to_native_num($cond, $level, $java_type)  if $is_float_type{$java_type} || $is_double_type{$java_type};
-        return to_native_bool($cond, $level, $java_type) if $is_boolean_type{$java_type};
-        return to_native_char($cond, $level, $java_type) if $is_char_type{$java_type};
+        return to_native_int($cond, $level, $java_type)
+            if $is_long_type{$java_type} || $is_int_type{$java_type};
+        return to_native_num($cond, $level, $java_type)
+            if $is_float_type{$java_type} || $is_double_type{$java_type};
+        return to_native_bool($cond, $level, $java_type)  if $is_boolean_type{$java_type};
+        return to_native_char($cond, $level, $java_type)  if $is_char_type{$java_type};
+        return to_native_short($cond, $level, $java_type) if $is_short_type{$java_type};
+        return to_native_byte($cond, $level, $java_type)  if $is_byte_type{$java_type};
 
         my $is_apply = (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{arguments} && @{$cond->{arguments}};
 
@@ -697,6 +716,20 @@ sub to_native_char {
         my $java_type = shift // '';
         return '(char)(' . to_native_int( $cond, $level, 'int' ) . ')' if $java_type eq 'char';
         return '(new Character((char)' . to_native_int( $cond, $level, 'int' ) . '))';
+}
+
+sub to_native_byte {
+        my $cond = shift;
+        my $level = shift;
+        my $java_type = shift // '';
+        return '(byte)(' . to_native_int( $cond, $level, 'int' ) . ')';
+}
+
+sub to_native_short {
+        my $cond = shift;
+        my $level = shift;
+        my $java_type = shift // '';
+        return '(short)(' . to_native_int( $cond, $level, 'int' ) . ')';
 }
 
 sub to_native_str {
