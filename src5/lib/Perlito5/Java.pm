@@ -547,9 +547,10 @@ sub to_native_arg {
         my $java_type = shift // '';
         my $wantarray = 'scalar';
 
-        return to_native_int($cond, $level, $java_type) if $is_long_type{$java_type};
-        return to_native_num($cond, $level, $java_type) if $is_float_type{$java_type} || $is_double_type{$java_type};
+        return to_native_int($cond, $level, $java_type)  if $is_long_type{$java_type};
+        return to_native_num($cond, $level, $java_type)  if $is_float_type{$java_type} || $is_double_type{$java_type};
         return to_native_bool($cond, $level, $java_type) if $is_boolean_type{$java_type};
+        return to_native_char($cond, $level, $java_type) if $is_char_type{$java_type};
 
         my $is_apply = (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{arguments} && @{$cond->{arguments}};
 
@@ -662,6 +663,7 @@ sub to_native_num {
         my $cond = shift;
         my $level = shift;
         my $java_type = shift // '';
+
         if (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'circumfix:<( )>'
            && $cond->{arguments} && @{$cond->{arguments}}
            )
@@ -687,6 +689,14 @@ sub to_native_num {
             # TODO - ensure "num"
             return to_native_args([$cond], $level);
         }
+}
+
+sub to_native_char {
+        my $cond = shift;
+        my $level = shift;
+        my $java_type = shift // '';
+        return '(char)(' . to_native_int( $cond, $level, 'int' ) . ')' if $java_type eq 'char';
+        return '(new Character((char)' . to_native_int( $cond, $level, 'int' ) . '))';
 }
 
 sub to_native_str {
@@ -724,37 +734,50 @@ sub to_native_int {
         my $java_type = shift // 'int';
         my $wantarray = 'scalar';
 
-        if (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'circumfix:<( )>'
-           && $cond->{arguments} && @{$cond->{arguments}}
-           )
-        {
-            return to_native_int( $cond->{arguments}[0], $level, $java_type )
+        my $type_spec = '';
+        $type_spec = 'L' if $is_long_type{$java_type};
+
+        my $cast = '.to_int()';
+        $cast = '.to_long()' if $is_long_type{$java_type};
+
+        my $is_apply = (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{arguments} && @{$cond->{arguments}};
+
+        if ($is_apply) {
+
+            if ( $cond->{code} eq 'circumfix:<( )>' ) {
+                return to_native_int( $cond->{arguments}[0], $level, $java_type )
+            }
+            # elsif ( exists $native_op{ $cond->{code} } ) {
+            #     return '(' . to_native_num($cond->{arguments}[0], $level, $java_type) . ' '
+            #         . $native_op{ $cond->{code} } . ' '
+            #         . to_native_num($cond->{arguments}[1], $level, $java_type) . ')';
+            # }
+
+            if (  $cond->{code} eq 'infix:<+>'
+               && (   $cond->{arguments}[0]->isa( 'Perlito5::AST::Int' )
+                  ||  $cond->{arguments}[1]->isa( 'Perlito5::AST::Int' ) )
+               )
+            {
+                return to_native_int( $cond->{arguments}[0], $level, $java_type ) . " + " . to_native_int( $cond->{arguments}[1], $level, $java_type );
+            }
+
         }
-        if (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'infix:<+>'
-           && (   $cond->{arguments}[0]->isa( 'Perlito5::AST::Int' )
-              ||  $cond->{arguments}[1]->isa( 'Perlito5::AST::Int' ) )
-           )
-        {
-            return to_native_int( $cond->{arguments}[0], $level, $java_type ) . " + " . to_native_int( $cond->{arguments}[1], $level, $java_type );
+
+        if (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'undef' ) {
+            return '0' . $type_spec;
         }
+
         if ((ref($cond) eq 'Perlito5::AST::Buf' )) {
-            my $type_spec = '';
-            $type_spec = 'L' if $is_long_type{$java_type};
             return int( 0 + $cond->{buf} ) . $type_spec;
         }
         elsif ((ref($cond) eq 'Perlito5::AST::Int' )) {
-            my $type_spec = '';
-            $type_spec = 'L' if $is_long_type{$java_type};
             return int( 0 + $cond->{int} ) . $type_spec;
         }
         elsif ((ref($cond) eq 'Perlito5::AST::Num' )) {
-            my $type_spec = '';
-            $type_spec = 'L' if $is_long_type{$java_type};
             return int( 0 + $cond->{num} ) . $type_spec;
         }
         else {
-            return $cond->emit_java($level, $wantarray) . '.to_long()' if $is_long_type{$java_type};
-            return $cond->emit_java($level, $wantarray) . '.to_int()';
+            return $cond->emit_java($level, $wantarray) . $cast;
         }
 }
 

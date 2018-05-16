@@ -696,6 +696,7 @@ $arr->add($p->toString());
     ```perl
     package Character { };
     my Character $b = 50;
+    my Character $b = ord("a");
     my Character $b = $v;   # cast from scalar to Character is automatic (the scalar must have a numeric value)
     ```
 
@@ -708,8 +709,7 @@ $arr->add($p->toString());
     but:
 
     ```perl
-    my Character $b = "a";
-    # error: incompatible types: String cannot be converted to Character
+    my Character $b = "a";  # numeric value is zero
     ```
 
   - Long
@@ -733,19 +733,13 @@ $arr->add($p->toString());
   (TODO) type propagation problems:
 
     ```sh
-    $ time java -jar perlito5.jar -Isrc5/lib  -e ' package float {}; my float $b = 100/3; $x = $b; say $x; '
+    $ java -jar perlito5.jar -Isrc5/lib  -e ' package float {}; my float $b = 100/3; $x = $b; say $x; '
     error: incompatible types: possible lossy conversion from double to float
             b_103 = (100D / 3D);
     ```sh
-    $ time java -jar perlito5.jar -Isrc5/lib  -e ' package int {}; my int $b = 100/3; $x = $b; say $x; '
+    $ java -jar perlito5.jar -Isrc5/lib  -e ' package int {}; my int $b = 100/3; $x = $b; say $x; '
     error: incompatible types: possible lossy conversion from double to int
             b_103 = (100D / 3D);
-    ```
-
-    ```sh
-    $ time java -jar perlito5.jar -Isrc5/lib  -e ' package Character {}; my Character $b = ord("a"); $x = $b; say $x; '
-    error: incompatible types: long cannot be converted to Character
-            b_103 = (PerlOp.ord(tmp106)).to_long();
     ```
 
 Using typed variables
