@@ -559,9 +559,16 @@ sub to_native_arg {
                 ' ' . $native_op{ $cond->{code} } . ' ' . to_native_num($cond->{arguments}[1], $level) . ')';
         }
         elsif ( $is_apply && exists $op_to_num{ $cond->{code} } ) {
-            return '(' . $cond->emit_java($level, $wantarray) . ').' .
-                (${$cond->{arguments}}[0]->isa( 'Perlito5::AST::Num' ) || ${$cond->{arguments}}[1]->isa( 'Perlito5::AST::Num' )
-                    ? 'to_double()' : 'to_long()');
+            if (@{$cond->{arguments}} == 2) {
+                return '(' . $cond->emit_java($level, $wantarray) . ').' .
+                    (${$cond->{arguments}}[0]->isa( 'Perlito5::AST::Num' ) || ${$cond->{arguments}}[1]->isa( 'Perlito5::AST::Num' )
+                        ? 'to_double()' : 'to_long()');
+            }
+            if (@{$cond->{arguments}} == 1) {
+                return '(' . $cond->emit_java($level, $wantarray) . ').' .
+                    (${$cond->{arguments}}[0]->isa( 'Perlito5::AST::Num' )
+                        ? 'to_double()' : 'to_long()');
+            }
         }
         elsif ( $is_apply && exists $op_to_str{ $cond->{code} } ) {
             return '(' . $cond->emit_java($level, $wantarray) . ').toString()';

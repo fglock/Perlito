@@ -742,6 +742,12 @@ $arr->add($p->toString());
             b_103 = (100D / 3D);
     ```
 
+    ```sh
+    $ time java -jar perlito5.jar -Isrc5/lib  -e ' package Character {}; my Character $b = ord("a"); $x = $b; say $x; '
+    error: incompatible types: long cannot be converted to Character
+            b_103 = (PerlOp.ord(tmp106)).to_long();
+    ```
+
 Using typed variables
 ---------------------
 
