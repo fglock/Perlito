@@ -726,7 +726,7 @@ package Perlito5::AST::Apply;
                 my $Java_var = Perlito5::Java::get_java_var_info();
                 my $type = $Java_var->{ $id }{type} || 'PlLvalue';
                 if ($type ne 'PlLvalue') {
-                    return Perlito5::Java::to_native_num($arg, $level, $wantarray) . '++';
+                    return Perlito5::Java::to_native_num($arg, $level) . '++';
                 }
             }
             $arg->emit_java($level, 'scalar', 'lvalue') . '.post_incr()'
@@ -739,7 +739,7 @@ package Perlito5::AST::Apply;
                 my $Java_var = Perlito5::Java::get_java_var_info();
                 my $type = $Java_var->{ $id }{type} || 'PlLvalue';
                 if ($type ne 'PlLvalue') {
-                    return Perlito5::Java::to_native_num($arg, $level, $wantarray) . '--';
+                    return Perlito5::Java::to_native_num($arg, $level) . '--';
                 }
             }
             $arg->emit_java($level, 'scalar', 'lvalue') . '.post_decr()'
@@ -752,7 +752,7 @@ package Perlito5::AST::Apply;
                 my $Java_var = Perlito5::Java::get_java_var_info();
                 my $type = $Java_var->{ $id }{type} || 'PlLvalue';
                 if ($type ne 'PlLvalue') {
-                    return '++' . Perlito5::Java::to_native_num($arg, $level, $wantarray);
+                    return '++' . Perlito5::Java::to_native_num($arg, $level);
                 }
             }
             $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_incr()'
@@ -765,7 +765,7 @@ package Perlito5::AST::Apply;
                 my $Java_var = Perlito5::Java::get_java_var_info();
                 my $type = $Java_var->{ $id }{type} || 'PlLvalue';
                 if ($type ne 'PlLvalue') {
-                    return '--' . Perlito5::Java::to_native_num($arg, $level, $wantarray);
+                    return '--' . Perlito5::Java::to_native_num($arg, $level);
                 }
             }
             $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_decr()'

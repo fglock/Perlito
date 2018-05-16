@@ -85,6 +85,11 @@ our %is_char_type = (
     'Character'           => 1,
     'java.lang.Character' => 1,
 );
+our %is_double_type = (
+    'double'           => 1,
+    'Double'           => 1,
+    'java.lang.Double' => 1,
+);
 
 sub init_java_class {
     my $Java_class = Perlito5::Java::get_java_class_info();
@@ -533,13 +538,14 @@ sub to_native_arg {
         my $wantarray = 'scalar';
 
         return to_native_int($cond, $level, $java_type) if $is_long_type{$java_type};
+        return to_native_num($cond, $level, $java_type) if $is_float_type{$java_type} || $is_double_type{$java_type};
 
         my $is_apply = (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{arguments} && @{$cond->{arguments}};
 
         if ( $is_apply && exists $native_op{ $cond->{code} } ) {
             # TODO - cast arguments to "number", "string" or "boolean" depending on operator
-            return '(' . to_native_num($cond->{arguments}[0], $level, $wantarray) .
-                ' ' . $native_op{ $cond->{code} } . ' ' . to_native_num($cond->{arguments}[1], $level, $wantarray) . ')';
+            return '(' . to_native_num($cond->{arguments}[0], $level) .
+                ' ' . $native_op{ $cond->{code} } . ' ' . to_native_num($cond->{arguments}[1], $level) . ')';
         }
         elsif ( $is_apply && exists $op_to_num{ $cond->{code} } ) {
             return '(' . $cond->emit_java($level, $wantarray) . ').' .
@@ -671,18 +677,27 @@ sub to_native_bool {
 sub to_native_num {
         my $cond = shift;
         my $level = shift;
-        my $wantarray = shift;
+        my $java_type = shift // '';
         if (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'circumfix:<( )>'
            && $cond->{arguments} && @{$cond->{arguments}}
            )
         {
-            return to_native_num( $cond->{arguments}[0], $level, $wantarray )
+            return to_native_num( $cond->{arguments}[0], $level, $java_type )
+        }
+        elsif ((ref($cond) eq 'Perlito5::AST::Buf' )) {
+            my $type_spec = 'D';
+            $type_spec = 'F' if $is_float_type{$java_type};
+            return ( 0 + $cond->{buf} ) . $type_spec;
         }
         elsif ((ref($cond) eq 'Perlito5::AST::Int' )) {
-            return $cond->{int};
+            my $type_spec = 'D';
+            $type_spec = 'F' if $is_float_type{$java_type};
+            return $cond->{int} . $type_spec;
         }
         elsif ((ref($cond) eq 'Perlito5::AST::Num' )) {
-            return $cond->{num};
+            my $type_spec = 'D';
+            $type_spec = 'F' if $is_float_type{$java_type};
+            return $cond->{num} . $type_spec;
         }
         else {
             # TODO - ensure "num"

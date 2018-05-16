@@ -687,7 +687,7 @@ $arr->add($p->toString());
   my $arr = Java->type("int[]")->new(10);
   ```
 
-- Constants
+- Typed values
 
   - Character
 
@@ -719,18 +719,9 @@ $arr->add($p->toString());
 
   - Float
 
-    Perlito can't represent native `Float` values (only Double):
-
     ```perl
     package Float {};
     my Float $b = 100.0;
-    # error: incompatible types: double cannot be converted to Float
-    ```
-
-    workaround:
-
-    ```perl
-    package Float {};
     my Float $b = Float->new(100.0);
     my Float $b = $v;   # cast from scalar to Float is automatic
     ```
