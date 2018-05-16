@@ -17,54 +17,54 @@ Requirements
 Perlito5-Java platform differences
 -------------------------------------------
 
-  - no timely destruction (DESTROY) (because we use Java memory management)
-      - files don't "auto-close" at the end of a block
-      - weaken() is a no-op
-      - Try::Tiny `finally` doesn't work
-      - Object::InsideOut will not cleanup unused objects
-      - SelectSaver module doesn't work
+- no timely destruction (DESTROY) (because we use Java memory management)
+    - files don't "auto-close" at the end of a block
+    - weaken() is a no-op
+    - Try::Tiny `finally` doesn't work
+    - Object::InsideOut will not cleanup unused objects
+    - SelectSaver module doesn't work
 
-  - no XS (because we use Java instead of C)
-      - many CPAN modules which use C libraries don't work
-      - some CPAN modules are already ported, see: src5/lib/Perlito5X/Java/
+- no XS (because we use Java instead of C)
+    - many CPAN modules which use C libraries don't work
+    - some CPAN modules are already ported, see: src5/lib/Perlito5X/Java/
 
-  - some system features are not readily available in Java, such as:
-      - file permissions for setuid, setgid, and sticky bit are not implemented
-      - some signals are not available in Java.
+- some system features are not readily available in Java, such as:
+    - file permissions for setuid, setgid, and sticky bit are not implemented
+    - some signals are not available in Java.
 
 
 Build using make
 ----------------
 
-  - type:
+- type:
 
-    ```sh
-    $ make
-    ```
+  ```sh
+  $ make
+  ```
 
-  - alternately:
+- alternately:
 
-      - Update the Perl-based compiler `perlito5.pl`
+    - Update the Perl-based compiler `perlito5.pl`
 
-        ```sh
-        $ make build-5to5
-        ```
+      ```sh
+      $ make build-5to5
+      ```
 
-      - Compile the compiler into a jar file `perlito5.jar`
+    - Compile the compiler into a jar file `perlito5.jar`
 
-        ```sh
-        $ make build-5java
-        ```
+      ```sh
+      $ make build-5java
+      ```
 
-  - run a test or two:
+- run a test or two:
 
-    ```
-    $ java -jar perlito5.jar -v
-    This is Perlito5 9.021, an implementation of the Perl language.
+  ```
+  $ java -jar perlito5.jar -v
+  This is Perlito5 9.021, an implementation of the Perl language.
 
-    $ java -jar perlito5.jar -Isrc5/lib t5/unit/array.t
-    ok 1 ...
-    ```
+  $ java -jar perlito5.jar -Isrc5/lib t5/unit/array.t
+  ok 1 ...
+  ```
 
 Perlito5-Java work-in-progress
 ------------------------------
@@ -296,7 +296,7 @@ Limitations
   - eval bytecode is cached - this will leak memory
       - review the ClassLoader for leaks
 
-  - some Java extensions are disabled inside eval-string - see section `Perlito5-Java extensibility`
+  - some Java extensions may be disabled inside eval-string - see section `Perlito5-Java extensibility`
 
 Possible workarounds for slow compilation:
 
@@ -397,7 +397,7 @@ Java fields, methods and constructors
 
   - `new` invokes a constructor
 
-  - Simple Java objects (String, Integer, Long, Double, Boolean) are converted to Perl values.
+  - Simple Java objects (String, Character, Integer, Long, Short, Byte, Double, Boolean) are converted to Perl values.
 
   - Other Java objects are seen by Perl as "blessed references"
 
@@ -750,7 +750,7 @@ package long {}
 my long $j;             # Java variable
 my $var;                # Perl variable
 $var = $j;              # store Java value in Perl variable
-$j = $var;   # get Java value from Perl variable; cast from scalar to long is automatic
+$j = $var;              # get Java value from Perl variable; cast from scalar to long is automatic
 ```
 
 Typed variables generate efficient, native Java. The catch is that there are a few restrictions:
@@ -766,6 +766,14 @@ conditionals should work fine, because these are not usually implemented as clos
 - Java variables are not accepted as Perl subroutine parameters.
 
   - workaround: store the Java value in a Perl variable
+
+  - (TODO) provide automatic casting where possible
+
+    ```
+    $ java -jar perlito5.jar -Isrc5/lib  -e ' package short {}; my short $b = ord("a"); say $b;'
+    error: short cannot be dereferenced
+            PlCORE.say(PlCx.VOID, PlV.STDOUT, b_103.toString());
+    ```
 
 - Java methods with type `void` should not be in the last line of a Perl block.
   This is because Perl blocks return the last value, and `void` is not acceptable as a value.
