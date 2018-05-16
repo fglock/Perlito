@@ -726,6 +726,17 @@ $arr->add($p->toString());
     my Float $b = $v;   # cast from scalar to Float is automatic
     ```
 
+  (TODO) type propagation problems:
+
+    ```sh
+    $ time java -jar perlito5.jar -Isrc5/lib  -e ' package float {}; my float $b = 100/3; $x = $b; say $x; '
+    error: incompatible types: possible lossy conversion from double to float
+            b_103 = (100D / 3D);
+    ```sh
+    $ time java -jar perlito5.jar -Isrc5/lib  -e ' package int {}; my int $b = 100/3; $x = $b; say $x; '
+    error: incompatible types: possible lossy conversion from double to int
+            b_103 = (100D / 3D);
+    ```
 
 Using typed variables
 ---------------------
