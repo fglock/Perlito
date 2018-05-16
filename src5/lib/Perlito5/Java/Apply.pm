@@ -522,8 +522,8 @@ package Perlito5::AST::Apply;
         },
         'infix:<xor>' => sub {
             my ($self, $level, $wantarray) = @_;
-            '( ' . Perlito5::Java::to_boolean( $self->{arguments}->[0], $level ) . ' ? new PlBool(!'
-                 . Perlito5::Java::to_boolean($self->{arguments}->[1], $level) . ') : '
+            '( ' . Perlito5::Java::to_native_bool( $self->{arguments}->[0], $level ) . ' ? new PlBool(!'
+                 . Perlito5::Java::to_native_bool($self->{arguments}->[1], $level) . ') : '
                  . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray ) . ')';
         },
         'infix:<=>>' => sub {
@@ -534,7 +534,7 @@ package Perlito5::AST::Apply;
         'prefix:<!>' => sub {
             my $self      = shift;
             my $level     = shift;
-            'new PlBool(!(' . Perlito5::Java::to_boolean( $self->{arguments}->[0], $level ) . '))';
+            'new PlBool(!(' . Perlito5::Java::to_native_bool( $self->{arguments}->[0], $level ) . '))';
         },
         'prefix:<not>' => sub {
             my $self      = shift;
@@ -543,7 +543,7 @@ package Perlito5::AST::Apply;
             if (!$arg) {
                 return 'PlCx.TRUE';
             }
-            'new PlBool(!( ' . Perlito5::Java::to_boolean( $arg, $level ) . '))';
+            'new PlBool(!( ' . Perlito5::Java::to_native_bool( $arg, $level ) . '))';
         },
         'prefix:<~>' => sub {
             my $self  = shift;
@@ -922,7 +922,7 @@ package Perlito5::AST::Apply;
                         otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[2] ] ),
                     )->emit_java($level, $wantarray);
             }
-               '( ' . Perlito5::Java::to_boolean( $self->{arguments}->[0], $level )
+               '( ' . Perlito5::Java::to_native_bool( $self->{arguments}->[0], $level )
             . ' ? ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray )
             . ' : ' . ( $self->{arguments}->[2] )->emit_java( $level, $wantarray )
             .  ')';
@@ -2039,6 +2039,7 @@ package Perlito5::AST::Apply;
         }
         return ()
     }
+
 }
 
 1;

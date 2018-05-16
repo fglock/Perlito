@@ -271,6 +271,20 @@ sub PUSH {
     );
 }
 
+sub UNDEF {
+    return Perlito5::AST::Apply->new(
+        'arguments' => [],
+        'code'      => 'undef',
+        'namespace' => '',
+    );
+}
+
+sub value {
+    my $self = shift;
+    my $ref = ref($self);
+    return undef if $ref eq 'Perlito5::AST::Apply' && $self->{code} eq 'undef';
+    die "can't take the Constant value() of Perlito5::AST::Apply '" . $self->{code} . "'";
+}
 
 package Perlito5::AST::If;
 sub new { my $class = shift; bless {@_}, $class }

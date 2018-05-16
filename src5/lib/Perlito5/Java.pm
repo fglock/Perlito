@@ -640,40 +640,6 @@ sub is_native_args {
         return 0;
 }
 
-sub to_native_bool {
-        my $cond = shift;
-        my $level = shift;
-        my $wantarray = shift;
-        if (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'circumfix:<( )>'
-           && $cond->{arguments} && @{$cond->{arguments}}
-           )
-        {
-            return to_native_bool( $cond->{arguments}[0], $level, $wantarray )
-        }
-        elsif (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'ref'
-           && $cond->{arguments} && @{$cond->{arguments}}
-           )
-        {
-            return $cond->{arguments}[0]->emit_java( $level, $wantarray ) . '.ref_boolean()';
-        }
-        elsif ((ref($cond) eq 'Perlito5::AST::Int' )) {
-            if ($cond->{int} == 0) {
-                return 'false';
-            }
-            return '(' . $cond->{int} . ' != 0)';
-        }
-        elsif ((ref($cond) eq 'Perlito5::AST::Num' )) {
-            if ($cond->{num} == 0.0) {
-                return 'false';
-            }
-            return '(' . $cond->{num} . ' != 0.0)';
-        }
-        else {
-            # TODO - ensure "bool"
-            return to_native_args([$cond], $level);
-        }
-}
-
 sub to_native_num {
         my $cond = shift;
         my $level = shift;
@@ -815,7 +781,42 @@ sub to_num {
             return 'new PlDouble(' . $cond->emit_java($level, $wantarray) . '.to_double())';
         }
 }
-sub to_boolean {
+
+# sub to_native_bool {
+#         my $cond = shift;
+#         my $level = shift;
+#         my $wantarray = shift;
+#         if (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'circumfix:<( )>'
+#            && $cond->{arguments} && @{$cond->{arguments}}
+#            )
+#         {
+#             return to_native_bool( $cond->{arguments}[0], $level, $wantarray )
+#         }
+#         elsif (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'ref'
+#            && $cond->{arguments} && @{$cond->{arguments}}
+#            )
+#         {
+#             return $cond->{arguments}[0]->emit_java( $level, $wantarray ) . '.ref_boolean()';
+#         }
+#         elsif ((ref($cond) eq 'Perlito5::AST::Int' )) {
+#             if ($cond->{int} == 0) {
+#                 return 'false';
+#             }
+#             return '(' . $cond->{int} . ' != 0)';
+#         }
+#         elsif ((ref($cond) eq 'Perlito5::AST::Num' )) {
+#             if ($cond->{num} == 0.0) {
+#                 return 'false';
+#             }
+#             return '(' . $cond->{num} . ' != 0.0)';
+#         }
+#         else {
+#             # TODO - ensure "bool"
+#             return to_native_args([$cond], $level);
+#         }
+# }
+
+sub to_native_bool {
         my $cond = shift;
         my $level = shift;
         my $wantarray = 'scalar';
@@ -828,7 +829,7 @@ sub to_boolean {
                ) 
             {
                 if (@{$cond->{arguments}} == 1) {
-                    return to_boolean( $cond->{arguments}[0], $level );
+                    return to_native_bool( $cond->{arguments}[0], $level );
                 }
             }
             if (  $cond->{code} eq 'ref'
@@ -843,22 +844,22 @@ sub to_boolean {
                || $cond->{code} eq 'infix:<and>'
                ) 
             {
-                return '(' . to_boolean($cond->{arguments}->[0], $level) . ' && '
-                           . to_boolean($cond->{arguments}->[1], $level) . ')'
+                return '(' . to_native_bool($cond->{arguments}->[0], $level) . ' && '
+                           . to_native_bool($cond->{arguments}->[1], $level) . ')'
             }
             if (  $cond->{code} eq 'infix:<||>'
                || $cond->{code} eq 'infix:<or>'
                ) 
             {
-                return '(' . to_boolean($cond->{arguments}->[0], $level) . ' || '
-                           . to_boolean($cond->{arguments}->[1], $level) . ')'
+                return '(' . to_native_bool($cond->{arguments}->[0], $level) . ' || '
+                           . to_native_bool($cond->{arguments}->[1], $level) . ')'
             }
             if (  $cond->{code} eq 'prefix:<!>'
                || $cond->{code} eq 'prefix:<not>'
                )
             {
                 if (@{$cond->{arguments}} == 1) {
-                    return '!' . to_boolean($cond->{arguments}->[0], $level)
+                    return '!' . to_native_bool($cond->{arguments}->[0], $level)
                 }
             }
             if (  $cond->{code} eq 'infix:<eq>' ) {
@@ -918,12 +919,20 @@ sub to_boolean {
         if (  $class eq 'Perlito5::AST::Var' && $cond->{sigil} eq '@' ) {
             return $cond->emit_java($level, "list") . '.length_of_array_boolean()';
         }
+        elsif ($class eq 'Perlito5::AST::Int') {
+            if ($cond->{int} == 0) {
+                return 'false';
+            }
+            return '(' . $cond->{int} . ' != 0)';
+        }
+        elsif ($class eq 'Perlito5::AST::Num') {
+            if ($cond->{num} == 0.0) {
+                return 'false';
+            }
+            return '(' . $cond->{num} . ' != 0.0)';
+        }
 
-        if  (  ($class eq 'Perlito5::AST::Int' )
-            || ($class eq 'Perlito5::AST::Num' )
-            || ($class eq 'Perlito5::AST::Apply'  && exists $op_to_boolean{ $cond->{code} })
-            )
-        {
+        if  ($class eq 'Perlito5::AST::Apply'  && exists $op_to_boolean{ $cond->{code} }) {
             return $cond->emit_java($level, $wantarray) . '.to_boolean()';
         }
         else {

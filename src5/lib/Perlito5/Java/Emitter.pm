@@ -1789,7 +1789,7 @@ package Perlito5::AST::If;
             ? undef
             : Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, not_a_loop => 1 );
  
-        push @str, 'if (' . Perlito5::Java::to_boolean($cond, $level + 1) . ') {';
+        push @str, 'if (' . Perlito5::Java::to_native_bool($cond, $level + 1) . ') {';
         if ($body) {
             push @str, [ $body->emit_java( $level + 1, $wantarray ) ];
         }
@@ -1861,7 +1861,7 @@ package Perlito5::AST::When;
             : Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, not_a_loop => 1 );
         push @{ $body->{block} }, $next; 
 
-        push @str, 'if (' . Perlito5::Java::to_boolean($cond, $level + 1) . ') {';
+        push @str, 'if (' . Perlito5::Java::to_native_bool($cond, $level + 1) . ') {';
         if ($body) {
             push @str, [ $body->emit_java( $level + 1, $wantarray ) ];
         }
@@ -1891,13 +1891,7 @@ package Perlito5::AST::While;
                 push @str, $arg->emit_java_init($level, $wantarray);
             }
         }
-        my $expression;
-        if (Perlito5::Java::is_native_bool($cond)) {
-            $expression = Perlito5::Java::to_native_bool($cond, $level + 1);
-        }
-        else {
-            $expression =  Perlito5::Java::to_boolean($cond, $level + 1);    
-        }
+        my $expression = Perlito5::Java::to_native_bool($cond, $level + 1);
         if ($expression eq 'false') {
             # no-op
             return 'PerlOp.statement();';
@@ -1976,7 +1970,7 @@ package Perlito5::AST::For;
             push @str,
                 'for ( '
                     . ( $self->{cond}[0] ? $self->{cond}[0]->emit_java($level + 1) . '; '  : '; ' )
-                    . ( $self->{cond}[1] ? Perlito5::Java::to_boolean($self->{cond}[1], $level + 1) . '; '  : '; ' )
+                    . ( $self->{cond}[1] ? Perlito5::Java::to_native_bool($self->{cond}[1], $level + 1) . '; '  : '; ' )
                     . ( $self->{cond}[2] ? $self->{cond}[2]->emit_java($level + 1) . ' '   : ''  )
                   . ') {',
                       [
