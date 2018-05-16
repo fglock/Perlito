@@ -466,7 +466,7 @@ Java extensions in eval-string (work in progress)
     java.lang.Object@4fe533ff
     ```
 
-    - TODO - test syntax for creating new Java subclass ("extends" and "implements")
+    - TODO - (experimental) test syntax for creating new Java subclass ("extends" and "implements")
 
   - Java objects can be assigned to Perl scalar variables, array elements, or hash elements.
 
@@ -527,15 +527,15 @@ package Sample { import => "misc.Java.Sample" };
 
   - an empty package works for importing builtin types or primitives (`String`, `Long`, `long`)
 
-These extensions are experimental and may be deprecated:
-
   - an `import` specification works for importing Java classes
 
-  - an `extends` specification works for adding methods to an existing class
+These extensions are experimental and may be deprecated:
 
-  - an `implements` specification works for adding methods to an existing interface
+  - (experimental) an `extends` specification works for adding methods to an existing class
 
-  - a `header` specification works for creating a Java package
+  - (experimental) an `implements` specification works for adding methods to an existing interface
+
+  - (experimental) a `header` specification works for creating a Java package
 
 
 Calling a Perl subroutine from Java
@@ -777,7 +777,7 @@ conditionals should work fine, because these are not usually implemented as clos
   - workaround: add a plain-perl line, such as `return`, `undef`, or `1`.
 
 
-Extending a Java class with Perl
+(experimental) Extending a Java class with Perl
 --------------------------------
 
 Extending a Java class with Perl is very experimental, the API is going to change.
