@@ -95,6 +95,11 @@ our %is_boolean_type = (
     'Boolean'           => 1,
     'java.lang.Boolean' => 1,
 );
+our %is_char_type = (
+    'char'                => 1,
+    'Character'           => 1,
+    'java.lang.Character' => 1,
+);
 
 sub init_java_class {
     my $Java_class = Perlito5::Java::get_java_class_info();

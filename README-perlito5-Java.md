@@ -691,21 +691,25 @@ $arr->add($p->toString());
 
   - Character
 
-    (TODO) Perlito can't represent native `Character` values (only String)
+    `Character` values are numeric (not String)
 
     ```perl
     package Character { };
-    my Character $b = "a";
-    # error: incompatible types: String cannot be converted to Character
+    my Character $b = 50;
+    my Character $b = $v;   # cast from scalar to Character is automatic (the scalar must have a numeric value)
     ```
-
-    workaround:
 
     ```perl
     package Character { };
     package String { };
     my Character $b = String->new("a")->charAt(0);
-    my Character $b = $v;   # cast from scalar to Character is automatic
+    ```
+
+    but:
+
+    ```perl
+    my Character $b = "a";
+    # error: incompatible types: String cannot be converted to Character
     ```
 
   - Long
