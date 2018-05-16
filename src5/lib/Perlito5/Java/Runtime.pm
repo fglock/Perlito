@@ -736,7 +736,6 @@ class PerlOp {
         boolean isMain = nameSpace.equals("main::");
         PlHash out = new PlHash();
         getSymbolTableScan2(out, PlStringConstant.constants, nameSpace, pos, isMain);
-        getSymbolTableScan(out, PlV.svar, nameSpace, pos, isMain);
         getSymbolTableScan(out, PlV.avar, nameSpace, pos, isMain);
         getSymbolTableScan(out, PlV.hvar, nameSpace, pos, isMain);
         getSymbolTableScan(out, PlV.fvar, nameSpace, pos, isMain);
@@ -810,8 +809,9 @@ class PerlOp {
         // delete $Foo::{foo}
         String sname = nameSpace + index.toString();
         PlString name = new PlString(sname);
-        PlStringConstant.getConstant(sname).codeRef.set(PlCx.UNDEF);
-        PlV.svar.hdelete(PlCx.VOID, name);
+        PlStringConstant glob = PlStringConstant.getConstant(sname);
+        glob.codeRef.set(PlCx.UNDEF);
+        glob.scalarRef.set(PlCx.UNDEF);
         PlV.avar.hdelete(PlCx.VOID, name);
         PlV.hvar.hdelete(PlCx.VOID, name);
         PlV.fvar.hdelete(PlCx.VOID, name);
@@ -1191,8 +1191,19 @@ class PerlOp {
         PlV.local_stack.a.add(new PlString(name));
         PlV.local_stack.a.add(glob.codeRef);
         PlV.local_stack.a.add(PlCx.INT3);
-        PlLvalue newValue = new PlLvalue(value);
+        PlLvalue newValue = new PlLvalue();
+        newValue.set(value);
         glob.codeRef = newValue;
+        return newValue;
+    }
+    public static final PlObject push_local_scalar(PlObject value, String name) {
+        PlStringConstant glob = PlStringConstant.getConstant(name);
+        PlV.local_stack.a.add(new PlString(name));
+        PlV.local_stack.a.add(glob.scalarRef);
+        PlV.local_stack.a.add(new PlInt(20));       // XXX magic number
+        PlLvalue newValue = new PlLvalue();
+        newValue.set(value);
+        glob.scalarRef = newValue;
         return newValue;
     }
 
@@ -1240,6 +1251,10 @@ EOT
                 case 3:
                     index     = PlV.local_stack.pop();
                     PlStringConstant.getConstant(index.toString()).codeRef = (PlLvalue)v;
+                    break;
+                case 20:      // XXX magic number
+                    index     = PlV.local_stack.pop();
+                    PlStringConstant.getConstant(index.toString()).scalarRef = (PlLvalue)v;
                     break;
 EOT
     , (( map {
@@ -2529,7 +2544,6 @@ class PlV {
     // TODO - import CORE subroutines in new namespaces, if needed
     // TODO - cache lookups in lexical variables (see PlClosure implementation)
 
-    public static final PlHash svar = new PlHash(); // scalar
     public static final PlHash avar = new PlHash(); // array
     public static final PlHash hvar = new PlHash(); // hash
     public static final PlHash fvar = new PlHash(); // file
@@ -2674,34 +2688,22 @@ EOT
 
     // scalar
     public static final PlLvalue sget(String name) {
-        // inline from: hget_lvalue(String name)
-        PlObject o = svar.h.get(name);
-        if (o == null) {
-            PlLvalue a = new PlLvalue();
-            svar.h.put(name, a);
-            return a;
-        }
-        if (o.is_lvalue()) {
-            return (PlLvalue)o;
-        }
-        PlLvalue a = new PlLvalue(o);
-        svar.h.put(name, a);
-        return a;
+        return PlStringConstant.getConstant(name).scalarRef;
     }
     public static final PlLvalue sget_local(String name) {
-        return (PlLvalue)svar.hget_lvalue_local(name);
+        return (PlLvalue)PerlOp.push_local_scalar(PlCx.UNDEF, name);
     }
     public static final PlObject sset(String name, PlObject v) {
-        return (PlLvalue)svar.hget_lvalue(name).set(v);
+        return PlStringConstant.getConstant(name).scalarRef.set(v);
     }
     public static final PlObject sset(String name, Object o) {
-        return (PlLvalue)svar.hget_lvalue(name).set( PlJavaObject.fromObject(o) );
+        return PlStringConstant.getConstant(name).scalarRef.set(PlJavaObject.fromObject(o));
     }
     public static final PlObject sset_local(String name, PlObject v) {
-        return svar.hget_lvalue_local(name).set(v);
+        return PerlOp.push_local_scalar(v, name);
     }
     public static final void sset_alias(String name, PlLvalue v) {
-        svar.hset_alias(name, v);
+        PlStringConstant.getConstant(name).scalarRef = v;
     }
 
     // accessors for special variables like $_ $\
@@ -2753,7 +2755,6 @@ EOT
         return PlStringConstant.getConstant(name).codeRef;
     }
     public static final PlObject cset(String name, PlObject v) {
-        // TODO - invalidate the method lookup cache
         return PlStringConstant.getConstant(name).codeRef.set(v);
     }
     public static final PlObject cset_local(String name, PlObject v) {
@@ -4251,8 +4252,9 @@ class PlFileHandle extends PlScalarImmutable {
             PlV.sset("main::!", new PlStringLazyError(e));
         }
 
-        PlStringConstant.getConstant(typeglob_name).codeRef.set(PlCx.UNDEF);
-        PlV.svar.hdelete(PlCx.VOID, name);
+        PlStringConstant glob = PlStringConstant.getConstant(typeglob_name);
+        glob.codeRef.set(PlCx.UNDEF);
+        glob.scalarRef.set(PlCx.UNDEF);
         PlV.avar.hdelete(PlCx.VOID, name);
         PlV.fvar.hdelete(PlCx.VOID, name);
         if (typeglob_name.endsWith("::")) {
@@ -8395,10 +8397,12 @@ class PlStringConstant extends PlString {
     // inherited: String s
     private PlClass cls;
     public  PlLvalue codeRef;   // CODE
+    public  PlLvalue scalarRef; // SCALAR
 
     public PlStringConstant(String s) {
         super(s);
         this.codeRef = new PlLvalue();
+        this.scalarRef = new PlLvalue();
     }
 
     public static PlStringConstant getConstant(String s) {

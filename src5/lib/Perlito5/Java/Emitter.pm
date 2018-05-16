@@ -1181,8 +1181,14 @@ package Perlito5::AST::Var;
             # return Perlito5::AST::Buf->new( buf => $namespace )->emit_java($level, 'scalar');
         }
 
-        my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
+        my $full_name = $namespace . '::' . $table->{$sigil} . $str_name;
+        my $index = Perlito5::Java::escape_string($full_name);
         if ( $sigil eq '$' ) {
+            if (!$local) {
+                # create a PlStringConstant
+                my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
+                return $scalar . '.scalarRef'
+            }
             return "PlV.sget$local(" . $index . ')';
         }
         if ( $sigil eq '*' ) {
