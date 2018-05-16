@@ -90,6 +90,11 @@ our %is_double_type = (
     'Double'           => 1,
     'java.lang.Double' => 1,
 );
+our %is_boolean_type = (
+    'boolean'           => 1,
+    'Boolean'           => 1,
+    'java.lang.Boolean' => 1,
+);
 
 sub init_java_class {
     my $Java_class = Perlito5::Java::get_java_class_info();
@@ -539,6 +544,7 @@ sub to_native_arg {
 
         return to_native_int($cond, $level, $java_type) if $is_long_type{$java_type};
         return to_native_num($cond, $level, $java_type) if $is_float_type{$java_type} || $is_double_type{$java_type};
+        return to_native_bool($cond, $level, $java_type) if $is_boolean_type{$java_type};
 
         my $is_apply = (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{arguments} && @{$cond->{arguments}};
 
@@ -782,40 +788,6 @@ sub to_num {
         }
 }
 
-# sub to_native_bool {
-#         my $cond = shift;
-#         my $level = shift;
-#         my $wantarray = shift;
-#         if (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'circumfix:<( )>'
-#            && $cond->{arguments} && @{$cond->{arguments}}
-#            )
-#         {
-#             return to_native_bool( $cond->{arguments}[0], $level, $wantarray )
-#         }
-#         elsif (  (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'ref'
-#            && $cond->{arguments} && @{$cond->{arguments}}
-#            )
-#         {
-#             return $cond->{arguments}[0]->emit_java( $level, $wantarray ) . '.ref_boolean()';
-#         }
-#         elsif ((ref($cond) eq 'Perlito5::AST::Int' )) {
-#             if ($cond->{int} == 0) {
-#                 return 'false';
-#             }
-#             return '(' . $cond->{int} . ' != 0)';
-#         }
-#         elsif ((ref($cond) eq 'Perlito5::AST::Num' )) {
-#             if ($cond->{num} == 0.0) {
-#                 return 'false';
-#             }
-#             return '(' . $cond->{num} . ' != 0.0)';
-#         }
-#         else {
-#             # TODO - ensure "bool"
-#             return to_native_args([$cond], $level);
-#         }
-# }
-
 sub to_native_bool {
         my $cond = shift;
         my $level = shift;
@@ -831,6 +803,9 @@ sub to_native_bool {
                 if (@{$cond->{arguments}} == 1) {
                     return to_native_bool( $cond->{arguments}[0], $level );
                 }
+            }
+            if (  $cond->{code} eq 'undef' ) {
+                return 'false';
             }
             if (  $cond->{code} eq 'ref'
                && $cond->{arguments} && @{$cond->{arguments}}
