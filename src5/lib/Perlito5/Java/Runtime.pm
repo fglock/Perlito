@@ -735,13 +735,45 @@ class PerlOp {
         int pos = nameSpace.lastIndexOf("::");
         boolean isMain = nameSpace.equals("main::");
         PlHash out = new PlHash();
-        getSymbolTableScan(out, PlV.cvar, nameSpace, pos, isMain);
+        getSymbolTableScan2(out, PlStringConstant.constants, nameSpace, pos, isMain);
         getSymbolTableScan(out, PlV.svar, nameSpace, pos, isMain);
         getSymbolTableScan(out, PlV.avar, nameSpace, pos, isMain);
         getSymbolTableScan(out, PlV.hvar, nameSpace, pos, isMain);
         getSymbolTableScan(out, PlV.fvar, nameSpace, pos, isMain);
         return out;
     }
+
+    private static final void getSymbolTableScan2(PlHash out, HashMap<String, PlStringConstant> vars, String nameSpace, int pos, boolean isMain) {
+        if (isMain) {
+            for (String name : vars.keySet()) {
+                if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0 && name.lastIndexOf("::") == pos) {
+                    // normal variable like "ARGV" in $main::ARGV
+                    out.hset(name.substring(pos+2), PlV.fget(name));
+                }
+                else {
+                    // "inner" namespace
+                    String inner = name.substring(0, name.indexOf("::")+2);
+                    out.hset(inner, PlV.fget(inner));
+                }
+            }
+        }
+        else {
+            for (String name : vars.keySet()) {
+                if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0) {
+                    if (name.lastIndexOf("::") == pos) {
+                        // normal variable like "ARGV" in $main::ARGV
+                        out.hset(name.substring(pos+2), PlV.fget(name));
+                    }
+                    else {
+                        // "inner" namespace
+                        String inner = name.substring(pos+2, name.indexOf("::", pos+2)+2);
+                        out.hset(inner, PlV.fget(name.substring(0, name.indexOf("::", pos+2)+2)));
+                    }
+                }
+            }
+        }
+    }
+
     private static final void getSymbolTableScan(PlHash out, PlHash vars, String nameSpace, int pos, boolean isMain) {
         if (isMain) {
             for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, vars)) {
@@ -776,8 +808,9 @@ class PerlOp {
     }
     public static final PlObject deleteSymbolTable(String nameSpace, PlObject index) {
         // delete $Foo::{foo}
-        PlString name = new PlString(nameSpace + index.toString());
-        PlV.cvar.hdelete(PlCx.VOID, name);
+        String sname = nameSpace + index.toString();
+        PlString name = new PlString(sname);
+        PlStringConstant.getConstant(sname).codeRef.set(PlCx.UNDEF);
         PlV.svar.hdelete(PlCx.VOID, name);
         PlV.avar.hdelete(PlCx.VOID, name);
         PlV.hvar.hdelete(PlCx.VOID, name);
@@ -1154,11 +1187,12 @@ class PerlOp {
         PlV.regex_result = new_match;
     }
     public static final PlObject push_local_named_sub(PlObject value, String name) {
+        PlStringConstant glob = PlStringConstant.getConstant(name);
         PlV.local_stack.a.add(new PlString(name));
-        PlV.local_stack.a.add(PlV.cget_no_autoload(name));
+        PlV.local_stack.a.add(glob.codeRef);
         PlV.local_stack.a.add(PlCx.INT3);
         PlLvalue newValue = new PlLvalue(value);
-        PlV.cset_alias(name, newValue);
+        glob.codeRef = newValue;
         return newValue;
     }
 
@@ -1205,7 +1239,7 @@ EOT
                     break;
                 case 3:
                     index     = PlV.local_stack.pop();
-                    PlV.cset_alias(index.toString(), (PlLvalue)v);
+                    PlStringConstant.getConstant(index.toString()).codeRef = (PlLvalue)v;
                     break;
 EOT
     , (( map {
@@ -2496,7 +2530,6 @@ class PlV {
     // TODO - cache lookups in lexical variables (see PlClosure implementation)
 
     public static final PlHash svar = new PlHash(); // scalar
-    public static final PlHash cvar = new PlHash(); // code
     public static final PlHash avar = new PlHash(); // array
     public static final PlHash hvar = new PlHash(); // hash
     public static final PlHash fvar = new PlHash(); // file
@@ -2697,7 +2730,7 @@ EOT
 
     public static final PlLvalue cget(String name) {
         // this implements " \&name "
-        PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);
+        PlLvalue code = PlStringConstant.getConstant(name).codeRef;
         if ( code.is_coderef() ) {
             return code;
         }
@@ -2717,20 +2750,17 @@ EOT
         return (PlLvalue)PerlOp.push_local_named_sub(PlCx.UNDEF, name);
     }
     public static final PlLvalue cget_no_autoload(String name) {
-        return (PlLvalue)cvar.hget_lvalue(name);
+        return PlStringConstant.getConstant(name).codeRef;
     }
     public static final PlObject cset(String name, PlObject v) {
         // TODO - invalidate the method lookup cache
-        PlStringConstant.getConstant(name).setCodeRef(v);    // apply() cache
-        return cvar.hset(name, v);
+        return PlStringConstant.getConstant(name).codeRef.set(v);
     }
     public static final PlObject cset_local(String name, PlObject v) {
         return PerlOp.push_local_named_sub(v, name);
     }
     public static final void cset_alias(String name, PlLvalue v) {
-        // TODO - invalidate the method lookup cache
-        PlStringConstant.getConstant(name).setCodeRef(v);    // apply() cache
-        cvar.hset_alias(name, v);
+        PlStringConstant.getConstant(name).codeRef = v;
     }
 
     // hash
@@ -3137,7 +3167,7 @@ EOT
         // $ perl -e ' $a = 5; $a->() '
         // Undefined subroutine &main::5 called
         String name = this.toString();
-        PlObject code = PlV.cvar.hget(name);
+        PlObject code = PlStringConstant.getConstant(name).codeRef;
         if ( code.is_coderef() ) {
             return code.apply(want, List__);
         }
@@ -4221,7 +4251,7 @@ class PlFileHandle extends PlScalarImmutable {
             PlV.sset("main::!", new PlStringLazyError(e));
         }
 
-        PlV.cvar.hdelete(PlCx.VOID, name);
+        PlStringConstant.getConstant(typeglob_name).codeRef.set(PlCx.UNDEF);
         PlV.svar.hdelete(PlCx.VOID, name);
         PlV.avar.hdelete(PlCx.VOID, name);
         PlV.fvar.hdelete(PlCx.VOID, name);
@@ -8360,13 +8390,15 @@ class PlStringLazyError extends PlString {
     }
 }
 class PlStringConstant extends PlString {
-    private static HashMap<String, PlStringConstant> constants = new HashMap<String, PlStringConstant>();
+    public static HashMap<String, PlStringConstant> constants = new HashMap<String, PlStringConstant>();
 
+    // inherited: String s
     private PlClass cls;
-    private PlObject codeRef;
+    public  PlLvalue codeRef;   // CODE
 
     public PlStringConstant(String s) {
         super(s);
+        this.codeRef = new PlLvalue();
     }
 
     public static PlStringConstant getConstant(String s) {
@@ -8378,9 +8410,6 @@ class PlStringConstant extends PlString {
         return v;
     }
 
-    public void setCodeRef(PlObject c) {
-        this.codeRef = c;
-    }
     public PlClass blessed_class() {
         if (cls == null) {
             cls = PlClass.getInstance(s);
@@ -8388,24 +8417,18 @@ class PlStringConstant extends PlString {
         return cls;
     }
     public PlObject apply(int want, PlArray List__) {
-        if (this.codeRef == null) {
-            String name = this.toString();
-            PlObject code = PlV.cvar.hget(name);
-            if ( code.is_coderef() ) {
-                this.codeRef = code;
-            }
-            else {
-                int pos = name.lastIndexOf("::");
-                if (pos != -1) {
-                    String namespace = name.substring(0, pos);
-                    PlLvalue autoload = PlV.cget_no_autoload(namespace + "::AUTOLOAD");
-                    if ( autoload.is_coderef() ) {
-                        PlV.sset(namespace + "::AUTOLOAD", new PlString(name));
-                        return autoload.apply(want, List__);
-                    }
+        if (this.codeRef.is_undef()) {
+            String name = this.s;
+            int pos = name.lastIndexOf("::");
+            if (pos != -1) {
+                String namespace = name.substring(0, pos);
+                PlLvalue autoload = PlV.cget_no_autoload(namespace + "::AUTOLOAD");
+                if ( autoload.is_coderef() ) {
+                    PlV.sset(namespace + "::AUTOLOAD", new PlString(name));
+                    return autoload.apply(want, List__);
                 }
-                return PlCORE.die("Undefined subroutine &" + name + " called");
             }
+            return PlCORE.die("Undefined subroutine &" + name + " called");
         }
         return this.codeRef.apply(want, List__);
     }

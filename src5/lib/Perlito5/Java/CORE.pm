@@ -2232,8 +2232,8 @@ EOT
                 //        Exporter::import and MyClass::import can point to the same Java code
                 // this loop does a symbol table scan - PlV.cvar
               SCAN_SUBNAME:
-                for (PlObject perlSubName : (PlArray)PlCORE.keys(PlCx.LIST, PlV.cvar)) {
-                    PlObject value = PlV.cget_no_autoload(perlSubName.toString());
+                for (String name : PlStringConstant.constants.keySet()) {
+                    PlObject value = PlV.cget_no_autoload(name);
                     if (value.is_lvalue()) {
                         value = value.get();
                     }
@@ -2252,7 +2252,7 @@ EOT
                             //     elem.getLineNumber()
                             // );
                             // PlCORE.say("\tPerl sub &" + perlSubName.toString());
-                            callerName.push_void(perlSubName);
+                            callerName.push_void(new PlString(name));
                             codeRef.push_void(value);
                             break SCAN_SUBNAME;
                         }
