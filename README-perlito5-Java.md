@@ -775,6 +775,8 @@ conditionals should work fine, because these are not usually implemented as clos
             PlCORE.say(PlCx.VOID, PlV.STDOUT, b_103.toString());
     ```
 
+    - workaround: use `Short` instead of `short`
+
 - Java methods with type `void` should not be in the last line of a Perl block.
   This is because Perl blocks return the last value, and `void` is not acceptable as a value.
 
