@@ -1255,7 +1255,8 @@ package Perlito5::AST::Var;
             return Perlito5::Java::escape_string( $namespace );
         }
 
-        my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
+        my $full_name = $namespace . '::' . $table->{$sigil} . $str_name;
+        my $index = Perlito5::Java::escape_string($full_name);
         if ( $sigil eq '$' ) {
             if ($namespace eq 'main') {
                 my $java_name = $Perlito5::Java::special_scalar{$self->{name}};
@@ -1264,6 +1265,11 @@ package Perlito5::AST::Var;
                     return "PlV.${java_name}.set(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")" if !$local;
                     return "PlV.sset${local}_${java_name}(" . Perlito5::Java::to_scalar([$arguments], $level+1) . ")";
                 }
+            }
+            if (!$local) {
+                # create a PlStringConstant
+                my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
+                return $scalar . '.scalarRef.set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
             }
             return "PlV.sset$local(" . $index . ', ' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
         }
