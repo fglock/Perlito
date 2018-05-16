@@ -23,7 +23,7 @@ mkdir META-INF/services
 
 perl makefiles/make_perlito5-lib-jar_.pl perlito5-javalib.java
 
-time javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 org/perlito/Perlito5/LibPerl.java 
+time javac -J-Xms2000m -J-Xmx2000m -J-Xss1000m -source 7 org/perlito/Perlito5/LibPerl.java 
 jar -cfe \
     perlito5-lib.jar \
     org.perlito.Perlito5.LibPerl \

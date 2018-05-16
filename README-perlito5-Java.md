@@ -102,7 +102,7 @@ Perlito5-Java work-in-progress
         ```sh
         $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main.java
 
-        $ javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 Main.java
+        $ javac -J-Xms2000m -J-Xmx2000m -J-Xss1000m -source 7 Main.java
         # errors - TODO - fixme
         #   this is because the compiler uses eval-string
         #   try: --nojava_eval
