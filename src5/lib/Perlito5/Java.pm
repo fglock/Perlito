@@ -776,9 +776,9 @@ sub to_native_int {
         elsif ((ref($cond) eq 'Perlito5::AST::Num' )) {
             return int( 0 + $cond->{num} ) . $type_spec;
         }
-        else {
-            return $cond->emit_java($level, $wantarray) . $cast;
-        }
+
+        return $cond->emit_java($level, $wantarray) if is_native($cond);    # java native call
+        return $cond->emit_java($level, $wantarray) . $cast;
 }
 
 sub to_str {
@@ -941,6 +941,8 @@ sub to_native_bool {
             }
             return '(' . $cond->{num} . ' != 0.0)';
         }
+
+        return $cond->emit_java($level, $wantarray) if is_native($cond);    # java native call
 
         if  ($class eq 'Perlito5::AST::Apply'  && exists $op_to_boolean{ $cond->{code} }) {
             return $cond->emit_java($level, $wantarray) . '.to_boolean()';
