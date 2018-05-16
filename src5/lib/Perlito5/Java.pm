@@ -71,9 +71,19 @@ sub set_java_class_defaults {
 }
 
 our %is_long_type = (
-    'long' => 1,
-    'Long' => 1,
+    'long'           => 1,
+    'Long'           => 1,
     'java.lang.Long' => 1,
+);
+our %is_float_type = (
+    'float'           => 1,
+    'Float'           => 1,
+    'java.lang.Float' => 1,
+);
+our %is_char_type = (
+    'char'                => 1,
+    'Character'           => 1,
+    'java.lang.Character' => 1,
 );
 
 sub init_java_class {
