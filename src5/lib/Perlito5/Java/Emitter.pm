@@ -1208,7 +1208,7 @@ package Perlito5::AST::Var;
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
-                $s = $scalar . '.arrayRef.array_deref_strict()';
+                $s = $scalar . '.arrayRef.o.array_deref_strict()';
             }
             if ( $wantarray eq 'scalar' ) {
                 return $s . '.length_of_array()';
@@ -1223,7 +1223,7 @@ package Perlito5::AST::Var;
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
-                return $scalar . '.hashRef.hash_deref_strict()';
+                return $scalar . '.hashRef.o.hash_deref_strict()';
             }
             return "PlV.hash_get$local(" . $index . ')';
         }
@@ -1294,7 +1294,7 @@ package Perlito5::AST::Var;
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
-                return $scalar . '.arrayRef.array_deref_set(' .  Perlito5::Java::to_list([$arguments], $level+1) . ')';
+                return $scalar . '.arrayRef.o.array_deref_set(' .  Perlito5::Java::to_list([$arguments], $level+1) . ')';
             }
             return "PlV.array_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }
@@ -1302,7 +1302,7 @@ package Perlito5::AST::Var;
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
-                return $scalar . '.hashRef.hash_deref_set(' .  Perlito5::Java::to_list([$arguments], $level+1) . ')';
+                return $scalar . '.hashRef.o.hash_deref_set(' .  Perlito5::Java::to_list([$arguments], $level+1) . ')';
             }
             return "PlV.hash_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }

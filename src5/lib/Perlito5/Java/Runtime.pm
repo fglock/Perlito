@@ -8406,10 +8406,10 @@ class PlStringConstant extends PlString {
 
     // inherited: String s
     private PlClass cls;
-    public  PlLvalue codeRef;   // CODE
-    public  PlLvalue scalarRef; // SCALAR
-    public  PlLvalue arrayRef;  // ARRAY
-    public  PlLvalue hashRef;   // HASH
+    public PlLvalue codeRef;   // CODE
+    public PlLvalue scalarRef; // SCALAR
+    public PlLvalue arrayRef;  // ARRAY
+    public PlLvalue hashRef;   // HASH
 
     public PlStringConstant(String s) {
         super(s);
