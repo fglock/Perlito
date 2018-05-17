@@ -736,7 +736,6 @@ class PerlOp {
         boolean isMain = nameSpace.equals("main::");
         PlHash out = new PlHash();
         getSymbolTableScan2(out, PlStringConstant.constants, nameSpace, pos, isMain);
-        getSymbolTableScan(out, PlV.hvar, nameSpace, pos, isMain);
         getSymbolTableScan(out, PlV.fvar, nameSpace, pos, isMain);
         return out;
     }
@@ -812,7 +811,7 @@ class PerlOp {
         glob.codeRef.set(PlCx.UNDEF);
         glob.scalarRef.set(PlCx.UNDEF);
         glob.arrayRef.set(new PlArrayRef());
-        PlV.hvar.hdelete(PlCx.VOID, name);
+        glob.hashRef.set(new PlHashRef());
         PlV.fvar.hdelete(PlCx.VOID, name);
         return PlCx.UNDEF; 
     }
@@ -1215,6 +1214,16 @@ class PerlOp {
         glob.arrayRef = newValue;
         return newValue;
     }
+    public static final PlObject push_local_hash(PlObject value, String name) {
+        PlStringConstant glob = PlStringConstant.getConstant(name);
+        PlV.local_stack.a.add(new PlString(name));
+        PlV.local_stack.a.add(glob.hashRef);
+        PlV.local_stack.a.add(new PlInt(22));       // XXX magic number
+        PlLvalue newValue = new PlLvalue();
+        newValue.set(value);
+        glob.hashRef = newValue;
+        return newValue;
+    }
 
     // localizers for special variables like $_ $\
 EOT
@@ -1268,6 +1277,10 @@ EOT
                 case 21:      // XXX magic number
                     index     = PlV.local_stack.pop();
                     PlStringConstant.getConstant(index.toString()).arrayRef = (PlLvalue)v;
+                    break;
+                case 22:      // XXX magic number
+                    index     = PlV.local_stack.pop();
+                    PlStringConstant.getConstant(index.toString()).hashRef = (PlLvalue)v;
                     break;
 EOT
     , (( map {
@@ -2557,7 +2570,6 @@ class PlV {
     // TODO - import CORE subroutines in new namespaces, if needed
     // TODO - cache lookups in lexical variables (see PlClosure implementation)
 
-    public static final PlHash hvar = new PlHash(); // hash
     public static final PlHash fvar = new PlHash(); // file
 
     public static PlRegexResult regex_result = new PlRegexResult();
@@ -2778,48 +2790,41 @@ EOT
 
     // hash
     public static final PlHash hash_get(String name) {
-        // inline from: hget_hashref(String name)
-        PlObject o = hvar.h.get(name);
-        if (o == null || o.is_undef()) {
-            o = new PlHashRef();
-            hvar.hset(name, o);
-        }
-        return (PlHash)o.hash_deref_strict();
+        return PlStringConstant.getConstant(name).hashRef.hash_deref_strict();
     }
     public static final PlHash hash_get_local(String name) {
-        PlLvalue o = (PlLvalue)hvar.hget_lvalue_local(name);
-        PlHashRef hr = new PlHashRef();
-        o.set(hr);
-        return hr.hash_deref_strict();
+        PlLvalue o = (PlLvalue)PerlOp.push_local_hash(new PlHashRef(), name);
+        return o.hash_deref_strict();
     }
     public static final PlObject hash_set(String name, PlObject v) {
-        return hvar.hget_hashref(name).hash_deref_set(v);
+        PlLvalue o = PlStringConstant.getConstant(name).hashRef;
+        return o.hash_deref_set(v);
     }
     public static final PlObject hash_set_local(String name, PlObject v) {
-        return hvar.hget_lvalue_local(name).get_hashref().hash_deref_set(v);
+        PlLvalue o = (PlLvalue)PerlOp.push_local_hash(new PlHashRef(), name);
+        return o.hash_deref_set(v);
     }
     public static final PlLvalue hget(String name) {
-        return (PlLvalue)hvar.hget_lvalue(name);
+        return PlStringConstant.getConstant(name).hashRef;
     }
     public static final PlLvalue hget_local(String name) {
-        return (PlLvalue)hvar.hget_lvalue_local(name);
+        return (PlLvalue)PerlOp.push_local_hash(new PlHashRef(), name);
     }
     public static final PlObject hset(String name, PlObject v) {
-        return hvar.hset(name, v);
+        return PlStringConstant.getConstant(name).hashRef.set(v);
     }
     public static final PlObject hset(String name, PlLvalue v) {
-        return hvar.hset(name, v.get());
+        return PlStringConstant.getConstant(name).hashRef.set(v);
     }
     public static final PlObject hset_local(String name, PlObject v) {
-        return hvar.hget_lvalue_local(name).set(v);
+        return (PlLvalue)PerlOp.push_local_hash(v, name);
     }
     public static final void hset_alias(String name, PlHash v) {
-        hvar.hset_alias(name, v);
+        PlStringConstant.getConstant(name).hashRef = new PlLvalue(v);
     }
 
     // array
     public static final PlArray array_get(String name) {
-        // inline from: hget_arrayref(String name)
         return PlStringConstant.getConstant(name).arrayRef.array_deref_strict();
     }
     public static final PlArray array_get_local(String name) {
@@ -3275,9 +3280,9 @@ EOT
         PlCORE.die("Not a HASH reference");
         return this;
     }
-    public PlObject hash_deref_strict() {
+    public PlHash hash_deref_strict() {
         PlCORE.die("Not a HASH reference");
-        return this;
+        return (PlHash)this;
     }
     public PlObject hash_deref_set(PlObject i) {
         PlCORE.die("Not a HASH reference");
@@ -4263,12 +4268,10 @@ class PlFileHandle extends PlScalarImmutable {
         glob.codeRef.set(PlCx.UNDEF);
         glob.scalarRef.set(PlCx.UNDEF);
         glob.arrayRef.set(new PlArrayRef());
+        glob.hashRef.set(new PlHashRef());
         PlV.fvar.hdelete(PlCx.VOID, name);
         if (typeglob_name.endsWith("::")) {
             // TODO - undefine inner symbol table
-        }
-        else {
-            PlV.hvar.hdelete(PlCx.VOID, name);
         }
         return PlCx.UNDEF; 
     }
@@ -6042,7 +6045,7 @@ class PlLvalue extends PlScalarObject {
         }
         return o.hash_deref(namespace);
     }
-    public PlObject hash_deref_strict() {
+    public PlHash hash_deref_strict() {
         // %$x doesn't autovivify
         PlScalarImmutable o = this.get();
         return o.hash_deref_strict();
@@ -8035,8 +8038,8 @@ class PlUndef extends PlScalarImmutable {
     public PlArray array_deref_strict() {
         return (PlArray)PlCORE.die("Can't use an undefined value as an ARRAY reference");
     }
-    public PlObject hash_deref_strict() {
-        return PlCORE.die("Can't use an undefined value as a HASH reference");
+    public PlHash hash_deref_strict() {
+        return (PlHash)PlCORE.die("Can't use an undefined value as a HASH reference");
     }
 
 }
@@ -8406,12 +8409,14 @@ class PlStringConstant extends PlString {
     public  PlLvalue codeRef;   // CODE
     public  PlLvalue scalarRef; // SCALAR
     public  PlLvalue arrayRef;  // ARRAY
+    public  PlLvalue hashRef;   // HASH
 
     public PlStringConstant(String s) {
         super(s);
         this.codeRef = new PlLvalue();
         this.scalarRef = new PlLvalue();
         this.arrayRef = new PlLvalue(new PlArrayRef());
+        this.hashRef = new PlLvalue(new PlHashRef());
     }
 
     public static PlStringConstant getConstant(String s) {
@@ -8592,7 +8597,7 @@ EOT
         }
         return PlV.hash_get(s);
     }
-    public PlObject hash_deref_strict() {
+    public PlHash hash_deref_strict() {
         PlCORE.die("Can't use string (\"" + this.s + "\") as a HASH ref while \"strict refs\" in use");
         return PlV.hash_get(s);
     }

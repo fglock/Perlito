@@ -1220,6 +1220,11 @@ package Perlito5::AST::Var;
                 # %Module::
                 return "PerlOp.getSymbolTable(" . $index . ')';
             }
+            if (!$local) {
+                # create a PlStringConstant
+                my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
+                return $scalar . '.hashRef.hash_deref_strict()';
+            }
             return "PlV.hash_get$local(" . $index . ')';
         }
         die "don't know how to access variable ", $sigil, $self->name;
@@ -1294,6 +1299,11 @@ package Perlito5::AST::Var;
             return "PlV.array_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }
         if ( $sigil eq '%' ) {
+            if (!$local) {
+                # create a PlStringConstant
+                my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
+                return $scalar . '.hashRef.hash_deref_set(' .  Perlito5::Java::to_list([$arguments], $level+1) . ')';
+            }
             return "PlV.hash_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }
         if ( $sigil eq '*' ) {
