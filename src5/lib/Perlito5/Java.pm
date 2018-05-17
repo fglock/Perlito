@@ -481,6 +481,19 @@ sub escape_string {
 sub is_native {
     my $self = shift;
 
+    if ( ref($self) eq 'Perlito5::AST::Var' ) {
+        my $id    = $self->{_id};
+        my $sigil = $self->{_real_sigil} || $self->{sigil};
+        if ( $sigil eq '$' && $id ) {
+            my $Java_var = Perlito5::Java::get_java_var_info();
+            my $type = $Java_var->{ $id }{type} || 'PlLvalue';
+            if ($type ne 'PlLvalue') {
+                # my Integer $i
+                return 1;
+            }
+        }
+    }
+
     if ( ref($self) eq 'Perlito5::AST::Call' ) {
 
         # class method call in native 'Java' packages
@@ -929,6 +942,13 @@ sub to_native_bool {
                 return '(' . to_native_str($cond->{arguments}->[0], $level, 'scalar') . '.compareTo('
                            . to_native_str($cond->{arguments}->[1], $level, 'scalar') . ') > 0)'
             }
+
+            if ( exists $native_op_to_boolean{ $cond->{code} } && is_native_args($cond->{arguments}) ) {
+                return '(' . to_native_num($cond->{arguments}[0], $level) .
+                    ' ' . $native_op_to_boolean{ $cond->{code} }
+                    . ' ' . to_native_num($cond->{arguments}[1], $level) . ')';
+            }
+
             if (  $cond->{code} eq 'defined' ) {
                 my $arg = $cond->{arguments}[0];
                 if (  ref( $arg ) eq 'Perlito5::AST::Apply' 
