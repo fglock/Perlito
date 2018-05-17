@@ -735,12 +735,11 @@ class PerlOp {
         int pos = nameSpace.lastIndexOf("::");
         boolean isMain = nameSpace.equals("main::");
         PlHash out = new PlHash();
-        getSymbolTableScan2(out, PlStringConstant.constants, nameSpace, pos, isMain);
-        getSymbolTableScan(out, PlV.fvar, nameSpace, pos, isMain);
+        getSymbolTableScan(out, PlStringConstant.constants, nameSpace, pos, isMain);
         return out;
     }
 
-    private static final void getSymbolTableScan2(PlHash out, HashMap<String, PlStringConstant> vars, String nameSpace, int pos, boolean isMain) {
+    private static final void getSymbolTableScan(PlHash out, HashMap<String, PlStringConstant> vars, String nameSpace, int pos, boolean isMain) {
         if (isMain) {
             for (String name : vars.keySet()) {
                 if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0 && name.lastIndexOf("::") == pos) {
@@ -771,38 +770,6 @@ class PerlOp {
         }
     }
 
-    private static final void getSymbolTableScan(PlHash out, PlHash vars, String nameSpace, int pos, boolean isMain) {
-        if (isMain) {
-            for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, vars)) {
-                String name = o.toString();
-                if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0 && name.lastIndexOf("::") == pos) {
-                    // normal variable like "ARGV" in $main::ARGV
-                    out.hset(name.substring(pos+2), PlV.fget(name));
-                }
-                else {
-                    // "inner" namespace
-                    String inner = name.substring(0, name.indexOf("::")+2);
-                    out.hset(inner, PlV.fget(inner));
-                }
-            }
-        }
-        else {
-            for (PlObject o : (PlArray)PlCORE.keys(PlCx.LIST, vars)) {
-                String name = o.toString();
-                if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0) {
-                    if (name.lastIndexOf("::") == pos) {
-                        // normal variable like "ARGV" in $main::ARGV
-                        out.hset(name.substring(pos+2), PlV.fget(name));
-                    }
-                    else {
-                        // "inner" namespace
-                        String inner = name.substring(pos+2, name.indexOf("::", pos+2)+2);
-                        out.hset(inner, PlV.fget(name.substring(0, name.indexOf("::", pos+2)+2)));
-                    }
-                }
-            }
-        }
-    }
     public static final PlObject deleteSymbolTable(String nameSpace, PlObject index) {
         // delete $Foo::{foo}
         String sname = nameSpace + index.toString();
@@ -812,7 +779,7 @@ class PerlOp {
         glob.scalarRef.set(PlCx.UNDEF);
         glob.arrayRef.set(new PlArrayRef());
         glob.hashRef.set(new PlHashRef());
-        PlV.fvar.hdelete(PlCx.VOID, name);
+        glob.fileRef.set(new PlFileHandle(sname));
         return PlCx.UNDEF; 
     }
 
@@ -821,7 +788,7 @@ class PerlOp {
         if (fh.is_lvalue()) {
             if (fh.is_undef()) {
                 // $fh autovivification to filehandle
-                fh.set(new PlFileHandle());
+                fh.set(new PlFileHandle(nameSpace));
             }
             fh = fh.get();
         }
@@ -1224,6 +1191,16 @@ class PerlOp {
         glob.hashRef = newValue;
         return newValue;
     }
+    public static final PlObject push_local_file(PlObject value, String name) {
+        PlStringConstant glob = PlStringConstant.getConstant(name);
+        PlV.local_stack.a.add(new PlString(name));
+        PlV.local_stack.a.add(glob.fileRef);
+        PlV.local_stack.a.add(new PlInt(23));       // XXX magic number
+        PlLvalue newValue = new PlLvalue();
+        newValue.set(value);
+        glob.fileRef = newValue;
+        return newValue;
+    }
 
     // localizers for special variables like $_ $\
 EOT
@@ -1281,6 +1258,10 @@ EOT
                 case 22:      // XXX magic number
                     index     = PlV.local_stack.pop();
                     PlStringConstant.getConstant(index.toString()).hashRef = (PlLvalue)v;
+                    break;
+                case 23:      // XXX magic number
+                    index     = PlV.local_stack.pop();
+                    PlStringConstant.getConstant(index.toString()).fileRef = (PlLvalue)v;
                     break;
 EOT
     , (( map {
@@ -2568,15 +2549,12 @@ class PlV {
     // PlV implements namespaces and global variables
     //
     // TODO - import CORE subroutines in new namespaces, if needed
-    // TODO - cache lookups in lexical variables (see PlClosure implementation)
-
-    public static final PlHash fvar = new PlHash(); // file
 
     public static PlRegexResult regex_result = new PlRegexResult();
     public static Path path;
-    public static PlFileHandle STDIN  = new PlFileHandle();
-    public static PlFileHandle STDOUT = new PlFileHandle();
-    public static PlFileHandle STDERR = new PlFileHandle();
+    public static PlFileHandle STDIN  = (PlFileHandle)PlStringConstant.getConstant("main::STDIN").fileRef.o;
+    public static PlFileHandle STDOUT = (PlFileHandle)PlStringConstant.getConstant("main::STDOUT").fileRef.o;
+    public static PlFileHandle STDERR = (PlFileHandle)PlStringConstant.getConstant("main::STDERR").fileRef.o;
 
     // initialize special variables like $_ $\
 EOT
@@ -2857,36 +2835,16 @@ EOT
 
     // filehandle
     public static final PlLvalue fget(String name) {
-        PlLvalue v = (PlLvalue)fvar.hget_lvalue(name);
-        if (v.is_undef()) {
-            // autovivification to filehandle
-            PlFileHandle f = new PlFileHandle();
-            if (name.equals("main::ARGV")) {
-                f.is_argv = true;
-            }
-            f.typeglob_name = name;
-            v.set(f);
-        }
-        return v;
+        return PlStringConstant.getConstant(name).fileRef;
     }
     public static final PlLvalue fget_local(String name) {
-        PlLvalue v = (PlLvalue)fvar.hget_lvalue_local(name);
-        if (v.is_undef()) {
-            // autovivification to filehandle
-            PlFileHandle f = new PlFileHandle();
-            if (name.equals("main::ARGV")) {
-                f.is_argv = true;
-            }
-            f.typeglob_name = name;
-            v.set(f);
-        }
-        return v;
+        return (PlLvalue)PerlOp.push_local_array(new PlFileHandle(name), name);
     }
     public static final PlObject fset(String name, PlObject v) {
-        return fvar.hset(name, v);
+        return PlStringConstant.getConstant(name).fileRef.set(v);
     }
     public static final PlObject fset_local(String name, PlObject v) {
-        return fvar.hget_lvalue_local(name).set(v);
+        return (PlLvalue)PerlOp.push_local_array(v, name);
     }
 
     // code
@@ -4177,6 +4135,15 @@ class PlFileHandle extends PlScalarImmutable {
         this.binmode = false;
         this.output_autoflush = false;
     }
+
+    public PlFileHandle(String name) {
+        this();     // call the base constructor
+        if (name.equals("main::ARGV")) {
+            this.is_argv = true;
+        }
+        this.typeglob_name = name;
+    }
+
     public boolean is_filehandle() {
         return true;
     }
@@ -4269,7 +4236,7 @@ class PlFileHandle extends PlScalarImmutable {
         glob.scalarRef.set(PlCx.UNDEF);
         glob.arrayRef.set(new PlArrayRef());
         glob.hashRef.set(new PlHashRef());
-        PlV.fvar.hdelete(PlCx.VOID, name);
+        glob.fileRef.set(new PlFileHandle(typeglob_name));
         if (typeglob_name.endsWith("::")) {
             // TODO - undefine inner symbol table
         }
@@ -8410,6 +8377,7 @@ class PlStringConstant extends PlString {
     public PlLvalue scalarRef; // SCALAR
     public PlLvalue arrayRef;  // ARRAY
     public PlLvalue hashRef;   // HASH
+    public PlLvalue fileRef;   // IO
 
     public PlStringConstant(String s) {
         super(s);
@@ -8417,6 +8385,7 @@ class PlStringConstant extends PlString {
         this.scalarRef = new PlLvalue();
         this.arrayRef = new PlLvalue(new PlArrayRef());
         this.hashRef = new PlLvalue(new PlHashRef());
+        this.fileRef = new PlLvalue(new PlFileHandle(s));
     }
 
     public static PlStringConstant getConstant(String s) {
