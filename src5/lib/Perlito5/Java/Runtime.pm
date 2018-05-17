@@ -8833,8 +8833,10 @@ EOT
         }
         String c = _string_increment(s.substring(s.length()-1, s.length()));
         if (c.length() == 1) {
+            // AAAC => AAAD
             return s.substring(0, s.length()-1) + c;
         }
+        // AAAZ => AABA
         return _string_increment(s.substring(0, s.length()-1)) + c.substring(c.length()-1, c.length());
     }
     public PlObject _incr() {
