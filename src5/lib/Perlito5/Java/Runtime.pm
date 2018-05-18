@@ -2265,6 +2265,10 @@ EOT
     }
     public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want, boolean global, boolean replace_flag) {
         if (!s.is_lvalue()) {
+            if (!replace_flag) {
+                PlLvalue lv = new PlLvalue(s);
+                return replace(lv, new PlRegex(pat, 0, false), rep, want, global, replace_flag);
+            }
             PlCORE.die("Can't modify constant item in substitution (s///)");
         }
         // TODO - cache the compiled pattern
@@ -2272,6 +2276,10 @@ EOT
     }
     public static final PlObject replace(PlObject s, PlObject pat, String rep, int want, boolean global, boolean replace_flag) {
         if (!s.is_lvalue()) {
+            if (!replace_flag) {
+                PlLvalue lv = new PlLvalue(s);
+                return replace(lv, new PlRegex(pat, 0, false), rep, want, global, replace_flag);
+            }
             PlCORE.die("Can't modify constant item in substitution (s///)");
         }
         // TODO - cache the compiled pattern
