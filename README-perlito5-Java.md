@@ -387,7 +387,7 @@ Java fields, methods and constructors
 
     ```
     $ jrunscript -cp . -l Perl5 
-    perl> my $x = Java::inline q{ new Integer(123) }
+    perl> my $x = Java::inline q{ (Integer)123 }
     123
     perl> my $x = Java::inline q{ (char)90 }
     Z
@@ -407,12 +407,6 @@ Java fields, methods and constructors
       perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; say $x->PI
       incompatible types: String cannot be converted to PlArray
             return PerlOp.context(want, PlCORE.say(want, PlV.STDOUT, PerlOp.call(tmp105, PlArray.construct_list_of_aliases(x_100), want).toString()));
-      ```
-
-      ```
-      perl> my $x = Java::inline q{ new Integer(123) }
-      Note: /PlEval147.java uses or overrides a deprecated API.
-      script error: PlEval147.runEval(int, java.lang.Object, java.lang.Object, java.lang.Object, org.perlito.Perlito5.PlArray)
       ```
 
   - `new` invokes a constructor
