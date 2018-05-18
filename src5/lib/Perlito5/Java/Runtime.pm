@@ -2292,7 +2292,8 @@ EOT
         String str          = pstr.toString();
         String searchChars  = psearchChars.toString();
         String replaceChars = preplaceChars.toString();
-        boolean complement = modifier.indexOf("c") < 0 ? false : true;  // c = complement
+        boolean complement   = modifier.indexOf("c") < 0 ? false : true;  // c = complement
+        boolean replace_flag = modifier.indexOf("r") < 0 ? true : false;  // r = replace flag
         int modified = 0;
         final int replaceCharsLength = replaceChars.length();
         final int strLength = str.length();
@@ -2328,7 +2329,7 @@ EOT
             }
         }
 
-        if (modified > 0) {
+        if (modified > 0 && replace_flag) {
             pstr.set(new PlString(buf.toString()));
         }
         return new PlInt(modified);
