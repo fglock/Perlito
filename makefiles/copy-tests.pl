@@ -17,11 +17,13 @@ my @files = <$f>;
 # warn "running from directory: ", `pwd`;
 
 my %bad_file;
+my @bad_directory;
 for my $line (@files) {
     if ( $line =~ m{^(t5/\S+)} ) {
-        $bad_file{$1} = 1;
-
-        # warn "bad file $1\n";
+        my $name = $1;
+        $bad_file{$name} = 1;
+        push @bad_directory, $name if $name =~ m{/$};
+        # warn "bad file $name\n";
     }
 }
 
@@ -41,6 +43,10 @@ finddepth(
 
 for my $name ( sort { length($a) <=> length($b) } @dir) {
     # warn "$name is directory\n";
+    if ( grep { "$name/" =~ /^$_/ } @bad_directory ) {
+        # warn "bad directory $name\n";
+        next;
+    }
     $name =~ s/^t5/$out_dir/;
     if (! -d $name) {
         mkdir $name
@@ -49,7 +55,7 @@ for my $name ( sort { length($a) <=> length($b) } @dir) {
 }
 for my $name (@files) {
     # warn "file $name\n";
-    if ( $bad_file{$name} ) {
+    if ( $bad_file{$name} || grep { $name =~ /^$_/ } @bad_directory ) {
         # warn "bad file $name\n";
         next;
     }

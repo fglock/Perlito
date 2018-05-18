@@ -1,5 +1,12 @@
 Test Summary Report
 -------------------
+
+# --- blacklisted directories:
+
+# t5/unit/
+
+# --- blacklisted files:
+
 t5/01-perlito/100-for-global.t            (Wstat: 0 Tests: 17 Failed: 3)
   Failed tests:  4, 14, 17
 t5/01-perlito/410-ampersand.t             (Wstat: 0 Tests: 9 Failed: 2)

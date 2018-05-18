@@ -1,5 +1,12 @@
 Test Summary Report
 -------------------
+
+# --- blacklisted directories:
+
+# t5/unit/
+
+# --- blacklisted files:
+
 t5/01-perlito/010-sanity.t                (Wstat: 65280 Tests: 0 Failed: 0)
   Non-zero exit status: 255
   Parse errors: No plan found in TAP output

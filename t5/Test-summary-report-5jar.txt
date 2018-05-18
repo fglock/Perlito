@@ -1,5 +1,12 @@
 Test Summary Report
 -------------------
+
+# --- blacklisted directories:
+
+# t5/unit/
+
+# --- blacklisted files:
+
 # t5/base/lex.t                             (Wstat: 0 Tests: 43 Failed: 0)
 #   Parse errors: Tests out of sequence.  Found (41) but expected (40)
 #                 Tests out of sequence.  Found (42) but expected (41)
