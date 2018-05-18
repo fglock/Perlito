@@ -994,7 +994,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   package The::Class {
       import           => 'full.path.Class',  # mandatory, can contain a type argument
       java_type        => 'full.path.Class',  # auto generated, can be overridden
-      perl_to_java     => 'to_TheClass',      # (deprecated) auto generated from Perl package name, can be overridden
+      # perl_to_java     => 'to_TheClass',    # (deprecated) auto generated from Perl package name, can be overridden
       # perl_package   => 'The::Class',       # auto generated, Perl package name
   }
   ```
@@ -1064,7 +1064,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     - puts the boxed object into a Perl scalar  (DONE)
 
-  my Sample $put = Sample->new();
+  `my Sample $put = Sample->new();`
 
     - creates a native Java variable          (DONE)
 
@@ -1086,8 +1086,6 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     package Int { import => 'java.lang.Integer' };
     my Int $x = 3;          # $x is a Java Int (not a PlScalar)  (TODO: test)
     ```
-
-  - TODO test: automatic casting `my Result $java_obj = $scan_result;`
 
   - TODO: capture typed variables in closures
 
@@ -1122,6 +1120,8 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     ```
 
   - Automatic casting:
+
+    - TODO test
 
     ```
         # cast perl object to java object
