@@ -66,6 +66,9 @@ Build using make
   ok 1 ...
   ```
 
+  - Java specific tests are in `t5/java-specific` directory
+
+
 Perlito5-Java work-in-progress
 ------------------------------
 
