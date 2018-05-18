@@ -3,7 +3,7 @@ Test Summary Report
 
 # --- blacklisted directories:
 
-# t5/unit/
+t5/java-specific/
 
 # --- blacklisted files:
 
