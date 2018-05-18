@@ -579,13 +579,15 @@ Calling a Perl subroutine from Java
   ```
 
   ```
-  perl> $Perlito5::Java::DEBUG=1   # enable debugging output
-  ```
-
-  ```
   perl> push @INC, "src5/lib";     # initialize @INC to load Perl modules (alternately, set PERL5LIB env variable)
   perl> use Java
   ```
+
+  - enable debugging output: this is the same as setting `-J DEBUG=1` in the command line
+
+    ```
+    perl> $Perlito5::Java::DEBUG=1
+    ```
 
 - older API (deprecated)
 
@@ -712,7 +714,7 @@ $arr->add($p->toString());
     but:
 
     ```perl
-    my Character $b = "a";  # numeric value is zero
+    my Character $b = "a";  # wrong: numeric value is zero
     ```
 
   - Long
@@ -936,6 +938,11 @@ Java-specific command line options
 
       - specify what we want to return: PlObject vs. array of strings, etc
   
+  - `-J DEBUG=1` - enable debugging output
+
+    ```bash
+    $ java -jar perlito5.jar -I src5/lib -J DEBUG=1 -e ' say 123 '
+    ```
 
 Workaround JVM bytecode size limit
 ----------------------------------
