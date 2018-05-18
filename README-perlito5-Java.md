@@ -252,6 +252,8 @@ Perlito5-Java work-in-progress
       - See: https://github.com/jnr
       - See: https://github.com/jnr/jnr-posix
 
+  - `reset` and `m??` not implemented
+
   - clone() is work-in-progress
       - deep clone of references is not implemented
       - clone tied values is not implemented
