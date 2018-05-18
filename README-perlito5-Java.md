@@ -443,7 +443,7 @@ perl> $arr->length
 ```
 
 
-Java extensions in eval-string (work in progress)
+Java extensions in runtime (work in progress)
 -------------------------------------------------
 
   - Syntax
@@ -1027,6 +1027,8 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     - no `global` typed variables (only `my` variables)
 
+    - only scalar variables (no hash, array, code)
+
   - Note:
         - parameters to native calls are evaluated in scalar context
         - untyped variables are passed by reference - that is, v_x instead of v_x.get()
@@ -1058,7 +1060,6 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   my Sample $put = Sample->new();
 
     - creates a native Java variable          (DONE)
-                                            (TODO: allow Int, String types)
 
   `my Int $val = Sample->VAL;`
 
@@ -1079,10 +1080,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     my Int $x = 3;          # $x is a Java Int (not a PlScalar)  (TODO: test)
     ```
 
-  - maybe TODO: automatic casting `my Result $java_obj = $scan_result;`
-
-  - maybe TODO: make pJavaReference which will have this implementation
-        - Note: Boxed Java objects can be undef (null)
+  - TODO test: automatic casting `my Result $java_obj = $scan_result;`
 
   - TODO: capture typed variables in closures
 
@@ -1368,6 +1366,8 @@ Value types
 
 - autobox as-needed
 
+  - add tests
+
   - runtime methods should accept String, int, double, boolean types
     and maybe other types of number (byte, ...)
 
@@ -1478,8 +1478,6 @@ Missing features, or partially implemented, or untested
 -------------------------------------------------------
 
 - Object-related
-
-  - bless (DONE)
 
   - `UNIVERSAL::`
 
@@ -1736,9 +1734,6 @@ Threads
 
 Optimizations
 -------------
-
-  - use `our`-ish variables to avoid global variable lookups
-        Note: remember the special-cases for `local` keyword
 
   - do-block and eval-block in void-context don't need a subroutine wrapper
 
