@@ -7,6 +7,10 @@ Test Summary Report
 
 # --- blacklisted files:
 
+# TODO - typed arguments in Perl method call or subroutine call
+t5/java-specific/040-typed-variable-to-scalar.t
+
+
 # t5/base/lex.t                             (Wstat: 0 Tests: 43 Failed: 0)
 #   Parse errors: Tests out of sequence.  Found (41) but expected (40)
 #                 Tests out of sequence.  Found (42) but expected (41)
