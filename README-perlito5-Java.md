@@ -198,8 +198,8 @@ Perlito5-Java work-in-progress
 
   - object system is partially implemented
       - method resolution order is not selectable
-      - interaction between inheritance and overloading need more tests
-      - interaction between `local` and method cache more tests
+      - interaction between inheritance and overloading needs more tests
+      - interaction between `local` and method cache needs more tests
 
   - tied variables are partially implemented
       - DESTROY not used, because we use Java memory management
@@ -397,6 +397,20 @@ Java fields, methods and constructors
     perl> $x[10] = eval { Java::inline q{ Class.forName("java.lang.Thread") } }; say $x[10]->currentThread()
     Thread[main,5,main]
     ```
+
+    - BUG - TODO add tests:
+
+      ```
+      perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; say $x->PI
+      incompatible types: String cannot be converted to PlArray
+            return PerlOp.context(want, PlCORE.say(want, PlV.STDOUT, PerlOp.call(tmp105, PlArray.construct_list_of_aliases(x_100), want).toString()));
+      ```
+
+      ```
+      perl> my $x = Java::inline q{ new Integer(123) }
+      Note: /PlEval147.java uses or overrides a deprecated API.
+      script error: PlEval147.runEval(int, java.lang.Object, java.lang.Object, java.lang.Object, org.perlito.Perlito5.PlArray)
+      ```
 
   - `new` invokes a constructor
 
@@ -930,6 +944,8 @@ Java-specific command line options
 
   - specify main Class name (currently "Main")
   
+  - have a way to port a simple .pm to a .jar
+
   - have a way to port a simple .pm to a .java (without a main function)
   
       - specify input arguments
@@ -1456,7 +1472,7 @@ Variables
   - subroutine lookups could also be "our"-like (also method lookups)
 
 
-Overflow from int to double
+Overflow from long to double
 ---------------------------
 
   - partially implemented - needs more work, tests
@@ -1741,6 +1757,8 @@ Threads
 
 Optimizations
 -------------
+
+  - inline the block in `map`, `grep`, `sort`
 
   - do-block and eval-block in void-context don't need a subroutine wrapper
 
