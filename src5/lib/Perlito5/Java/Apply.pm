@@ -67,6 +67,11 @@ package Perlito5::AST::Apply;
                 )->emit_java($level);
                 $modifier =~ s/e//g;
             }
+            my $modifier_replace = 'true';
+            if ($modifier =~ /r/) {
+                $modifier_replace = 'false';
+                $modifier =~ s/r//g;
+            }
             if ($modifier =~ /g/) {
                 $modifier_global = 'true';
                 $modifier =~ s/g//g;
@@ -76,7 +81,8 @@ package Perlito5::AST::Apply;
                     . emit_qr_java( $regex_args->[0], $modifier, $level ) . ', '
                     . $replace_java . ', '
                     . Perlito5::Java::to_context($wantarray) . ', '
-                    . $modifier_global
+                    . $modifier_global . ', '
+                    . $modifier_replace
                   . ")";
         }
         elsif ($code eq 'p5:m') {

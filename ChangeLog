@@ -41,6 +41,7 @@ backends.
 	example at misc/Java/Script.java
 -- "jrunscript" support
 	$ jrunscript -cp .:perlito5.jar -l Perl5
+-- global variable lookup is cached
 -- fix $^O, returns the the operating system name
 -- "require", "require VERSION"
 -- "opendir", "readdir", "closedir", "select", "binmode"
@@ -57,7 +58,7 @@ backends.
 -- symbol tables like %:: and typeglobs support
 -- file tests: "-e", "-l", "-r", "-w", "-x"
 -- lvalue ternary "?:", "vec", "substr"
--- regex modifier /xx
+-- regex modifier /xx /r
 -- regex %+ named captures
 -- regex named captures can have underscore in the name
 -- SUPER method call

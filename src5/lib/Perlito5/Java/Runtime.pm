@@ -2142,7 +2142,7 @@ EOT
         return match(s, new PlRegex(pat, 0, false), want, global, c_flag);
     }
 
-    public static final PlObject replace(PlLvalue s, PlRegex pat, PlClosure rep, int want, boolean global) {
+    public static final PlObject replace(PlLvalue s, PlRegex pat, PlClosure rep, int want, boolean global, boolean replace_flag) {
         String str = s.toString();
         int count = 0;
         Matcher matcher = pat.p.matcher(str);
@@ -2167,7 +2167,9 @@ EOT
                 if (pos <= str.length()) {
                     buf.append( str.substring(pos) );
                 }
-                s.set(new PlString(buf.toString()));
+                if (replace_flag) {
+                    s.set(new PlString(buf.toString()));
+                }
             }
         }
         else {
@@ -2187,7 +2189,9 @@ EOT
                 if (end <= str.length()) {
                     buf.append( str.substring(end) );
                 }
-                s.set(new PlString(buf.toString()));
+                if (replace_flag) {
+                    s.set(new PlString(buf.toString()));
+                }
             }
         }
         if (count == 0) {
@@ -2196,7 +2200,7 @@ EOT
         }
         return new PlInt(count);
     }
-    public static final PlObject replace(PlLvalue s, PlRegex pat, String replace, int want, boolean global) {
+    public static final PlObject replace(PlLvalue s, PlRegex pat, String replace, int want, boolean global, boolean replace_flag) {
         String str = s.toString();
         int count = 0;
         Matcher matcher = pat.p.matcher(str);
@@ -2220,7 +2224,9 @@ EOT
                 if (pos <= str.length()) {
                     buf.append( str.substring(pos) );
                 }
-                s.set(new PlString(buf.toString()));
+                if (replace_flag) {
+                    s.set(new PlString(buf.toString()));
+                }
             }
         }
         else {
@@ -2239,7 +2245,9 @@ EOT
                 if (end <= str.length()) {
                     buf.append( str.substring(end) );
                 }
-                s.set(new PlString(buf.toString()));
+                if (replace_flag) {
+                    s.set(new PlString(buf.toString()));
+                }
             }
         }
         if (count == 0) {
@@ -2249,25 +2257,25 @@ EOT
         return new PlInt(count);
     }
 
-    public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global) {
+    public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global, boolean replace_flag) {
         if (rep.is_coderef()) {
-            return replace(s, pat, (PlClosure)rep, want, global);
+            return replace(s, pat, (PlClosure)rep, want, global, replace_flag);
         }
-        return replace(s, pat, rep.toString(), want, global);
+        return replace(s, pat, rep.toString(), want, global, replace_flag);
     }
-    public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want, boolean global) {
+    public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want, boolean global, boolean replace_flag) {
         if (!s.is_lvalue()) {
             PlCORE.die("Can't modify constant item in substitution (s///)");
         }
         // TODO - cache the compiled pattern
-        return replace((PlLvalue)s, new PlRegex(pat, 0, false), rep, want, global);
+        return replace((PlLvalue)s, new PlRegex(pat, 0, false), rep, want, global, replace_flag);
     }
-    public static final PlObject replace(PlObject s, PlObject pat, String rep, int want, boolean global) {
+    public static final PlObject replace(PlObject s, PlObject pat, String rep, int want, boolean global, boolean replace_flag) {
         if (!s.is_lvalue()) {
             PlCORE.die("Can't modify constant item in substitution (s///)");
         }
         // TODO - cache the compiled pattern
-        return replace((PlLvalue)s, new PlRegex(pat, 0, false), rep, want, global);
+        return replace((PlLvalue)s, new PlRegex(pat, 0, false), rep, want, global, replace_flag);
     }
 
     // $v =~ tr/xyz/abc/i

@@ -263,10 +263,10 @@ Perlito5-Java work-in-progress
 Regex differences
 -----------------
 
-  - regex modifiers /ismxgec work the same as Perl; other modifiers are not yet implemented.
+  - regex modifiers /ismxgecr work the same as Perl; other modifiers are not yet implemented.
       - `/xx` works
       - `/ee` works
-      - `/r` not implemented
+      - `/r`  works
       - `/g` has problems in certain backtracking zero-length-matches
 
   - regex variables `$1`, `$2`, ... and `$&`, `$'`, `` $` `` work; other variables are not yet implemented.
@@ -280,6 +280,13 @@ Regex differences
     ```
 
   - Perlito5 allows underscores in named captures. This is not allowed in Java regex.
+
+  - `s///r` bound to a constant is not yet implemented
+
+    ```
+    java -jar perlito5.jar -I src5/lib  -e ' "aaa" =~ s/aaa/aba/r '
+    Can't modify constant item in substitution (s///)
+    ```
 
   - TODO - check this error message, this may need to be implemented for compatibility:
 
