@@ -23,9 +23,7 @@ my BufferedReader $in = BufferedReader->new(
     ),
 );
 
-# TODO - test defined() in the loop
-
-while (my $s = $in->readLine()) {
+while (defined (my $s = $in->readLine())) {
     print $s, "\n";
 }
 

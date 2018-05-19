@@ -966,8 +966,9 @@ sub to_native_bool {
                     my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
                     return '!PlV.cget_no_autoload(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ').is_undef()';
                 }
-                # TODO - use this code for typed variables:
-                #   $invocant . ' != null' 
+                if (is_native($arg)) {
+                    return $arg->emit_java($level, 'scalar') . ' != null'
+                }
                 return '!' . $arg->emit_java($level, 'scalar') . '.is_undef()';
             }
             # if (  $cond->{code} eq 'prefix:<@>'

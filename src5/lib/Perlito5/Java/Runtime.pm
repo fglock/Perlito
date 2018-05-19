@@ -6091,20 +6091,27 @@ class PlLvalue extends PlScalarObject {
         // $a = new Object()
         return this.set(PlJavaObject.fromObject(o));
     }
-EOT
-    , ((map {
-            my $native = $_;
-            my $perl   = $native_to_perl{$native};
-            $native && $perl ? 
-"    public PlObject set($native s) {
-        this.set(new $perl(s));
+    public PlObject set(String s) {
+        if (s == null) {
+            this.set(PlCx.UNDEF);
+            return this;
+        }
+        this.set(new PlString(s));
         return this;
     }
-" : ()
-            }
-            sort keys %native_to_perl ))
+    public PlObject set(boolean s) {
+        this.set(new PlBool(s));
+        return this;
+    }
+    public PlObject set(double s) {
+        this.set(new PlDouble(s));
+        return this;
+    }
+    public PlObject set(long s) {
+        this.set(new PlInt(s));
+        return this;
+    }
 
-    , <<'EOT'
     public PlScalarImmutable length() {
         return this.get().length();
     }
@@ -9085,7 +9092,16 @@ class PlJavaObject extends PlReference {
         return ref();
     }
     public String toString() {
+        if (stuff == null) {
+            return "";
+        }
         return this.stuff.toString();
+    }
+    public boolean to_boolean() {
+        if (stuff == null) {
+            return false;
+        }
+        return true;
     }
     public boolean is_JavaObject() {
         return true;
