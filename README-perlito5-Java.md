@@ -1807,6 +1807,9 @@ Modules
 
   - there is a port of JSON.pm - it is pure-perl and slow. It would be nice to have a native-java version.
 
+    update: `src5/lib/Perlito5X/Java/JSON.pm` uses `javax.json.stream.JsonParser`
+    but this JsonParser class doesn't seem to be installed by default.
+
   - TODO: DBI.pm
 
 
