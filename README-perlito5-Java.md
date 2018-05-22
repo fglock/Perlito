@@ -1120,13 +1120,9 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     maybe TODO: allow typed variables in parameter list;
     but they would probably lose the type information
 
-    possible workaround:
+  - TODO test: call Perl subroutines with native parameters
 
-    `my Int $x = $y;     # automatically insert a call to $y->toInt()`
-
-  - maybe TODO: call Perl subroutines with native parameters
-
-  - TODO: (wip) call Java methods with Perl parameters
+  - TODO test: call Java methods with Perl parameters
 
     ```perl
     Sample->new(10);                # native int
@@ -1140,20 +1136,17 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   - Method chaining:
 
     ```
-        my $global_queue = ConcurrentLinkedQueue::Of::String->new();
-        my ConcurrentLinkedQueue::Of::String $queue = $global_queue;
-        my $x = $queue->poll();
+    my $global_queue = ConcurrentLinkedQueue::Of::String->new();
+    my ConcurrentLinkedQueue::Of::String $queue = $global_queue;
+    my $x = $queue->poll();
 
-        my $x = $global_queue->poll();    # uses reflection to find the method
+    my $x = $global_queue->poll();    # uses reflection to find the method
     ```
 
-  - Automatic casting:
-
-    - TODO test
+  - TODO more tests: cast perl object to java object
 
     ```
-        # cast perl object to java object
-        my Result $java_obj_result = $scan_result;
+    my Result $java_obj_result = $scan_result;
     ```
 
   - Array-deref:
@@ -1200,7 +1193,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     this also takes care of `$x` and `0+$x`
     (TODO)
     
-    PlLvalue.set() is super-overloaded # Array, Hash, int, string, boolean, ...
+    PlLvalue.set() is overloaded - Array, Hash, int, string, boolean, ...
 
     src5/lib/Perlito5/Java/Runtime.pm 1463
 
@@ -1527,13 +1520,17 @@ Missing features, or partially implemented, or untested
 
   - (DONE) Scalar::blessed
 
-  - TODO - unit tests (work in progress)
+  - TODO tests - unit tests (work in progress)
 
-  - TODO - invalidate method cache when subroutine changes or @INC changes
+  - TODO tests - tests for modules in `src5/lib/Perlito5X`
+
+  - TODO tests - invalidate method cache when subroutine changes or @INC changes
 
 - Perl features
 
   - overload
+
+    - TODO - remove optimizations when one of the operators is overloaded
 
   - tie()
 
