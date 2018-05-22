@@ -1247,15 +1247,20 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   - (maybe deprecated) everything at the right side of `...->to_JavaThing()->...` is native-call
 
 
-- native expressions TODO
+- native expressions
 
     ```perl
-    $x++         # autoincrement
+    $x++;         # autoincrement
+    $x = $x + 1;  # assignment
+    print $x;     # print
+    ```
 
-    $x = $x + 1  # assignment
-                 # TODO - cast arguments to `number`, `string` or `boolean` depending on operator
+  - Note that native variables must be initialized:
 
-    print $x     # print
+    ```
+    java -jar perlito5.jar -Isrc5/lib  -e ' package Integer {}; my Integer $x; $x ++ ' 
+    error: variable x_103 might not have been initialized
+            x_103++;
     ```
 
   - test case:
