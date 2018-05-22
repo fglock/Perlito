@@ -9090,9 +9090,22 @@ class PlJavaObject extends PlReference {
 
     public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
         // want same Java class
+        // System.out.println("PerlArgumentLookupResult castToClass from " + this.ref_str());
         for (Class[] cl : params) {
+            // System.out.println("  compare to " + cl[pos]);
             if (cl[pos].equals( this.stuff.getClass() )) {
+                // System.out.println("   match");
                 return new PerlArgumentLookupResult( this.stuff, cl[pos] );
+            }
+            // try again with Class.cast()
+            try {
+                cl[pos].cast( this.stuff );
+                // cast returns ok
+                // System.out.println("   can cast()");
+                return new PerlArgumentLookupResult( this.stuff, cl[pos] );
+            }
+            catch (ClassCastException e) {
+                // System.out.println("   cannot cast()");
             }
         }
         // try other things
