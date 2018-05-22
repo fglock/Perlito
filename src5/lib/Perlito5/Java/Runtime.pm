@@ -8982,59 +8982,6 @@ EOT
     , <<'EOT'
 }
 EOT
-        # add "box" classes to Java classes
-        # that were declared with
-        #
-        #   package MyJavaClass { Java }
-        #
-    , (( map {
-                    my $class = $java_classes{$_};
-                    my $java_class_name = $class->{java_type};
-                    my $perl_to_java    = $class->{perl_to_java};
-                    my $perl_package    = $class->{perl_package};
-                    my $java_native_to_perl = $class->{java_native_to_perl};
-                    $class->{import} || $class->{extends} || $class->{implements} ? 
-"class ${java_native_to_perl} extends PlJavaObject {
-    public static final String REF_str = new String(\"${perl_package}\");
-    public static final PlStringConstant REF = new PlStringConstant(REF_str);
-    private ${java_class_name} stuff;
-
-    public ${java_native_to_perl}(${java_class_name} stuff) {
-        super((Object)stuff);
-        this.stuff = stuff;
-    }
-    public ${java_class_name} ${perl_to_java}() {
-        return this.stuff;
-    }
-    public Object toJava() {
-        return this.stuff;
-    }
-    public PlString ref() {
-        return REF;
-    }
-    public String ref_str() {
-        return REF_str;
-    }
-    public boolean ref_boolean() {
-        return true;
-    }
-
-    public boolean is_JavaObject() {
-        return true;
-    }
-    public boolean is_undef() {
-        return stuff == null;
-    }
-    public PlObject clone() throws CloneNotSupportedException {
-        // TODO - test if implements 'Cloneable' and call stuff.clone() if possible
-        return this;
-    }
-}
-" : ()
-            }
-            grep { $java_classes{$_}{perl_to_java} }
-            sort keys %java_classes
-      ))
 
     # Java API
     # work in progress
