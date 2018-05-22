@@ -489,7 +489,7 @@ Java extensions in runtime (work in progress)
 
   - Java objects can be assigned to Perl scalar variables, array elements, or hash elements.
 
-  - Assign from Perl scalar to typed variables requires explicit coercion (or unboxing).
+  - Assign from Perl scalar expression to typed variables requires explicit coercion (or unboxing).
 
     Example: use the `Java` package to create a boxed Java array;
     use a typed variable declaration to create an unboxed Java array:
@@ -501,6 +501,13 @@ Java extensions in runtime (work in progress)
     perl> package Java::Array::Of::Int { import => "java.lang.Integer", java_type => "int[]" }  
     perl> my Java::Array::Of::Int $aa; $aa = Java->type("int[]")->new(10);
     error: incompatible types: PlObject cannot be converted to int[]
+    ```
+
+    workaround: assign the expression to a variable, and then assign between variables:
+
+    ```
+    perl> my Java::Array::Of::Int $aa; my $bb = Java->type("int[]")->new(10); $aa = $bb;
+    [I@26d5a317
     ```
 
   - TODO - type information is lost for `Byte`, `Character` values - these are converted to `long`, `String`
