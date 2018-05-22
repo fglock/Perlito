@@ -1240,10 +1240,6 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package my::Sample { import => "misc.Java.Sample" }; my $x = my::Sample->new(); say "ref: ", ref($x), " x ", $x; my @arr = (1,2,5); say ref(\@arr); $x = \@arr; say ref($x); my my::Sample $z = my::Sample->new(); $x = $z; 
     ```
 
-  - TODO - typed arguments in Perl method call or subroutine call
-
-    `t5/java-specific/040-typed-variable-to-scalar.t`
-
   - (maybe deprecated) everything at the right side of `...->to_JavaThing()->...` is native-call
 
 
