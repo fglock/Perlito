@@ -1795,6 +1795,11 @@ Optimizations
   - investigate using Lambdas:
     https://stackoverflow.com/questions/26257266/are-java-8-lambdas-compiled-as-inner-classes-methods-or-something-else
 
+  - investigate bundling together the calls to `Perlito5::Grammar::Block::eval_begin_block()` to reduce
+    the java compiler initialization overhead.
+
+    `eval_begin_block()` is currently called for each named subroutine definition.
+
 Modules
 -------
 
