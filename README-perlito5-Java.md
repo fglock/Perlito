@@ -1599,13 +1599,10 @@ Missing features, or partially implemented, or untested
 
       - TODO - anonymous subroutines and eval string are not shown in the call stack
 
-      - TODO - the compiler stack is "leaking" into the script stack. The "Perlito5" namespace belongs to the compiler.
-
         ```bash
         $ java -jar perlito5.jar -I src5/lib -e ' sub x { print "@{[ caller($_) ]}\n" for 0..3; } sub yy { eval "x()"; }; ( sub { yy() } )->(); '
-        main -e 2 main::x
-        main -e 2 main::yy
-        Perlito5 src5/util/jperl.pl 9 Perlito5::eval_string
+        main -e 1 main::x
+        main -e 1 main::yy
 
         $ perl -e ' sub x { print "@{[ caller($_) ]}\n" for 0..3; } sub yy { eval "x()"; }; ( sub { yy() } )->(); '
         main (eval 1) 1 main::x 1    0
@@ -1626,10 +1623,10 @@ Missing features, or partially implemented, or untested
 
         $ java -jar perlito5.jar -I src5/lib -I . -e ' package AAA; sub x { my $v = caller; print "caller: $v\n"; print "$_: @{[ caller($_) ]}\n" for 0..3; }; package BBB; sub yy {AAA::x(); }; package CCC; sub cc { BBB::yy() }; cc(); '
         caller: BBB
-        0: BBB -e 2 AAA::x
-        1: CCC -e 2 BBB::yy
-        2: Perlito5 -e 2 CCC::cc
-        3:  src5/util/jperl.pl 9 Perlito5::eval_string
+        0: BBB -e 1 AAA::x
+        1: CCC -e 1 BBB::yy
+        2: main -e 1 CCC::cc
+        3:    
         ```
 
   - `__DATA__` sections
