@@ -7,8 +7,8 @@ Test Summary Report
 
 # --- blacklisted files:
 
-# TODO - typed arguments in Perl method call or subroutine call
-t5/java-specific/040-typed-variable-to-scalar.t
+# FIXED - typed arguments in Perl method call or subroutine call
+# t5/java-specific/040-typed-variable-to-scalar.t
 
 
 # t5/base/lex.t                             (Wstat: 0 Tests: 43 Failed: 0)
