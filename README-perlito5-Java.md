@@ -425,6 +425,11 @@ Java fields, methods and constructors
       both method set(String) in PlLvalue and method set(System) in PlLvalue match
     ```
 
+    workaround: cast null to a specific class:
+
+    ```
+    perl> my $x; eval { $x = Java::inline q{ (String)null } }; say $x
+    ```
 
 `Java` Perl module
 -----------------
