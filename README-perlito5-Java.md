@@ -809,8 +809,11 @@ conditionals should work fine, because these are not usually implemented as clos
                       return PerlOp.context(want, System.gc());
   ```
 
-  - workaround: add a plain-perl line, such as `return`, `undef`, or `1`.
+  workaround: add a plain-perl line, such as `return`, `undef`, or `1`.
 
+  ```
+  perl> System->gc(); 1
+  ```
 
 (experimental) Extending a Java class with Perl
 --------------------------------
