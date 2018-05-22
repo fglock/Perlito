@@ -6869,6 +6869,34 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         }
         return new PlArray(aa);
     }
+    public static PlArray construct_list_of_aliases(Object... args) {
+        PlArrayList aa = new PlArrayList();
+        for (Object s1 : args) {
+            PlObject s = PlJavaObject.fromObject(s1);
+            if (s.is_lvalue()) {
+                aa.add(s);  // store lvalue as-is
+            }
+            else if (s.is_hash()) {
+                // ( %x );
+                s = ((PlHash)s).to_list_of_aliases();
+                for (int i = 0; i < s.to_long(); i++) {
+                    aa.add(s.aget_lvalue(i));
+                }
+            }
+            else if (s.is_array()) {
+                // ( @x, @y );
+                int ll = s.to_int();
+                for (int i = 0; i < ll; i++) {
+                    aa.add(s.aget_lvalue(i));
+                }
+            }
+            else {
+                aa.add(new PlROvalue(s));  // store "read only"
+            }
+        }
+        return new PlArray(aa);
+    }
+
     public static PlArray construct_list_of_references(PlObject... args) {
         PlArray aa = PlArray.construct_list_of_aliases(args);
         PlArray result = new PlArray();

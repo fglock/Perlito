@@ -1039,7 +1039,7 @@ sub to_method_call_param_list {
     my ($this, $items, $level) = @_;
     my $items = to_list_preprocess( $items );
 
-    if ((ref($this) eq 'Perlito5::AST::Var') && $this->{sigil} eq "::") {
+    if ((ref($this) eq 'Perlito5::AST::Var') && $this->{sigil} eq '::') {
         # convert bareword to string
         $this = Perlito5::AST::Buf->new( buf => $this->{namespace} );
     }
