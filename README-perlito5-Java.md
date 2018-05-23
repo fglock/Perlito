@@ -178,15 +178,13 @@ Perlito5-Java work-in-progress
       - other signals are not yet implemented
       - `$SIG{ALRM}` and `alarm()` not implemented
 
-  - object system is partially implemented
+  - object system
       - method resolution order is not selectable
       - interaction between inheritance and overloading needs more tests
       - interaction between `local` and method cache needs more tests
 
-  - tied variables are partially implemented
+  - tied variables
       - DESTROY not used, because we use Java memory management
-      - lazy lookup: possibly incomplete impl for proxy objects, this needs more tests
-      - TODO tie filehandle
 
   - overload is partially implemented
       - overload string, number, boolean work
@@ -1485,6 +1483,17 @@ Missing features, or partially implemented, or untested
     - TODO - remove optimizations when one of the operators is overloaded
 
   - tie()
+
+    - TODO tie filehandle
+
+      ```
+      $ java -jar perlito5.jar -Isrc5/lib  -e ' tie *FH, "NewHandle";'
+      Can't locate object method "TIEHANDLE" via package "NewHandle" (perhaps you forgot to load "NewHandle"?)
+      ```
+
+    - how does Perl behave when tieing a SCALAR to a Handle?
+    - lazy lookup: possibly incomplete impl for proxy objects, this needs more tests
+    - TODO test - tie() in BEGIN
 
   - exceptions
 

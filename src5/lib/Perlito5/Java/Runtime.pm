@@ -4139,6 +4139,7 @@ class PlFileHandle extends PlScalarImmutable {
     public String  charset;  // "UTF-8"
     public boolean binmode;
     public boolean output_autoflush;
+    public PlObject tied;
 
     public static final int BUFFER_SIZE = 4096;
     public static final int BUFFER_THRESHOLD = BUFFER_SIZE - 256;
@@ -4165,6 +4166,35 @@ class PlFileHandle extends PlScalarImmutable {
         return true;
     }
 
+    // tie "handle"
+    public PlObject tie(PlArray args) {
+        if (this.tied != null) {
+            this.untie();
+        }
+        PlObject self = PerlOp.call("TIEHANDLE", args, PlCx.VOID);
+        this.tied = self;
+        return self;
+    }
+
+    public PlObject untie() {
+        if (this.tied != null) {
+            PlObject tied = this.tied;
+            PlObject untie = PerlOp.call("can", new PlArray(tied, new PlString("UNTIE")), PlCx.SCALAR);
+            if (untie.to_boolean()) {
+                untie.apply(PlCx.VOID, new PlArray(tied));
+            };
+            this.tied = null;
+            return tied;
+        }
+        return this;
+    }
+    public PlObject tied() {
+        if (this.tied != null) {
+            return this.tied;
+        }
+        return PlCx.UNDEF;
+    }
+ 
     public static void close_all_files() {
         // called at teardown - program finish, die() or exit()
         // Note: this is also called when the compiler finishes loading (the compiler is a Perl program)
@@ -5735,6 +5765,10 @@ class PlLvalue extends PlScalarObject {
 
     // tie scalar
     public PlObject tie(PlArray args) {
+        if (this.o.is_filehandle()) {
+            return this.o.tie(args);
+        }
+
         if (this.tied != null) {
             this.untie();
         }
@@ -5744,6 +5778,10 @@ class PlLvalue extends PlScalarObject {
     }
 
     public PlObject untie() {
+        if (this.o.is_filehandle()) {
+            return ((PlFileHandle)this.o).untie();
+        }
+
         if (this.tied != null) {
             PlObject tied = this.tied;
             PlObject untie = PerlOp.call("can", new PlArray(tied, new PlString("UNTIE")), PlCx.SCALAR);
@@ -5756,6 +5794,10 @@ class PlLvalue extends PlScalarObject {
         return this;
     }
     public PlObject tied() {
+        if (this.o.is_filehandle()) {
+            return this.o.tied();
+        }
+
         if (this.tied != null) {
             return this.tied;
         }
