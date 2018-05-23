@@ -460,7 +460,7 @@ Java extensions in runtime (work in progress)
     $ jrunscript -cp . -l Perl5 
     perl> push @INC, "src5/lib";
     perl> use Java
-    perl> package Java::Array::Of::Int { import => "java.lang.Integer", java_type => "int[]" }  
+    perl> package Java::Array::Of::Int { import => "java.lang.Integer[]" }  
     perl> my Java::Array::Of::Int $aa; $aa = Java->type("int[]")->new(10);
     error: incompatible types: PlObject cannot be converted to int[]
     ```
@@ -470,6 +470,13 @@ Java extensions in runtime (work in progress)
     ```
     perl> my Java::Array::Of::Int $aa; my $bb = Java->type("int[]")->new(10); $aa = $bb;
     [I@26d5a317
+    ```
+
+    alternately:
+
+    ```
+    perl> package Java::Array::Of::Int { import => "java.lang.Integer[]" }
+    perl> my Java::Array::Of::Int $aa; my $bb = Java->type("java.lang.Integer[]")->new(10); $aa = $bb;
     ```
 
   - TODO - type information is lost for `Byte`, `Character` values - these are converted to `long`, `String`
