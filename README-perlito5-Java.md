@@ -17,24 +17,6 @@ Requirements
 
   - Java 7 is also required for named groups in regex, like:  `(?<name>X).`
 
-Perlito5-Java platform differences
--------------------------------------------
-
-- no timely destruction (DESTROY) (because we use Java memory management)
-    - files don't "auto-close" at the end of a block
-    - weaken() is a no-op
-    - Try::Tiny `finally` doesn't work
-    - Object::InsideOut will not cleanup unused objects
-    - SelectSaver module doesn't work
-
-- no XS (because we use Java instead of C)
-    - many CPAN modules which use C libraries don't work
-    - some CPAN modules are already ported, see: src5/lib/Perlito5X/Java/
-
-- some system features are not readily available in Java, such as:
-    - file permissions for setuid, setgid, and sticky bit are not implemented
-    - some signals are not available in Java.
-
 
 Build using make
 ----------------
@@ -70,6 +52,25 @@ Build using make
   ```
 
   - Java specific tests are in `t5/java-specific` directory
+
+
+Perlito5-Java platform differences
+-------------------------------------------
+
+- no timely destruction (DESTROY) (because we use Java memory management)
+    - files don't "auto-close" at the end of a block
+    - weaken() is a no-op
+    - Try::Tiny `finally` doesn't work
+    - Object::InsideOut will not cleanup unused objects
+    - SelectSaver module doesn't work
+
+- no XS (because we use Java instead of C)
+    - many CPAN modules which use C libraries don't work
+    - some CPAN modules are already ported, see: src5/lib/Perlito5X/Java/
+
+- some system features are not readily available in Java, such as:
+    - file permissions for setuid, setgid, and sticky bit are not implemented
+    - some signals are not available in Java.
 
 
 Perlito5-Java work-in-progress
@@ -318,17 +319,11 @@ Possible workarounds for slow compilation:
   - preload modules in `src5/util/jperl.pl`
 
 
-Perlito5-Java extensibility
+Perlito5-Java extensions
 ===========================
 
 The Perlito5 Java backend doesn't support Perl XS extensions.
 Instead of XS, it has an extension mechanism that connects Perl with Java.
-
-TODO - investigate using the Nashorn convention for "Using Java from Scripts", see:
-
-  - https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
-  - https://wiki.openjdk.java.net/display/Nashorn/Nashorn+extensions
-  - https://github.com/shekhargulati/java8-the-missing-tutorial/blob/master/10-nashorn.md
 
 
 `Java::inline` extension
@@ -433,6 +428,13 @@ Java fields, methods and constructors
 -----------------
 
 The `Java` Perl module is meant to emulate the `Java` global object in Nashorn.
+
+- the Nashorn convention for "Using Java from Scripts", see:
+
+  - https://docs.oracle.com/javase/9/scripting/using-java-scripts.htm
+  - https://wiki.openjdk.java.net/display/Nashorn/Nashorn+extensions
+  - https://github.com/shekhargulati/java8-the-missing-tutorial/blob/master/10-nashorn.md
+
 
 ```
 $ jrunscript -cp .:perlito5.jar -l Perl5
