@@ -929,15 +929,6 @@ Perlito5-Java extensibility in "pre-compile" mode
 
 This documentation should be copied to file Perlito5::Java, in the CPAN distribution.
 
-- Java import and typed variables
-
-  ```perl
-  package The::Class {
-      import           => 'full.path.Class',  # mandatory, can contain a type argument
-      java_type        => 'full.path.Class',  # auto generated, can be overridden
-      # perl_package   => 'The::Class',       # auto generated, Perl package name
-  }
-  ```
 
 - Java import
 
@@ -945,11 +936,22 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   package Sample {
       import => "misc.Java.Sample"
   };
+  ```
 
+  - the type specification can also contain a type argument
+
+  ```
   package Array::Of::String {
-      import => "java.util.ArrayList<String>",
+      import => "java.util.ArrayList<java.lang.String>",
   }
   ```
+
+  ```
+  package Array::Of::String {
+      import => "java.lang.String[]",
+  }
+  ```
+
 
   - TODO: what happens when a class is imported again
         - for example, import `Int` or `Byte` again
@@ -1180,24 +1182,25 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 Value types
 ---------------
 
-  - Conversion from Perl scalar to native array is not implemented.
+- Native array variables:
 
-  - Native array variables can not be created directly.
+  ```perl
+  # import a native array Class
+  #
+  #  package Java::Array::Of::String {
+  #       import => "java.lang.String[]",
+  #  }
+  ```
+
+  - not implemented:
+
+    - Conversion from Perl scalar to native array is not implemented.
 
     ```perl
     # Possible implementation for creating native array variables
     #
     # my byte @bytes;
     # $#bytes = 9;      # indexes 0..9 (10 elements)
-    ```
-
-    ```perl
-    # Not implemented: import a native array Class
-    #
-    #  package Java::Array::Of::String {
-    #       import => "java.lang.String",
-    #       java_type => "String[]",
-    #   }
     ```
 
     ```perl
