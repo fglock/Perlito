@@ -405,12 +405,7 @@ Java fields, methods and constructors
     Thread[main,5,main]
     ```
 
-    - TODO add tests:
-
-      ```
-      perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; say $x->PI
-      3.141592653589793
-      ```
+    - TODO add tests for these examples
 
   - `new` invokes a constructor
 
@@ -420,7 +415,7 @@ Java fields, methods and constructors
 
   - Java exceptions can be catched with Perl eval-block
 
-  - Note that explicitly returning `null` from `Java::inline` is a syntax error, because Java doesn't know how to dispatch the method call:
+  - Note that explicitly returning a plain `null` from `Java::inline` is a syntax error, because Java doesn't know which class it belongs to:
 
     ```
     perl> my $x; eval { $x = Java::inline q{ null } }; say $x
@@ -487,8 +482,6 @@ Java extensions in runtime (work in progress)
     perl> my Java::Object $obj = Java::Object->new();
     java.lang.Object@4fe533ff
     ```
-
-    - TODO - (experimental) test syntax for creating new Java subclass ("extends" and "implements")
 
   - Java objects can be assigned to Perl scalar variables, array elements, or hash elements.
 
@@ -559,14 +552,6 @@ package Sample { import => "misc.Java.Sample" };
   - an empty package works for importing builtin types or primitives (`String`, `Long`, `long`)
 
   - an `import` specification works for importing Java classes
-
-These extensions are experimental and may be deprecated:
-
-  - (experimental) an `extends` specification works for adding methods to an existing class
-
-  - (experimental) an `implements` specification works for adding methods to an existing interface
-
-  - (experimental) a `header` specification works for creating a Java package
 
 
 Calling a Perl subroutine from Java
@@ -700,7 +685,7 @@ $arr->add($p->toString());
 
 - native arrays
 
-  Perl arrays can be assigned a native array:
+  TODO tests - Perl arrays can be assigned a native array:
   
   ```perl
   package Byte { };
@@ -720,7 +705,7 @@ $arr->add($p->toString());
   my $arr = Java->type("int[]")->new(10);
   ```
 
-- Typed values
+- Typed values examples
 
   - Character
 
@@ -763,7 +748,7 @@ $arr->add($p->toString());
     my Float $b = $v;   # cast from scalar to Float is automatic
     ```
 
-  (TODO) type propagation problems:
+- Type propagation problems:
 
     ```sh
     $ java -jar perlito5.jar -Isrc5/lib  -e ' package float {}; my float $b = 100/3; $x = $b; say $x; '
@@ -776,6 +761,29 @@ $arr->add($p->toString());
     ```
 
     - TODO add a casting operation to the native code emitter in `Perlito5::Java`
+
+- Java methods with type `void` should not be in the last line of a Perl block.
+  This is because Perl blocks return the last value, and `void` is not acceptable as a value.
+
+  ```
+  perl> package System { import => "java.lang.System" }
+  import
+  perl> System->gc()
+  /PlEval3.java:15: error: 'void' type not allowed here
+                      return PerlOp.context(want, System.gc());
+  ```
+
+  workaround: add a plain-perl line, such as `return`, `undef`, or `1`.
+
+  ```
+  perl> System->gc(); 1
+  ```
+
+- TODO more tests: Java variables and expressions as Perl subroutine parameters.
+
+  ```
+  $ java -jar perlito5.jar -Isrc5/lib  -e ' package short {}; my short $b = ord("a"); say $b;'
+  ```
 
 Using typed variables
 ---------------------
@@ -798,33 +806,20 @@ conditionals should work fine, because these are not usually implemented as clos
 
   - workaround: store the Java value in a Perl variable
 
-- TODO tests: Java variables as Perl subroutine parameters.
-
-  ```
-  $ java -jar perlito5.jar -Isrc5/lib  -e ' package short {}; my short $b = ord("a"); say $b;'
-  ```
-
-- Java methods with type `void` should not be in the last line of a Perl block.
-  This is because Perl blocks return the last value, and `void` is not acceptable as a value.
-
-  ```
-  perl> package System { import => "java.lang.System" }
-  import
-  perl> System->gc()
-  /PlEval3.java:15: error: 'void' type not allowed here
-                      return PerlOp.context(want, System.gc());
-  ```
-
-  workaround: add a plain-perl line, such as `return`, `undef`, or `1`.
-
-  ```
-  perl> System->gc(); 1
-  ```
-
 (experimental) Extending a Java class with Perl
 --------------------------------
 
 Extending a Java class with Perl is very experimental, the API is going to change.
+
+These extensions are experimental and may be deprecated:
+
+  - (experimental) an `extends` specification works for adding methods to an existing class
+
+    - TODO - (experimental) test syntax for creating new Java subclass ("extends" and "implements")
+
+  - (experimental) an `implements` specification works for adding methods to an existing interface
+
+  - (experimental) a `header` specification works for creating a Java package
 
 ```perl
 # create a Java package
