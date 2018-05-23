@@ -102,32 +102,7 @@ Perlito5-Java work-in-progress
 
   - add `src5/lib` Perl files to `perlito5.jar`, instead of setting `-I src5/lib` or `PERL5LIB=src5/lib`.
 
-  - bootstrapping using `perlito5-lib.jar`
-
-      - bootstrapping is not possible with perlito5.jar, because it is built without the grammar modules.
-
-        ```sh
-        $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main.java
-
-        $ javac -J-Xms2000m -J-Xmx2000m -J-Xss1000m -source 7 Main.java
-        # errors - TODO - fixme
-        #   this is because the compiler uses eval-string
-        #   try: --nojava_eval
-
-        # test the bootstrapping
-        $ java Main --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main2.java
-        $ diff Main.java Main2.java
-        [ no differences ]
-        ```
-
-      - Using the perlito5-lib.jar file
-
-        - TODO - explain this
-
-          ```java
-          import org.perlito.Perlito5.*;
-          ```
-
+    - precompile the modules in `lib`
 
   - Java 8 triggers this problem:
 
@@ -303,20 +278,11 @@ Limitations
 
   - eval compilation is slow; after compilation, the code runs at native speed.
 
-  - eval bytecode is cached - this will leak memory
+  - eval bytecode is cached - this may leak memory
+
       - review the ClassLoader for leaks
 
-  - some Java extensions may be disabled inside eval-string - see section `Perlito5-Java extensibility`
-
-Possible workarounds for slow compilation:
-
-  - Java `ASM`
-      - TODO: prototype eval-string with ASM
-      - See: `misc/Java_asm/`
-
-  - write a tiny interpreter for simple expressions
-
-  - preload modules in `src5/util/jperl.pl`
+      - add tests for leaks
 
 
 Perlito5-Java extensions
@@ -808,60 +774,6 @@ conditionals should work fine, because these are not usually implemented as clos
 
   - workaround: store the Java value in a Perl variable
 
-(experimental) Extending a Java class with Perl
---------------------------------
-
-Extending a Java class with Perl is very experimental, the API is going to change.
-
-These extensions are experimental and may be deprecated:
-
-  - (experimental) an `extends` specification works for adding methods to an existing class
-
-    - TODO - (experimental) test syntax for creating new Java subclass ("extends" and "implements")
-
-  - (experimental) an `implements` specification works for adding methods to an existing interface
-
-  - (experimental) a `header` specification works for creating a Java package
-
-```perl
-# create a Java package
-package header { java_path => 'org.perlito.udfs' };
-
-# import the original Java class
-package Java::Date   { import => "java.util.Date" };
-
-# create and import the extended class
-package My::Date {
-    extends => 'Java::Date',
-    decl => [ "public", "final" ],              # public final class
-    'Java::inline' => " // ... Java code ... \n",
-    methods => [
-        toString => {
-            decl => [ "public" ],               # public method
-            args => [],                         # no arguments
-            return => "String",                 # returns String
-            code => "main::my_date_string",     # implemented in Perl, see below
-        },
-    ],
-}
-
-package main;
-
-# Perl implementation for My::Date->toString()
-sub my_date_string {
-    my $self = shift;
-    print "date_string: self is $self\n";
-    return "Hello";
-}
-
-my Java::Date $j_date = Java::Date->new();
-my $s1 = $j_date->toString();   # original class
-my My::Date $date = My::Date->new();
-my $s2 = $date->toString();     # extended class
-
-print $s1, " ", $s2, "\n";   # prints date and "Hello"
-```
-
 
 Thread safety
 -------------
@@ -1018,7 +930,6 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   package The::Class {
       import           => 'full.path.Class',  # mandatory, can contain a type argument
       java_type        => 'full.path.Class',  # auto generated, can be overridden
-      # perl_to_java     => 'to_TheClass',    # (deprecated) auto generated from Perl package name, can be overridden
       # perl_package   => 'The::Class',       # auto generated, Perl package name
   }
   ```
@@ -1395,6 +1306,61 @@ Value types
     - String accepts char in constructor (DONE)
     - Hash accepts String for index (DONE)
     - Array accepts int for index   (DONE)
+
+
+(experimental) Extending a Java class with Perl
+--------------------------------
+
+Extending a Java class with Perl is very experimental, the API is going to change.
+
+These extensions are experimental and may be deprecated:
+
+  - (experimental) an `extends` specification works for adding methods to an existing class
+
+    - TODO - (experimental) test syntax for creating new Java subclass ("extends" and "implements")
+
+  - (experimental) an `implements` specification works for adding methods to an existing interface
+
+  - (experimental) a `header` specification works for creating a Java package
+
+```perl
+# create a Java package
+package header { java_path => 'org.perlito.udfs' };
+
+# import the original Java class
+package Java::Date   { import => "java.util.Date" };
+
+# create and import the extended class
+package My::Date {
+    extends => 'Java::Date',
+    decl => [ "public", "final" ],              # public final class
+    'Java::inline' => " // ... Java code ... \n",
+    methods => [
+        toString => {
+            decl => [ "public" ],               # public method
+            args => [],                         # no arguments
+            return => "String",                 # returns String
+            code => "main::my_date_string",     # implemented in Perl, see below
+        },
+    ],
+}
+
+package main;
+
+# Perl implementation for My::Date->toString()
+sub my_date_string {
+    my $self = shift;
+    print "date_string: self is $self\n";
+    return "Hello";
+}
+
+my Java::Date $j_date = Java::Date->new();
+my $s1 = $j_date->toString();   # original class
+my My::Date $date = My::Date->new();
+my $s2 = $date->toString();     # extended class
+
+print $s1, " ", $s2, "\n";   # prints date and "Hello"
+```
 
 
 Autovivification of aliased parameters
@@ -1780,6 +1746,46 @@ Optimizations
     the java compiler initialization overhead.
 
     `eval_begin_block()` is currently called for each named subroutine definition.
+
+Possible workarounds for slow compilation:
+
+  - Java `ASM`
+      - TODO: prototype eval-string with ASM
+      - See: `misc/Java_asm/`
+
+  - write a tiny interpreter for simple expressions
+
+  - preload modules in `src5/util/jperl.pl`
+
+
+
+Bootstrapping using `perlito5-lib.jar`
+-------------------------------------
+
+- bootstrapping is not possible with perlito5.jar, because it is built without the grammar modules.
+
+  ```sh
+  $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main.java
+
+  $ javac -J-Xms2000m -J-Xmx2000m -J-Xss1000m -source 7 Main.java
+  # errors - TODO - fixme
+  #   this is because the compiler uses eval-string
+  #   try: --nojava_eval
+
+  # test the bootstrapping
+  $ java Main --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main2.java
+  $ diff Main.java Main2.java
+  [ no differences ]
+  ```
+
+- Using the perlito5-lib.jar file
+
+  - TODO - explain this
+
+    ```java
+    import org.perlito.Perlito5.*;
+    ```
+
 
 Modules
 -------
