@@ -147,6 +147,19 @@ Parser
     Global symbol "$v" requires explicit package name
     ```
 
+    ```sh
+    $ java -jar perlito5.jar -Isrc5/lib  -e ' use strict; my $v; my $x; $x = qr/abc # $v/x; print $x; '
+    (?x-ism:abc # )
+    ```
+
+    expected:
+
+    ```sh
+    perl -e ' use strict; my $v; my $x; $x = qr/abc # $v/x; print $x; '
+    (?^x:abc # $v
+    )
+    ```
+
 - BEGIN blocks
 
   - Loops containing: BEGIN/INIT/END blocks, "use" statements, or named subroutines
@@ -851,12 +864,6 @@ Compile-time execution environment
 
 - TODO - lexicals are not shared
 
-- special backend option `_comp` dumps the compile-time execution environment:
-
-  ```sh
-  $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
-  ```
-
 
 Nice to Have
 ------------
@@ -943,7 +950,12 @@ Deprecate
 ---------
 
 - Interpreter backend
-   this is not being maintained; the code is still in src5/lib/Perlito5/Eval.pm just in case
+  - this is not being maintained; the code is still in src5/lib/Perlito5/Eval.pm just in case
+  - to compute constant foldings use `Perlito5::FoldConstant` instead
 
-   alternately, use the interpreter to compute constant foldings
+- special backend option `_comp` dumps the compile-time execution environment:
+
+  ```sh
+  $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
+  ```
 

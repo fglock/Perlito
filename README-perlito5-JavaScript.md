@@ -371,11 +371,6 @@ Compile-time / Run-time interleaving (TODO)
 
 
 
-Threads (TODO)
---------------
-
-
-
 Reference counting (TODO)
 --------------
 
@@ -577,39 +572,6 @@ defineProperty() can be used to provide accessors to non-tied containers:
 Perlito5 JavaScript backend TODO list
 =====================================
 
-Performance
------------
-
-compilation time (bootstrap) slowed down during the year 2015,
-from about 10s to 30s.
-
-    $ cat misc/git_bisect_slowjs.pl
-    use strict;
-    use Data::Dumper;
-    `make build-5js`;
-    my @v = `make boot-5js 2>&1`;
-    my ($time) = grep { /^user\s+(\d)m(\d+)\./ } @v;
-    my @time = $time =~ /(\d)m(\d+)\./;
-    my $t = $time[0] * 60 + $time[1];
-    print STDERR "t = $t\n";
-    # good 0
-    # bad  1
-    # skip 125
-    exit(1) if $t > 20;
-    exit(125) if $t > 3;
-    exit(0);
-
-    $ git bisect start origin/master ec254b20f4e39de9ace6a7cf032087b845dee8bc
-    $ git bisect run perl misc/git_bisect_slowjs.pl
-
-    # t = 26s
-    5d337a844c706cd1759b3c55666d070658ae1c85 is the first bad commit
-
-    # t = 20s
-    ff9201b480dba0d594e71029298fb0e07d982b60 is the first bad commit
-
-    # t = 17s
-    bb97211c066848ef417c15fe030dc483f81fc986 is the first bad commit
 
 Features
 --------
