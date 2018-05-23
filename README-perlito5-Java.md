@@ -798,20 +798,11 @@ conditionals should work fine, because these are not usually implemented as clos
 
   - workaround: store the Java value in a Perl variable
 
-- Java variables are not accepted as Perl subroutine parameters.
+- TODO tests: Java variables as Perl subroutine parameters.
 
-  - workaround: store the Java value in a Perl variable
-
-  - TODO tests: automatic casting
-
-    ```
-    $ java -jar perlito5.jar -Isrc5/lib  -e ' package short {}; my short $b = ord("a"); say $b;'
-    error: short cannot be dereferenced
-            PlCORE.say(PlCx.VOID, PlV.STDOUT, b_103.toString());
-    ```
-
-    - workaround: use `Short` instead of `short`
-    - TODO add a casting operation to the native code emitter in `Perlito5::Java`
+  ```
+  $ java -jar perlito5.jar -Isrc5/lib  -e ' package short {}; my short $b = ord("a"); say $b;'
+  ```
 
 - Java methods with type `void` should not be in the last line of a Perl block.
   This is because Perl blocks return the last value, and `void` is not acceptable as a value.

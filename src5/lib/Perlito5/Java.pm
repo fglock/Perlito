@@ -116,6 +116,17 @@ our %is_byte_type = (
     'java.lang.Byte' => 1,
 );
 
+our %stringify = (
+    byte    => "Byte.toString",
+    short   => "Short.toString",
+    int     => "Integer.toString",
+    long    => "Long.toString",
+    float   => "Float.toString",
+    double  => "Double.toString",
+    char    => "Character.toString",
+    boolean => "Boolean.toString",
+);
+
 sub init_java_class {
     my $Java_class = Perlito5::Java::get_java_class_info();
     $Java_class->{String} = {
@@ -769,9 +780,15 @@ sub to_native_str {
         elsif ((ref($cond) eq 'Perlito5::AST::Num' )) {
             return Perlito5::Java::escape_string( $cond->{num} );
         }
-        else {
-            return $cond->emit_java($level, $wantarray) . '.toString()';
+        elsif ( ref($cond) eq 'Perlito5::AST::Var' && $cond->{_id} ) {
+            my $id = $cond->{_id};
+            my $Java_var = Perlito5::Java::get_java_var_info();
+            my $type = $Java_var->{ $id }{type} || 'PlLvalue';
+            if ($type ne 'PlLvalue') {
+                return $stringify{$type} . '(' . $cond->emit_java($level, $wantarray) . ')' if $stringify{$type};
+            }
         }
+        return $cond->emit_java($level, $wantarray) . '.toString()';
 }
 
 sub to_native_int {
