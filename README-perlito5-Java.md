@@ -6,6 +6,9 @@ Perlito5 Java backend
 Requirements
 ------------
 
+- building the compiler requires `perl` and `JDK` (for `javac`).
+  No extra modules are required.
+
 - minimum Java version is Java 8
 
   - Perlito5 runtime uses `java.time.ZonedDateTime`,  which was introduced in Java 8.
@@ -308,6 +311,7 @@ Possible workarounds for slow compilation:
 
   - Java `ASM`
       - TODO: prototype eval-string with ASM
+      - See: `misc/Java_asm/`
 
   - write a tiny interpreter for simple expressions
 
@@ -401,12 +405,11 @@ Java fields, methods and constructors
     Thread[main,5,main]
     ```
 
-    - BUG - TODO add tests:
+    - TODO add tests:
 
       ```
       perl> my $x; eval { $x = Java::inline q{ Class.forName("java.lang.Math") } }; say $x->PI
-      incompatible types: String cannot be converted to PlArray
-            return PerlOp.context(want, PlCORE.say(want, PlV.STDOUT, PerlOp.call(tmp105, PlArray.construct_list_of_aliases(x_100), want).toString()));
+      3.141592653589793
       ```
 
   - `new` invokes a constructor
@@ -473,7 +476,7 @@ Java extensions in runtime (work in progress)
     - https://wiki.python.org/jython/UserGuide#interaction-with-java-packages
   
 
-  - TODO - Some extensions are allowed in pre-compilation mode, but not in eval-string mode
+  - TODO add tests - Extensions are allowed in pre-compilation mode and in eval-string mode
 
   - native Java variables (typed variables)
 
@@ -537,9 +540,11 @@ Java extensions in runtime (work in progress)
 
   - TODO - syntax for Java method calls - typed argument lists are work in progress
 
-  - Perl modules using extensions can be precompiled ahead-of-time in `perlito5.jar`, by adding a `use` statement in `src5/util/jperl.pl`
+    - TODO document method resolution order
 
-    - TODO - interoperation of "ahead-of-time" compiler extensions and "eval-string" extensions is untested
+  - Perl modules using extensions can be precompiled ahead-of-time in `perlito5.jar`, by adding an extra `use` statement in `src5/util/jperl.pl`
+
+    - TODO add tests - interoperation of "ahead-of-time" compiler extensions and "eval-string" extensions
 
 
 Java extensions in ahead-of-time (pre-compilation) mode
@@ -770,6 +775,8 @@ $arr->add($p->toString());
             b_103 = (100D / 3D);
     ```
 
+    - TODO add a casting operation to the native code emitter in `Perlito5::Java`
+
 Using typed variables
 ---------------------
 
@@ -795,7 +802,7 @@ conditionals should work fine, because these are not usually implemented as clos
 
   - workaround: store the Java value in a Perl variable
 
-  - (TODO) provide automatic casting where possible
+  - TODO tests: automatic casting
 
     ```
     $ java -jar perlito5.jar -Isrc5/lib  -e ' package short {}; my short $b = ord("a"); say $b;'
@@ -804,6 +811,7 @@ conditionals should work fine, because these are not usually implemented as clos
     ```
 
     - workaround: use `Short` instead of `short`
+    - TODO add a casting operation to the native code emitter in `Perlito5::Java`
 
 - Java methods with type `void` should not be in the last line of a Perl block.
   This is because Perl blocks return the last value, and `void` is not acceptable as a value.
@@ -1039,21 +1047,11 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
   }
   ```
 
-  - (this is deprecated) generates:
-    - import misc.java.Sample;              (DONE)
-    - adds a pObject coercion `to_Sample`   (DONE)
-    - adds a pObject variant `pSample`      (DONE)
-                                            (TODO: add argument list - test)
-                                            (TODO: maybe unbox the arguments automatically)
-    - add a pScalar variant `set(Sample)`   (TODO)
-    - add pArray and pHash setters          (TODO)
-
   - TODO: what happens when a class is imported again
         - for example, import `Int` or `Byte` again
 
   - TODO: test that Perl modules can import Java classes
         - only tested in `main` program
-
 
 - Typed variables
 
@@ -1112,7 +1110,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     ```
     package Int { import => 'java.lang.Integer' };
-    my Int $x = 3;          # $x is a Java Int (not a PlScalar)  (TODO: test)
+    my Int $x = 3;          # $x is a Java Integer (not a PlScalar)  (TODO: test)
     ```
 
   - TODO: capture typed variables in closures
@@ -1522,7 +1520,7 @@ Missing features, or partially implemented, or untested
 
   - TODO tests - unit tests (work in progress)
 
-  - TODO tests - tests for modules in `src5/lib/Perlito5X`
+  - TODO tests - tests for modules in `src5/lib/Perlito5X` and `src5/lib/Perlito5X/Java`
 
   - TODO tests - invalidate method cache when subroutine changes or @INC changes
 
@@ -1798,7 +1796,7 @@ Optimizations
 Modules
 -------
 
-  - ported modules are in src5/lib/Perlito5X/Java
+  - ported modules are in `src5/lib/Perlito5X/Java` and `src5/lib/Perlito5X`
 
   - there is a port of JSON.pm - it is pure-perl and slow. It would be nice to have a native-java version.
 
