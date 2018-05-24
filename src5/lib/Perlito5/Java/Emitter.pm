@@ -439,6 +439,8 @@ package Perlito5::AST::CompUnit;
             );
         }
         elsif ($Java_class->{$class}->{extends}) {
+            # (obsolete)
+            #
             # extends => 'JavaObject',              # Perl package name (a class imported from Java)
             # methods => [ ... ]
 
@@ -461,6 +463,8 @@ package Perlito5::AST::CompUnit;
             # warn "'extends' not implemented";
         }
         elsif ($Java_class->{$class}->{implements}) {
+            # (obsolete)
+            #
             # implements => 'JavaObject',              # Perl package name (a class imported from Java)
             # methods => [ ... ]
 
@@ -1707,21 +1711,6 @@ package Perlito5::AST::Call;
             }
             else {
                 return "$invocant.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
-            }
-        }
-
-        # type coercion method call on an untyped invocant
-        #   package Sample { import => "misc.Java.Sample" };
-        #   my $x;  
-        #   $x->to_Sample();
-        #
-        if ( $meth =~ /^to/ ) {
-            # TODO - check for no-arguments
-            my $Java_class = Perlito5::Java::get_java_class_info();
-            for my $info ( values %{$Java_class} ) {
-                if ( $meth eq $info->{perl_to_java} ) {
-                    return "$invocant.$meth()";
-                }
             }
         }
 
