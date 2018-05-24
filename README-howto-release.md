@@ -6,7 +6,10 @@ Perlito5 Release
 
 * run tests
 
+    ```
+    make
     make test
+    ```
 
 * increment version number in "src5/lib/Perlito5.pm"
 
@@ -24,9 +27,11 @@ Perlito5 Release
 
 * build and test the module inside "cpan-Perlito5" directory
 
+    ```
     perl Makefile.PL
     make
     make test
+    ```
 
 * make dist
 
@@ -54,7 +59,9 @@ Perlito6 Release
 
 * run tests
 
+    ```
     make test-6to5
+    ```
 
 * increment version number in "cpan-v6/v6.pm"
 
@@ -66,15 +73,18 @@ Perlito6 Release
 
 * go to "cpan-v6" directory and execute "make-v6.sh"
 
+    ```
     cd cpan-v6
-
     . make-v6.sh
+    ```
 
 * build and test the module inside "cpan-v6" directory
 
+    ```
     perl Makefile.PL
     make
     make test
+    ```
 
 * make dist
 
