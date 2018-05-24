@@ -197,10 +197,42 @@ Perlito5-Java extensions
 ===========================
 
 The Perlito5 Java backend doesn't support Perl XS extensions.
-Instead of XS, it has an extension mechanism that connects Perl with Java.
+
+Instead of XS, it can use Java classes directly, and there is also a 
+`Java` package that connects Perl with Java.
 
 
-`Java::inline` extension
+Import a Java class as a Perl package at compile-time, and typed variables
+-------------------------------------------------------
+
+Java classes can be added to a Perl script using a special `package` import declaration:
+
+```perl
+package Date   { import => "java.util.Date" };
+```
+
+The new package can be used as a variable type specification:
+
+```perl
+my Date $dt = Date->new();
+```
+
+variable types are optional, this also works:
+
+```perl
+my $dt = Date->new();
+```
+
+- (experimental) as a special case, an empty package works for importing builtin types or primitives (`String`, `Long`, `long`)
+
+```perl
+package Integer {}
+
+my Integer $i;
+```
+
+
+Inlining Java code with `Java::inline`
 ------------
 
 `Java::inline` can be used to add simple Java expressions to a Perl script
@@ -416,20 +448,6 @@ Java extensions in runtime (work in progress)
   - Perl modules using extensions can be precompiled ahead-of-time in `perlito5.jar`, by adding an extra `use` statement in `src5/util/jperl.pl`
 
     - TODO add tests - interoperation of "ahead-of-time" compiler extensions and "eval-string" extensions
-
-
-Java extensions in ahead-of-time (pre-compilation) mode
--------------------------------------------------------
-
-Java classes can be added to a Perl script using a special `package` declaration:
-
-```perl
-package Sample { import => "misc.Java.Sample" };
-```
-
-  - an empty package works for importing builtin types or primitives (`String`, `Long`, `long`)
-
-  - an `import` specification works for importing Java classes
 
 
 Calling a Perl subroutine from Java
