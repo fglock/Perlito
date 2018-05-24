@@ -87,5 +87,3 @@ TODO for the release process
 
 * BUG - the README files are not included in the cpan distribution
 
-* BUG - version number in src5/lib/Perlito5/Java/JavaxScript.pm is not updated automatically
-
