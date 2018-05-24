@@ -2,6 +2,8 @@ package Perlito5;
 use Perlito5::Grammar::Scope;
 use strict;
 
+our @PERL_VERSION = ( 5, 26, 0 );
+
 $^O = 'perlito5'    unless defined $^O;
 $/  = chr(10)       unless defined $/;
 $"  = ' '           unless defined $";
@@ -10,10 +12,10 @@ $!  = ''            unless defined $!;
 $;  = chr(28)       unless defined $;;
 $?  = 0             unless defined $?;
 # $[  = 0             unless defined $[;    # "assignment to $[ is deprecated"
-$]  = '5.026000'    unless $];      # $] is defined(), but ${"main::]"} is not
-$^V = bless( { 'original' => 'v5.26.0',
+$]  = sprintf( "%d.%03d%03d", @PERL_VERSION )    unless $];      # $] is defined(), but ${"main::]"} is not
+$^V = bless( { 'original' => 'v' . join( ".", @PERL_VERSION ),   # v5.26.0
                'qv'       => 1,
-               'version'  => [ 5, 26, 0 ]
+               'version'  => [ @PERL_VERSION ]
              }, 'version' )
                     unless defined $^V;
 $^H = 0;
