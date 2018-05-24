@@ -92,8 +92,12 @@ perlito5 [switches] [programfile]
                     emits or not boilerplate code
     --bootstrapping set this when compiling the compiler,
                     otherwise the new subroutine definitions will overwrite the current compiler
-    --java_eval     enable java eval, using perlito5-lib.jar
-    --nojava_eval   disable java eval, creates a standalone file that doesn't depend on perlito5-lib.jar
+    --java_eval     enable Java eval, using perlito5-lib.jar
+    --nojava_eval   disable Java eval, creates a standalone file that doesn't depend on perlito5-lib.jar
+    -J DEBUG=1      set Java backend options
+                        DEBUG=1     dump the Java source code in eval-string
+    -JS DEBUG=1     set JavaScript backend options
+                        DEBUG=1     dump the JavaScript source code in eval-string
 ";
 my $copyright_message = <<"EOT";
 This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
@@ -147,6 +151,25 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
 {
     if ($ARGV[0] eq '--verbose') {
         $verbose = 1;
+        shift @ARGV;
+    }
+    elsif (substr($ARGV[0], 0, 3) eq '-JS') {
+        substr($ARGV[0], 0, 3) = '-J';  # get_text_from_switch() expects a single letter
+        my $java_opt = get_text_from_switch();
+        my ($key, $value) = split("=", $java_opt, 2);
+        if (!defined $value) {
+            $value = 1;
+        }
+        ${"Perlito5::JavaScript::$key"} = $value;
+        shift @ARGV;
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-J') {
+        my $java_opt = get_text_from_switch();
+        my ($key, $value) = split("=", $java_opt, 2);
+        if (!defined $value) {
+            $value = 1;
+        }
+        ${"Perlito5::Java::$key"} = $value;
         shift @ARGV;
     }
     elsif (substr($ARGV[0], 0, 2) eq '-I') {
