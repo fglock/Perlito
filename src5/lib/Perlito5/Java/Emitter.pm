@@ -1123,13 +1123,6 @@ package Perlito5::AST::Lookup;
 
 package Perlito5::AST::Var;
 {
-    my $table = {
-        '$' => '',
-        '@' => '',
-        '%' => '',
-        '&' => '',
-    };
-
     sub emit_java_global {
         my ($self, $level, $wantarray, $localize) = @_;
         my $local = $localize ? "_local" : "";
@@ -1181,7 +1174,7 @@ package Perlito5::AST::Var;
             # return Perlito5::AST::Buf->new( buf => $namespace )->emit_java($level, 'scalar');
         }
 
-        my $full_name = $namespace . '::' . $table->{$sigil} . $str_name;
+        my $full_name = $namespace . '::' . $str_name;
         my $index = Perlito5::Java::escape_string($full_name);
         if ( $sigil eq '$' ) {
             if (!$local) {
@@ -1265,7 +1258,7 @@ package Perlito5::AST::Var;
             return Perlito5::Java::escape_string( $namespace );
         }
 
-        my $full_name = $namespace . '::' . $table->{$sigil} . $str_name;
+        my $full_name = $namespace . '::' . $str_name;
         my $index = Perlito5::Java::escape_string($full_name);
         if ( $sigil eq '$' ) {
             if ($namespace eq 'main') {
@@ -1328,7 +1321,7 @@ package Perlito5::AST::Var;
             # TODO - for $1 (...) {} is valid perl
             die "not implemented emit_java_global_set_alias() for regex capture";
         }
-        my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
+        my $index = Perlito5::Java::escape_string($namespace . '::' . $str_name);
         $arguments = Perlito5::Java::to_scalar([$arguments], $level+1)
             if ref($arguments);
         if ( $sigil eq '$' ) {
@@ -1354,7 +1347,7 @@ package Perlito5::AST::Var;
         if ( $decl_type ne 'my' && $decl_type ne 'state' ) {
             return $self->emit_java_global($level, $wantarray);
         }
-        my $str_name = $table->{$sigil} . $self->{name} . "_" . $self->{_id};
+        my $str_name = $self->{name} . "_" . $self->{_id};
 
         $str_name = $Perlito5::Java::Java_var_name{$self->{_id}}
             if exists $Perlito5::Java::Java_var_name{$self->{_id}};
