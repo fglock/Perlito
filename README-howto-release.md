@@ -7,7 +7,11 @@ Perlito5 Release
 * run tests
 
     ```
+    make clean
     make
+    make test-5to5
+    make test-5js
+    make test-5jar
     make test
     ```
 
