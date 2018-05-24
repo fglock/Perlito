@@ -39,12 +39,15 @@ sub perl5_to_js {
 
     # say "ast: [" . ast . "]";
     my $js_code = $ast->emit_javascript2(0, $want);
-    # say "js-source: [" . $js_code . "]";
 
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    if ($Perlito5::JavaScript::DEBUG) {
+        # "-JS DEBUG" switch in the command line
+        print $js_code, "\n\n";
+    }
     return $js_code;
 }
 
@@ -60,6 +63,10 @@ sub eval_ast {
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    if ($Perlito5::JavaScript::DEBUG) {
+        # "-JS DEBUG" switch in the command line
+        print $js_code, "\n\n";
+    }
     $_ = $js_code;
     return JS::inline('eval("(function(){" + p5pkg.main.v__ + "})()")');
 }

@@ -154,7 +154,7 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
         shift @ARGV;
     }
     elsif (substr($ARGV[0], 0, 3) eq '-JS') {
-        substr($ARGV[0], 0, 3) = '-J';  # get_text_from_switch() expects a single letter
+        $ARGV[0] = '-J' . substr($ARGV[0], 3);  # get_text_from_switch() expects a single letter
         my $java_opt = get_text_from_switch();
         my ($key, $value) = split("=", $java_opt, 2);
         if (!defined $value) {
