@@ -146,7 +146,7 @@ sub check_variable_declarations {
     # - check if the variables were declared
     # - insert the variables in the current compile-time scope
 
-    # print "env: ", Data::Dumper::Dumper( \@Perlito5::BASE_SCOPE );
+    # print "env: ", Perlito5::Dumper::Dumper( \@Perlito5::BASE_SCOPE );
     for my $item ( @Perlito5::SCOPE_STMT ) {
         if (ref($item) eq 'Perlito5::AST::Var') {
             my $var = $item;
@@ -159,7 +159,7 @@ sub check_variable_declarations {
             else {
                 # unknown variable
                 if ( $^H & $Perlito5::STRICT_VARS ) {
-                    # warn "look: ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
+                    # warn "look: ", Perlito5::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
                     my $sigil = $var->{_real_sigil} || $var->{sigil};
                     if ($sigil ne '*' && $sigil ne '&') {
                         if (length($var->{name}) >= 2 && substr($var->{name}, -2) eq '::') {

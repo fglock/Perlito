@@ -23,9 +23,9 @@ sub perl5_to_java {
     local %Perlito5::Java::Java_constant_seen;
 
     # warn "in eval enter\n";
-    # warn "External scope ", Data::Dumper::Dumper($scope_java);
-    # warn "BASE_SCOPE ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
-    # warn "SCOPE_STMT ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
+    # warn "External scope ", Perlito5::Dumper::Dumper($scope_java);
+    # warn "BASE_SCOPE ", Perlito5::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    # warn "SCOPE_STMT ", Perlito5::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
 
     my $match = Perlito5::Grammar::exp_stmts( $source, 0 );
 
@@ -93,7 +93,7 @@ sub perl5_to_java {
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
-    # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    # warn "in eval BASE_SCOPE exit: ", Perlito5::Dumper::Dumper($Perlito5::BASE_SCOPE);
 
     return ($className, $java_code, $constants);
 }
@@ -111,7 +111,7 @@ sub eval_ast {
         # warn "ANNOTATION: [[[\n$str\n]]]\n";
     }
 
-    # warn "AST:\n" . Data::Dumper::Dumper($ast);
+    # warn "AST:\n" . Perlito5::Dumper::Dumper($ast);
 
     # use lexicals from BEGIN scratchpad
     $ast = $ast->emit_begin_scratchpad();
@@ -121,7 +121,7 @@ sub eval_ast {
     # say STDERR "java-source: [" . $java_code . "]";
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
-    # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    # warn "in eval BASE_SCOPE exit: ", Perlito5::Dumper::Dumper($Perlito5::BASE_SCOPE);
 
     my $java_classes = Perlito5::Java::get_java_class_info() // {};
     my $className = "PlEval" . $Perlito5::ID++;

@@ -1126,7 +1126,7 @@ package Perlito5::AST::Lookup;
             # my $v = $self->{obj};   HERE
 
             #if ($self->{obj}{_real_sigil} ne '%') {
-            #    warn Data::Dumper::Dumper($self->{obj});
+            #    warn Perlito5::Dumper::Dumper($self->{obj});
             #}
 
             my $v = Perlito5::AST::Var->new( %{$self->{obj}}, sigil => '%' );
@@ -1830,9 +1830,9 @@ package Perlito5::AST::Sub;
                           : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
                           : ( $_->{_id} => $_ )
                           } @captured;
-        # warn Data::Dumper::Dumper(\@captured);
-        # warn Data::Dumper::Dumper(\%dont_capture);
-        # warn Data::Dumper::Dumper(\%capture);
+        # warn Perlito5::Dumper::Dumper(\@captured);
+        # warn Perlito5::Dumper::Dumper(\%dont_capture);
+        # warn Perlito5::Dumper::Dumper(\%capture);
         my @captures_ast  = map { $capture{$_} }
                             sort keys %capture;
         local @Perlito5::CAPTURES = @captures_ast;

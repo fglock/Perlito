@@ -124,7 +124,7 @@ sub eval_begin_block {
                       : ( $_->{_id} => $_ )
                       } @captured;
 
-    # print STDERR "CAPTURES ", Data::Dumper::Dumper(\%capture);
+    # print STDERR "CAPTURES ", Perlito5::Dumper::Dumper(\%capture);
 
     # %capture == (
     #     '100' => ...,

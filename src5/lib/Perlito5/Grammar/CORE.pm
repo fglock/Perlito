@@ -147,7 +147,7 @@ token term_local {
             if ( $look && ($look->{_decl} eq 'my' || $look->{_decl} eq 'state') ) {
                 Perlito5::Compiler::error "Can\'t localize lexical variable $var->{sigil}$var->{name}";
             }
-            # warn "look: ", Data::Dumper::Dumper($look)
+            # warn "look: ", Perlito5::Dumper::Dumper($look)
             #     if ref($look) eq 'Perlito5::AST::Var';
 
             $var->{_id}   = $Perlito5::ID++;
