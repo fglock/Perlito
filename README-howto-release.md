@@ -21,9 +21,10 @@ Perlito5 Release
 
 * go to "cpan-Perlito5" directory and execute "make-Perlito5.sh"
 
+    ```
     cd cpan-Perlito5
-
     . make-Perlito5.sh
+    ```
 
 * build and test the module inside "cpan-Perlito5" directory
 
