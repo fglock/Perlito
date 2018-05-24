@@ -2019,12 +2019,22 @@ package Perlito5::AST::For;
             elsif ( (ref($cond) eq 'Perlito5::AST::Apply' ) && $cond->{code} eq 'list:<,>' ) {
                 # TODO - create an iterator over the iterators
                 # TODO - optimization - use to_list() when the topic doesn't need to mutate
-                $loop_expression = 'PlObject ' . $local_label
-                    . ' : ' . Perlito5::Java::to_param_list($cond->{arguments}, $level + 1);
+                #
+                # Note: evaluate the iterator before localizing the iterator variable,
+                #       because the iterator expression may be using the variable
+                #
+                #       example:
+                #
+                #           for (@$_) {...}
+                #
+                my $expr_label = Perlito5::Java::get_label();
+                push @str, 'PlObject ' . $expr_label . ' = ' . Perlito5::Java::to_param_list($cond->{arguments}, $level + 1) . ';';
+                $loop_expression = 'PlObject ' . $local_label . ' : ' . $expr_label;
             }
             else {
-                $loop_expression = 'PlObject ' . $local_label
-                    . ' : ' . $cond->emit_java($level + 1, 'list');
+                my $expr_label = Perlito5::Java::get_label();
+                push @str, 'PlObject ' . $expr_label . ' = ' . $cond->emit_java($level + 1, 'list') . ';';
+                $loop_expression = 'PlObject ' . $local_label . ' : ' . $expr_label;
             }
 
             my $decl = '';
