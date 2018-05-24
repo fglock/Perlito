@@ -44,7 +44,7 @@ Perlito5 Release
 
   TODO
 
-* relase perlito5.js to npm
+* release perlito5.js to npm
 
   TODO
 

@@ -1,6 +1,8 @@
 use v5;
 
 package Perlito5::Java::JavaxScript;
+use Perlito5;
+use Perlito5::Runtime;
 use strict;
 
 sub meta_file_name {
@@ -32,6 +34,9 @@ EOT
 sub emit_java_EngineFactory {
     # TODO - get constants from Perlito5::Runtime
 
+    my $engineVersion = $Perlito5::VERSION;
+    my $languageVersion = join ".", @Perlito5::PERL_VERSION;
+
     return <<'EOT'
 package org.perlito.Perlito5;
 
@@ -46,10 +51,6 @@ public final class Perlito5ScriptEngineFactory implements javax.script.ScriptEng
         return "perlito5";
     }
     @Override
-    public String getEngineVersion() {
-        return "1.0";
-    }
-    @Override
     public List<String> getExtensions() {
         return Arrays.asList("pl");
     }
@@ -57,10 +58,18 @@ public final class Perlito5ScriptEngineFactory implements javax.script.ScriptEng
     public String getLanguageName() {
         return "Perl";
     }
-    @Override
-    public String getLanguageVersion() {
-        return "5.26.0";
+EOT
+    . <<"EOT"
+    \@Override
+    public String getEngineVersion() {
+        return "$engineVersion";
     }
+    \@Override
+    public String getLanguageVersion() {
+        return "$languageVersion";
+    }
+EOT
+    . <<'EOT'
     @Override
     public String getMethodCallSyntax(String obj, String m, String[] args) {
         String ret = obj;

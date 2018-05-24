@@ -21,7 +21,7 @@ mkdir org/perlito/Perlito5
 mkdir META-INF
 mkdir META-INF/services
 
-perl makefiles/make_perlito5-lib-jar_.pl perlito5-javalib.java
+perl -I src5/lib makefiles/make_perlito5-lib-jar_.pl perlito5-javalib.java
 
 time javac -J-Xms2000m -J-Xmx2000m -J-Xss1000m -source 7 org/perlito/Perlito5/LibPerl.java 
 jar -cfe \
@@ -37,7 +37,7 @@ perl perlito5.pl --bootstrapping --java_eval -Isrc5/lib -Cjava src5/util/jperl.p
 
 # create org/perlito/Perlito5/Main.java
 # Note: jperl.pl contains class "Main"
-perl makefiles/make_perlito5-lib-jar_.pl jperl.java 
+perl -I src5/lib makefiles/make_perlito5-lib-jar_.pl jperl.java 
 
 # Note: compile with perlito5-lib.jar so eval-string works
 javac -cp .:perlito5-lib.jar -source 7 org/perlito/Perlito5/Main.java
