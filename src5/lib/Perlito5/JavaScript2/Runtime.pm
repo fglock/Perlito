@@ -408,15 +408,16 @@ function p5scalar_deref(v, current_pkg_name, autoviv_type) {
         return p5pkg[pkg_name][name];
     }
     if (!v._scalar_) {
-        if (autoviv_type == 'array') {
-            v._scalar_ = new p5ArrayRef([]);
-        }
-        else if (autoviv_type == 'hash') {
-            v._scalar_ = new p5HashRef([]);
-        }
-        else if (autoviv_type == 'scalar') {
-            v._scalar_ = new p5ScalarRef([]);
-        }
+        CORE.die(["not a SCALAR reference"]);
+        // if (autoviv_type == 'array') {
+        //     v._scalar_ = new p5ArrayRef([]);
+        // }
+        // else if (autoviv_type == 'hash') {
+        //     v._scalar_ = new p5HashRef([]);
+        // }
+        // else if (autoviv_type == 'scalar') {
+        //     v._scalar_ = new p5ScalarRef([]);
+        // }
     }
     return v._scalar_;
 }
