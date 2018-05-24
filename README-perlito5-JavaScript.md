@@ -2,6 +2,29 @@
 Perlito5-in-JavaScript
 ======================
 
+Command line
+---------------
+
+- execute a Perl script
+
+  ```
+  $ nodejs perlito5.js -Isrc5/lib -e ' say "hello, World!" '
+  ```
+
+- compile a Perl script to a JavaScript file with `-Cjs`
+
+  ```
+  $ nodejs perlito5.js -Isrc5/lib -Cjs -e ' say "hello, World!" ' > out.js
+
+  $ nodejs out.js
+  ```
+
+- enable debugging mode with `-JS DEBUG`. This prints the JavaScript code just before it is executed
+
+  ```
+  $ nodejs perlito5.js -Isrc5/lib -JS DEBUG t5-js/op/wantarray.t
+  ```
+
 Perlito5-in-JavaScript - what works
 --------------
 
