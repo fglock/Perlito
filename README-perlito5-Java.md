@@ -76,96 +76,6 @@ Perlito5-Java platform differences
 Perlito5-Java work-in-progress
 ------------------------------
 
-  - upload the perlito5 jar to a Maven repository
-
-      - See: https://maven.apache.org/guides/mini/guide-central-repository-upload.html
-
-  - add more options to Makefile
-
-      - build stand-alone, precompiled "secure" script without eval-string / without "perlito5-lib"
-
-        ```sh
-        $ java -jar perlito5.jar -I src5/lib --nojava_eval -Cjava t5/unit/array.t > test.java
-        $ javac test.java
-        $ java Main
-        ```
-
-      - build android script
-
-      - integrate with Perlito5 in CPAN
-
-  - precompile modules
-
-      - TODO - transparently load `pmc` files in `require` and `use`.
-
-      - `pmc` files could be plain `jar` files.
-
-  - add `src5/lib` Perl files to `perlito5.jar`, instead of setting `-I src5/lib` or `PERL5LIB=src5/lib`.
-
-    - precompile the modules in `lib`
-
-  - Java 8 triggers this problem:
-
-      - http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
-      - http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
-
-      - "The workaround is to compile at Java 7-compatibility level: javac -source 7, or just to use simpler constructions.
-      - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
-
-
-  - detect and fix "unreachable code"
-
-      - See: `t5/cmd/switch.t` line 65
-
-
-  - BEGIN blocks
-
-      - Loops containing: BEGIN blocks, `use` statements, or named subroutines.
-
-          - lexical variables inside loops may not behave properly if they are captured at compile-time.
-
-      - some data structures created by BEGIN need more work for proper serialization to AST:
-
-          - some types of aliased values, like:  `*name2 = *name1{IO}`
-
-          - lexical variables are not shared between closures created in BEGIN blocks
-
-      - FIXED - bug capturing BEGIN variables in eval-string:
-
-        ```
-        $ java -jar perlito5.jar -I src5/lib -Cperl5 -e ' my @v; BEGIN { @v = (123); sub x { @v }; eval " sub yy { \@v }  " } x; yy; '
-        *main::x = do {;
-            sub {;
-                @Perlito5::BEGIN::_100_v
-            }
-        };
-        *main::yy = do {;
-            sub {;
-                @v      # <--- this should be @Perlito5::BEGIN::_100_v
-            }
-        };
-        ```
-
-      - bug capturing BEGIN variables in eval-string:
-
-        Variables created during runtime are not captured by BEGIN blocks in eval-string.
-
-        In this example, the named sub declaration is compiled at BEGIN time in eval:
-
-        ```
-        $ java -jar perlito5.jar -I src5/lib -e ' my @v = (123); sub yy; eval " sub yy { \@v }  "; print yy(); '
-        [empty string; expected: 123]
-        ```
-
-        Anonymous subs are not affected by this bug, because anon subs are not BEGIN time.
-
-
-  - runtime error messages sometimes do not include the line number in the Perl code
-
-      - also caller() is only partially implemented
-
-      - BEGIN line numbers show the line number at the time of eval - the line number is relative to the start of the BEGIN block
-
   - `goto`
       - `goto &code` works, but it doesn't do a tail-call
       - `goto LABEL` - some use patterns work.
@@ -880,11 +790,110 @@ Java-specific command line options
     $ java -jar perlito5.jar -I src5/lib -J DEBUG=1 -e ' say 123 '
     ```
 
-Workaround JVM bytecode size limit
-----------------------------------
+Java distribution
+----------------------
 
-According to the Java Virtual Machine specification,
-the bytecode of a method must not be bigger than 65536 bytes:
+  - upload the perlito5 jar to a Maven repository
+
+      - See: https://maven.apache.org/guides/mini/guide-central-repository-upload.html
+
+  - add more options to Makefile
+
+      - build stand-alone, precompiled "secure" script without eval-string / without "perlito5-lib"
+
+        ```sh
+        $ java -jar perlito5.jar -I src5/lib --nojava_eval -Cjava t5/unit/array.t > test.java
+        $ javac test.java
+        $ java Main
+        ```
+
+      - build android script
+
+      - integrate with Perlito5 in CPAN
+
+Precompile modules
+------------------
+
+      - TODO - transparently load `pmc` files in `require` and `use`.
+
+      - `pmc` files could be plain `jar` files.
+
+  - add `src5/lib` Perl files to `perlito5.jar`, instead of setting `-I src5/lib` or `PERL5LIB=src5/lib`.
+
+    - precompile the modules in `lib`
+
+
+BEGIN blocks
+------------
+
+      - Loops containing: BEGIN blocks, `use` statements, or named subroutines.
+
+          - lexical variables inside loops may not behave properly if they are captured at compile-time.
+
+      - some data structures created by BEGIN need more work for proper serialization to AST:
+
+          - some types of aliased values, like:  `*name2 = *name1{IO}`
+
+          - lexical variables are not shared between closures created in BEGIN blocks
+
+      - FIXED - bug capturing BEGIN variables in eval-string:
+
+        ```
+        $ java -jar perlito5.jar -I src5/lib -Cperl5 -e ' my @v; BEGIN { @v = (123); sub x { @v }; eval " sub yy { \@v }  " } x; yy; '
+        *main::x = do {;
+            sub {;
+                @Perlito5::BEGIN::_100_v
+            }
+        };
+        *main::yy = do {;
+            sub {;
+                @v      # <--- this should be @Perlito5::BEGIN::_100_v
+            }
+        };
+        ```
+
+      - bug capturing BEGIN variables in eval-string:
+
+        Variables created during runtime are not captured by BEGIN blocks in eval-string.
+
+        In this example, the named sub declaration is compiled at BEGIN time in eval:
+
+        ```
+        $ java -jar perlito5.jar -I src5/lib -e ' my @v = (123); sub yy; eval " sub yy { \@v }  "; print yy(); '
+        [empty string; expected: 123]
+        ```
+
+        Anonymous subs are not affected by this bug, because anon subs are not BEGIN time.
+
+
+  - runtime error messages sometimes do not include the line number in the Perl code
+
+      - also caller() is only partially implemented
+
+      - BEGIN line numbers show the line number at the time of eval - the line number is relative to the start of the BEGIN block
+
+
+JVM and Java compiler related
+------------------------------
+
+- Java 8 triggers this problem:
+
+      - http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
+      - http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
+
+      - "The workaround is to compile at Java 7-compatibility level: javac -source 7, or just to use simpler constructions.
+      - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
+
+
+- detect and fix "unreachable code"
+
+      - See: `t5/cmd/switch.t` line 65
+
+
+- Workaround JVM bytecode size limit
+
+  According to the Java Virtual Machine specification,
+  the bytecode of a method must not be bigger than 65536 bytes:
 
   - See: `$Perlito5::CODE_TOO_LARGE` in `/src5`
 
@@ -918,6 +927,7 @@ XS support using libperl.so
     - http://bsfperl.sourceforge.net/tutorial/
   
     - https://sourceforge.net/p/bsfperl/discussion/307607/
+
 
 Perlito5-Java extensibility in "pre-compile" mode
 ------------------------------------
