@@ -231,6 +231,27 @@ package Integer {}
 my Integer $i;
 ```
 
+Using typed variables
+---------------------
+
+```perl
+package long {}
+my long $j;             # Java variable
+my $var;                # Perl variable
+$var = $j;              # store Java value in Perl variable
+$j = $var;              # get Java value from Perl variable; cast from scalar to long is automatic
+```
+
+Typed variables generate efficient, native Java. There are a few restrictions:
+
+- Only `my` variables can be typed.
+
+- Java variables are not captured by Perl closures. This means that a variable declared in a context
+will not be seen inside inner subroutine declarations (named or anonymous) and eval blocks. Loops and
+conditionals should work fine, because these are not usually implemented as closures.
+
+  - workaround: store the Java value in a Perl variable
+
 
 Inlining Java code with `Java::inline`
 ------------
@@ -680,27 +701,6 @@ $arr->add($p->toString());
   ```
   $ java -jar perlito5.jar -Isrc5/lib  -e ' package short {}; my short $b = ord("a"); say $b;'
   ```
-
-Using typed variables
----------------------
-
-```perl
-package long {}
-my long $j;             # Java variable
-my $var;                # Perl variable
-$var = $j;              # store Java value in Perl variable
-$j = $var;              # get Java value from Perl variable; cast from scalar to long is automatic
-```
-
-Typed variables generate efficient, native Java. The catch is that there are a few restrictions:
-
-- Only `my` variables can be typed.
-
-- Java variables are not captured by Perl closures. This means that a variable declared in a context
-will not be seen inside inner subroutine declarations (named or anonymous) and eval blocks. Loops and
-conditionals should work fine, because these are not usually implemented as closures.
-
-  - workaround: store the Java value in a Perl variable
 
 
 Thread safety
