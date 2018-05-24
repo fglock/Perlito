@@ -422,6 +422,8 @@ perl> $arr->length
 10
 ```
 
+- TODO compile Java->type() to static code if the type parameter is a constant
+
 
 Java extensions in runtime (work in progress)
 -------------------------------------------------
