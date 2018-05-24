@@ -1,6 +1,6 @@
 package Perlito5;
 
-$VERSION = '9.022';
+$VERSION = '9.023';
 
 1;
 

@@ -38,7 +38,11 @@ Perlito5 Release
     make test
     ```
 
-* make dist
+* make the distribution file
+
+    ```
+    make dist
+    ```
 
 * publish to pause.perl.org
 
