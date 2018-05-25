@@ -68,7 +68,6 @@ sub lookup_variable {
 
     return if ref($var) ne 'Perlito5::AST::Var';
 
-    my $c = substr($var->{name}, 0, 1);
     if ( $var->is_special_var() ) {
         # special variable
         $var->{_decl} = 'global';
