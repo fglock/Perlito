@@ -93,5 +93,6 @@ sub import {
     version => '5.22.0',
     d_double_has_inf => '1',
     d_double_has_nan => '1',
+    nvsize => '8',
 );
 
