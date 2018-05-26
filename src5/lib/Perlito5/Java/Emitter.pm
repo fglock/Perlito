@@ -689,10 +689,17 @@ package Perlito5::AST::Int;
 
 package Perlito5::AST::Num;
 {
+    my $inf = 1000 ** 1000 ** 1000;
+
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        my $s = "new PlDouble(" . $self->{num} . "d)";
-
+        my $s;
+        if ($self->{num} == $inf) {
+            $s = "new PlDouble(Double.POSITIVE_INFINITY)";
+        }
+        else {
+            $s = "new PlDouble(" . $self->{num} . "d)";
+        }
         return Perlito5::Java::get_constant( "PlDouble", $s );
     }
     sub emit_java_set {
@@ -1152,7 +1159,9 @@ package Perlito5::AST::Var;
         }
 
         if ($sigil eq '$') {
-            if ($self->{name} > 0) {
+            if ($self->{name} > 0
+               && $self->{name} ne "Inf"   # $Inf in Math::Complex
+               ) {
                 # regex captures
                 return 'PerlOp.regex_var(' . (0 + $self->{name}) . ')'
             }
@@ -1254,7 +1263,10 @@ package Perlito5::AST::Var;
             # return $s;
         }
 
-        if ($sigil eq '$' && $self->{name} > 0) {
+        if ($sigil eq '$' && $self->{name} > 0
+            && $self->{name} ne "Inf"   # $Inf in Math::Complex
+           )
+        {
             # regex captures
             return 'p5_regex_capture[' . ($self->{name} - 1) . ']'
         }

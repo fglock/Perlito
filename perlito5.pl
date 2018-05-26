@@ -18106,9 +18106,16 @@ use feature 'say';
     }
     package Perlito5::AST::Num;
     {
+        my $inf = 1000**1000**1000;
         sub Perlito5::AST::Num::emit_java {
             (my $self, my $level, my $wantarray) = @_;
-            my $s = "new PlDouble(" . ($self->{"num"}) . "d)";
+            my $s;
+            if ($self->{"num"} == $inf) {;
+                $s = "new PlDouble(Double.POSITIVE_INFINITY)"
+            }
+            else {;
+                $s = "new PlDouble(" . ($self->{"num"}) . "d)"
+            }
             return Perlito5::Java::get_constant("PlDouble", $s)
         }
         sub Perlito5::AST::Num::emit_java_set {;
@@ -18336,7 +18343,7 @@ use feature 'say';
                 return $s
             }
             if ($sigil eq "\$") {
-                if ($self->{"name"} > 0) {;
+                if ($self->{"name"} > 0 && $self->{"name"} ne "Inf") {;
                     return "PerlOp.regex_var(" . (0 + ($self->{"name"})) . ")"
                 }
                 if ($namespace eq "main") {
@@ -18415,7 +18422,7 @@ use feature 'say';
                 }
                 return $s . ".set(" . Perlito5::Java::to_list([$arguments], $level + 1) . ")"
             }
-            if ($sigil eq "\$" && $self->{"name"} > 0) {;
+            if ($sigil eq "\$" && $self->{"name"} > 0 && $self->{"name"} ne "Inf") {;
                 return "p5_regex_capture[" . (($self->{"name"}) - 1) . "]"
             }
             if ($sigil eq "::") {;
