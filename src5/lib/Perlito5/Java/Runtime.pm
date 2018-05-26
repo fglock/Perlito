@@ -3742,6 +3742,9 @@ EOT
     public PlClass blessed_class() {
         return null;
     }
+    public PlObject set_prototype(PlObject v) {
+        return PlCORE.die("Type of arg 1 to Scalar::Util::set_prototype must be block or sub {}");
+    }
     public PlScalarImmutable scalar() {
         return (PlScalarImmutable)this;
     }
@@ -4608,6 +4611,9 @@ class PlClosure extends PlReference implements Runnable {
     }
     public PlObject prototype() {
         return this.prototype;
+    }
+    public PlObject set_prototype(PlObject v) {
+        return this.prototype = new PlString(v.toString());
     }
 }
 class PlLvalueRef extends PlReference {
@@ -6290,6 +6296,10 @@ class PlLvalue extends PlScalarObject {
     }
     public PlObject bless(String className) {
         return this.get().bless(className);
+    }
+
+    public PlObject set_prototype(PlObject v) {
+        return this.get().set_prototype(v);
     }
 
     public PlObject pow(PlObject arg)    { return this.get().pow(arg); }

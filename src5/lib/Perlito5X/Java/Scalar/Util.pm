@@ -20,6 +20,9 @@ sub reftype {
 sub blessed {
     Java::inline("List__.aget(0).blessed()");
 }
+sub set_prototype {
+    Java::inline("List__.aget(0).set_prototype(List__.aget(1))");
+}
 
 sub weaken {
     # all references are weak already
@@ -43,7 +46,6 @@ sub isdual        { ... }
 sub isvstring     { ... }
 sub openhandle    { ... }
 sub readonly      { ... }
-sub set_prototype { ... }
 sub tainted       { ... }
 
 1;
