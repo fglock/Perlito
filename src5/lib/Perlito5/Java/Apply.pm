@@ -509,7 +509,7 @@ package Perlito5::AST::Apply;
                             . '(PerlOp.or1('
                                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PlV.boolean_stack : '
                                 . $self->{arguments}->[1]->emit_java($level, $wantarray)
-                        . ')';
+                        . '))';
                     }
                     # or1(x) ? or2() : y
                     '(PerlOp.or1('
