@@ -534,7 +534,7 @@ package Perlito5::AST::CompUnit;
 
         for my $comp_unit ( @$comp_units ) {
             my @str = $comp_unit->emit_java($level + 1, $wantarray);
-            $str[-1] .= ";\n" if @str && !ref($str[-1]);
+            # $str[-1] .= ";\n" if @str && !ref($str[-1]);
             push @main, @str;
         }
         if ($options{'expand_use'}) {
