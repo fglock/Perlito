@@ -83,6 +83,11 @@ rm t/vec.t                           # (Wstat: 512 Tests: 0 Failed: 0)
 rm t/wantarray.t             # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
 
 
+# remove tests that are version-specific - ack 'use 5\.' t5
+rm t/regex_xx.t          # use v5.26;
+rm t/fc.t                # use 5.18.0;
+
+
 mkdir src
 mkdir src/Perlito5
 mkdir src/Perlito5/Grammar
