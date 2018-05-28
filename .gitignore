@@ -7,4 +7,27 @@ perlito5.js
 *.class
 Main.*
 *.swp
+*.pkg
+utf*.pl
+t5-5to5
+t5-js
+t5-jar
+*.tar.gz
+*.dmg
+cpan-Perlito5/Changes
+cpan-Perlito5/LICENSE.md
+cpan-Perlito5/MANIFEST
+cpan-Perlito5/META.yml
+cpan-Perlito5/MYMETA.json
+cpan-Perlito5/MYMETA.yml
+cpan-Perlito5/Makefile
+cpan-Perlito5/README
+cpan-Perlito5/bin/
+cpan-Perlito5/blib/
+cpan-Perlito5/lib/
+cpan-Perlito5/pm_to_blib
+cpan-Perlito5/src/
+cpan-Perlito5/t/
+org
+*.jar
 
