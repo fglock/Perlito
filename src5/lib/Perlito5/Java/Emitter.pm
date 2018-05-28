@@ -1134,6 +1134,8 @@ package Perlito5::AST::Lookup;
 
 package Perlito5::AST::Var;
 {
+    my $inf = 1000 ** 1000 ** 1000;
+
     sub emit_java_global {
         my ($self, $level, $wantarray, $localize) = @_;
         my $local = $localize ? "_local" : "";
@@ -1160,7 +1162,7 @@ package Perlito5::AST::Var;
 
         if ($sigil eq '$') {
             if ($self->{name} > 0
-               && $self->{name} ne "Inf"   # $Inf in Math::Complex
+               && $self->{name} != $inf   # $Inf in Math::Complex
                ) {
                 # regex captures
                 return 'PerlOp.regex_var(' . (0 + $self->{name}) . ')'
@@ -1264,7 +1266,7 @@ package Perlito5::AST::Var;
         }
 
         if ($sigil eq '$' && $self->{name} > 0
-            && $self->{name} ne "Inf"   # $Inf in Math::Complex
+            && $self->{name} != $inf    # $Inf in Math::Complex
            )
         {
             # regex captures
