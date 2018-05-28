@@ -2,6 +2,14 @@ Dev Version:
 
 - no changes
 
+9.024 cpan:Perlito5 2018-05-28
+
+- remove from CPAN tests that depend on specific Perl versions
+
+- Java:
+-- fix syntax error in "or" operation
+-- fix "Inf" in emitter
+
 9.023 cpan:Perlito5 2018-05-24
 
 - Parser:
