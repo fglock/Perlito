@@ -476,6 +476,7 @@ package Perlito5::AST::Apply;
                                     otherwise => Perlito5::AST::Block->new( stmts => [] ),
                                 )->emit_java($level, $wantarray);
                         }
+                        $wantarray = 'scalar';  # ternary doesn't work with void context
                         return 'PerlOp.context('
                             . Perlito5::Java::to_context('void') . ', '
                             . 'PerlOp.and1('
@@ -504,6 +505,7 @@ package Perlito5::AST::Apply;
                                     otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
                                 )->emit_java($level, $wantarray);
                         }
+                        $wantarray = 'scalar';  # ternary doesn't work with void context
                         return 'PerlOp.context('
                             . Perlito5::Java::to_context('void') . ', '
                             . '(PerlOp.or1('
