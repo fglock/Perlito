@@ -2907,7 +2907,7 @@ EOT
             PlV.hset(name, value);
         }
         else if (value.is_arrayref()) {
-            PlV.aset(name, value);
+            PlStringConstant.getConstant(name).arrayRef.set(value);
         }
         else if (value.is_scalarref()) {
             PlV.sset(name, value.scalar_deref(nameSpace));
