@@ -112,6 +112,7 @@ clean ::
 	-rm *.pyc
 	-rm misc/Java/*.class
 	-rm *.[0-9][0-9]
+	-rm -rf t/
 	-rm -rf t5-js/
 	-rm -rf t5-jar/
 	-rm -rf t5-5to5/
