@@ -1,5 +1,7 @@
 [ -d cpan-Perlito5 ] && cd cpan-Perlito5
 
+PERLITO_ROOT=..
+
 rm -rf lib
 rm -rf src
 rm -rf t
@@ -11,20 +13,20 @@ rm *.tar.gz
 
 touch META.yml
 
-cp ../ChangeLog ./Changes
-cp ../LICENSE.md ./LICENSE.md
+cp $PERLITO_ROOT/ChangeLog ./Changes
+cp $PERLITO_ROOT/LICENSE.md ./LICENSE.md
 
 mkdir lib
-cp -r ../src5/lib/* lib/
-cp -r ../src5/lib/Perlito5.pm lib/
+cp -r $PERLITO_ROOT/src5/lib/* lib/
+cp -r $PERLITO_ROOT/src5/lib/Perlito5.pm lib/
 
 mkdir bin
-cp ../src5/util/perlito5.pl bin/perlito5
+cp $PERLITO_ROOT/src5/util/perlito5.pl bin/perlito5
 
 perldoc -otext lib/Perlito5.pm > README
 
 mkdir t
-cp -r ../t5/*/*.t t/
+cp -r $PERLITO_ROOT/t5/*/*.t t/
 
 rm t/010-inline.t                    # (Wstat: 65280 Tests: 0 Failed: 0)
 rm t/020-java-type.t                 # (Wstat: 512 Tests: 0 Failed: 0)
@@ -49,8 +51,8 @@ rm t/do.t                    # (Wstat: 65280 Tests: 0 Failed: 0) -  Non-zero exi
 rm t/exp.t                   # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
 rm t/for.t                   # (Wstat: 0 Tests: 116 Failed: 0) -  TODO passed:   13
 rm t/hashassign.t                    # (Wstat: 512 Tests: 0 Failed: 0)
-rm t/hash_ref_with_map.t            # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/hash_ref_with_map.t line 6.
-rm t/hash_with_map_and_fat_arrow.t  # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/hash_with_map_and_fat_arrow.t line 6.
+rm t/hash_ref_with_map.t            # Can't locate ./test.pl in @INC (@INC contains: $PERLITO_ROOT/lib) at t/hash_ref_with_map.t line 6.
+rm t/hash_with_map_and_fat_arrow.t  # Can't locate ./test.pl in @INC (@INC contains: $PERLITO_ROOT/lib) at t/hash_with_map_and_fat_arrow.t line 6.
 rm t/hexfp.t                         # (Wstat: 512 Tests: 0 Failed: 0)
 rm t/index_eval.t           # Can't locate ./test.pl
 rm t/index.t                 # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
@@ -62,7 +64,7 @@ rm t/mod.t                   # (Wstat: 0 Tests: 13 Failed: 1) -  Failed test:  8
 rm t/negate.t                # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
 rm t/not.t                   # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
 rm t/numconvert.t                    # (Wstat: 512 Tests: 0 Failed: 0)
-rm t/object-can.t                   # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/object-can.t line 6.
+rm t/object-can.t                   # Can't locate ./test.pl in @INC (@INC contains: $PERLITO_ROOT/lib) at t/object-can.t line 6.
 rm t/overload.t                      # (Wstat: 512 Tests: 0 Failed: 0)
 rm t/pow.t                   # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
 rm t/qq.t                            # (Wstat: 512 Tests: 0 Failed: 0)
@@ -75,7 +77,7 @@ rm t/split.t                 # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit 
 rm t/srand.t                         # (Wstat: 512 Tests: 0 Failed: 0)
 rm t/state.t                # new in Perl
 rm t/sub.t                   # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
-rm t/undef-on-obj-slot-index.t      # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/undef-on-obj-slot-index.t line 6.
+rm t/undef-on-obj-slot-index.t      # Can't locate ./test.pl in @INC (@INC contains: $PERLITO_ROOT/lib) at t/undef-on-obj-slot-index.t line 6.
 rm t/unshift.t               # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
 rm t/upgrade.t                       # (Wstat: 512 Tests: 0 Failed: 0)
 rm t/utfhash.t                       # (Wstat: 512 Tests: 0 Failed: 0)
@@ -93,31 +95,31 @@ rm t/fc.t                # use 5.18.0;
 mkdir src
 mkdir src/Perlito5
 mkdir src/Perlito5/Grammar
-cp -r ../src5/lib/Perlito5/Grammar.pm   src/Perlito5/
-cp -r ../src5/lib/Perlito5/Grammar/*.pm src/Perlito5/Grammar/
+cp -r $PERLITO_ROOT/src5/lib/Perlito5/Grammar.pm   src/Perlito5/
+cp -r $PERLITO_ROOT/src5/lib/Perlito5/Grammar/*.pm src/Perlito5/Grammar/
 
 # these grammar files are plain-Perl and do not need precompilation
-# ack -L '^s*token ' ../src5
+# ack -L '^s*token ' $PERLITO_ROOT/src5
 rm src/lib/Perlito5/Grammar/Attribute.pm
 rm src/lib/Perlito5/Grammar/Scope.pm
 rm src/lib/Perlito5/Grammar/Sigil.pm
 
 # Expand all grammars to plain-Perl code
-# ack -l '^s*token ' ../src5
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Bareword.pm    > lib/Perlito5/Grammar/Bareword.pm  
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Map.pm         > lib/Perlito5/Grammar/Map.pm       
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Print.pm       > lib/Perlito5/Grammar/Print.pm     
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Statement.pm   > lib/Perlito5/Grammar/Statement.pm     
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar.pm             > lib/Perlito5/Grammar.pm
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Number.pm      > lib/Perlito5/Grammar/Number.pm    
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Regex5.pm      > lib/Perlito5/Grammar/Regex5.pm    
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Use.pm         > lib/Perlito5/Grammar/Use.pm       
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Control.pm     > lib/Perlito5/Grammar/Control.pm   
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Expression.pm  > lib/Perlito5/Grammar/Expression.pm
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Space.pm       > lib/Perlito5/Grammar/Space.pm     
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Regex6.pm      > lib/Perlito5/Grammar/Regex6.pm    
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Block.pm       > lib/Perlito5/Grammar/Block.pm     
-perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/String.pm      > lib/Perlito5/Grammar/String.pm    
+# ack -l '^s*token ' $PERLITO_ROOT/src5
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Bareword.pm    > lib/Perlito5/Grammar/Bareword.pm  
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Map.pm         > lib/Perlito5/Grammar/Map.pm       
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Print.pm       > lib/Perlito5/Grammar/Print.pm     
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Statement.pm   > lib/Perlito5/Grammar/Statement.pm     
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar.pm             > lib/Perlito5/Grammar.pm
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Number.pm      > lib/Perlito5/Grammar/Number.pm    
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Regex5.pm      > lib/Perlito5/Grammar/Regex5.pm    
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Use.pm         > lib/Perlito5/Grammar/Use.pm       
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Control.pm     > lib/Perlito5/Grammar/Control.pm   
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Expression.pm  > lib/Perlito5/Grammar/Expression.pm
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Space.pm       > lib/Perlito5/Grammar/Space.pm     
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Regex6.pm      > lib/Perlito5/Grammar/Regex6.pm    
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Block.pm       > lib/Perlito5/Grammar/Block.pm     
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/String.pm      > lib/Perlito5/Grammar/String.pm    
 
 rm MANIFEST
 perl -e ' use ExtUtils::Manifest; ExtUtils::Manifest::mkmanifest() '
