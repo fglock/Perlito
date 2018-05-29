@@ -68,9 +68,15 @@ for my $name (@files) {
       or warn "Copy $name to $out failed: $!";
 }
 
-# Perl tests need "t/TEST" and "t/test.pl"
+# some Perl tests need "t/TEST" and "t/test.pl"
 mkdir "t";
 copy "t5/TEST", "t/TEST";
 copy "t5/test.pl", "t/test.pl";
 
+# some Perl tests have a hardcoded "lib" directory
+mkdir "lib";
+mkdir "lib/warnings";
+for my $file ( "Config.pm", "overload.pm", "overloading.pm", "warnings/register.pm" ) {
+    copy "src5/lib/Perlito5X/$file", "lib/$file";
+}
 
