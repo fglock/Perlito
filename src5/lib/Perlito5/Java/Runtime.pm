@@ -7317,12 +7317,19 @@ EOT
         if (v.is_array()) {
             return this.push( (PlArray)v );
         }
+        else if (v.is_hash()) {
+            return this.push( (PlHash)v );
+        }
         this.a.add(v.scalar());
         return new PlInt(this.a.size());
     }
     public void push_void(PlObject v) {
         if (v.is_array()) {
             this.push_void( (PlArray)v );
+            return;
+        }
+        else if (v.is_hash()) {
+            this.push_void( (PlHash)v );
             return;
         }
         this.a.add(v.scalar());
@@ -7379,6 +7386,9 @@ EOT
     public PlObject unshift(PlObject v) {
         if (v.is_array()) {
             return this.unshift( (PlArray)v );
+        }
+        else if (v.is_hash()) {
+            return this.unshift( (PlHash)v );
         }
         this.a.add(0, v.scalar());
         return new PlInt(this.a.size());
