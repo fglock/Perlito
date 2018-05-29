@@ -10,12 +10,11 @@ my $usage = "Usage: makefiles/copy-tests.pl t5/Test-summary-report-5jar.txt t5-j
 my $test_report = shift || die $usage;
 my $out_dir     = shift || die $usage;
 
-open my $f, "<", $test_report;
-
-my @files = <$f>;
-
 # warn "running from directory: ", `pwd`;
 
+# Read the "test_report" with the list of tests that cannot run in this platform
+open my $f, "<", $test_report;
+my @files = <$f>;
 my %bad_file;
 my @bad_directory;
 for my $line (@files) {
@@ -27,6 +26,7 @@ for my $line (@files) {
     }
 }
 
+# Collect all test filenames from "t5/"
 my @files;
 my @dir;
 finddepth(
@@ -41,6 +41,7 @@ finddepth(
     "t5"
 );
 
+# Create the destination directories
 for my $name ( sort { length($a) <=> length($b) } @dir) {
     # warn "$name is directory\n";
     if ( grep { "$name/" =~ /^$_/ } @bad_directory ) {
@@ -53,6 +54,7 @@ for my $name ( sort { length($a) <=> length($b) } @dir) {
             or warn "Can't mkdir $name\n";
     }
 }
+# Copy the test files
 for my $name (@files) {
     # warn "file $name\n";
     if ( $bad_file{$name} || grep { $name =~ /^$_/ } @bad_directory ) {
@@ -65,4 +67,10 @@ for my $name (@files) {
     copy( $name, $out )
       or warn "Copy $name to $out failed: $!";
 }
+
+# Perl tests need "t/TEST" and "t/test.pl"
+mkdir "t";
+copy "t5/TEST", "t/TEST";
+copy "t5/test.pl", "t/test.pl";
+
 

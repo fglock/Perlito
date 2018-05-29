@@ -9,6 +9,7 @@ Main.*
 *.swp
 *.pkg
 utf*.pl
+t
 t5-5to5
 t5-js
 t5-jar
