@@ -1159,7 +1159,7 @@ class PerlOp {
         PlV.local_stack.a.add(PlCx.INT3);
         PlLvalue newValue = new PlLvalue();
         newValue.set(value);
-        glob.codeRef = newValue;
+        glob.cset_alias( newValue );
         return newValue;
     }
     public static final PlObject push_local_scalar(PlObject value, String name) {
@@ -1246,7 +1246,7 @@ EOT
                     break;
                 case 3:
                     index     = PlV.local_stack.pop();
-                    PlStringConstant.getConstant(index.toString()).codeRef = (PlLvalue)v;
+                    PlStringConstant.getConstant(index.toString()).cset_alias( (PlLvalue)v );
                     break;
                 case 20:      // XXX magic number
                     index     = PlV.local_stack.pop();
@@ -2775,13 +2775,13 @@ EOT
         return PlStringConstant.getConstant(name).codeRef;
     }
     public static final PlObject cset(String name, PlObject v) {
-        return PlStringConstant.getConstant(name).codeRef.set(v);
+        return PlStringConstant.getConstant(name).cset(v);
     }
     public static final PlObject cset_local(String name, PlObject v) {
         return PerlOp.push_local_named_sub(v, name);
     }
     public static final void cset_alias(String name, PlLvalue v) {
-        PlStringConstant.getConstant(name).codeRef = v;
+        PlStringConstant.getConstant(name).cset_alias(v);
     }
 
     // hash
@@ -4283,7 +4283,7 @@ class PlFileHandle extends PlScalarImmutable {
         }
 
         PlStringConstant glob = PlStringConstant.getConstant(typeglob_name);
-        glob.codeRef.set(PlCx.UNDEF);
+        glob.cset(PlCx.UNDEF);
         glob.scalarRef.set(PlCx.UNDEF);
         glob.arrayRef.set(new PlArrayRef());
         glob.hashRef.set(new PlHashRef());
@@ -4993,7 +4993,7 @@ class PlClass {
         return methodCode;
     }
 
-    public void method_uncache(String method, int level) {
+    public void invalidate_method_cache(String method, int level) {
         if (this.methodCache.containsKey(method)) {
             this.methodCache.remove(method);
         }
@@ -5003,7 +5003,7 @@ class PlClass {
         //     if (level >= 100) {
         //         PlCORE.die("Recursive inheritance detected in package '" + className + "'");
         //     }
-        //     PlClass.getInstance(className).method_uncache(method, level+1);
+        //     PlClass.getInstance(className).invalidate_method_cache(method, level+1);
         // }
     }
 
@@ -8517,8 +8517,18 @@ class PlStringConstant extends PlString {
     public PlLvalue hashRef;   // HASH
     public PlLvalue fileRef;   // IO
 
+    public String namespace;   // "main" in "main::x"; maybe null
+    public String name;        // "x" in "main::x"; maybe null
+
     public PlStringConstant(String s) {
         super(s);
+
+        int pos = s.lastIndexOf("::");
+        if (pos != -1) {
+            this.namespace = s.substring(0, pos);
+            this.name      = s.substring(pos+2);
+        }
+
         this.codeRef = new PlLvalue();
         this.scalarRef = new PlLvalue();
         this.arrayRef = new PlLvalue(new PlArrayRef());
@@ -8540,6 +8550,14 @@ class PlStringConstant extends PlString {
             cls = PlClass.getInstance(s);
         }
         return cls;
+    }
+    public PlObject cset(PlObject v) {
+        PlClass.getInstance(this.namespace).invalidate_method_cache(this.name, 0);
+        return this.codeRef.set(v);
+    }
+    public PlObject cset_alias(PlLvalue v) {
+        PlClass.getInstance(this.namespace).invalidate_method_cache(this.name, 0);
+        return this.codeRef = v;
     }
     public PlObject apply(int want, PlArray List__) {
         if (this.codeRef.is_undef()) {
