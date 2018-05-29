@@ -8516,9 +8516,10 @@ class PlStringConstant extends PlString {
     public PlLvalue arrayRef;  // ARRAY
     public PlLvalue hashRef;   // HASH
     public PlLvalue fileRef;   // IO
+    // TODO - "FORMAT"
 
-    public String namespace;   // "main" in "main::x"; maybe null
-    public String name;        // "x" in "main::x"; maybe null
+    public String namespace;   // PACKAGE - "main" in "main::x"; maybe null
+    public String name;        // NAME    - "x" in "main::x"; maybe null
 
     public PlStringConstant(String s) {
         super(s);
@@ -8561,13 +8562,10 @@ class PlStringConstant extends PlString {
     }
     public PlObject apply(int want, PlArray List__) {
         if (this.codeRef.is_undef()) {
-            String name = this.s;
-            int pos = name.lastIndexOf("::");
-            if (pos != -1) {
-                String namespace = name.substring(0, pos);
-                PlLvalue autoload = PlV.cget_no_autoload(namespace + "::AUTOLOAD");
+            if (this.namespace != null) {
+                PlLvalue autoload = PlV.cget_no_autoload(this.namespace + "::AUTOLOAD");
                 if ( autoload.is_coderef() ) {
-                    PlV.sset(namespace + "::AUTOLOAD", new PlString(name));
+                    PlV.sset(this.namespace + "::AUTOLOAD", new PlString(this.s));
                     return autoload.apply(want, List__);
                 }
             }
