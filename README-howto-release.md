@@ -4,6 +4,20 @@
 Perlito5 Release
 ----------------
 
+Note: distribution tests should be runnable with old versions of dependencies.
+
+* install an old version of Perl (for example: 5.14)
+
+* install an old version of `node.js`
+
+* install an old version of Java `JDK` (version 7 or higher)
+
+* set the minimal Perl version in `cpan-Perlito5/Makefile.PL`
+
+    ```
+    MIN_PERL_VERSION => 5.014,
+    ```
+
 * run tests
 
     ```
