@@ -1,6 +1,6 @@
 Dev Version:
 
-- no changes
+- added a Class::XSAccessor pure-perl replacement
 
 9.024 cpan:Perlito5 2018-05-28
 
