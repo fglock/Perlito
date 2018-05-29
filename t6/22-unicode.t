@@ -1,4 +1,5 @@
 
+use v6-perlito;
 use Perlito6::Test;
 
 Perlito6::Test::plan 1;
