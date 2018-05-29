@@ -2841,7 +2841,7 @@ EOT
         return (PlLvalue)PerlOp.push_local_array(new PlArrayRef(), name);
     }
     public static final PlObject aset(String name, PlObject v) {
-        return PlStringConstant.getConstant(name).arrayRef.set(v);
+        return PlStringConstant.getConstant(name).arrayRef.array_deref_set(v);
     }
     public static final PlObject aset_local(String name, PlObject v) {
         return (PlLvalue)PerlOp.push_local_array(v, name);
