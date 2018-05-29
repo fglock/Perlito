@@ -4993,6 +4993,20 @@ class PlClass {
         return methodCode;
     }
 
+    public void method_uncache(String method, int level) {
+        if (this.methodCache.containsKey(method)) {
+            this.methodCache.remove(method);
+        }
+        // TODO - lookup in all classes that inherit from us
+        // for (PlObject className : PlV.array_get(className + "::ISA")) {
+        //     // prevent infinite loop
+        //     if (level >= 100) {
+        //         PlCORE.die("Recursive inheritance detected in package '" + className + "'");
+        //     }
+        //     PlClass.getInstance(className).method_uncache(method, level+1);
+        // }
+    }
+
     public PlObject method_lookup(String method, int level) {
         if (this.methodCache.containsKey(method)) {
             // retrieve from method cache
