@@ -7335,6 +7335,12 @@ EOT
     public void push_void(PlLvalue v) {
         this.a.add(v.get());
     }
+    public PlObject push(PlHash args) {
+        return push(args.to_array());
+    }
+    public void push_void(PlHash args) {
+        push_void(args.to_array());
+    }
     public PlObject push(PlArray args) {
         int size = args.a.size();
         for (int i = 0; i < size; i++) {
@@ -7380,6 +7386,9 @@ EOT
     public PlObject unshift(PlLvalue v) {
         this.a.add(0, v.get());
         return new PlInt(this.a.size());
+    }
+    public PlObject unshift(PlHash args) {
+        return unshift(args.to_array());
     }
     public PlObject unshift(PlArray args) {
         args = new PlArray(args);   // allow "unshift @x, @x" - TODO: optimize
