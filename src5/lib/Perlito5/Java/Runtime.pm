@@ -740,8 +740,9 @@ class PerlOp {
     }
 
     private static final void getSymbolTableScan(PlHash out, HashMap<String, PlStringConstant> vars, String nameSpace, int pos, boolean isMain) {
+        String[] keys = vars.keySet().toArray(new String[0]);
         if (isMain) {
-            for (String name : vars.keySet()) {
+            for (String name : keys) {
                 if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0 && name.lastIndexOf("::") == pos) {
                     // normal variable like "ARGV" in $main::ARGV
                     out.hset(name.substring(pos+2), PlV.fget(name));
@@ -754,7 +755,7 @@ class PerlOp {
             }
         }
         else {
-            for (String name : vars.keySet()) {
+            for (String name : keys) {
                 if (name.length() > pos + 2 && name.indexOf(nameSpace) == 0) {
                     if (name.lastIndexOf("::") == pos) {
                         // normal variable like "ARGV" in $main::ARGV
