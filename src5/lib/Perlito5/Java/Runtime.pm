@@ -8505,6 +8505,59 @@ class PlStringLazyError extends PlString {
     public boolean to_boolean() {
         return true;
     }
+
+    public PlObject abs() {
+        this.toString();
+        return this.parse().abs();
+    }
+    public PlObject num_cmp(PlObject b) {
+        this.toString();
+        return this.parse().num_cmp(b);
+    }
+    public PlObject num_cmp2(PlObject b) {
+        this.toString();
+        return b.num_cmp(this.parse());
+    }
+    public boolean is_integer_range() {
+        this.toString();
+        return this.parse().is_integer_range();
+    }
+EOT
+    , ((map {
+            my $perl = $_;
+            my $native  = $number_binop{$perl}{op};
+            my $returns = $number_binop{$perl}{returns};
+            my $num_returns = $number_binop{$perl}{num_returns};
+            if ($returns eq 'PlDouble') {
+"    public PlObject ${perl}(PlObject b) {
+        // 'num' - int, 'num' - num
+        this.toString();
+        return this.parse().${perl}(b);
+    }
+    public PlObject ${perl}2(PlObject b) {
+        // int - 'num'
+        this.toString();
+        return b.${perl}(this.parse());
+    }
+"
+            }
+            else {
+"    public PlObject ${perl}(PlObject b) {
+        // 'num' - int, 'num' - num
+        this.toString();
+        return this.parse().${perl}(b);
+    }
+    public PlObject ${perl}2(PlObject b) {
+        // int - 'num'
+        this.toString();
+        return b.${perl}(this.parse());
+    }
+"
+            }
+            }
+            sort keys %number_binop ))
+
+    , <<'EOT'
 }
 class PlStringConstant extends PlString {
     public static HashMap<String, PlStringConstant> constants = new HashMap<String, PlStringConstant>();
