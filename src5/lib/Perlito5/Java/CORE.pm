@@ -56,6 +56,10 @@ my %FileFunc = (
                     mode = mode + s.substring(0, 1);
                     s = s.substring(1);
                 }
+                if (s.length() > 0 && s.charAt(0) == '&') {
+                    mode = mode + s.substring(0, 1);
+                    s = s.substring(1);
+                }
                 while (s.length() > 0 && (s.charAt(0) == ' ' || s.charAt(0) == '\t')) {
                     s = s.substring(1);
                 }
