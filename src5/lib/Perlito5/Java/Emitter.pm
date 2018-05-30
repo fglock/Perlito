@@ -1586,6 +1586,7 @@ package Perlito5::AST::Call;
             $method = 'aget_arrayref'  if $autovivification_type eq 'array';
             $method = 'aget_hashref'   if $autovivification_type eq 'hash';
             $method = 'aget_lvalue'    if $autovivification_type eq 'lvalue';
+            $method = 'aget_lvalue_local' if $autovivification_type eq 'local';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
                 . '.' . $method . '('
                 .       Perlito5::Java::to_native_int( $self->{arguments}, $level + 1 )
@@ -1597,6 +1598,7 @@ package Perlito5::AST::Call;
             $method = 'hget_arrayref'  if $autovivification_type eq 'array';
             $method = 'hget_hashref'   if $autovivification_type eq 'hash';
             $method = 'hget_lvalue'    if $autovivification_type eq 'lvalue';
+            $method = 'hget_lvalue_local' if $autovivification_type eq 'local';
 
             my $args = $self->{arguments};
             if (  (ref($args) eq 'Perlito5::AST::Apply')
