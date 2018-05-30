@@ -134,11 +134,40 @@ token term_operator_with_paren {
 
 token term_local {
     'local' <.Perlito5::Grammar::Space::opt_ws>
-    [ <Perlito5::Grammar::Sigil::term_sigil>
+
+    [
+        # local $v->meth->{idx}
+        <before '$'> <argument_parse>
+        {
+            my $declarator = 'local';
+            my $type = '';
+            my $var = Perlito5::Match::flat($MATCH->{argument_parse});
+            # warn "var: ", Perlito5::Dumper::Dumper($var);
+            my $look = Perlito5::Grammar::Scope::lookup_variable($var);
+            if (ref($look) eq 'Perlito5::AST::Var') {
+                # warn "look: ", Perlito5::Dumper::Dumper($look);
+                if ( $look->{_decl} eq 'my' || $look->{_decl} eq 'state' ) {
+                    Perlito5::Compiler::error "Can\'t localize lexical variable $var->{sigil}$var->{name}";
+                }
+                $var->{_id}   = $Perlito5::ID++;
+                $var->{_decl} = $declarator;
+                $var->{_namespace} = $Perlito5::PKG_NAME
+                    if !$var->{namespace} && !$var->{_namespace};
+            }
+            my $decl = Perlito5::AST::Decl->new(
+                    decl => $declarator,
+                    type => $type,
+                    var  => $var
+                );
+            $MATCH->{capture} = [ 'term', $decl ];
+        }
+    |
+      <Perlito5::Grammar::Sigil::term_sigil>
         {
             my $declarator = 'local';
             my $type = '';
             $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil::term_sigil"})->[1];
+            # TODO - cleanup: this check is not necessary
             # hijack some string interpolation code to parse the possible subscript
             $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
             my $var = $MATCH->{capture};
