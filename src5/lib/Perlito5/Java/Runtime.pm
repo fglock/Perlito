@@ -4166,6 +4166,25 @@ class PlFileHandle extends PlScalarImmutable {
         this.typeglob_name = name;
     }
 
+    public void dupFileHandle(PlFileHandle o) {
+        this.typeglob_name =     o.typeglob_name;
+        this.outputStream =      o.outputStream;    // System.out, System.err
+        this.inputStream =       o.inputStream;     // System.in
+        this.directoryIterator = o.directoryIterator;
+        this.directoryStream =   o.directoryStream;
+        this.reader =            o.reader;       // Console.reader
+        this.readlineBuffer =    o.readlineBuffer;
+        this.printBuffer =       o.printBuffer;
+        this.eof =               o.eof;
+        this.is_argv =           o.is_argv;
+        this.path =              o.path;     // filename
+        this.mode =              o.mode;     // ">", "+<"
+        this.charset =           o.charset;  // "UTF-8"
+        this.binmode =           o.binmode;
+        this.output_autoflush =  o.output_autoflush;
+        this.tied =              o.tied;
+    }
+
     public boolean is_filehandle() {
         return true;
     }
