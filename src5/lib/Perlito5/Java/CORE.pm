@@ -11,11 +11,11 @@ my %FileFunc = (
     # open FILEHANDLE,MODE,REFERENCE
     # open FILEHANDLE
     open => <<'EOT',
-        int argCount = List__.to_int();
-        Path path = null; 
-        String mode = "";
-        String s = "";
         try {
+            int argCount = List__.to_int();
+            Path path = null; 
+            // PlCORE.say("open " + List__.toString());
+
             PlFileHandle.allOpenFiles.add(fh);
             fh.readlineBuffer = new StringBuilder();
             fh.flush();
@@ -26,24 +26,18 @@ my %FileFunc = (
             if (fh.reader != null) {
                 fh.reader.close();
             }
-            // PlCORE.say("open " + List__.toString());
-            if (argCount == 0) {
-                // As a shortcut a one-argument call takes the filename from the
-                // global scalar variable of the same name as the filehandle
-                PlCORE.die("TODO - not implemented: single argument open()");
-            }
-            else if (argCount == 1) {
 
-                if (List__.aget(0).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
-                    PlObject o = List__.aget(0).scalar_deref("main");
-                    fh.reader = new PlStringReader(o);
-                    fh.reader.mark(o.toString().length());
-                    fh.outputStream = null;
-                    return PlCx.INT1;
-                }
+            // As a shortcut a one-argument call takes the filename from the
+            // global scalar variable of the same name as the filehandle
+            PlObject arg =
+                  argCount == 0 ? PlV.sget(fh.typeglob_name)
+                : argCount == 1 ? List__.aget(0)
+                :                 List__.aget(1);
 
-                // EXPR
-                s = List__.aget(0).toString();
+            String mode  = List__.aget(0).toString();
+            String s     = arg.toString();
+            if (argCount < 2) {
+                mode = "";
                 if (s.length() > 0 && s.charAt(0) == '+') {
                     mode = mode + s.substring(0, 1);
                     s = s.substring(1);
@@ -67,22 +61,6 @@ my %FileFunc = (
                 while (s.length() > 0 && (s.charAt(0) == ' ' || s.charAt(0) == '\t')) {
                     s = s.substring(1);
                 }
-            }
-            else if (argCount > 1) {
-                // MODE,EXPR,LIST?
-                mode = List__.aget(0).toString();
-
-                if (List__.aget(1).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
-                    // TODO - input stream, charset
-
-                    PlObject o = List__.aget(1).scalar_deref("main");
-                    fh.reader = new PlStringReader(o);
-                    fh.reader.mark(o.toString().length());
-                    fh.outputStream = null;
-                    return PlCx.INT1;
-                }
-
-                s = List__.aget(1).toString();
             }
 
             String charset = "ISO-8859-1";
@@ -150,7 +128,21 @@ my %FileFunc = (
             fh.mode = mode;     // ">", "+<"
             fh.charset = charset;   // "UTF-8"
 
-            // PlCORE.say("path " + mode + " " + path.toString());
+            // PlCORE.say("path " + mode + " " + path.toString() + " arg " + arg.toString());
+
+            if (arg.ref_str().equals("SCALAR")) {
+                // read/write to Perl scalarref
+                PlObject o = arg.scalar_deref("main");
+                fh.reader = new PlStringReader(o);
+                fh.reader.mark(o.toString().length());
+                fh.outputStream = null;
+                return PlCx.INT1;
+            }
+
+            if (mode.equals("<&") || mode.equals(">&")) {
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+
             if (mode.equals("<") || mode.equals("")) {
                 fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
                 fh.outputStream = null;
