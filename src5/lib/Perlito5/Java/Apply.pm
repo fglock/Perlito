@@ -1772,9 +1772,20 @@ package Perlito5::AST::Apply;
                   )
             . ')';
         },
+        'open' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @in  = @{$self->{arguments}};
+            my $fun = shift(@in);
+            'PlCORE.open('
+             .      Perlito5::Java::to_context($wantarray) . ', '
+             .      Perlito5::Java::to_filehandle($fun, $level+1) . ', '
+             .      Perlito5::Java::to_param_list(\@in, $level+1) . ', '
+             .      Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+             . ')';
+        },
     );
 
-    for my $op (qw/ binmode close closedir open opendir readdir seek seekdir read sysread
+    for my $op (qw/ binmode close closedir opendir readdir seek seekdir read sysread
         write syswrite /
     ) {
         $emit_js{$op} = sub {

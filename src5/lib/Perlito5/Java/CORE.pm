@@ -5,213 +5,9 @@ use strict;
 
 
 my %FileFunc = (
-    # open FILEHANDLE,EXPR
-    # open FILEHANDLE,MODE,EXPR
-    # open FILEHANDLE,MODE,EXPR,LIST
-    # open FILEHANDLE,MODE,REFERENCE
-    # open FILEHANDLE
-    open => <<'EOT',
-        try {
-            int argCount = List__.to_int();
-            Path path = null; 
-            // PlCORE.say("open " + List__.toString());
 
-            PlFileHandle.allOpenFiles.add(fh);
-            fh.readlineBuffer = new StringBuilder();
-            fh.flush();
-            fh.eof = false;
-            if (fh.outputStream != null) {
-                fh.outputStream.close();
-            }
-            if (fh.reader != null) {
-                fh.reader.close();
-            }
 
-            // As a shortcut a one-argument call takes the filename from the
-            // global scalar variable of the same name as the filehandle
-            PlObject arg =
-                  argCount == 0 ? PlV.sget(fh.typeglob_name)
-                : argCount == 1 ? List__.aget(0)
-                :                 List__.aget(1);
 
-            String mode  = List__.aget(0).toString();
-            String s     = arg.toString();
-            if (argCount < 2) {
-                mode = "";
-                if (s.length() > 0 && s.charAt(0) == '+') {
-                    mode = mode + s.substring(0, 1);
-                    s = s.substring(1);
-                }
-                if (s.length() > 1 && s.substring(0, 2).equals(">>")) {
-                    mode = mode + s.substring(0, 2);
-                    s = s.substring(2);
-                }
-                else if (s.length() > 0 && (s.charAt(0) == '>' || s.charAt(0) == '<')) {
-                    mode = mode + s.substring(0, 1);
-                    s = s.substring(1);
-                }
-                if (s.length() > 0 && s.charAt(0) == '&') {
-                    mode = mode + s.substring(0, 1);
-                    s = s.substring(1);
-                }
-                if (s.length() > 0 && s.charAt(0) == '=') {
-                    mode = mode + s.substring(0, 1);
-                    s = s.substring(1);
-                }
-                while (s.length() > 0 && (s.charAt(0) == ' ' || s.charAt(0) == '\t')) {
-                    s = s.substring(1);
-                }
-            }
-
-            String charset = "ISO-8859-1";
-            int pos;
-            pos = mode.indexOf(":raw");
-            if (pos > 0) {
-                charset = "ISO-8859-1";
-                if ((pos + 4) > mode.length()) {
-                    mode = mode.substring(0, pos).trim();
-                }
-                else {
-                    mode = ( mode.substring(0, pos) + mode.substring(pos + 4) ).trim();
-                }
-            }
-            pos = mode.indexOf(":bytes");
-            if (pos > 0) {
-                charset = "ISO-8859-1";
-                if ((pos + 6) > mode.length()) {
-                    mode = mode.substring(0, pos).trim();
-                }
-                else {
-                    mode = ( mode.substring(0, pos) + mode.substring(pos + 6) ).trim();
-                }
-            }
-            pos = mode.indexOf(":encoding(");
-            if (pos > 0) {
-                // extract the charset specification
-                int last = mode.indexOf(")", pos);
-                if (last > 0) {
-                    charset = mode.substring(pos + 10, last);
-                    if ((last + 1) > mode.length()) {
-                        mode = mode.substring(0, pos).trim();
-                    }
-                    else {
-                        mode = ( mode.substring(0, pos) + mode.substring(last + 1) ).trim();
-                    }
-
-                    if (charset.equals("Latin1")) {
-                        charset = "ISO-8859-1";
-                    }
-                    if (charset.equals("utf8")) {
-                        charset = "UTF-8";
-                    }
-                    if (charset.equals("utf16")) {
-                        charset = "UTF-16";
-                    }
-                }
-            }
-            pos = mode.indexOf(":utf8");
-            if (pos > 0) {
-                charset = "UTF-8";
-                if ((pos + 5) > mode.length()) {
-                    mode = mode.substring(0, pos).trim();
-                }
-                else {
-                    mode = ( mode.substring(0, pos) + mode.substring(pos + 5) ).trim();
-                }
-            }
-            // PlCORE.say("charset [" + charset + "] mode [" + mode + "]");
-
-            path = PlV.path.resolve(s);
-
-            // save the info for binmode()
-            fh.path = path;     // filename
-            fh.mode = mode;     // ">", "+<"
-            fh.charset = charset;   // "UTF-8"
-
-            // PlCORE.say("path " + mode + " " + path.toString() + " arg " + arg.toString());
-
-            if (arg.ref_str().equals("SCALAR")) {
-                // read/write to Perl scalarref
-                PlObject o = arg.scalar_deref("main");
-                fh.reader = new PlStringReader(o);
-                fh.reader.mark(o.toString().length());
-                fh.outputStream = null;
-                return PlCx.INT1;
-            }
-
-            if (mode.equals("<&") || mode.equals(">&")) {
-                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
-            }
-
-            if (mode.equals("<") || mode.equals("")) {
-                fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
-                fh.outputStream = null;
-            }
-            else if (mode.equals(">")) {
-                fh.reader = null;
-                fh.outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-            }
-            else if (mode.equals(">>")) {
-                fh.reader = null;
-                fh.outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
-            }
-            else if (mode.equals("+<")) {
-                // read/write
-                // TODO - share the IO buffer for reads and writes
-                fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
-                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
-            }
-            else if (mode.equals("+>")) {
-                // read/write, truncate first
-                // TODO - share the IO buffer for reads and writes
-                fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
-                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
-            }
-            else if (mode.equals("<-")) {
-                //   In the two-argument (and one-argument) form, opening "<-" or
-                //   "-" opens STDIN and opening ">-" opens STDOUT.
-                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
-            }
-            else if (mode.equals(">-")) {
-                //   In the two-argument (and one-argument) form, opening "<-" or
-                //   "-" opens STDIN and opening ">-" opens STDOUT.
-                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
-            }
-            else if (mode.equals("|-")) {
-                //   For three or more arguments if MODE is "|-", the filename is
-                //   interpreted as a command to which output is to be piped, and if
-                //   MODE is "-|", the filename is interpreted as a command that
-                //   pipes output to us.  In the two-argument (and one-argument)
-                //   form, one should replace dash ("-") with the command.  See
-                //   "Using open() for IPC" in perlipc for more examples of this.
-                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
-            }
-            else if (mode.equals("-|")) {
-                //   For three or more arguments if MODE is "|-", the filename is
-                //   interpreted as a command to which output is to be piped, and if
-                //   MODE is "-|", the filename is interpreted as a command that
-                //   pipes output to us.  In the two-argument (and one-argument)
-                //   form, one should replace dash ("-") with the command.  See
-                //   "Using open() for IPC" in perlipc for more examples of this.
-                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
-            }
-            else {
-                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
-            }
-            path = path.toRealPath();
-            // PlCORE.say("path " + mode + " " + path.toString());
-
-            // success
-            return PlCx.INT1;
-        }
-        catch(NoSuchFileException e) {
-            PlV.sset("main::!", new PlString("No such file or directory"));
-        }
-        catch(Exception e) {
-            PlV.sset("main::!", new PlStringLazyError(e));
-        }
-        return PlCx.UNDEF;
-EOT
     close => <<'EOT',
         try {
             fh.close();
@@ -236,10 +32,12 @@ EOT
         else {
             layer = List__.aget(0).toString();
         }
-        return PlCORE.open(want, fh, new PlArray(
-            new PlString(fh.mode + layer),
-            new PlString(fh.path.toString()) 
-        ));
+        return PlCORE.open(
+            want,
+            fh,
+            new PlArray(new PlString(fh.mode + layer), new PlString(fh.path.toString())),
+            ""
+        );
 EOT
     opendir => <<'EOT',
         try {
@@ -354,7 +152,12 @@ EOT
                 PlFileHandle in = new PlFileHandle();
                 if (argv.to_int() > 0) {
                     // arg list contains file name
-                    PlCORE.open(PlCx.VOID, in, new PlArray(new PlString("<"), argv.shift()));
+                    PlCORE.open(
+                        PlCx.VOID,
+                        in,
+                        new PlArray(new PlString("<"), argv.shift()),
+                        ""
+                    );
                 }
                 else {
                     // read from STDIN
@@ -536,7 +339,213 @@ EOT
         } sort keys %FileFunc
     ), 
     <<'EOT',
+    public static final PlObject open(int want, PlFileHandle fh, PlArray List__, String namespace) {
+        // open FILEHANDLE,EXPR
+        // open FILEHANDLE,MODE,EXPR
+        // open FILEHANDLE,MODE,EXPR,LIST
+        // open FILEHANDLE,MODE,REFERENCE
+        // open FILEHANDLE
+        try {
+            int argCount = List__.to_int();
+            Path path = null; 
+            // PlCORE.say("open " + List__.toString());
 
+            PlFileHandle.allOpenFiles.add(fh);
+            fh.readlineBuffer = new StringBuilder();
+            fh.flush();
+            fh.eof = false;
+            if (fh.outputStream != null) {
+                fh.outputStream.close();
+            }
+            if (fh.reader != null) {
+                fh.reader.close();
+            }
+
+            // As a shortcut a one-argument call takes the filename from the
+            // global scalar variable of the same name as the filehandle
+            PlObject arg =
+                  argCount == 0 ? PlV.sget(fh.typeglob_name)
+                : argCount == 1 ? List__.aget(0)
+                :                 List__.aget(1);
+
+            String mode  = List__.aget(0).toString();
+            String s     = arg.toString();
+            if (argCount < 2) {
+                mode = "";
+                if (s.length() > 0 && s.charAt(0) == '+') {
+                    mode = mode + s.substring(0, 1);
+                    s = s.substring(1);
+                }
+                if (s.length() > 1 && s.substring(0, 2).equals(">>")) {
+                    mode = mode + s.substring(0, 2);
+                    s = s.substring(2);
+                }
+                else if (s.length() > 0 && (s.charAt(0) == '>' || s.charAt(0) == '<')) {
+                    mode = mode + s.substring(0, 1);
+                    s = s.substring(1);
+                }
+                if (s.length() > 0 && s.charAt(0) == '&') {
+                    mode = mode + s.substring(0, 1);
+                    s = s.substring(1);
+                }
+                if (s.length() > 0 && s.charAt(0) == '=') {
+                    mode = mode + s.substring(0, 1);
+                    s = s.substring(1);
+                }
+                while (s.length() > 0 && (s.charAt(0) == ' ' || s.charAt(0) == '\t')) {
+                    s = s.substring(1);
+                }
+            }
+
+            String charset = "ISO-8859-1";
+            int pos;
+            pos = mode.indexOf(":raw");
+            if (pos > 0) {
+                charset = "ISO-8859-1";
+                if ((pos + 4) > mode.length()) {
+                    mode = mode.substring(0, pos).trim();
+                }
+                else {
+                    mode = ( mode.substring(0, pos) + mode.substring(pos + 4) ).trim();
+                }
+            }
+            pos = mode.indexOf(":bytes");
+            if (pos > 0) {
+                charset = "ISO-8859-1";
+                if ((pos + 6) > mode.length()) {
+                    mode = mode.substring(0, pos).trim();
+                }
+                else {
+                    mode = ( mode.substring(0, pos) + mode.substring(pos + 6) ).trim();
+                }
+            }
+            pos = mode.indexOf(":encoding(");
+            if (pos > 0) {
+                // extract the charset specification
+                int last = mode.indexOf(")", pos);
+                if (last > 0) {
+                    charset = mode.substring(pos + 10, last);
+                    if ((last + 1) > mode.length()) {
+                        mode = mode.substring(0, pos).trim();
+                    }
+                    else {
+                        mode = ( mode.substring(0, pos) + mode.substring(last + 1) ).trim();
+                    }
+
+                    if (charset.equals("Latin1")) {
+                        charset = "ISO-8859-1";
+                    }
+                    if (charset.equals("utf8")) {
+                        charset = "UTF-8";
+                    }
+                    if (charset.equals("utf16")) {
+                        charset = "UTF-16";
+                    }
+                }
+            }
+            pos = mode.indexOf(":utf8");
+            if (pos > 0) {
+                charset = "UTF-8";
+                if ((pos + 5) > mode.length()) {
+                    mode = mode.substring(0, pos).trim();
+                }
+                else {
+                    mode = ( mode.substring(0, pos) + mode.substring(pos + 5) ).trim();
+                }
+            }
+            // PlCORE.say("charset [" + charset + "] mode [" + mode + "]");
+
+            path = PlV.path.resolve(s);
+
+            // save the info for binmode()
+            fh.path = path;     // filename
+            fh.mode = mode;     // ">", "+<"
+            fh.charset = charset;   // "UTF-8"
+
+            // PlCORE.say("path " + mode + " " + path.toString() + " arg " + arg.toString());
+
+            if (arg.ref_str().equals("SCALAR")) {
+                // read/write to Perl scalarref
+                PlObject o = arg.scalar_deref("main");
+                fh.reader = new PlStringReader(o);
+                fh.reader.mark(o.toString().length());
+                fh.outputStream = null;
+                return PlCx.INT1;
+            }
+
+            if (mode.equals("<") || mode.equals("")) {
+                fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
+                fh.outputStream = null;
+            }
+            else if (mode.equals(">")) {
+                fh.reader = null;
+                fh.outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+            }
+            else if (mode.equals(">>")) {
+                fh.reader = null;
+                fh.outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
+            }
+            else if (mode.equals("+<")) {
+                // read/write
+                // TODO - share the IO buffer for reads and writes
+                fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals("+>")) {
+                // read/write, truncate first
+                // TODO - share the IO buffer for reads and writes
+                fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals("<-")) {
+                //   In the two-argument (and one-argument) form, opening "<-" or
+                //   "-" opens STDIN and opening ">-" opens STDOUT.
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals(">-")) {
+                //   In the two-argument (and one-argument) form, opening "<-" or
+                //   "-" opens STDIN and opening ">-" opens STDOUT.
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals("|-")) {
+                //   For three or more arguments if MODE is "|-", the filename is
+                //   interpreted as a command to which output is to be piped, and if
+                //   MODE is "-|", the filename is interpreted as a command that
+                //   pipes output to us.  In the two-argument (and one-argument)
+                //   form, one should replace dash ("-") with the command.  See
+                //   "Using open() for IPC" in perlipc for more examples of this.
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals("-|")) {
+                //   For three or more arguments if MODE is "|-", the filename is
+                //   interpreted as a command to which output is to be piped, and if
+                //   MODE is "-|", the filename is interpreted as a command that
+                //   pipes output to us.  In the two-argument (and one-argument)
+                //   form, one should replace dash ("-") with the command.  See
+                //   "Using open() for IPC" in perlipc for more examples of this.
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            else if (mode.equals("<&") || mode.equals(">&")) {
+                PlFileHandle fh2 = PerlOp.get_filehandle(arg, namespace);
+                fh.dupFileHandle(fh2);
+            }
+            else {
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+            path = path.toRealPath();
+            // PlCORE.say("path " + mode + " " + path.toString());
+
+            // success
+            return PlCx.INT1;
+        }
+        catch(NoSuchFileException e) {
+            PlV.sset("main::!", new PlString("No such file or directory"));
+        }
+        catch(Exception e) {
+            PlV.sset("main::!", new PlStringLazyError(e));
+        }
+        return PlCx.UNDEF;
+    }
     public static final PlObject print(int want, PlFileHandle fh, String... args) {
         try {
             StringBuilder printBuffer = fh.printBuffer;
