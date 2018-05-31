@@ -1,10 +1,15 @@
 Dev Version:
 
-- added a Class::XSAccessor pure-perl replacement
+- add  modules:
+-- Class::XSAccessor pure-perl replacement
+-- Test::More - work in progress
+
+- Java:
+-- open() mode ">&" and "<&" emulation
 
 9.024 cpan:Perlito5 2018-05-28
 
-- remove from CPAN tests that depend on specific Perl versions
+- remove CPAN tests that depend on specific Perl versions
 
 - Java:
 -- fix syntax error in "or" operation
@@ -13,8 +18,7 @@ Dev Version:
 9.023 cpan:Perlito5 2018-05-24
 
 - Parser:
--- some "goto" forms are transformed, so they work in JavaScript and Java
-backends.
+-- some "goto" forms are transformed, so they work in JavaScript and Java backends.
 -- fix chomp(), chop()
 -- fix fat-arrow in argument lists
 -- fix indirect object
