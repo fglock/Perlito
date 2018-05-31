@@ -1,5 +1,10 @@
 Dev Version:
 
+-- no changes
+
+9.025 cpan:Perlito5 2018-05-31
+
+- remove CPAN tests that depend on specific Perl versions
 - add  modules:
 -- Class::XSAccessor pure-perl replacement
 -- Test::More - work in progress
