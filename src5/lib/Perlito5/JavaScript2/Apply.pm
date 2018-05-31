@@ -851,7 +851,7 @@ package Perlito5::AST::Apply;
                && $arg->{sigil} eq '&'
                )
             {
-                $invocant = 'p5pkg[' . Perlito5::JavaScript2::escape_string(($arg->{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::JavaScript2::escape_string($arg->{name} ) . ']';
+                $invocant = 'p5make_package(' . Perlito5::JavaScript2::escape_string($arg->{namespace} || $Perlito5::PKG_NAME) . ')[' . Perlito5::JavaScript2::escape_string($arg->{name} ) . ']';
             }
             else {
                 $invocant = $arg->emit_javascript2($level, 'scalar');
