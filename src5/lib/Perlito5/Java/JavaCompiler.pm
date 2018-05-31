@@ -140,8 +140,18 @@ class PlJavaCompiler {
             source5.append("        catch(PlRedoException e) {\n");
             source5.append("            throw(e);\n");
             source5.append("        }\n");
+            source5.append("        catch(java.lang.NullPointerException e) {\n");
+            source5.append("            e.printStackTrace();\n");
+            source5.append("            String message = \"null pointer: java.lang.NullPointerException\";\n");
+            source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
+            source5.append("            return PerlOp.context(want);\n");
+            source5.append("        }\n");
             source5.append("        catch(Exception e) {\n");
-            // source5.append("            e.printStackTrace();\n");
+
+            if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                source5.append("            e.printStackTrace();\n");
+            }
+
             source5.append("            String message = e.getMessage();\n");
             source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
             source5.append("            return PerlOp.context(want);\n");
@@ -291,8 +301,18 @@ class PlJavaCompiler {
             source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
             source5.append("            throw(e);\n");
             source5.append("        }\n");
+            source5.append("        catch(java.lang.NullPointerException e) {\n");
+            source5.append("            e.printStackTrace();\n");
+            source5.append("            String message = \"null pointer: java.lang.NullPointerException\";\n");
+            source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
+            source5.append("            return PerlOp.context(want);\n");
+            source5.append("        }\n");
             source5.append("        catch(Exception e) {\n");
-            // source5.append("            e.printStackTrace();\n");
+
+            if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                source5.append("            e.printStackTrace();\n");
+            }
+
             source5.append("            String message = e.getMessage();\n");
             source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
             source5.append("            return PerlOp.context(want);\n");
