@@ -50,13 +50,14 @@ CORE.sprintf = function(List__) {
      *  b - binary number
      *  c - ASCII character represented by the given value
      *  d - signed decimal number
+     *  u - an unsigned integer, in decimal
      *  f - floating point value
      *  o - octal number
      *  s - string
      *  x - hexadecimal number (lowercase characters)
      *  X - hexadecimal number (uppercase characters)
      */
-    var r = new RegExp( /%(\+)?([0 ]|'(.))?(-)?([0-9]+)?(\.([0-9]+))?([%bcdfosxX])/g );
+    var r = new RegExp( /%(\+)?([0 ]|'(.))?(-)?([0-9]+)?(\.([0-9]+))?([%bcdufosxX])/g );
 
     /**
      * Each format string is splitted into the following parts:
@@ -137,6 +138,10 @@ CORE.sprintf = function(List__) {
             break;
             case 'd':
                 preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
+            break;
+            case 'u':
+                // preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
+                preSubstitution = String( Math.abs( parseFloat( parts[i].data ) ) );
             break;
             case 'f':
                 preSubstitution = ( parts[i].precision == false )
