@@ -4138,7 +4138,7 @@ class PlFileHandle extends PlScalarImmutable {
     public StringBuilder printBuffer;
     public boolean eof;
     public boolean is_argv;
-    public Path    path;     // filename
+    public Path    path;     // filename, can be null
     public String  mode;     // ">", "+<"
     public String  charset;  // "UTF-8"
     public boolean binmode;

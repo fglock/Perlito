@@ -5,9 +5,6 @@ use strict;
 
 
 my %FileFunc = (
-
-
-
     close => <<'EOT',
         try {
             fh.close();
@@ -31,6 +28,10 @@ EOT
         }
         else {
             layer = List__.aget(0).toString();
+        }
+        if (fh.path == null) {
+            // special file, don't know what to do
+            return PlCx.INT1;
         }
         return PlCORE.open(
             want,
@@ -455,23 +456,33 @@ EOT
             }
             // PlCORE.say("charset [" + charset + "] mode [" + mode + "]");
 
-            path = PlV.path.resolve(s);
-
             // save the info for binmode()
-            fh.path = path;     // filename
             fh.mode = mode;     // ">", "+<"
             fh.charset = charset;   // "UTF-8"
 
-            // PlCORE.say("path " + mode + " " + path.toString() + " arg " + arg.toString());
+            // modes that don't need a "path"
 
             if (arg.ref_str().equals("SCALAR")) {
-                // read/write to Perl scalarref
+                // read-write to Perl scalarref
                 PlObject o = arg.scalar_deref("main");
                 fh.reader = new PlStringReader(o);
                 fh.reader.mark(o.toString().length());
                 fh.outputStream = null;
                 return PlCx.INT1;
             }
+            else if (mode.equals("<&") || mode.equals(">&")) {
+                // "dup" a filehandle
+                PlFileHandle fh2 = PerlOp.get_filehandle(arg, namespace);
+                fh.dupFileHandle(fh2);
+                return PlCx.INT1;
+            }
+
+            // the other modes need a "path"
+
+            path = PlV.path.resolve(s);
+            // save the info for binmode()
+            fh.path = path;     // filename
+            // PlCORE.say("path " + mode + " " + path.toString() + " arg " + arg.toString());
 
             if (mode.equals("<") || mode.equals("")) {
                 fh.reader = Files.newBufferedReader(path, Charset.forName(charset));
@@ -524,10 +535,6 @@ EOT
                 //   form, one should replace dash ("-") with the command.  See
                 //   "Using open() for IPC" in perlipc for more examples of this.
                 PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
-            }
-            else if (mode.equals("<&") || mode.equals(">&")) {
-                PlFileHandle fh2 = PerlOp.get_filehandle(arg, namespace);
-                fh.dupFileHandle(fh2);
             }
             else {
                 PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
