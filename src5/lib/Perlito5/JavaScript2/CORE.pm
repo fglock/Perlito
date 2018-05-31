@@ -459,9 +459,25 @@ CORE.length = function(List__) {
     return p5str(List__[0]).length;
 };
 
-CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };
-CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) };
-
+CORE.pack    = function(List__) {
+    // pack "W*", 90
+    var pattern = p5str(List__.shift());
+    if (pattern == "W*") {
+        return List.map(String.fromCharCode).join('');
+    }
+    if (pattern == "d") {
+        return "";  // TODO
+    }
+    CORE.warn([ "CORE::pack " + pattern + " not implemented" ]);
+};
+CORE.unpack  = function(List__) {
+    var pattern = p5str(List__[0]);
+    var s = p5str(List__[1]);
+    if (pattern == "W*") {
+        return s.split('').map( x => x.charCodeAt(0) );
+    }
+    CORE.warn([ "CORE::unpack " + pattern + " not implemented" ])
+};
 CORE.ref = function(List__) {
     var o = List__[0];
     if (o == null) {
