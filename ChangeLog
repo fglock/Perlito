@@ -2,6 +2,10 @@ Dev Version:
 
 -- no changes
 
+9.026 cpan:Perlito5 2018-06-13
+
+- remove CPAN tests that depend on specific Perl versions
+
 9.025 cpan:Perlito5 2018-05-31
 
 - remove CPAN tests that depend on specific Perl versions

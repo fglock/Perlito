@@ -85,6 +85,8 @@ rm t/vec.t                           # (Wstat: 512 Tests: 0 Failed: 0)
 rm t/wantarray.t             # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
 rm t/arith.t
 rm t/cond.t
+rm t/crypt.t
+rm t/sub_current.t
 
 # http://www.cpantesters.org/cpan/report/28626710-63e2-11e8-a1cf-bb670eaac09d
 rm t/range.t         # problem with NaN
