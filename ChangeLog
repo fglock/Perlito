@@ -1,6 +1,6 @@
 Dev Version:
 
--- no changes
+- add Perlito5/Runtime/Formline.pm for CORE::formline() implementation
 
 9.026 cpan:Perlito5 2018-06-13
 
