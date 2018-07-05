@@ -1,4 +1,6 @@
 package Perlito5::Runtime::Formline;
+use strict;
+use warnings;
 
 # a pure Perl implementation of CORE::formline()
 
@@ -8,9 +10,50 @@ sub formline {
     # TODO
     warn "TODO - CORE::formline not implemented";
 
-    $^A = $picture;
+    my $out = $picture;
+
+    for my $v (@list) {
+        $out =~ s{(
+                \@   <+           #  @<<<<
+              | \@  \|+           #  @||||
+              | \@   >+           #  @>>>>
+              | \@  \#+  \. \#+   #  @###.###
+              | \@  \#+           #  @###
+              | \@       \. \#+   #  @.###
+              | \@  \*            #  @*
+              | \@
+
+              | \^   <+           #  ^<<<<
+              | \^  \|+           #  ^||||
+              | \^   >+           #  ^>>>>
+              | \^  \*            #  ^*
+              )
+             }
+             { _format($1, $v) }xe;
+    }
+
+    print "[[ $out ]]\n";
+
+    $^A = $out;
     return 1;
 }
+
+sub _format {
+    my ($picture, $value) = @_;
+    print "_format [[ $picture ]] [[ $value ]]\n";
+
+    while (length($value) < length($picture)) {
+        $value = $value . ' ' if $picture =~ / \@\< | \@\| /x;
+        $value = ' ' . $value if $picture =~ / \@\> | \@\| /x;
+    }
+    return substr($value, 0, length($picture));
+
+}
+
+Perlito5::Runtime::Formline::formline(
+    "xx @<<<<< xx @||||| xx @>>>>> xx",
+        "abc",    "def",    "ghi",
+);
 
 1;
 
