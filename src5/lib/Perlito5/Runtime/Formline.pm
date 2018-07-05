@@ -14,19 +14,19 @@ sub formline {
 
     for my $v (@list) {
         $out =~ s{(
-                \@   <+           #  @<<<<
-              | \@  \|+           #  @||||
-              | \@   >+           #  @>>>>
-              | \@  \#+  \. \#+   #  @###.###
-              | \@  \#+           #  @###
-              | \@       \. \#+   #  @.###
-              | \@  \*            #  @*
+                \@   <+          (?: \.\.\. )?       #  @<<<<
+              | \@  \|+          (?: \.\.\. )?       #  @||||
+              | \@   >+          (?: \.\.\. )?       #  @>>>>
+              | \@  \#+  \. \#+                      #  @###.###
+              | \@  \#+                              #  @###
+              | \@       \. \#+                      #  @.###
+              | \@  \*                               #  @*
               | \@
 
-              | \^   <+           #  ^<<<<
-              | \^  \|+           #  ^||||
-              | \^   >+           #  ^>>>>
-              | \^  \*            #  ^*
+              | \^   <+          (?: \.\.\. )?       #  ^<<<<
+              | \^  \|+          (?: \.\.\. )?       #  ^||||
+              | \^   >+          (?: \.\.\. )?       #  ^>>>>
+              | \^  \*                               #  ^*
               )
              }
              { _format($1, $v) }xe;
@@ -42,17 +42,31 @@ sub _format {
     my ($picture, $value) = @_;
     print "_format [[ $picture ]] [[ $value ]]\n";
 
-    while (length($value) < length($picture)) {
-        $value = $value . ' ' if $picture =~ / \@\< | \@\| /x;
-        $value = ' ' . $value if $picture =~ / \@\> | \@\| /x;
+    if ($picture eq '@*') {
+        chomp($value);
+        return $value;
     }
-    return substr($value, 0, length($picture));
 
+    if (length($value) < length($picture)) {
+        while (length($value) < length($picture)) {
+            $value = $value . ' ' if $picture =~ / \@\< | \@\| /x;
+            $value = ' ' . $value if $picture =~ / \@\> | \@\| /x;
+        }
+        return $value;
+    }
+
+    if (length($value) > length($picture)) {
+        $value = substr($value, 0, length($picture) - 3) . "..." if $picture =~ / \.\.\. /x;
+        $value = substr($value, 0, length($picture));
+        return $value;
+    }
+
+    return $value;
 }
 
 Perlito5::Runtime::Formline::formline(
-    "xx @<<<<< xx @||||| xx @>>>>> xx",
-        "abc",    "def",    "ghi",
+    "xx @<<<<< xx @||||| xx @>>>>> xx @> xx ",
+        "abc",    "def",    "ghi",    "zzzz",
 );
 
 1;
