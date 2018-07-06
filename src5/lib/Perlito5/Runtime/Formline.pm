@@ -20,7 +20,7 @@ sub formline {
         if ($picture =~ /~~/) {
             $repeat_line_until_all_fields_exhausted = 1;
         }
-        $picture =~ s/~//g;
+        $picture =~ s/~/ /g;
     }
     $picture =~ s/[ ]*$//;  # trim spaces at the end of line before interpolating
     my @parts = split 
