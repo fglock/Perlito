@@ -6,6 +6,7 @@ use strict;
 use Perlito5::Java::CORE;
 use Perlito5::Java::Crypt;
 use Perlito5::Java::JavaCompiler;
+use Perlito5::Runtime::Formline;
 
 sub perl5_to_java {
     my ($source, $namespace, $want, $scope_java) = @_;

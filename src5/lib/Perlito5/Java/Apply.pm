@@ -1891,6 +1891,12 @@ package Perlito5::AST::Apply;
                 . ')'
         }
 
+        if ($self->{namespace} eq 'CORE' || $self->{namespace} eq '') {
+            if ($code eq 'formline') {
+                $self->{namespace} = 'Perlito5::Runtime::Formline';
+            }
+        }
+
         if ($self->{namespace}) {
             if (  $self->{namespace} eq 'Java' 
                && $code eq 'inline'

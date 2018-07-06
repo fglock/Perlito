@@ -32,4 +32,5 @@ utf*.pl
 /cpan-Perlito5/t/
 /org
 *.jar
+.DS_Store
 
