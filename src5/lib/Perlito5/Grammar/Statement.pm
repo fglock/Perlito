@@ -61,22 +61,6 @@ token stmt_yadayada {
 # Errors: "Format not terminated"
 #
 #
-token stmt_format_internal_op1 {
-    [ ' ' | \t ]*
-    <!before [ \c10 | \c13 ] >
-    <Perlito5::Grammar::Precedence::op_parse>
-    {
-        my $op = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Precedence::op_parse"});
-        print STDERR "got op\n"; 
-        print STDERR Perlito5::Dumper::Dumper( $op );
-        $MATCH->{capture} = $op;
-    }
-    [ ' ' | \t ]*
-};
-sub stmt_format_internal_op2 {
-    stmt_format_internal_op1(@_);
-}
-
 token stmt_format {
     'format'
     [ <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::full_ident>
@@ -89,36 +73,6 @@ token stmt_format {
     [ \c10 \c13? | \c13 \c10? ]
 
     { print STDERR "TODO - 'format' parsing - work in progress\n"; }
-
-    [
-        '.' [ ' ' | \t ]*   # TODO - test for EOF
-        { print STDERR "end of format\n"; }
-    |
-        <Perlito5::Grammar::Space::to_eol> [ \c10 \c13? | \c13 \c10? ]
-        { print STDERR "one line of text\n"; }
-        [
-            '.' [ ' ' | \t ]*   # TODO - test for EOF
-            { print STDERR "end of format\n"; }
-        |
-            <stmt_format_internal_op1>
-            [ ','  <stmt_format_internal_op2> ]*
-            [ \c10 \c13? | \c13 \c10? ]
-            {
-                my @op_list;
-                for my $op ( $MATCH->{"stmt_format_internal_op1"}, @{ $MATCH->{"stmt_format_internal_op2"} } ) {
-                    my $term = $op->{capture};
-                    print STDERR "got term: ", Perlito5::Dumper::Dumper( $term );
-                    if ($term->[0] eq 'term') {
-                        push @op_list, $term->[1];
-                    }
-                    # elsif ($term->[0] eq 'term') {
-                }
-                print STDERR "got list: ", Perlito5::Dumper::Dumper( \@op_list );
-                # $MATCH->{capture} = $op1;
-            }
-
-        ]
-    ]
     {
         $MATCH->{capture} =
             Perlito5::AST::Apply->new(
@@ -131,7 +85,39 @@ token stmt_format {
                 ]
             );
     }
-    <.Perlito5::Grammar::Space::opt_ws>  # this will read the 'here-doc' we are expecting
+
+    [
+        '.' [ ' ' | \t ]*   # TODO - test for EOF
+        { print STDERR "end of format\n"; }
+        { return $MATCH }
+    |
+        <Perlito5::Grammar::Space::to_eol> [ \c10 \c13? | \c13 \c10? ]
+        { print STDERR "one line of text\n"; }
+        [
+            '.' [ ' ' | \t ]*   # TODO - test for EOF
+            { print STDERR "end of format\n"; }
+            { return $MATCH }
+        |
+            [ ' ' | \t ]*
+            [   <before '{'>
+                <Perlito5::Grammar::Precedence::op_parse>
+                {
+                    my $op = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Precedence::op_parse"}->[-1]);
+                    print STDERR "got block\n"; 
+                    print STDERR Perlito5::Dumper::Dumper( $op );
+                }
+            ]
+            <Perlito5::Grammar::Space::to_eol>
+            [ \c10 \c13? | \c13 \c10? ]
+            {
+                my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
+                print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
+                my $exp2 = Perlito5::Match::flat(Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 ));
+                print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
+                # $MATCH->{capture} = $op1;
+            }
+        ]
+    ]*
 };
 
 token stmt_package {
