@@ -1,6 +1,7 @@
 package Perlito5::Runtime::Formline;
 use strict;
 use warnings;
+use Data::Dumper;
 
 # a pure Perl implementation of CORE::formline()
 
@@ -8,14 +9,11 @@ sub formline {
     my ($picture, @list) = @_;
 
     # TODO
+    # TODO - process '~', '~~'
     warn "TODO - CORE::formline not implemented";
 
-    my $out = $picture;
-
-    # TODO - process '~', '~~'
-
-    for my $v (@list) {
-        $out =~ s{(
+    my @parts = split 
+             /(
                 \@   <+          (?: \.\.\. )?       #  @<<<<     @<<<<... 
               | \@  \|+          (?: \.\.\. )?       #  @||||     @||||...
               | \@   >+          (?: \.\.\. )?       #  @>>>>     @>>>>...
@@ -30,9 +28,16 @@ sub formline {
               | \^  \|+          (?: \.\.\. )?       #  ^||||     ^||||...
               | \^   >+          (?: \.\.\. )?       #  ^>>>>     ^>>>>...
               | \^  \*                               #  ^*
-              )
-             }
-             { _format($1, $v) }xe;
+              )/x, $picture;
+    print Dumper \@parts;
+    my $out = "";
+    for my $s (@parts) {
+        if ( substr($s, 0, 1) eq "@" ) {
+            $out .= _format($s, shift @list);
+        }
+        else {
+            $out .= $s;
+        }
     }
 
     print "[[ $out ]]\n";
@@ -48,6 +53,24 @@ sub _format {
     if ($picture eq '@*') {
         chomp($value);
         return $value;
+    }
+
+    if ($picture =~ /\@[\.#0]/) {
+        my $fmt = "%";
+        $fmt .= "0" if $picture =~ /0/;
+        $fmt .= length($picture);
+        my $dot = index( $picture, "." );
+        if ($dot > 0) {
+            $fmt = $fmt . "." . ( length($picture) - $dot );
+        }
+        else {
+            $fmt = $fmt . ".0";
+        }
+        $fmt .= "f";
+        print "_format sprintf [[ $fmt ]]\n";
+        my $out = sprintf( $fmt, $value );
+        print "_format out [[ $out ]]\n";
+        return $out;
     }
 
     if (length($value) < length($picture)) {
@@ -68,9 +91,14 @@ sub _format {
 }
 
 Perlito5::Runtime::Formline::formline(
-    "xx @<<<<< xx @||||| xx @>>>>> xx @> xx ",
+    'xx @<<<<< xx @||||| xx @>>>>> xx @> xx ',
         "abc",    "def",    "ghi",    "zzzz",
 );
+Perlito5::Runtime::Formline::formline(
+    'xx @### xx @###.### xx @.### xx @0####.## xx ',
+        13.45,  78.99,      0.12,    14.45,
+);
+print "done\n";
 
 1;
 
