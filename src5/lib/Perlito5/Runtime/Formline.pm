@@ -17,7 +17,6 @@ sub formline {
     my $supress_line_if_all_fields_empty = 0;
     my $repeat_line_until_all_fields_exhausted = 0;
 
-    $picture =~ s/[ ]*$//;  # trim spaces at the end of line before interpolating
     if ($picture =~ /~/) {
         $supress_line_if_all_fields_empty = 1;
         if ($picture =~ /~~/) {
@@ -25,20 +24,7 @@ sub formline {
         }
         $picture =~ s/~//g;
     }
-
-    if ($supress_line_if_all_fields_empty) {
-        my $empty = 1;
-        for (@_) {
-            $empty = 0 if defined($_) && $_ ne '';
-        }
-        $^A = "" if !defined($^A);
-        return 1 if $empty;
-    }
-
-    if ($repeat_line_until_all_fields_exhausted) {
-        warn "TODO - CORE::formline '~~' not implemented";
-    }
-
+    $picture =~ s/[ ]*$//;  # trim spaces at the end of line before interpolating
     my @parts = split 
         /( [\@\^]
               (?:
@@ -54,57 +40,61 @@ sub formline {
               )
         )/x, $picture;
     # print Dumper \@parts;
-    my $out = "";
-  PART:
-    for my $part_index (0 .. $#parts) {
-        my $s = $parts[$part_index];
-        if ( substr($s, 0, 1) eq "^" ) {
-            # special field
-            my $regular_field = $s;
-            $regular_field =~ s/\^/\@/;
-            if ($regular_field eq '@*') {
-                $_[$var_index] =~ s/^([^\n*]\n?)//;     # modify the parameter
-                my $var = $1;
-                # if ($_[$var_index] eq "") {
-                #     $_[$var_index] = undef;             # field is exhausted
-                # }
-                $var_index++;
-                $out .= _format($regular_field, $var);
+    do {
+        if ($supress_line_if_all_fields_empty) {
+            my $empty = 1;
+            for (@_) {
+                $empty = 0 if defined($_) && $_ ne '';
             }
-            elsif ($regular_field =~ /\@[\.#0]/) {
-                my $var = $_[$var_index++];
-                if (defined($var)) {
+            $^A = "" if !defined($^A);
+            return 1 if $empty;
+        }
+        my $out = "";
+      PART:
+        for my $part_index (0 .. $#parts) {
+            my $s = $parts[$part_index];
+            if ( substr($s, 0, 1) eq "^" ) {
+                # special field
+                my $regular_field = $s;
+                $regular_field =~ s/\^/\@/;
+                if ($regular_field eq '@*') {
+                    $_[$var_index] =~ s/^([^\n*]\n?)//;     # modify the parameter
+                    my $var = $1;
+                    $var_index++;
                     $out .= _format($regular_field, $var);
                 }
-                else {
-                    $out .= " " x length($regular_field);
+                elsif ($regular_field =~ /\@[\.#0]/) {
+                    my $var = $_[$var_index++];
+                    if (defined($var)) {
+                        $out .= _format($regular_field, $var);
+                    }
+                    else {
+                        $out .= " " x length($regular_field);
+                    }
                 }
+                else {
+                    if (!defined($_[$var_index]) && $part_index == $#parts) {
+                        next PART;                          # skip last field if the variable is undef
+                    }
+                    my $len = length($regular_field);
+                    $_[$var_index] =~ s/^(.{0,$len})//;     # modify the parameter
+                    my $var = $1;
+                    $var_index++;
+                    $out .= _format($regular_field, $var);
+                }
+            }
+            elsif ( substr($s, 0, 1) eq "@" ) {
+                # regular field
+                $out .= _format($s, $_[$var_index++]);
             }
             else {
-                if (!defined($_[$var_index]) && $part_index == $#parts) {
-                    next PART;                          # skip last field if the variable is undef
-                }
-                my $len = length($regular_field);
-                $_[$var_index] =~ s/^(.{0,$len})//;     # modify the parameter
-                my $var = $1;
-                # if ($_[$var_index] eq "") {
-                #     $_[$var_index] = undef;             # field is exhausted
-                # }
-                $var_index++;
-                $out .= _format($regular_field, $var);
+                $out .= $s;
             }
         }
-        elsif ( substr($s, 0, 1) eq "@" ) {
-            # regular field
-            $out .= _format($s, $_[$var_index++]);
-        }
-        else {
-            $out .= $s;
-        }
+        # print "[[ $out ]]\n";
+        $^A .= $out;
     }
-    # $out =~ s/[ ]*$//;  # trim spaces at the end of line after interpolating
-    # print "[[ $out ]]\n";
-    $^A .= $out;
+    while $repeat_line_until_all_fields_exhausted;
     return 1;
 }
 
