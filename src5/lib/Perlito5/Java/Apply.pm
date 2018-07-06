@@ -1893,7 +1893,12 @@ package Perlito5::AST::Apply;
 
         if ($self->{namespace} eq 'CORE' || $self->{namespace} eq '') {
             if ($code eq 'formline') {
-                $self->{namespace} = 'Perlito5::Runtime::Formline';
+                # create a PlStringConstant
+                $code = Perlito5::AST::Buf->new( buf => 'Perlito5::Runtime::Formline::formline' )->emit_java($level, 'scalar');
+                return $code . '.apply('
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . Perlito5::Java::to_param_list($self->{arguments}, $level+1)
+                      . ')';
             }
         }
 

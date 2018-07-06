@@ -8,21 +8,6 @@ use Data::Dumper;
 # TODO - process fields:     '~', '~~'
 # TODO - special variables:  $: $^ $~ $% $= $^L
 #
-# TODO - BUG:
-#
-# $ perl -e ' use Data::Dumper; $v = "123"; formline( "aaa ^< ^ ^ xxx", $v, $v, $v ); print Dumper [ $^A, $v, defined($v) ]; '
-# $VAR1 = [
-#           'aaa 12 3   xxx',
-#           '',
-#           1
-#         ];
-# $ java -jar perlito5.jar -Isrc5/lib -e ' use Data::Dumper; $v = "123"; formline( "aaa ^< ^ ^ xxx", $v, $v, $v ); print Dumper [ $^A, $v, defined($v) ]; '
-# $VAR1 = [
-#         "aaa 12 1 1 xxx",
-#         123,
-#         1,
-#     ];
-# 
 
 sub formline {
     my $picture = $_[0];
@@ -179,6 +164,12 @@ __END__
             13.45,  undef,      $v,      $v,         $v,$v,$v,
     );
     print "PRF::fl:  [[ $^A ]]\n";
+
+    $^A = "";
+    $v = "123"; 
+    Perlito5::Runtime::Formline::formline( "aaa ^< ^ ^ xxx", $v, $v, $v );
+    print "PRF::fl:  ", Dumper [ $^A, $v, defined($v) ];
+
 }
 
 {
