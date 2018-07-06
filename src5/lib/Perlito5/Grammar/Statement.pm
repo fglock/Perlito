@@ -50,6 +50,14 @@ token stmt_yadayada {
 # .
 #
 #
+# $ perl -e ' $v = "abc"; $c = "ert"; $a = "yuu"; format=  # comment 
+# xyz @<<< @<<<
+# { $c; $v; }, $a
+# .
+# write; '
+# xyz abc  yuu
+#
+#
 # Errors: "Format not terminated"
 #
 #
@@ -76,8 +84,20 @@ token stmt_format {
             '.' [ ' ' | \t ]*   # TODO - test for EOF
             { print STDERR "end of format\n"; }
         |
-            '{'
-            { print STDERR "wait for BLOCK\n"; }
+            '{'  <.Perlito5::Grammar::Space::ws>?
+                { $MATCH->{_save_scope} = [ @Perlito5::SCOPE_STMT ];
+                  @Perlito5::SCOPE_STMT = ();
+                }
+                <Perlito5::Grammar::exp_stmts>
+                { @Perlito5::SCOPE_STMT = @{ $MATCH->{_save_scope} } }
+                <.Perlito5::Grammar::Space::ws>?
+            [ \} | { Perlito5::Compiler::error 'Missing right curly bracket' } ]
+            [ ' ' | \t ]*
+            [ '#' <.Perlito5::Grammar::Space::to_eol> ]?
+            [ \c10 \c13? | \c13 \c10? ]
+            { print STDERR "saw BLOCK\n"; }
+            { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::exp_stmts"}) ]
+            }
         |
             { print STDERR "wait for LIST\n"; }
         ]
