@@ -11,8 +11,6 @@ use Data::Dumper;
 
 sub formline {
     my $picture = shift;
-    # Note: we access the parameter list from @_, because the form parameters are "rw"
-    my $var_index = 0;
 
     my $supress_line_if_all_fields_empty = 0;
     my $repeat_line_until_all_fields_exhausted = 0;
@@ -50,6 +48,7 @@ sub formline {
             return 1 if $empty;
         }
         my $out = "";
+        my $var_index = 0;  # we access the parameter list from @_, because the form parameters are "rw"
       PART:
         for my $part_index (0 .. $#parts) {
             my $s = $parts[$part_index];
@@ -179,6 +178,16 @@ __END__
     $v = "123"; 
     Perlito5::Runtime::Formline::formline( "aaa ^< ^ ^ xxx", $v, $v, $v );
     print "PRF::fl:  ", Dumper [ $^A, $v, defined($v) ];
+
+    $^A = "";
+    $v = "";
+    formline( "~ xxx ^< xxx", $v );
+    print "PRF::fl: ~  ", Dumper [ $^A, $v, defined($v) ];
+
+    $^A = "";
+    $v = "1234567";
+    formline( "~~ xxx ^< xxx", $v );
+    print "PRF::fl: ~~ ", Dumper [ $^A, $v, defined($v) ];
 
 }
 
