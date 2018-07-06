@@ -5,7 +5,6 @@ use Data::Dumper;
 
 # a pure Perl implementation of CORE::formline()
 #
-# TODO - process fields:     '~', '~~'
 # TODO - special variables:  $: $^ $~ $% $= $- $^L
 #
 
