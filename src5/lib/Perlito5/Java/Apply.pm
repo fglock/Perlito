@@ -1523,6 +1523,15 @@ package Perlito5::AST::Apply;
              .      $list
              . ')';
         },
+        'formline' => sub {
+            my ($self, $level, $wantarray) = @_;
+            # create a PlStringConstant
+            my $code = Perlito5::AST::Buf->new( buf => 'Perlito5::Runtime::Formline::formline' )->emit_java($level, 'scalar');
+            return $code . '.apply('
+                    . Perlito5::Java::to_context($wantarray) . ', '
+                    . Perlito5::Java::to_param_list($self->{arguments}, $level+1)
+                  . ')';
+        },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
@@ -1889,17 +1898,6 @@ package Perlito5::AST::Apply;
             return $Perlito5::Java::op_prefix_js_str{$code} . '(' 
                 . Perlito5::Java::to_str($self->{arguments}[0])
                 . ')'
-        }
-
-        if ($self->{namespace} eq 'CORE' || $self->{namespace} eq '') {
-            if ($code eq 'formline') {
-                # create a PlStringConstant
-                $code = Perlito5::AST::Buf->new( buf => 'Perlito5::Runtime::Formline::formline' )->emit_java($level, 'scalar');
-                return $code . '.apply('
-                        . Perlito5::Java::to_context($wantarray) . ', '
-                        . Perlito5::Java::to_param_list($self->{arguments}, $level+1)
-                      . ')';
-            }
         }
 
         if ($self->{namespace}) {
