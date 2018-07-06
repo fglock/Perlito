@@ -32,7 +32,12 @@ sub formline {
     print Dumper \@parts;
     my $out = "";
     for my $s (@parts) {
-        if ( substr($s, 0, 1) eq "@" ) {
+        if ( substr($s, 0, 1) eq "^" ) {
+            # special field
+            warn "TODO - special field not implemented";
+        }
+        elsif ( substr($s, 0, 1) eq "@" ) {
+            # regular field
             $out .= _format($s, shift @list);
         }
         else {
