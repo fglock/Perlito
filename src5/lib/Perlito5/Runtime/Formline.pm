@@ -15,32 +15,43 @@ sub formline {
     warn "TODO - CORE::formline not implemented";
 
     my @parts = split 
-             /(
-                \@   <+          (?: \.\.\. )?       #  @<<<<     @<<<<... 
-              | \@  \|+          (?: \.\.\. )?       #  @||||     @||||...
-              | \@   >+          (?: \.\.\. )?       #  @>>>>     @>>>>...
-              | \@   0?   \#+  \. \#+                #  @###.###  @0###.###
-              | \@   0?   \#+                        #  @###      @0###
-              | \@   0?        \. \#+                #  @.###     @0.###
-              | \@   0                               #            @0
-              | \@  \*                               #  @*
-              | \@
-
-              | \^   <+          (?: \.\.\. )?       #  ^<<<<     ^<<<<...  
-              | \^  \|+          (?: \.\.\. )?       #  ^||||     ^||||...
-              | \^   >+          (?: \.\.\. )?       #  ^>>>>     ^>>>>...
-              | \^  \*                               #  ^*
-              )/x, $picture;
+        /( [\@\^]
+              (?:
+                  <+          (?: \.\.\. )?       #  @<<<<     @<<<<... 
+              |  \|+          (?: \.\.\. )?       #  @||||     @||||...
+              |   >+          (?: \.\.\. )?       #  @>>>>     @>>>>...
+              |   0?   \#+  \. \#+                #  @###.###  @0###.###
+              |   0?   \#+                        #  @###      @0###
+              |   0?        \. \#+                #  @.###     @0.###
+              |   0                               #            @0
+              |  \*                               #  @*
+              |                                   #  @
+              )
+        )/x, $picture;
     print Dumper \@parts;
     my $out = "";
     for my $s (@parts) {
         if ( substr($s, 0, 1) eq "^" ) {
             # special field
-            warn "TODO - special field not implemented";
             my $regular_field = $s;
             $regular_field =~ s/\^/\@/;
             if ($picture eq '^*') {
                 $_[$var_index++] =~ s/^([^\n*]\n?)//;   # modify the parameter
+                my $var = $1;
+                $out .= _format($regular_field, $var);
+            }
+            elsif ($picture =~ /\@[\.#0]/) {
+                my $var = $_[$var_index++];
+                if (defined($var)) {
+                    $out .= _format($regular_field, $var);
+                }
+                else {
+                    $out .= " " x length($regular_field);
+                }
+            }
+            else {
+                my $len = length($regular_field);
+                $_[$var_index++] =~ s/^(.{0,$len})//;   # modify the parameter
                 my $var = $1;
                 $out .= _format($regular_field, $var);
             }
@@ -56,7 +67,7 @@ sub formline {
 
     print "[[ $out ]]\n";
 
-    $^A = $out;
+    $^A .= $out;
     return 1;
 }
 
@@ -107,14 +118,33 @@ sub _format {
     return $value;
 }
 
+# tests
+
+$^A = "";
 Perlito5::Runtime::Formline::formline(
-    'xx @<<<<< xx @||||| xx @>>>>> xx @> xx ',
-        "abc",    "def",    "ghi",    "zzzz",
+    'xx @<<<<< xx @||||| xx @>>>>> xx @> xx @ xx',
+        "abc",    "def",    "ghi",   "jjjj", "k", 
 );
+$^A = "";
 Perlito5::Runtime::Formline::formline(
     'xx @### xx @###.### xx @.### xx @0####.## xx @## xx ',
         13.45,  78.99,      0.12,    14.45,       1000,
 );
+
+$^A = "";
+formline(
+    'xx @<<<<< xx @||||| xx @>>>>> xx @> xx @ xx',
+        "abc",    "def",    "ghi",   "jjjj", "k", 
+);
+print "formline: [[ $^A ]]\n";
+$^A = "";
+formline(
+    'xx @### xx @###.### xx @.### xx @0####.## xx @## xx ',
+        13.45,  78.99,      0.12,    14.45,       1000,
+);
+print "formline: [[ $^A ]]\n";
+
+
 print "done\n";
 
 1;
