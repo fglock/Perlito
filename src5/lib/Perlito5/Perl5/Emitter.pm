@@ -383,6 +383,27 @@ package Perlito5::AST::Apply;
                     );
             return 'qr' . $q . $replace0 . $q . $self->{arguments}->[1]->{buf};
         }
+        if ($self->{code} eq 'p5:format') {
+            my @arg = @{ $self->{arguments} };
+            my $name = shift @arg;
+            $name = $name->{buf} if ref $name;
+            my @str;
+            push @str, "format " . ( $name ? $name . " " : "" ) . "=";
+            while (@arg) {
+                my $picture = shift @arg;
+                push @str, $picture->{buf};
+                my $ast = shift @arg;
+                if ($ast) {
+                    my $out = [];
+                    Perlito5::Perl5::PrettyPrinter::pretty_print([$ast->emit_perl5()], 0, $out);
+                    my $code = join('', @{$out});
+                    chomp $code;
+                    push @str, $code;
+                }
+            }
+            push @str, ".\n"; 
+            return join("\n", @str);
+        }
 
         if ($self->{code} eq 'package')    { return [ stmt => 'package', [ bareword => $self->{namespace} ] ] }
 
