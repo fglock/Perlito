@@ -25,6 +25,31 @@ token stmt_yadayada {
     }
 };
 
+#
+# format =
+# format NAME =
+#
+#   # comment
+#
+#   . OPTIONAL-SPACE
+#
+#   ONE-LINE_OF-TEXT
+#   . OPTIONAL-SPACE
+#
+#   ONE-LINE_OF-TEXT
+#   { LIST,
+#   LIST   }   # comment
+#
+#   ONE-LINE_OF-TEXT
+#   LIST
+#
+#
+# format BLOCK =
+# @<<< @<<<
+# {foo=>"bar"} # this is a block, not a hash!
+# .
+#
+#
 token stmt_format {
     'format' <.Perlito5::Grammar::Space::ws> 
     [ <Perlito5::Grammar::full_ident>
