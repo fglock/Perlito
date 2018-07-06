@@ -74,15 +74,16 @@ token stmt_format {
 
     { print STDERR "TODO - 'format' parsing - work in progress\n"; }
     {
+        $MATCH->{fmt} = [
+            Perlito5::AST::Buf->new(
+                buf => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'}),
+            ),
+        ];
         $MATCH->{capture} =
             Perlito5::AST::Apply->new(
                 code      => 'p5:format',
                 namespace => '',
-                arguments => [
-                    Perlito5::AST::Buf->new(
-                        buf => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'}),
-                    ),
-                ]
+                arguments => $MATCH->{fmt},
             );
     }
 
@@ -106,16 +107,29 @@ token stmt_format {
                     print STDERR "got block\n"; 
                     print STDERR Perlito5::Dumper::Dumper( $op );
                 }
+                [
+                    ',' <Perlito5::Grammar::Space::to_eol>
+                    {
+                        my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
+                        print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
+                        my $exp2 = Perlito5::Match::flat(Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 ));
+                        print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
+                        # $MATCH->{capture} = $op1;
+                        push @{ $MATCH->{fmt} }, $exp2;
+                    }
+                ]?
+            |
+                <Perlito5::Grammar::Space::to_eol>
+                {
+                    my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
+                    print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
+                    my $exp2 = Perlito5::Match::flat(Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 ));
+                    print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
+                    # $MATCH->{capture} = $op1;
+                    push @{ $MATCH->{fmt} }, $exp2;
+                }
             ]
-            <Perlito5::Grammar::Space::to_eol>
             [ \c10 \c13? | \c13 \c10? ]
-            {
-                my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
-                print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
-                my $exp2 = Perlito5::Match::flat(Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 ));
-                print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
-                # $MATCH->{capture} = $op1;
-            }
         ]
     ]*
 };
