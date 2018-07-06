@@ -72,7 +72,7 @@ token stmt_format {
     [ '#' <.Perlito5::Grammar::Space::to_eol> ]?
     [ \c10 \c13? | \c13 \c10? ]
 
-    { print STDERR "TODO - 'format' parsing - work in progress\n"; }
+    # { print STDERR "'format' parsing\n"; }
     {
         $MATCH->{fmt} = [
             Perlito5::AST::Buf->new(
@@ -89,14 +89,22 @@ token stmt_format {
 
     [
         '.' [ ' ' | \t ]*   # TODO - test for EOF
-        { print STDERR "end of format\n"; }
+        # { print STDERR "end of format\n"; }
         { return $MATCH }
     |
+        '#' <Perlito5::Grammar::Space::to_eol> [ \c10 \c13? | \c13 \c10? ]
+        # { print STDERR "comment\n"; }
+    |
         <Perlito5::Grammar::Space::to_eol> [ \c10 \c13? | \c13 \c10? ]
-        { print STDERR "one line of text\n"; }
+        # { print STDERR "one line of text\n"; }
+        {
+            my $picture = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
+            # print STDERR "picture: ", Perlito5::Dumper::Dumper( $picture );
+            push @{ $MATCH->{fmt} }, Perlito5::AST::Buf->new( buf => $picture );
+        }
         [
             '.' [ ' ' | \t ]*   # TODO - test for EOF
-            { print STDERR "end of format\n"; }
+            # { print STDERR "end of format\n"; }
             { return $MATCH }
         |
             [ ' ' | \t ]*
@@ -104,28 +112,48 @@ token stmt_format {
                 <Perlito5::Grammar::Precedence::op_parse>
                 {
                     my $op = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Precedence::op_parse"}->[-1]);
-                    print STDERR "got block\n"; 
-                    print STDERR Perlito5::Dumper::Dumper( $op );
+                    # print STDERR "got block\n"; 
+                    # print STDERR Perlito5::Dumper::Dumper( $op );
+                    if ( $op && $op->[0] eq "postfix_or_term" && $op->[1] eq "block" ) {
+                        $MATCH->{_ops} = [ $op->[2][-1] ];
+                    }
+                    else {
+                        Perlito5::Compiler::error "Syntax error";
+                    }
                 }
                 [
                     ',' <Perlito5::Grammar::Space::to_eol>
                     {
                         my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
-                        print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
+                        # print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
                         my $exp2 = Perlito5::Match::flat(Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 ));
-                        print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
+                        # print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
                         # $MATCH->{capture} = $op1;
-                        push @{ $MATCH->{fmt} }, $exp2;
+                        if ($exp2) {
+                            push @{ $MATCH->{_ops} }, $exp2;
+                        }
                     }
                 ]?
+                {
+                    # print STDERR "ops: ", Perlito5::Dumper::Dumper( $MATCH->{_ops} );
+                    push @{ $MATCH->{fmt} }, Perlito5::AST::Apply->new(
+                        arguments => $MATCH->{_ops},
+                        code => 'list:<,>',
+                    );
+                }
             |
                 <Perlito5::Grammar::Space::to_eol>
                 {
                     my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
-                    print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
+                    # print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
                     my $exp2 = Perlito5::Match::flat(Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 ));
-                    print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
-                    # $MATCH->{capture} = $op1;
+                    if (!$exp2) {
+                        $exp2 = Perlito5::AST::Apply->new(
+                            arguments => [],
+                            code => 'list:<,>',
+                        );
+                    }
+                    # print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
                     push @{ $MATCH->{fmt} }, $exp2;
                 }
             ]
