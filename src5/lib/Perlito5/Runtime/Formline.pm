@@ -8,6 +8,21 @@ use Data::Dumper;
 # TODO - process fields:     '~', '~~'
 # TODO - special variables:  $: $^ $~ $% $= $^L
 #
+# TODO - BUG:
+#
+# $ perl -e ' use Data::Dumper; $v = "123"; formline( "aaa ^< ^ ^ xxx", $v, $v, $v ); print Dumper [ $^A, $v, defined($v) ]; '
+# $VAR1 = [
+#           'aaa 12 3   xxx',
+#           '',
+#           1
+#         ];
+# $ java -jar perlito5.jar -Isrc5/lib -e ' use Data::Dumper; $v = "123"; formline( "aaa ^< ^ ^ xxx", $v, $v, $v ); print Dumper [ $^A, $v, defined($v) ]; '
+# $VAR1 = [
+#         "aaa 12 1 1 xxx",
+#         123,
+#         1,
+#     ];
+# 
 
 sub formline {
     my $picture = $_[0];
@@ -45,9 +60,9 @@ sub formline {
             if ($regular_field eq '@*') {
                 $_[$var_index] =~ s/^([^\n*]\n?)//;     # modify the parameter
                 my $var = $1;
-                if ($_[$var_index] eq "") {
-                    $_[$var_index] = undef;             # field is exhausted
-                }
+                # if ($_[$var_index] eq "") {
+                #     $_[$var_index] = undef;             # field is exhausted
+                # }
                 $var_index++;
                 $out .= _format($regular_field, $var);
             }
@@ -67,9 +82,9 @@ sub formline {
                 my $len = length($regular_field);
                 $_[$var_index] =~ s/^(.{0,$len})//;     # modify the parameter
                 my $var = $1;
-                if ($_[$var_index] eq "") {
-                    $_[$var_index] = undef;             # field is exhausted
-                }
+                # if ($_[$var_index] eq "") {
+                #     $_[$var_index] = undef;             # field is exhausted
+                # }
                 $var_index++;
                 $out .= _format($regular_field, $var);
             }
