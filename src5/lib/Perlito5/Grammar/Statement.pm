@@ -55,7 +55,9 @@ token stmt_format {
                 code      => 'p5:format',
                 namespace => '',
                 arguments => [
-                    Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'}),
+                    Perlito5::AST::Buf->new(
+                        buf => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'}),
+                    ),
                     $placeholder,
                 ]
             );
