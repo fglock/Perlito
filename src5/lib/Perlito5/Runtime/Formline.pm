@@ -10,9 +10,10 @@ sub formline {
     # Note: variables in @_ are "rw"
     my $var_index = 1;
 
-    # TODO
-    # TODO - process '~', '~~'
-    warn "TODO - CORE::formline not implemented";
+    if ($picture =~ /~/) {
+        # TODO - process '~', '~~'
+        warn "TODO - CORE::formline '~', '~~' not implemented";
+    }
 
     my @parts = split 
         /( [\@\^]
@@ -28,7 +29,7 @@ sub formline {
               |                                   #  @
               )
         )/x, $picture;
-    print Dumper \@parts;
+    # print Dumper \@parts;
     my $out = "";
     for my $s (@parts) {
         if ( substr($s, 0, 1) eq "^" ) {
@@ -51,7 +52,6 @@ sub formline {
             }
             else {
                 my $len = length($regular_field);
-                print "special field - modify [[ $_[$var_index] ]]\n";
                 $_[$var_index++] =~ s/^(.{0,$len})//;   # modify the parameter
                 my $var = $1;
                 $out .= _format($regular_field, $var);
@@ -65,16 +65,15 @@ sub formline {
             $out .= $s;
         }
     }
-
-    print "[[ $out ]]\n";
-
+    $out =~ s/[ ]*$//;  # trim spaces at the end of line
+    # print "[[ $out ]]\n";
     $^A .= $out;
     return 1;
 }
 
 sub _format {
     my ($picture, $value) = @_;
-    print "_format [[ $picture ]] [[ $value ]]\n";
+    # print "_format [[ $picture ]] [[ $value ]]\n";
 
     if ($picture eq '@*') {
         chomp($value);
@@ -93,9 +92,9 @@ sub _format {
             $fmt = $fmt . ".0";
         }
         $fmt .= "f";
-        print "_format sprintf [[ $fmt ]]\n";
+        # print "_format sprintf [[ $fmt ]]\n";
         my $out = sprintf( $fmt, $value );
-        print "_format out [[ $out ]]\n";
+        # print "_format out [[ $out ]]\n";
         if (length($out) > length($picture)) {
             return "#" x length($picture);
         }
@@ -105,7 +104,7 @@ sub _format {
     if (length($value) < length($picture)) {
         while (length($value) < length($picture)) {
             $value = $value . ' ' if $picture =~ / \@\< | \@\| /x;
-            $value = ' ' . $value if $picture =~ / \@\> | \@\| /x;
+            $value = ' ' . $value if $picture =~ / \@\> | \@\| /x && length($value) < length($picture);
         }
         return $value;
     }
@@ -119,6 +118,10 @@ sub _format {
     return $value;
 }
 
+1;
+
+__END__
+
 # tests
 
 {
@@ -127,19 +130,22 @@ sub _format {
         'xx @<<<<< xx @||||| xx @>>>>> xx @> xx @ xx',
             "abc",    "def",    "ghi",   "jjjj", "k", 
     );
+    print "PRF::fl:  [[ $^A ]]\n";
     
     $^A = "";
     Perlito5::Runtime::Formline::formline(
         'xx @### xx @###.### xx @.### xx @0####.## xx @## xx ',
             13.45,  78.99,      0.12,    14.45,       1000,
     );
+    print "PRF::fl:  [[ $^A ]]\n";
     
     $^A = "";
     my $v = "abcdefghi";
     Perlito5::Runtime::Formline::formline(
-        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx ',
+        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx   ',
             13.45,  undef,      $v,      $v,
     );
+    print "PRF::fl:  [[ $^A ]]\n";
 }
 
 {
@@ -160,7 +166,7 @@ sub _format {
     $^A = "";
     my $v = "abcdefghi";
     CORE::formline(
-        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx ',
+        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx   ',
             13.45,  undef,      $v,      $v,
     );
     print "formline: [[ $^A ]]\n";
