@@ -6,7 +6,9 @@ use Data::Dumper;
 # a pure Perl implementation of CORE::formline()
 
 sub formline {
-    my ($picture, @list) = @_;
+    my $picture = $_[0];
+    # Note: variables in @_ are "rw"
+    my $var_index = 1;
 
     # TODO
     # TODO - process '~', '~~'
@@ -35,10 +37,17 @@ sub formline {
         if ( substr($s, 0, 1) eq "^" ) {
             # special field
             warn "TODO - special field not implemented";
+            my $regular_field = $s;
+            $regular_field =~ s/\^/\@/;
+            if ($picture eq '^*') {
+                $_[$var_index++] =~ s/^([^\n*]\n?)//;   # modify the parameter
+                my $var = $1;
+                $out .= _format($regular_field, $var);
+            }
         }
         elsif ( substr($s, 0, 1) eq "@" ) {
             # regular field
-            $out .= _format($s, shift @list);
+            $out .= _format($s, $_[$var_index++]);
         }
         else {
             $out .= $s;
@@ -66,7 +75,7 @@ sub _format {
         $fmt .= length($picture);
         my $dot = index( $picture, "." );
         if ($dot > 0) {
-            $fmt = $fmt . "." . ( length($picture) - $dot );
+            $fmt = $fmt . "." . ( length($picture) - $dot - 1 );
         }
         else {
             $fmt = $fmt . ".0";
@@ -75,6 +84,9 @@ sub _format {
         print "_format sprintf [[ $fmt ]]\n";
         my $out = sprintf( $fmt, $value );
         print "_format out [[ $out ]]\n";
+        if (length($out) > length($picture)) {
+            return "#" x length($picture);
+        }
         return $out;
     }
 
@@ -100,8 +112,8 @@ Perlito5::Runtime::Formline::formline(
         "abc",    "def",    "ghi",    "zzzz",
 );
 Perlito5::Runtime::Formline::formline(
-    'xx @### xx @###.### xx @.### xx @0####.## xx ',
-        13.45,  78.99,      0.12,    14.45,
+    'xx @### xx @###.### xx @.### xx @0####.## xx @## xx ',
+        13.45,  78.99,      0.12,    14.45,       1000,
 );
 print "done\n";
 
