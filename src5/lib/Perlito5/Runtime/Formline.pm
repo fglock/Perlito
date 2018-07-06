@@ -14,7 +14,7 @@ sub formline {
     # Note: we access the parameter list from @_, because the form parameters are "rw"
     my $var_index = 1;
 
-    # $picture =~ s/[ ]*$//;  # trim spaces at the end of line before interpolating
+    $picture =~ s/[ ]*$//;  # trim spaces at the end of line before interpolating
     if ($picture =~ /~/) {
         warn "TODO - CORE::formline '~', '~~' not implemented";
     }
@@ -35,14 +35,20 @@ sub formline {
         )/x, $picture;
     # print Dumper \@parts;
     my $out = "";
-    for my $s (@parts) {
+  PART:
+    for my $part_index (0 .. $#parts) {
+        my $s = $parts[$part_index];
         if ( substr($s, 0, 1) eq "^" ) {
             # special field
             my $regular_field = $s;
             $regular_field =~ s/\^/\@/;
             if ($regular_field eq '@*') {
-                $_[$var_index++] =~ s/^([^\n*]\n?)//;   # modify the parameter
+                $_[$var_index] =~ s/^([^\n*]\n?)//;     # modify the parameter
                 my $var = $1;
+                if ($_[$var_index] eq "") {
+                    $_[$var_index] = undef;             # field is exhausted
+                }
+                $var_index++;
                 $out .= _format($regular_field, $var);
             }
             elsif ($regular_field =~ /\@[\.#0]/) {
@@ -55,9 +61,16 @@ sub formline {
                 }
             }
             else {
+                if (!defined($_[$var_index]) && $part_index == $#parts) {
+                    next PART;                          # skip last field if the variable is undef
+                }
                 my $len = length($regular_field);
-                $_[$var_index++] =~ s/^(.{0,$len})//;   # modify the parameter
+                $_[$var_index] =~ s/^(.{0,$len})//;     # modify the parameter
                 my $var = $1;
+                if ($_[$var_index] eq "") {
+                    $_[$var_index] = undef;             # field is exhausted
+                }
+                $var_index++;
                 $out .= _format($regular_field, $var);
             }
         }
@@ -69,7 +82,7 @@ sub formline {
             $out .= $s;
         }
     }
-    $out =~ s/[ ]*$//;  # trim spaces at the end of line after interpolating
+    # $out =~ s/[ ]*$//;  # trim spaces at the end of line after interpolating
     # print "[[ $out ]]\n";
     $^A .= $out;
     return 1;
