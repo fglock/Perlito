@@ -61,6 +61,22 @@ token stmt_yadayada {
 # Errors: "Format not terminated"
 #
 #
+token stmt_format_internal_op1 {
+    [ ' ' | \t ]*
+    <!before [ \c10 | \c13 ] >
+    <Perlito5::Grammar::Precedence::op_parse>
+    {
+        my $op = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Precedence::op_parse"});
+        print STDERR "got op\n"; 
+        print STDERR Perlito5::Dumper::Dumper( $op );
+        $MATCH->{capture} = $op;
+    }
+    [ ' ' | \t ]*
+};
+sub stmt_format_internal_op2 {
+    stmt_format_internal_op1(@_);
+}
+
 token stmt_format {
     'format'
     [ <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::full_ident>
@@ -84,44 +100,26 @@ token stmt_format {
             '.' [ ' ' | \t ]*   # TODO - test for EOF
             { print STDERR "end of format\n"; }
         |
-            '{'  <.Perlito5::Grammar::Space::ws>?
-                { $MATCH->{_save_scope} = [ @Perlito5::SCOPE_STMT ];
-                  @Perlito5::SCOPE_STMT = ();
-                }
-                <Perlito5::Grammar::exp_stmts>
-                { @Perlito5::SCOPE_STMT = @{ $MATCH->{_save_scope} } }
-                <.Perlito5::Grammar::Space::ws>?
-            [ \} | { Perlito5::Compiler::error 'Missing right curly bracket' } ]
-            [ ' ' | \t ]*
-            [ '#' <.Perlito5::Grammar::Space::to_eol> ]?
+            <stmt_format_internal_op1>
+            [ ','  <stmt_format_internal_op2> ]*
             [ \c10 \c13? | \c13 \c10? ]
-            { print STDERR "saw BLOCK\n"; }
-            { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::exp_stmts"}) ]
+            {
+                my @op_list;
+                for my $op ( $MATCH->{"stmt_format_internal_op1"}, @{ $MATCH->{"stmt_format_internal_op2"} } ) {
+                    my $term = $op->{capture};
+                    print STDERR "got term: ", Perlito5::Dumper::Dumper( $term );
+                    if ($term->[0] eq 'term') {
+                        push @op_list, $term->[1];
+                    }
+                    # elsif ($term->[0] eq 'term') {
+                }
+                print STDERR "got list: ", Perlito5::Dumper::Dumper( \@op_list );
+                # $MATCH->{capture} = $op1;
             }
-        |
-            { print STDERR "wait for LIST\n"; }
+
         ]
     ]
     {
-        # inject a here-doc request - see Perlito5::Grammar::String
-        my $placeholder = Perlito5::AST::Apply->new(
-            code      => 'list:<.>',
-            namespace => '',
-            arguments => [
-                # XXX - this comment was originally on Perlito5::Grammar::String
-                # XXX - test 12 t/base/lex.t fails if we don't use this "double-pointer"   '
-                Perlito5::AST::Apply->new(
-                    code      => 'list:<.>',
-                    namespace => '',
-                    arguments => []
-                  )
-            ]
-        );
-        push @Perlito5::Grammar::String::Here_doc, [
-            'single_quote',
-            $placeholder->{arguments}[0]{arguments},
-            '.',  # delimiter
-        ];
         $MATCH->{capture} =
             Perlito5::AST::Apply->new(
                 code      => 'p5:format',
@@ -130,11 +128,9 @@ token stmt_format {
                     Perlito5::AST::Buf->new(
                         buf => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'}),
                     ),
-                    $placeholder,
                 ]
             );
     }
-    # TODO - make sure there are only spaces or comments until the end of the line
     <.Perlito5::Grammar::Space::opt_ws>  # this will read the 'here-doc' we are expecting
 };
 
