@@ -10,13 +10,33 @@ use Data::Dumper;
 #
 
 sub formline {
-    my $picture = $_[0];
+    my $picture = shift;
     # Note: we access the parameter list from @_, because the form parameters are "rw"
-    my $var_index = 1;
+    my $var_index = 0;
+
+    my $supress_line_if_all_fields_empty = 0;
+    my $repeat_line_until_all_fields_exhausted = 0;
 
     $picture =~ s/[ ]*$//;  # trim spaces at the end of line before interpolating
     if ($picture =~ /~/) {
-        warn "TODO - CORE::formline '~', '~~' not implemented";
+        $supress_line_if_all_fields_empty = 1;
+        if ($picture =~ /~~/) {
+            $repeat_line_until_all_fields_exhausted = 1;
+        }
+        $picture =~ s/~//g;
+    }
+
+    if ($supress_line_if_all_fields_empty) {
+        my $empty = 1;
+        for (@_) {
+            $empty = 0 if defined($_) && $_ ne '';
+        }
+        $^A = "" if !defined($^A);
+        return 1 if $empty;
+    }
+
+    if ($repeat_line_until_all_fields_exhausted) {
+        warn "TODO - CORE::formline '~~' not implemented";
     }
 
     my @parts = split 
