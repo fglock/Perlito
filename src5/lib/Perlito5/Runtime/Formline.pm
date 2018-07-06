@@ -35,12 +35,12 @@ sub formline {
             # special field
             my $regular_field = $s;
             $regular_field =~ s/\^/\@/;
-            if ($picture eq '^*') {
+            if ($regular_field eq '@*') {
                 $_[$var_index++] =~ s/^([^\n*]\n?)//;   # modify the parameter
                 my $var = $1;
                 $out .= _format($regular_field, $var);
             }
-            elsif ($picture =~ /\@[\.#0]/) {
+            elsif ($regular_field =~ /\@[\.#0]/) {
                 my $var = $_[$var_index++];
                 if (defined($var)) {
                     $out .= _format($regular_field, $var);
@@ -51,6 +51,7 @@ sub formline {
             }
             else {
                 my $len = length($regular_field);
+                print "special field - modify [[ $_[$var_index] ]]\n";
                 $_[$var_index++] =~ s/^(.{0,$len})//;   # modify the parameter
                 my $var = $1;
                 $out .= _format($regular_field, $var);
@@ -120,30 +121,50 @@ sub _format {
 
 # tests
 
-$^A = "";
-Perlito5::Runtime::Formline::formline(
-    'xx @<<<<< xx @||||| xx @>>>>> xx @> xx @ xx',
-        "abc",    "def",    "ghi",   "jjjj", "k", 
-);
-$^A = "";
-Perlito5::Runtime::Formline::formline(
-    'xx @### xx @###.### xx @.### xx @0####.## xx @## xx ',
-        13.45,  78.99,      0.12,    14.45,       1000,
-);
+{
+    $^A = "";
+    Perlito5::Runtime::Formline::formline(
+        'xx @<<<<< xx @||||| xx @>>>>> xx @> xx @ xx',
+            "abc",    "def",    "ghi",   "jjjj", "k", 
+    );
+    
+    $^A = "";
+    Perlito5::Runtime::Formline::formline(
+        'xx @### xx @###.### xx @.### xx @0####.## xx @## xx ',
+            13.45,  78.99,      0.12,    14.45,       1000,
+    );
+    
+    $^A = "";
+    my $v = "abcdefghi";
+    Perlito5::Runtime::Formline::formline(
+        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx ',
+            13.45,  undef,      $v,      $v,
+    );
+}
 
-$^A = "";
-formline(
-    'xx @<<<<< xx @||||| xx @>>>>> xx @> xx @ xx',
-        "abc",    "def",    "ghi",   "jjjj", "k", 
-);
-print "formline: [[ $^A ]]\n";
-$^A = "";
-formline(
-    'xx @### xx @###.### xx @.### xx @0####.## xx @## xx ',
-        13.45,  78.99,      0.12,    14.45,       1000,
-);
-print "formline: [[ $^A ]]\n";
-
+{
+    $^A = "";
+    CORE::formline(
+        'xx @<<<<< xx @||||| xx @>>>>> xx @> xx @ xx',
+            "abc",    "def",    "ghi",   "jjjj", "k", 
+    );
+    print "formline: [[ $^A ]]\n";
+    
+    $^A = "";
+    CORE::formline(
+        'xx @### xx @###.### xx @.### xx @0####.## xx @## xx ',
+            13.45,  78.99,      0.12,    14.45,       1000,
+    );
+    print "formline: [[ $^A ]]\n";
+    
+    $^A = "";
+    my $v = "abcdefghi";
+    CORE::formline(
+        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx ',
+            13.45,  undef,      $v,      $v,
+    );
+    print "formline: [[ $^A ]]\n";
+}
 
 print "done\n";
 
