@@ -4,14 +4,18 @@ use warnings;
 use Data::Dumper;
 
 # a pure Perl implementation of CORE::formline()
+#
+# TODO - process fields:     '~', '~~'
+# TODO - special variables:  $: $^ $~ $% $= $^L
+#
 
 sub formline {
     my $picture = $_[0];
-    # Note: variables in @_ are "rw"
+    # Note: we access the parameter list from @_, because the form parameters are "rw"
     my $var_index = 1;
 
+    # $picture =~ s/[ ]*$//;  # trim spaces at the end of line before interpolating
     if ($picture =~ /~/) {
-        # TODO - process '~', '~~'
         warn "TODO - CORE::formline '~', '~~' not implemented";
     }
 
@@ -65,7 +69,7 @@ sub formline {
             $out .= $s;
         }
     }
-    $out =~ s/[ ]*$//;  # trim spaces at the end of line
+    $out =~ s/[ ]*$//;  # trim spaces at the end of line after interpolating
     # print "[[ $out ]]\n";
     $^A .= $out;
     return 1;
@@ -103,9 +107,10 @@ sub _format {
 
     if (length($value) < length($picture)) {
         while (length($value) < length($picture)) {
-            $value = $value . ' ' if $picture =~ / \@\< | \@\| /x;
+            $value = $value . ' ' if $picture =~ / \@\< | \@\| /x || $picture eq '@';
             $value = ' ' . $value if $picture =~ / \@\> | \@\| /x && length($value) < length($picture);
         }
+        # print "_format smaller [[$value]]\n";
         return $value;
     }
 
@@ -140,10 +145,10 @@ __END__
     print "PRF::fl:  [[ $^A ]]\n";
     
     $^A = "";
-    my $v = "abcdefghi";
+    my $v = "abcdefghijklmnop";
     Perlito5::Runtime::Formline::formline(
-        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx   ',
-            13.45,  undef,      $v,      $v,
+        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx ^ ^ ^  ',
+            13.45,  undef,      $v,      $v,         $v,$v,$v,
     );
     print "PRF::fl:  [[ $^A ]]\n";
 }
@@ -164,10 +169,10 @@ __END__
     print "formline: [[ $^A ]]\n";
     
     $^A = "";
-    my $v = "abcdefghi";
+    my $v = "abcdefghijklmnop";
     CORE::formline(
-        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx   ',
-            13.45,  undef,      $v,      $v,
+        'xx ^### xx ^###.### xx ^<<<< xx ^<<<<<<<< xx ^ ^ ^  ',
+            13.45,  undef,      $v,      $v,         $v,$v,$v,
     );
     print "formline: [[ $^A ]]\n";
 }
