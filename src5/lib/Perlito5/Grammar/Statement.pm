@@ -26,22 +26,22 @@ token stmt_yadayada {
 };
 
 #
-# format =
-# format NAME =
+# format =          # comment
+# format NAME =     # comment
 #
 #   # comment
 #
-#   . OPTIONAL-SPACE
+#   . OPTIONAL-SPACE  [ \n | EOF ]
 #
 #   ONE-LINE_OF-TEXT
-#   . OPTIONAL-SPACE
+#   . OPTIONAL-SPACE  [ \n | EOF ]
 #
 #   ONE-LINE_OF-TEXT
 #   { LIST,
 #   LIST   }   # comment
 #
 #   ONE-LINE_OF-TEXT
-#   LIST
+#   ONE-LINE-LIST   # comment
 #
 #
 # format BLOCK =
@@ -50,10 +50,37 @@ token stmt_yadayada {
 # .
 #
 #
+# Errors: "Format not terminated"
+#
+#
 token stmt_format {
-    'format' <.Perlito5::Grammar::Space::ws> 
-    [ <Perlito5::Grammar::full_ident>
+    'format'
+    [ <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::full_ident>
     | { $MATCH->{'Perlito5::Grammar::full_ident'} = 'STDOUT' }
+    ]
+    <.Perlito5::Grammar::Space::opt_ws>
+    '=' 
+    [ ' ' | \t ]*
+    [ '#' <.Perlito5::Grammar::Space::to_eol> ]?
+    [ \c10 \c13? | \c13 \c10? ]
+
+    { print STDERR "TODO - 'format' parsing - work in progress\n"; }
+
+    [
+        '.' [ ' ' | \t ]*   # TODO - test for EOF
+        { print STDERR "end of format\n"; }
+    |
+        <Perlito5::Grammar::Space::to_eol> [ \c10 \c13? | \c13 \c10? ]
+        { print STDERR "one line of text\n"; }
+        [
+            '.' [ ' ' | \t ]*   # TODO - test for EOF
+            { print STDERR "end of format\n"; }
+        |
+            '{'
+            { print STDERR "wait for BLOCK\n"; }
+        |
+            { print STDERR "wait for LIST\n"; }
+        ]
     ]
     {
         # inject a here-doc request - see Perlito5::Grammar::String
@@ -87,10 +114,8 @@ token stmt_format {
                 ]
             );
     }
-    <.Perlito5::Grammar::Space::opt_ws>
-    '=' 
     # TODO - make sure there are only spaces or comments until the end of the line
-    <.Perlito5::Grammar::Space::ws>  # this will read the 'here-doc' we are expecting
+    <.Perlito5::Grammar::Space::opt_ws>  # this will read the 'here-doc' we are expecting
 };
 
 token stmt_package {
