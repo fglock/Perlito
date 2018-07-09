@@ -4186,8 +4186,8 @@ class PlFileHandle extends PlScalarImmutable {
             this.is_argv = true;
         }
         this.typeglob_name = name;
-        this.format_top_name.set(this.typeglob_name);
-        this.format_name.set(this.typeglob_name + "_TOP");
+        this.format_top_name.set(this.typeglob_name + "_TOP");
+        this.format_name.set(this.typeglob_name);
     }
 
     public void dupFileHandle(PlFileHandle o) {
