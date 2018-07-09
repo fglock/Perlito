@@ -745,6 +745,16 @@ EOT
         // select FILEHANDLE
         PlFileHandle fOld = PlV.selectedFileHandle;
         PlV.selectedFileHandle = fh;
+
+        // point the "format" variables to the selected filehandle
+        PlV.sset_alias("main::" + (char)12, fh.format_formfeed);      // $^L
+        PlV.sset_alias("main::%", fh.format_page_number);             // $%
+        PlV.sset_alias("main::-", fh.format_lines_left);              // $-
+        PlV.sset_alias("main:::", fh.format_line_break_characters);   // $:
+        PlV.sset_alias("main::=", fh.format_lines_per_page);          // $=
+        PlV.sset_alias("main::^", fh.format_top_name);                // $^
+        PlV.sset_alias("main::~", fh.format_name);                    // $~
+
         return fOld;
     }
     public static final PlObject select(int want, PlArray List__) {

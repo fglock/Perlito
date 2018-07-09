@@ -2628,7 +2628,7 @@ EOT
         PlV.STDERR.charset       = "UTF-8";
         PlFileHandle.allOpenFiles.add(PlV.STDERR);
 
-        PlV.selectedFileHandle   = PlV.STDOUT;
+        PlCORE.select(PlV.STDOUT);
 
         try {
             PlV.path = Paths.get(".").toRealPath();
@@ -4171,11 +4171,10 @@ class PlFileHandle extends PlScalarImmutable {
         this.output_autoflush = false;
 
         // "format" variables
-        this.format_formfeed = new PlLvalue( new PlString("" + Character.toChars(12)) ); // $^L
+        this.format_formfeed = new PlLvalue( new PlString("" + (char)12) );              // $^L
         this.format_page_number = new PlLvalue( new PlInt(0) );                          // $%
         this.format_lines_left = new PlLvalue( new PlInt(0) );                           // $-
-        this.format_line_break_characters =
-            new PlLvalue( new PlString(" " + Character.toChars(10) + "-") );             // $:
+        this.format_line_break_characters = new PlLvalue( new PlString(" " + (char)10 + "-") );  // $:
         this.format_lines_per_page = new PlLvalue( new PlInt(60) );                      // $=
         this.format_top_name = new PlLvalue();                                           // $^
         this.format_name = new PlLvalue();                                               // $~
@@ -4208,6 +4207,15 @@ class PlFileHandle extends PlScalarImmutable {
         this.binmode =           o.binmode;
         this.output_autoflush =  o.output_autoflush;
         this.tied =              o.tied;
+
+        // "format" variables
+        this.format_formfeed.set(o.format_formfeed);
+        this.format_page_number.set(o.format_page_number);
+        this.format_lines_left.set(o.format_lines_left);
+        this.format_line_break_characters.set(o.format_line_break_characters);
+        this.format_lines_per_page.set(o.format_lines_per_page);
+        this.format_top_name.set(o.format_top_name);
+        this.format_name.set(o.format_name);
     }
 
     public boolean is_filehandle() {
