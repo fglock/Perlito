@@ -4149,6 +4149,15 @@ class PlFileHandle extends PlScalarImmutable {
     public boolean output_autoflush;
     public PlObject tied;
 
+    // "format" variables
+    public PlLvalue format_formfeed;                // $^L
+    public PlLvalue format_page_number;             // $%
+    public PlLvalue format_lines_left;              // $-
+    public PlLvalue format_line_break_characters;   // $:
+    public PlLvalue format_lines_per_page;          // $=
+    public PlLvalue format_top_name;                // $^
+    public PlLvalue format_name;                    // $~
+
     public static final int BUFFER_SIZE = 4096;
     public static final int BUFFER_THRESHOLD = BUFFER_SIZE - 256;
     public static HashSet<PlFileHandle> allOpenFiles = new HashSet<PlFileHandle>();
