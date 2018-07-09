@@ -4169,6 +4169,16 @@ class PlFileHandle extends PlScalarImmutable {
         this.is_argv = false;
         this.binmode = false;
         this.output_autoflush = false;
+
+        // "format" variables
+        this.format_formfeed = new PlLvalue( new PlString("" + Character.toChars(12)) ); // $^L
+        this.format_page_number = new PlLvalue( new PlInt(0) );                          // $%
+        this.format_lines_left = new PlLvalue( new PlInt(0) );                           // $-
+        this.format_line_break_characters =
+            new PlLvalue( new PlString(" " + Character.toChars(10) + "-") );             // $:
+        this.format_lines_per_page = new PlLvalue( new PlInt(60) );                      // $=
+        this.format_top_name = new PlLvalue();                                           // $^
+        this.format_name = new PlLvalue();                                               // $~
     }
 
     public PlFileHandle(String name) {
@@ -4177,6 +4187,8 @@ class PlFileHandle extends PlScalarImmutable {
             this.is_argv = true;
         }
         this.typeglob_name = name;
+        this.format_top_name.set(this.typeglob_name);
+        this.format_name.set(this.typeglob_name + "_TOP");
     }
 
     public void dupFileHandle(PlFileHandle o) {
