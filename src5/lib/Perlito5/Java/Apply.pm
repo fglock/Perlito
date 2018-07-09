@@ -1401,7 +1401,7 @@ package Perlito5::AST::Apply;
                 $fun = Perlito5::Java::to_filehandle($self->{special_arg}, $level+1);
             }
             else {
-                $fun  = 'PlV.STDOUT';
+                $fun  = 'PlV.selectedFileHandle';
             }
             return 'PlCORE.print('
                 . join( ', ',
@@ -1419,7 +1419,7 @@ package Perlito5::AST::Apply;
                 $fun = Perlito5::Java::to_filehandle($self->{special_arg}, $level+1);
             }
             else {
-                $fun  = 'PlV.STDOUT';
+                $fun  = 'PlV.selectedFileHandle';
             }
             return 'PlCORE.say('
                 . join( ', ',
@@ -1437,7 +1437,7 @@ package Perlito5::AST::Apply;
                 $fun = Perlito5::Java::to_filehandle($self->{special_arg}, $level+1);
             }
             else {
-                $fun  = 'PlV.STDOUT';
+                $fun  = 'PlV.selectedFileHandle';
             }
             my $list = 'PlCORE.sprintf(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list(\@in, $level) . ').toString()';
             'PlCORE.print(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';

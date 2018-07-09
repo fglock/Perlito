@@ -2574,6 +2574,7 @@ class PlV {
     public static PlFileHandle STDIN  = (PlFileHandle)PlStringConstant.getConstant("main::STDIN").fileRef.o;
     public static PlFileHandle STDOUT = (PlFileHandle)PlStringConstant.getConstant("main::STDOUT").fileRef.o;
     public static PlFileHandle STDERR = (PlFileHandle)PlStringConstant.getConstant("main::STDERR").fileRef.o;
+    public static PlFileHandle selectedFileHandle = STDOUT;
 
     // initialize special variables like $_ $\
 EOT
@@ -2626,6 +2627,8 @@ EOT
         PlV.STDERR.typeglob_name = "main::STDERR";
         PlV.STDERR.charset       = "UTF-8";
         PlFileHandle.allOpenFiles.add(PlV.STDERR);
+
+        PlV.selectedFileHandle   = PlV.STDOUT;
 
         try {
             PlV.path = Paths.get(".").toRealPath();
@@ -4380,7 +4383,7 @@ class PlLvalueSpecialVarAutoflush extends PlLvalue {
     // the $| variable
     public PlObject set(PlObject o) {
         // System.out.println("Set autoflush " + (o.to_boolean() ? "1" : "0"));
-        PlV.STDOUT.set_autoflush(o);
+        PlV.selectedFileHandle.set_autoflush(o);
         return super.set(o);
     }
     public PlObject set(PlScalarImmutable o) {

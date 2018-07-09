@@ -598,7 +598,7 @@ EOT
 
     // shortcut functions for internal use: say, warn, die
     public static final PlObject say(String s) {
-        return PlCORE.say(PlCx.VOID, PlV.STDOUT, s);
+        return PlCORE.say(PlCx.VOID, PlV.selectedFileHandle, s);
     }
     public static final PlObject warn(String s) {
         return PlCORE.warn(PlCx.VOID, new PlArray(new PlString(s)));
@@ -743,15 +743,15 @@ EOT
     }
     public static final PlObject select(PlFileHandle fh) {
         // select FILEHANDLE
-        PlFileHandle fOld = PlV.STDOUT;
-        PlV.STDOUT = fh;
+        PlFileHandle fOld = PlV.selectedFileHandle;
+        PlV.selectedFileHandle = fh;
         return fOld;
     }
     public static final PlObject select(int want, PlArray List__) {
         int arg_count = List__.length_of_array_int();
         if (arg_count == 0) {
             // Returns the currently selected filehandle
-            return PlV.STDOUT;
+            return PlV.selectedFileHandle;
         }
         if (arg_count == 4) {
             if (List__.aget(0).is_undef() && List__.aget(1).is_undef() && List__.aget(2).is_undef()) {
