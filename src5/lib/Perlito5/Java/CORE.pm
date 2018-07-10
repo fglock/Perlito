@@ -340,6 +340,12 @@ EOT
         } sort keys %FileFunc
     ), 
     <<'EOT',
+    public static final PlObject write(int want, PlArray List__) {
+        return PlCORE.write(PlCx.VOID, PlV.selectedFileHandle, List__);
+    }
+    public static final PlObject close(int want, PlArray List__) {
+        return PlCORE.close(PlCx.VOID, PlV.selectedFileHandle, List__);
+    }
     public static final PlObject open(int want, PlFileHandle fh, PlArray List__, String namespace) {
         // open FILEHANDLE,EXPR
         // open FILEHANDLE,MODE,EXPR

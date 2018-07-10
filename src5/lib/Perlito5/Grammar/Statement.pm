@@ -128,8 +128,13 @@ token stmt_format {
                     {
                         my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
                         # print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
-                        my $exp2 = Perlito5::Match::flat(Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 ));
-                        # print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
+                        my $exp = Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 );
+                        my $exp2;
+                        if ($exp) {
+                            # print STDERR "stmt exp: ", Perlito5::Dumper::Dumper( $exp );
+                            $exp2 = Perlito5::Match::flat($exp);
+                            # print STDERR "op2: ", Perlito5::Dumper::Dumper( $exp2 );
+                        }
                         # $MATCH->{capture} = $op1;
                         if ($exp2) {
                             push @{ $MATCH->{_ops} }, $exp2;
@@ -147,8 +152,13 @@ token stmt_format {
                 <Perlito5::Grammar::Space::to_eol>
                 {
                     my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
-                    # print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
-                    my $exp2 = Perlito5::Match::flat(Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 ));
+                    # print STDERR "stmt 2: ", Perlito5::Dumper::Dumper( $stmt );
+                    my $exp = Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 );
+                    my $exp2;
+                    if ($exp) {
+                        # print STDERR "stmt 2 exp: ", Perlito5::Dumper::Dumper( $exp );
+                        $exp2 = Perlito5::Match::flat($exp);
+                    }
                     if (!$exp2) {
                         $exp2 = Perlito5::AST::Apply->new(
                             arguments => [],
