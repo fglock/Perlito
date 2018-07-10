@@ -73,19 +73,10 @@ sub stmt_format {
 
     # $Perlito5::FORMAT{"name"} = sub { ... }
     my @stmts = ();
-
-    push @stmts, Perlito5::AST::Apply->new(
-        code => "warn",
-        arguments => [
-            Perlito5::AST::Buf->new( buf => "Here" ),
-        ],
-    );
-
     while (@arguments) {
         # add formline() calls
         my $picture = shift @arguments;         # "Buf"
         my $args    = shift @arguments;         # "Apply->{'code' => "list:<,>"}
-
         push @stmts, Perlito5::AST::Apply->new(
             code => 'formline',
             arguments => [

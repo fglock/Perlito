@@ -129,7 +129,19 @@ EOT
         return new PlInt(count);
 EOT
     write => <<'EOT',
-        return PlCORE.die("write() not implemented");
+        String name = fh.typeglob_name;
+        if (name.length() > 6 && name.startsWith("main::")) {
+            name = name.substring(6);
+        }
+        PlStringConstant tmp157 = PlStringConstant.getConstant("Perlito5::FORMAT");
+        PlStringConstant tmp213 = PlStringConstant.getConstant("main::" + (char)1);    // $^A
+        tmp213.scalarRef.set(PlCx.EMPTY);
+        if (!tmp157.hashRef.o.hash_deref_strict().hget(name).to_boolean()) {
+            PlCORE.die(PlCx.VOID, new PlArray(new PlString("Undefined format \"" + name + "\"")));
+        }
+        tmp157.hashRef.o.hash_deref_strict().hget(name).apply(PlCx.VOID, new PlArray());
+        PlCORE.print(want, fh, tmp213.scalarRef.toString());
+        return new PlInt(1);
 EOT
     readline => <<'EOT',
         if (want == PlCx.LIST) {
