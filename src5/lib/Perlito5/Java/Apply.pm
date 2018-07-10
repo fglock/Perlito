@@ -1795,7 +1795,7 @@ package Perlito5::AST::Apply;
         'p5:format' => sub {
             my ($self, $level, $wantarray) = @_;
 
-            warn "p5:format:", Perlito5::Dumper::Dumper($self);
+            # warn "p5:format:", Perlito5::Dumper::Dumper($self);
 
             my @arguments = @{$self->{arguments}};
             my $format_name = shift @arguments;     # "Buf", maybe empty string
@@ -1803,7 +1803,6 @@ package Perlito5::AST::Apply;
             # $Perlito5::FORMAT{"name"} = sub { ... }
             my @stmts = ();
 
-            # TODO - populate the closure with formline() calls
             push @stmts, Perlito5::AST::Apply->new(
                 code => "warn",
                 arguments => [
@@ -1811,8 +1810,19 @@ package Perlito5::AST::Apply;
                 ],
             );
 
-            my $picture = shift @arguments;         # "Buf"
-            my $args    = shift @arguments;         # "Apply->{'code' => "list:<,>"}
+            while (@arguments) {
+                # add formline() calls
+                my $picture = shift @arguments;         # "Buf"
+                my $args    = shift @arguments;         # "Apply->{'code' => "list:<,>"}
+
+                push @stmts, Perlito5::AST::Apply->new(
+                    code => 'formline',
+                    arguments => [
+                        $picture,
+                        ( $args ? $args : () ),
+                    ],
+                );
+            }
 
             my $ast = Perlito5::AST::Apply->new(
                 code => "infix:<=>",
@@ -1835,7 +1845,7 @@ package Perlito5::AST::Apply;
                 ],
             );
 
-            warn "p5:format: out - ", Perlito5::Dumper::Dumper($ast);
+            # warn "p5:format: out - ", Perlito5::Dumper::Dumper($ast);
 
             return $ast->emit_java( $level, $wantarray );
         },
