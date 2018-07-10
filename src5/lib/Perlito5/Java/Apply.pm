@@ -1792,6 +1792,52 @@ package Perlito5::AST::Apply;
              .      Perlito5::Java::escape_string($Perlito5::PKG_NAME)
              . ')';
         },
+        'p5:format' => sub {
+            my ($self, $level, $wantarray) = @_;
+
+            warn "p5:format:", Perlito5::Dumper::Dumper($self);
+
+            my @arguments = @{$self->{arguments}};
+            my $format_name = shift @arguments;     # "Buf", maybe empty string
+
+            # $Perlito5::FORMAT{"name"} = sub { ... }
+            my $stmts = [];
+            my $ast = Perlito5::AST::Apply->new(
+                code => "infix:<=>",
+                arguments => [
+                    Perlito5::AST::Lookup->new(
+                        obj => Perlito5::AST::Var->new(
+                            '_real_sigil' => "%",
+                            '_decl' => "our",
+                            'name' => "FORMAT",
+                            'namespace' => "Perlito5",
+                            'sigil' => "\$",
+                        ),
+                        index_exp => $format_name,
+                    ),
+                    Perlito5::AST::Sub->new(
+                        block => Perlito5::AST::Block->new(
+                            stmts => $stmts,
+                        ),
+                    ),
+                ],
+            );
+
+            # TODO - populate the closure with formline() calls
+            push @$stmts, Perlito5::AST::Apply->new(
+                code => "warn",
+                arguments => [
+                    Perlito5::AST::Buf->new( buf => "Here" ),
+                ],
+            );
+
+            my $picture = shift @arguments;         # "Buf"
+            my $args    = shift @arguments;         # "Apply->{'code' => "list:<,>"}
+
+            warn "p5:format: out - ", Perlito5::Dumper::Dumper($ast);
+
+            return $ast->emit_java( $level, $wantarray );
+        },
     );
 
     for my $op (qw/ binmode close closedir opendir readdir seek seekdir read sysread

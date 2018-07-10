@@ -31,6 +31,7 @@ our %DATA_SECTION = ();   # contents of the __DATA__ sections per package
 our $PKG_NAME     = '';   # current package being compiled
 our $LINE_NUMBER  = 0;    # current line number being compiled
 our $FILE_NAME    = '';   # current file name being compiled
+our %FORMAT       = ();   # 'format' statements - hash of subs
 
 # information about the current compilation process
 our $GLOBAL          = {};
