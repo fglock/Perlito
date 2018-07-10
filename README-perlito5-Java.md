@@ -130,12 +130,16 @@ Perlito5-Java work-in-progress
   - smartmatch `~~` operator partially implemented
     - `when` and `given` not implemented.
 
+  - format() function partially implemented
+    - initialization happens at runtime, not at compile-time
+    - line counter and page-break not implemented
+    - sentence break algorithm not implemented
+
   - incomplete CORE function implementations
       - open()
       - sprintf()
       - pack()
       - unpack()
-      - format()
       - UNIX-specific operators
       - no Unix pipes
         - named pipes are possible using C and JNI
