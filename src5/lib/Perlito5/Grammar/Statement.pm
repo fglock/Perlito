@@ -64,7 +64,7 @@ token stmt_yadayada {
 token stmt_format {
     'format'
     [ <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::full_ident>
-    | { $MATCH->{'Perlito5::Grammar::full_ident'} = '' }
+    | { $MATCH->{'Perlito5::Grammar::full_ident'} = { capture => '' } }
     ]
     <.Perlito5::Grammar::Space::opt_ws>
     '=' 
@@ -74,6 +74,7 @@ token stmt_format {
 
     # { print STDERR "'format' parsing\n"; }
     {
+        # print STDERR "ident: ", Perlito5::Dumper::Dumper( $MATCH );
         $MATCH->{fmt} = [
             Perlito5::AST::Buf->new(
                 buf => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'}),
@@ -98,6 +99,7 @@ token stmt_format {
         <Perlito5::Grammar::Space::to_eol> [ \c10 \c13? | \c13 \c10? ]
         # { print STDERR "one line of text\n"; }
         {
+            # print STDERR "match picture: ", Perlito5::Dumper::Dumper( $MATCH );
             my $picture = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
             # print STDERR "picture: ", Perlito5::Dumper::Dumper( $picture );
             push @{ $MATCH->{fmt} }, Perlito5::AST::Buf->new( buf => $picture );
@@ -109,13 +111,13 @@ token stmt_format {
         |
             [ ' ' | \t ]*
             [   <before '{'>
-                <Perlito5::Grammar::Precedence::op_parse>
+                <Perlito5::Grammar::Block::closure_block>
                 {
-                    my $op = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Precedence::op_parse"}->[-1]);
+                    my $op = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block::closure_block"}->[-1]);
                     # print STDERR "got block\n"; 
-                    # print STDERR Perlito5::Dumper::Dumper( $op );
-                    if ( $op && $op->[0] eq "postfix_or_term" && $op->[1] eq "block" ) {
-                        $MATCH->{_ops} = [ $op->[2][-1] ];
+                    # print STDERR "block ", Perlito5::Dumper::Dumper( $op );
+                    if ( ref($op) eq "Perlito5::AST::Block" ) {
+                        $MATCH->{_ops} = [ $op->{stmts}[-1] ];
                     }
                     else {
                         Perlito5::Compiler::error "Syntax error";

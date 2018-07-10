@@ -1,6 +1,7 @@
 use v5;
 
 package Perlito5::Match;
+use strict;
 
 sub flat {
     my $self = $_[0];
