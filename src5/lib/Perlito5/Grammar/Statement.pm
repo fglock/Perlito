@@ -61,7 +61,66 @@ token stmt_yadayada {
 # Errors: "Format not terminated"
 #
 #
-token stmt_format {
+sub stmt_format {
+    my $m = _stmt_format(@_);
+    return if !$m;
+    my $self = Perlito5::Match::flat($m);
+
+    # warn "p5:format:", Perlito5::Dumper::Dumper($self);
+
+    my @arguments = @{$self->{arguments}};
+    my $format_name = shift @arguments;     # "Buf", maybe empty string
+
+    # $Perlito5::FORMAT{"name"} = sub { ... }
+    my @stmts = ();
+
+    push @stmts, Perlito5::AST::Apply->new(
+        code => "warn",
+        arguments => [
+            Perlito5::AST::Buf->new( buf => "Here" ),
+        ],
+    );
+
+    while (@arguments) {
+        # add formline() calls
+        my $picture = shift @arguments;         # "Buf"
+        my $args    = shift @arguments;         # "Apply->{'code' => "list:<,>"}
+
+        push @stmts, Perlito5::AST::Apply->new(
+            code => 'formline',
+            arguments => [
+                $picture,
+                ( $args ? $args : () ),
+            ],
+        );
+    }
+
+    my $ast = Perlito5::AST::Apply->new(
+        code => "infix:<=>",
+        arguments => [
+            Perlito5::AST::Lookup->new(
+                obj => Perlito5::AST::Var->new(
+                    '_real_sigil' => "%",
+                    '_decl' => "our",
+                    'name' => "FORMAT",
+                    'namespace' => "Perlito5",
+                    'sigil' => "\$",
+                ),
+                index_exp => $format_name,
+            ),
+            Perlito5::AST::Sub->new(
+                block => Perlito5::AST::Block->new(
+                    stmts => \@stmts,
+                ),
+            ),
+        ],
+    );
+
+    # warn "p5:format: out - ", Perlito5::Dumper::Dumper($ast);
+    $m->{capture} = $ast;
+    return $m;
+}
+token _stmt_format {
     'format'
     [ <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::full_ident>
     | { $MATCH->{'Perlito5::Grammar::full_ident'} = { capture => 'STDOUT' } }
@@ -102,7 +161,7 @@ token stmt_format {
             # print STDERR "match picture: ", Perlito5::Dumper::Dumper( $MATCH );
             my $picture = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
             # print STDERR "picture: ", Perlito5::Dumper::Dumper( $picture );
-            push @{ $MATCH->{fmt} }, Perlito5::AST::Buf->new( buf => $picture );
+            push @{ $MATCH->{fmt} }, Perlito5::AST::Buf->new( buf => $picture . "\n" );
         }
         [
             '.' [ ' ' | \t ]*   # TODO - test for EOF
