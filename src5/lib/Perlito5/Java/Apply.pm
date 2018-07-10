@@ -1801,7 +1801,19 @@ package Perlito5::AST::Apply;
             my $format_name = shift @arguments;     # "Buf", maybe empty string
 
             # $Perlito5::FORMAT{"name"} = sub { ... }
-            my $stmts = [];
+            my @stmts = ();
+
+            # TODO - populate the closure with formline() calls
+            push @stmts, Perlito5::AST::Apply->new(
+                code => "warn",
+                arguments => [
+                    Perlito5::AST::Buf->new( buf => "Here" ),
+                ],
+            );
+
+            my $picture = shift @arguments;         # "Buf"
+            my $args    = shift @arguments;         # "Apply->{'code' => "list:<,>"}
+
             my $ast = Perlito5::AST::Apply->new(
                 code => "infix:<=>",
                 arguments => [
@@ -1817,22 +1829,11 @@ package Perlito5::AST::Apply;
                     ),
                     Perlito5::AST::Sub->new(
                         block => Perlito5::AST::Block->new(
-                            stmts => $stmts,
+                            stmts => \@stmts,
                         ),
                     ),
                 ],
             );
-
-            # TODO - populate the closure with formline() calls
-            push @$stmts, Perlito5::AST::Apply->new(
-                code => "warn",
-                arguments => [
-                    Perlito5::AST::Buf->new( buf => "Here" ),
-                ],
-            );
-
-            my $picture = shift @arguments;         # "Buf"
-            my $args    = shift @arguments;         # "Apply->{'code' => "list:<,>"}
 
             warn "p5:format: out - ", Perlito5::Dumper::Dumper($ast);
 
