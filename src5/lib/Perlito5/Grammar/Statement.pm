@@ -108,7 +108,12 @@ sub stmt_format {
     );
 
     # warn "p5:format: out - ", Perlito5::Dumper::Dumper($ast);
-    $m->{capture} = $ast;
+
+    # evaluate the sub definition in a BEGIN block
+    $block = Perlito5::AST::Block->new( stmts => [$ast] );
+    Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');  
+    # runtime effect of subroutine declaration is "undef"
+    $m->{capture} = Perlito5::Grammar::Block::ast_nop();
     return $m;
 }
 token _stmt_format {

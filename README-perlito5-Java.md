@@ -131,7 +131,6 @@ Perlito5-Java work-in-progress
     - `when` and `given` not implemented.
 
   - format() function partially implemented
-    - initialization happens at runtime, not at compile-time
     - line counter and page-break not implemented
     - sentence break algorithm not implemented
 
