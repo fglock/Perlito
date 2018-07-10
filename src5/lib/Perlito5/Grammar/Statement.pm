@@ -64,7 +64,7 @@ token stmt_yadayada {
 token stmt_format {
     'format'
     [ <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::full_ident>
-    | { $MATCH->{'Perlito5::Grammar::full_ident'} = { capture => '' } }
+    | { $MATCH->{'Perlito5::Grammar::full_ident'} = { capture => 'STDOUT' } }
     ]
     <.Perlito5::Grammar::Space::opt_ws>
     '=' 
