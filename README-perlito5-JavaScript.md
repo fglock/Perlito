@@ -111,6 +111,8 @@ Perlito5-in-JavaScript differences from "perl"
 
 - runtime error messages often do not include the right line number in the Perl code
 
+- `form` and `formline` are not implemented yet.
+
 
 Calling Perl subroutines from JavaScript
 =========
