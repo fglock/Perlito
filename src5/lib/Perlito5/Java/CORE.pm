@@ -129,18 +129,44 @@ EOT
         return new PlInt(count);
 EOT
     write => <<'EOT',
-        String name = fh.typeglob_name;
+
+        // The current format name is stored in the variable $~ ($FORMAT_NAME), and
+        // the current top of form format name is in $^ ($FORMAT_TOP_NAME). The
+        // current output page number is stored in $% ($FORMAT_PAGE_NUMBER), and the
+        // number of lines on the page is in $= ($FORMAT_LINES_PER_PAGE). Whether to
+        // autoflush output on this handle is stored in $| ($OUTPUT_AUTOFLUSH). The
+        // string output before each top of page (except the first) is stored in $^L
+        // ($FORMAT_FORMFEED).
+
+        PlHash formats = PlStringConstant.getConstant("Perlito5::FORMAT").hashRef.o.hash_deref_strict();
+        PlLvalue accumulator = PlStringConstant.getConstant("main::" + (char)1).scalarRef;    // $^A
+
+        String name = PlStringConstant.getConstant("main::~").scalarRef.toString();
+        if (name.equals("")) {
+            name = fh.typeglob_name;
+        }
         if (name.length() > 6 && name.startsWith("main::")) {
             name = name.substring(6);
         }
-        PlStringConstant tmp157 = PlStringConstant.getConstant("Perlito5::FORMAT");
-        PlStringConstant tmp213 = PlStringConstant.getConstant("main::" + (char)1);    // $^A
-        tmp213.scalarRef.set(PlCx.EMPTY);
-        if (!tmp157.hashRef.o.hash_deref_strict().hget(name).to_boolean()) {
+
+        String top_name = PlStringConstant.getConstant("main::^").scalarRef.toString();
+        if (top_name.equals("")) {
+            top_name = name + "_TOP";
+        }
+        if (top_name.length() > 6 && top_name.startsWith("main::")) {
+            top_name = top_name.substring(6);
+        }
+
+        if (!formats.hget(name).to_boolean()) {
             PlCORE.die(PlCx.VOID, new PlArray(new PlString("Undefined format \"" + name + "\"")));
         }
-        tmp157.hashRef.o.hash_deref_strict().hget(name).apply(PlCx.VOID, new PlArray());
-        PlCORE.print(want, fh, tmp213.scalarRef.toString());
+
+        if (formats.hget(top_name).to_boolean()) {
+            formats.hget(top_name).apply(PlCx.VOID, new PlArray());
+        }
+        formats.hget(name).apply(PlCx.VOID, new PlArray());
+        PlCORE.print(want, fh, accumulator.toString());
+        accumulator.set(PlCx.EMPTY);
         return new PlInt(1);
 EOT
     readline => <<'EOT',
