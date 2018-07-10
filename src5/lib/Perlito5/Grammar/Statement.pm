@@ -183,7 +183,13 @@ token _stmt_format {
                     {
                         my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
                         # print STDERR "stmt: ", Perlito5::Dumper::Dumper( $stmt );
+
+                        Perlito5::Grammar::Scope::check_variable_declarations();
+                        Perlito5::Grammar::Scope::create_new_compile_time_scope();
                         my $exp = Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 );
+                        Perlito5::Grammar::Scope::end_compile_time_scope();
+                        Perlito5::Grammar::Scope::check_variable_declarations();
+
                         my $exp2;
                         if ($exp) {
                             # print STDERR "stmt exp: ", Perlito5::Dumper::Dumper( $exp );
@@ -208,7 +214,13 @@ token _stmt_format {
                 {
                     my $stmt = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Space::to_eol"}->[-1]);
                     # print STDERR "stmt 2: ", Perlito5::Dumper::Dumper( $stmt );
+
+                    Perlito5::Grammar::Scope::check_variable_declarations();
+                    Perlito5::Grammar::Scope::create_new_compile_time_scope();
                     my $exp = Perlito5::Grammar::Expression::exp_parse( [ split("", $stmt) ], 0 );
+                    Perlito5::Grammar::Scope::end_compile_time_scope();
+                    Perlito5::Grammar::Scope::check_variable_declarations();
+
                     my $exp2;
                     if ($exp) {
                         # print STDERR "stmt 2 exp: ", Perlito5::Dumper::Dumper( $exp );
