@@ -1920,10 +1920,11 @@ EOT
             return value;
         }
         PlLvalue var = (PlLvalue)vv;
+        var.addMagic();
 
         if (value.is_undef()) {
-            var.pos = null;
-            var.regex_zero_length_flag = false;
+            var.magic.pos = null;
+            var.magic.regex_zero_length_flag = false;
             return value;
         }
 
@@ -1934,7 +1935,7 @@ EOT
 
         if (old_pos == pos) {
             // PlCORE.say("zero length match");
-            if (var.regex_zero_length_flag) {
+            if (var.magic.regex_zero_length_flag) {
                 if (matcher.matcher.find()) {
                     matcher.regex_string = str;
                     pos = matcher.matcher.end();
@@ -1944,22 +1945,22 @@ EOT
                     // String cap = str.substring(matcher.start(), matcher.end());
                     // PlCORE.say("zero length match [true]: [" + cap + "] ["+ cap1+"] pos=" + pos + " start="+matcher.start() + " end="+matcher.end());
 
-                    var.regex_zero_length_flag = false;
+                    var.magic.regex_zero_length_flag = false;
                 }
                 else {
                     reset_match();
-                    var.pos = null;
+                    var.magic.pos = null;
                     return PlCx.UNDEF;
                 }
             }
             else {
-                var.regex_zero_length_flag = true;
+                var.magic.regex_zero_length_flag = true;
             }
         }
 
         // TODO - test that pos < string length
         value = new PlInt(pos);
-        var.pos = pos;
+        var.magic.pos = pos;
         return value;
     }
 
@@ -5778,11 +5779,17 @@ EOT
     , <<'EOT'
 
 }
-class PlLvalue extends PlScalarObject {
-    public PlScalarImmutable o;
+class PlLvalueMagic {
+    public PlLvalueMagic() {
+    }
+
     public Integer pos;
     public boolean regex_zero_length_flag;
     public PlObject tied;
+}
+class PlLvalue extends PlScalarObject {
+    public PlScalarImmutable o;
+    public PlLvalueMagic magic;
 
     // Note: several versions of PlLvalue()
     public PlLvalue() {
@@ -5809,6 +5816,12 @@ class PlLvalue extends PlScalarObject {
         this.o = o.scalar();
     }
 
+    public void addMagic() {
+        if (this.magic == null) {
+            this.magic = new PlLvalueMagic();
+        }
+    }
+
     public PerlArgumentLookupResult castToClass(ArrayList<Class[]> params, int pos) {
         // want PlLvalue
         for (Class[] cl : params) {
@@ -5829,12 +5842,12 @@ class PlLvalue extends PlScalarObject {
         if (this.o.is_filehandle()) {
             return this.o.tie(args);
         }
-
-        if (this.tied != null) {
+        this.addMagic();
+        if (this.magic.tied != null) {
             this.untie();
         }
         PlObject self = PerlOp.call("TIESCALAR", args, PlCx.VOID);
-        this.tied = self;
+        this.magic.tied = self;
         return self;
     }
 
@@ -5843,13 +5856,13 @@ class PlLvalue extends PlScalarObject {
             return ((PlFileHandle)this.o).untie();
         }
 
-        if (this.tied != null) {
-            PlObject tied = this.tied;
+        if (this.magic != null && this.magic.tied != null) {
+            PlObject tied = this.magic.tied;
             PlObject untie = PerlOp.call("can", new PlArray(tied, new PlString("UNTIE")), PlCx.SCALAR);
             if (untie.to_boolean()) {
                 untie.apply(PlCx.VOID, new PlArray(tied));
             };
-            this.tied = null;
+            this.magic.tied = null;
             return tied;
         }
         return this;
@@ -5859,8 +5872,8 @@ class PlLvalue extends PlScalarObject {
             return this.o.tied();
         }
 
-        if (this.tied != null) {
-            return this.tied;
+        if (this.magic != null && this.magic.tied != null) {
+            return this.magic.tied;
         }
         return PlCx.UNDEF;
     }
@@ -5879,26 +5892,26 @@ class PlLvalue extends PlScalarObject {
     }
 
     public PlObject pos() {
-        // TODO - optimize: we are adding "pos" (Integer) to all PlLvalue objects
-        if (this.pos == null) {
-            return PlCx.UNDEF;
+        if (this.magic != null && this.magic.pos != null) {
+            return new PlInt(this.magic.pos);
         }
-        return new PlInt(this.pos);
+        return PlCx.UNDEF;
     }
     public PlObject set_pos(PlObject value) {
-        this.regex_zero_length_flag = false;
+        addMagic();
+        this.magic.regex_zero_length_flag = false;
         if (value.is_undef()) {
-            this.pos = null;
+            this.magic.pos = null;
         }
         else {
-            this.pos = value.to_int();
+            this.magic.pos = value.to_int();
         }
         return value;
     }
 
     public PlScalarImmutable get() {
-        if (this.tied != null) {
-            PlScalarImmutable v = PerlOp.call("FETCH", new PlArray(tied), PlCx.VOID).scalar();
+        if (this.magic != null && this.magic.tied != null) {
+            PlScalarImmutable v = PerlOp.call("FETCH", new PlArray(this.magic.tied), PlCx.VOID).scalar();
             this.o = v;
             return v;
         }
@@ -6159,24 +6172,24 @@ class PlLvalue extends PlScalarObject {
         if (o.is_lvalue()) {
             o = o.get();
         }
-        if (this.tied != null) {
-            PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
+        if (this.magic != null && this.magic.tied != null) {
+            PerlOp.call("STORE", new PlArray(this.magic.tied, o), PlCx.VOID);
             return this;
         }
         this.o = (PlScalarImmutable)o;
         return this;
     }
     public PlObject set(PlScalarImmutable o) {
-        if (this.tied != null) {
-            PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
+        if (this.magic != null && this.magic.tied != null) {
+            PerlOp.call("STORE", new PlArray(this.magic.tied, o), PlCx.VOID);
             return this;
         }
         this.o = o;
         return this;
     }
     public PlObject set(PlLvalue o) {
-        if (this.tied != null) {
-            PerlOp.call("STORE", new PlArray(tied, o), PlCx.VOID);
+        if (this.magic != null && this.magic.tied != null) {
+            PerlOp.call("STORE", new PlArray(this.magic.tied, o), PlCx.VOID);
             return this;
         }
         this.o = o.get();
@@ -6377,15 +6390,15 @@ EOT
     , ((map {
             my $perl = $_;
 "    public PlObject ${perl}(PlObject s) {
-        if (this.tied != null) {
-            PlScalarImmutable v = PerlOp.call(\"FETCH\", new PlArray(tied), PlCx.VOID).scalar();
+        if (this.magic != null && this.magic.tied != null) {
+            PlScalarImmutable v = PerlOp.call(\"FETCH\", new PlArray(this.magic.tied), PlCx.VOID).scalar();
             this.o = v;
         }
         return this.o.${perl}(s);
     }
     public PlObject ${perl}2(PlObject s) {
-        if (this.tied != null) {
-            PlScalarImmutable v = PerlOp.call(\"FETCH\", new PlArray(tied), PlCx.VOID).scalar();
+        if (this.magic != null && this.magic.tied != null) {
+            PlScalarImmutable v = PerlOp.call(\"FETCH\", new PlArray(this.magic.tied), PlCx.VOID).scalar();
             this.o = v;
         }
         return s.${perl}(this.o);
@@ -6429,8 +6442,8 @@ EOT
     , ((map {
             my ($op, $type) = @$_;
 "    public $type $op() {
-        if (this.tied != null) {
-            PlScalarImmutable v = PerlOp.call(\"FETCH\", new PlArray(tied), PlCx.VOID).scalar();
+        if (this.magic != null && this.magic.tied != null) {
+            PlScalarImmutable v = PerlOp.call(\"FETCH\", new PlArray(this.magic.tied), PlCx.VOID).scalar();
             this.o = v;
         }
         return this.o.$op();
