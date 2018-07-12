@@ -3226,21 +3226,17 @@ EOT
         return (PlArray)this;
     }
     public PlArray array_deref(String namespace) {
-        PlCORE.die("Not an ARRAY reference");
-        return (PlArray)this;
+        return (PlArray)PlCORE.die("Not an ARRAY reference");
     }
     public PlArray array_deref_strict() {
-        PlCORE.die("Not an ARRAY reference");
-        return (PlArray)this;
+        return (PlArray)PlCORE.die("Not an ARRAY reference");
     }
     public PlObject array_deref_set(PlObject i) {
-        PlCORE.die("Not an ARRAY reference");
-        return this;
+        return PlCORE.die("Not an ARRAY reference");
     }
 
     public PlObject hget_arrayref(String i) {
-        PlCORE.die("Not a HASH reference");
-        return this;
+        return PlCORE.die("Not a HASH reference");
     }
     public PlObject hget_hashref(String i) {
         PlCORE.die("Not a HASH reference");
@@ -3248,38 +3244,30 @@ EOT
     }
 
     public PlObject aget_arrayref(int i) {
-        PlCORE.die("Not an ARRAY reference");
-        return this;
+        return PlCORE.die("Not an ARRAY reference");
     }
     public PlObject aget_hashref(int i) {
-        PlCORE.die("Not an ARRAY reference");
-        return this;
+        return PlCORE.die("Not an ARRAY reference");
     }
 
     public PlObject hash_deref(String namespace) {
-        PlCORE.die("Not a HASH reference");
-        return this;
+        return PlCORE.die("Not a HASH reference");
     }
     public PlHash hash_deref_strict() {
-        PlCORE.die("Not a HASH reference");
-        return (PlHash)this;
+        return (PlHash)PlCORE.die("Not a HASH reference");
     }
     public PlObject hash_deref_set(PlObject i) {
-        PlCORE.die("Not a HASH reference");
-        return this;
+        return PlCORE.die("Not a HASH reference");
     }
 
     public PlObject hget(String i) {
-        PlCORE.die("Not a HASH reference");
-        return this;
+        return PlCORE.die("Not a HASH reference");
     }
     public PlObject hget_lvalue(String i) {
-        PlCORE.die("Not a HASH reference");
-        return this;
+        return PlCORE.die("Not a HASH reference");
     }
     public PlObject hget_lvalue_local(String i) {
-        PlCORE.die("Not a HASH reference");
-        return this;
+        return PlCORE.die("Not a HASH reference");
     }
 
     public PlObject hset(String s, PlObject v) {
@@ -6105,7 +6093,7 @@ class PlLvalue extends PlScalarObject {
     public PlArray array_deref_strict() {
         // @$x doesn't autovivify
         PlScalarImmutable o = this.get();
-        return (PlArray)(o.array_deref_strict());
+        return o.array_deref_strict();
     }
     public PlArray array_deref_lvalue() {
         PlScalarImmutable o = this.get();
@@ -8798,8 +8786,7 @@ EOT
         return PlV.array_get(s);
     }
     public PlArray array_deref_strict() {
-        PlCORE.die("Can't use string (\"" + this.s + "\") as an ARRAY ref while \"strict refs\" in use");
-        return PlV.array_get(s);
+        return (PlArray)PlCORE.die("Can't use string (\"" + this.s + "\") as an ARRAY ref while \"strict refs\" in use");
     }
     public PlArray array_deref(String namespace) {
         if (s.indexOf("::") == -1) {
@@ -8826,8 +8813,7 @@ EOT
         return PlV.hash_get(s);
     }
     public PlHash hash_deref_strict() {
-        PlCORE.die("Can't use string (\"" + this.s + "\") as a HASH ref while \"strict refs\" in use");
-        return PlV.hash_get(s);
+        return (PlHash)PlCORE.die("Can't use string (\"" + this.s + "\") as a HASH ref while \"strict refs\" in use");
     }
     public PlObject hash_deref_set(PlObject v) {
         // TODO - concatenate current namespace if needed
