@@ -7719,12 +7719,12 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     }
 
     public PlHash() {
-        this.each_iterator = new PlHashIterator();
+        // this.each_iterator = new PlHashIterator();
         this.h = new PlHashMap();
-        this.each_iterator.reset();
+        // this.each_iterator.reset();
     }
     public PlHash(PlObject... args) {
-        this.each_iterator = new PlHashIterator();
+        // this.each_iterator = new PlHashIterator();
         this.h = new PlHashMap();
         int args_size = args.length;
         for (int i = 0; i < args_size; i++) {
@@ -7763,7 +7763,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
                 this.hset(s.toString(), value);
             }
         }
-        this.each_iterator.reset();
+        // this.each_iterator.reset();
     }
 
 
@@ -7850,7 +7850,9 @@ class PlHash extends PlObject implements Iterable<PlObject> {
             PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Odd number of elements in hash assignment")));
             this.hset(s.toString(), PlCx.UNDEF);
         }
-        this.each_iterator.reset();
+        if (this.each_iterator != null) {
+            this.each_iterator.reset();
+        }
         if (want == PlCx.LIST) {
             return this.to_list_of_aliases();
         }
