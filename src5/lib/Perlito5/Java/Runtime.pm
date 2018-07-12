@@ -7638,12 +7638,6 @@ class PlTieHashMap extends PlHashMap {
 
 } // PlTieHashMap
 
-class PlHashIterator {
-    public Iterator<Map.Entry<String, PlObject>> iterator;
-
-    public PlHashIterator() {
-    }
-}
 class PlHashMap extends HashMap<String, PlObject> implements Iterable<Map.Entry<String, PlObject>> {
     public PlHashMap() {
     }
