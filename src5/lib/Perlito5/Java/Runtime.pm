@@ -7643,9 +7643,6 @@ class PlHashIterator {
 
     public PlHashIterator() {
     }
-    public void reset() {
-        iterator = null;
-    }
 }
 class PlHashMap extends HashMap<String, PlObject> implements Iterable<Map.Entry<String, PlObject>> {
     public PlHashMap() {
@@ -7712,19 +7709,16 @@ class PlHashLvalueIterator implements Iterator<PlObject> {
 }
 class PlHash extends PlObject implements Iterable<PlObject> {
     public PlHashMap h;
-    public PlHashIterator each_iterator;
+    public Iterator<Map.Entry<String, PlObject>> each_iterator;
 
     public Iterator<PlObject> iterator() {
         return new PlHashLvalueIterator(this); 
     }
 
     public PlHash() {
-        this.each_iterator = new PlHashIterator();
         this.h = new PlHashMap();
-        this.each_iterator.reset();
     }
     public PlHash(PlObject... args) {
-        this.each_iterator = new PlHashIterator();
         this.h = new PlHashMap();
         int args_size = args.length;
         for (int i = 0; i < args_size; i++) {
@@ -7763,7 +7757,6 @@ class PlHash extends PlObject implements Iterable<PlObject> {
                 this.hset(s.toString(), value);
             }
         }
-        this.each_iterator.reset();
     }
 
 
@@ -7850,7 +7843,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
             PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Odd number of elements in hash assignment")));
             this.hset(s.toString(), PlCx.UNDEF);
         }
-        this.each_iterator.reset();
+        this.each_iterator = null;
         if (want == PlCx.LIST) {
             return this.to_list_of_aliases();
         }
@@ -8093,11 +8086,11 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     }
     public PlObject each() {
         PlArray aa = new PlArray();
-        if (this.each_iterator.iterator == null) {
-            this.each_iterator.iterator = this.h.iterator();
+        if (this.each_iterator == null) {
+            this.each_iterator = this.h.iterator();
         }
-        if (this.each_iterator.iterator.hasNext()) {
-            Map.Entry<String, PlObject> entry = this.each_iterator.iterator.next();
+        if (this.each_iterator.hasNext()) {
+            Map.Entry<String, PlObject> entry = this.each_iterator.next();
             String key = entry.getKey();
             aa.push_void(new PlString(key));
             PlObject value = entry.getValue();
@@ -8105,7 +8098,7 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         }
         else {
             // return empty list
-            this.each_iterator.reset();
+            this.each_iterator = null;
         }
         return aa;
     }
