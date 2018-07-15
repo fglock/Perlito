@@ -1631,7 +1631,7 @@ package Perlito5::AST::Call;
             if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' && $self->{invocant}{sigil} eq '::' ) {
                 if ( $self->{invocant}{namespace} eq '__SUB__' || $self->{invocant}{namespace} eq 'CORE::__SUB__' ) {
                     # __SUB__->()
-                    $invocant = 'this.getCurrentSub()';     # "this" is the closure
+                    $invocant = 'this.currentSub';     # "this" is the closure
                 }
                 else {
                     # x->()
@@ -2149,7 +2149,7 @@ package Perlito5::AST::Sub;
         }
 
         my $outer_sub;
-        $outer_sub = 'this.getCurrentSub()' if $Perlito5::Java::is_inside_subroutine;
+        $outer_sub = 'this.currentSub' if $Perlito5::Java::is_inside_subroutine;
 
         my $sub_ref = Perlito5::Java::get_label();
         local $Perlito5::Java::is_inside_subroutine = 1;
