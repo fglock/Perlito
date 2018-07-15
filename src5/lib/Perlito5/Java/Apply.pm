@@ -1051,10 +1051,14 @@ package Perlito5::AST::Apply;
                 $wantarray = 'return';
             }
 
+            my $method  = $wantarray eq 'void' || $wantarray eq 'statement'
+                ? 'throw new PlReturnException'
+                : 'PerlOp.ret';
+
             if ( ! @{ $self->{arguments} } ) {
-                return 'PerlOp.ret(PerlOp.context(' . Perlito5::Java::to_context($wantarray) . '))';
+                return $method . '(PerlOp.context(' . Perlito5::Java::to_context($wantarray) . '))';
             }
-            return 'PerlOp.ret(' . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1, $wantarray ) . ')';
+            return $method . '(' . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1, $wantarray ) . ')';
         },
         'goto' => sub {
             my ($self, $level, $wantarray) = @_;

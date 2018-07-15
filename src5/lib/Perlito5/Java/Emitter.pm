@@ -148,11 +148,11 @@ package Perlito5::Java::LexicalBlock;
             else {
                 if (!@{$last_statement->{arguments}}) {
                     $Perlito5::THROW_RETURN = 1;
-                    push @str, 'return PerlOp.ret(PerlOp.context(return_context));'; 
+                    push @str, 'throw new PlReturnException(PerlOp.context(return_context));'; 
                 }
                 else {
                     $Perlito5::THROW_RETURN = 1;
-                    push @str, 'return PerlOp.ret('
+                    push @str, 'throw new PlReturnException('
                         . Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1, 'return')
                         . ');';
                 }
@@ -1209,14 +1209,14 @@ package Perlito5::AST::Var;
             return $sub . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
         }
         if ($sigil eq '@') {
-            if ($self->{sigil} eq '$#') {
-                return "PlV.array_get$local(" . $index . ').end_of_array_index()'
-            }
             my $s = "PlV.array_get$local(" . $index . ')';
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
                 $s = $scalar . '.arrayRef.o.array_deref_strict()';
+            }
+            if ($self->{sigil} eq '$#') {
+                return $s . '.end_of_array_index()'
             }
             if ( $wantarray eq 'scalar' ) {
                 return $s . '.length_of_array()';
