@@ -180,12 +180,7 @@ sub emit_perl5 {
     elsif ($self->{captures} > 1) {
         $code = 'if ($m2) { '
                 .   '$MATCH->{to} = $m2->{to}; '
-                .   'if (exists $MATCH->{\'' . $self->{metasyntax} . '\'}) { '
-                .       'push @{ $MATCH->{\'' . $self->{metasyntax} . '\'} }, $m2; '
-                .   '} '
-                .   'else { '
-                .       '$MATCH->{\'' . $self->{metasyntax} . '\'} = [ $m2 ]; '
-                .   '}; '
+                .   'push @{ $MATCH->{\'' . $self->{metasyntax} . '\'} }, $m2; '
                 .   '1 '
                 . '} else { 0 }; '
     }
