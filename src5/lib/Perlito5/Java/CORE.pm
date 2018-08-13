@@ -2172,7 +2172,13 @@ EOT
         return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
     }
     public static final PlDouble sleep(int want, PlArray List__) {
-        long s = ((Double)(List__.shift().to_double() * 1000)).longValue();
+        long s;
+        if (List__.to_int() == 0) {
+            s = Long.MAX_VALUE;
+        }
+        else {
+            s = ((Double)(List__.shift().to_double() * 1000)).longValue();
+        }
         try {
             TimeUnit.MILLISECONDS.sleep(s);
         } catch (InterruptedException e) {
