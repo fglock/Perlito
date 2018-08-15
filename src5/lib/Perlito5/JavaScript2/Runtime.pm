@@ -1590,6 +1590,20 @@ var p5sort = function(namespace, func, args) {
     return out;
 };
 
+function p5hash_delete(v,k) {
+    var res = v[k];
+    delete (v[k]);
+    return res;
+}
+function p5hash_delete_list(v,k) {
+    var res = [];
+    for (var i = 0; i < k.length; i++) {
+        res.push(v[k[i]]);
+        delete (v[k[i]]);
+    }
+    return res;
+}
+
 EOT
 
 } # end of emit_javascript2()

@@ -555,7 +555,14 @@ package Perlito5::AST::Apply;
                 my $key_js = $arg->autoquote($arg->{index_exp})->emit_javascript2($level);
                 my $suffix = ((  $v->isa('Perlito5::AST::Var') && $v->{sigil} eq '$') ? '' : '._hash_');
 
-                return "((function (v,k) { var ret = v[k]; delete (v[k]); return ret;})(" . $v_js . $suffix . ',' . $key_js . "))";
+                if (  (ref($v) eq 'Perlito5::AST::Var')
+                   && $v->{sigil} eq '@'
+                   )
+                {
+                    return "p5hash_delete_list(" . $v_js . $suffix . ',' . $key_js . ")";
+                }
+
+                return "p5hash_delete(" . $v_js . $suffix . ',' . $key_js . ")";
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
