@@ -4,9 +4,13 @@ Dev Version:
 -- add CORE function: formline
 -- 'form' CORE function initial implementation
 
+- JavaScript:
+-- implemented delete(@h{@keys})
+
 - Core compiler:
 -- 'form' compiler
 -- add Perlito5/Runtime/Formline.pm for CORE::formline() implementation
+-- add core module: feature.pm
 
 9.026 cpan:Perlito5 2018-06-13
 
