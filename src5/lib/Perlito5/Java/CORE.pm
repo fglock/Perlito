@@ -1254,16 +1254,53 @@ EOT
                                 break;
                             case 'v':
                                 // TODO - format value like "v1.v2.v3"
-                                // replace "%v" with "%s"
+                                // replace "%vd" with "%s"
+                                scanning = false;
                                 StringBuilder sbv = new StringBuilder();
                                 if (offset > 0) {
                                     sbv.append(format.substring(0, offset));
                                 }
-                                sbv.append("s");
-                                if (offset + 1 < format.length()) {
-                                    sbv.append(format.substring(offset + 1));
+                                sbv.append("s");    // replace "vd" with "s"
+                                if (offset + 2 < format.length()) {
+                                    sbv.append(format.substring(offset + 2));   // skip "v" and "d"
                                 }
                                 format = sbv.toString();
+                                length = format.length();
+                                int[] outs;
+                                PlObject plArg = List__.aget(args_index+1);
+                                if (plArg.ref_str().equals("version")) {
+                                    // version object @{ $x->{version} }
+                                    PlArray nums = plArg.hget_arrayref("version").array_deref_strict();
+                                    int nums_length = nums.to_int();
+                                    outs = new int[nums_length];
+                                    for (int pos = 0 ; pos < nums_length; pos++) {
+                                        outs[pos] = nums.aget(pos).to_int();
+                                    }
+                                }
+                                else {
+                                    String s = plArg.toString();
+                                    outs = new int[s.length()];
+                                    for (int pos = 0 ; pos < s.length(); pos++) {
+                                        outs[pos] = s.codePointAt(offset);
+                                    }
+                                }
+                                StringBuilder fmted = new StringBuilder();
+                                for (int pos = 0 ; pos < outs.length; pos++) {
+                                    if (pos > 0) {
+                                        fmted.append( "." );
+                                    }
+                                    fmted.append( outs[pos] );
+                                }
+                                args[args_index] = fmted.toString();
+                                // System.out.println(format);
+                                // System.out.println(args[args_index]);
+                                // System.out.println("fmt: <<" + String.format(format, args) + ">>");
+                                args_index++;
+                                if (args_index > args_max) {
+                                    // panic
+                                    offset = length;
+                                }
+                                offset++;   // skip "v"
                                 break;
                             case 'c': case 's': case 'd': case 'u': case 'o':
                             case 'x': case 'e': case 'f': case 'g':
@@ -1293,6 +1330,7 @@ EOT
                                                 sb.append(format.substring(offset + 1));
                                             }
                                             format = sb.toString();
+                                            length = format.length();
                                             //PlCORE.say("format [" + format + "]");
                                         }
 
@@ -1306,6 +1344,7 @@ EOT
                                             sb.append("0");
                                             sb.append(format.substring(offset));
                                             format = sb.toString();
+                                            length = format.length();
                                         }
                                         args[args_index] = List__.aget(args_index+1).to_double();
                                         break;

@@ -3,6 +3,7 @@ Dev Version:
 - Java:
 -- add CORE function: formline
 -- 'form' CORE function initial implementation
+-- sprintf() argument "%vd"
 
 - JavaScript:
 -- implemented delete(@h{@keys})
