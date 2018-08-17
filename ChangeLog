@@ -7,6 +7,7 @@ Dev Version:
 
 - JavaScript:
 -- implemented delete(@h{@keys})
+-- sprintf() argument "%vd"
 
 - Core compiler:
 -- 'form' compiler

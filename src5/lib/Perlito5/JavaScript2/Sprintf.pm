@@ -111,7 +111,11 @@ CORE.sprintf = function(List__) {
             /* type specifier */
             type: part[9],
             /* the given data associated with this part converted to a string */
-            data: ( part[9] != '%' ) ? String ( list[paramIndex++] ) : false
+            data:   ( part[8] != undefined )    // vector_flag
+                    ? list[paramIndex++]
+                    : ( part[9] != '%' )
+                    ? String ( list[paramIndex++] )
+                    : false
         };
     }
 
