@@ -2576,6 +2576,8 @@ class PlV {
     public static PlFileHandle STDOUT = (PlFileHandle)PlStringConstant.getConstant("main::STDOUT").fileRef.o;
     public static PlFileHandle STDERR = (PlFileHandle)PlStringConstant.getConstant("main::STDERR").fileRef.o;
     public static PlFileHandle selectedFileHandle = STDOUT;
+    public static final PlStringConstant sub_isa     = PlStringConstant.getConstant("UNIVERSAL::isa");
+    public static final PlStringConstant str_version = PlStringConstant.getConstant("version");
 
     // initialize special variables like $_ $\
 EOT

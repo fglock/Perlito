@@ -1268,8 +1268,8 @@ EOT
                                 length = format.length();
                                 int[] outs;
                                 PlObject plArg = List__.aget(args_index+1);
-                                if (plArg.ref_str().equals("version")) {
-                                    // version object @{ $x->{version} }
+                                if (PlV.sub_isa.apply(PlCx.SCALAR, PlArray.construct_list_of_aliases(plArg, PlV.str_version)).to_boolean()) {
+                                    // isa "version" object; get @{ $x->{version} }
                                     PlArray nums = plArg.hget_arrayref("version").array_deref_strict();
                                     int nums_length = nums.to_int();
                                     outs = new int[nums_length];
