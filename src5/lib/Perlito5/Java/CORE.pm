@@ -1266,35 +1266,7 @@ EOT
                                 }
                                 format = sbv.toString();
                                 length = format.length();
-                                int[] outs;
-                                PlObject plArg = List__.aget(args_index+1);
-                                if (PlV.sub_isa.apply(PlCx.SCALAR, PlArray.construct_list_of_aliases(plArg, PlV.str_version)).to_boolean()) {
-                                    // isa "version" object; get @{ $x->{version} }
-                                    PlArray nums = plArg.hget_arrayref("version").array_deref_strict();
-                                    int nums_length = nums.to_int();
-                                    outs = new int[nums_length];
-                                    for (int pos = 0 ; pos < nums_length; pos++) {
-                                        outs[pos] = nums.aget(pos).to_int();
-                                    }
-                                }
-                                else {
-                                    String s = plArg.toString();
-                                    outs = new int[s.length()];
-                                    for (int pos = 0 ; pos < s.length(); pos++) {
-                                        outs[pos] = s.codePointAt(offset);
-                                    }
-                                }
-                                StringBuilder fmted = new StringBuilder();
-                                for (int pos = 0 ; pos < outs.length; pos++) {
-                                    if (pos > 0) {
-                                        fmted.append( "." );
-                                    }
-                                    fmted.append( outs[pos] );
-                                }
-                                args[args_index] = fmted.toString();
-                                // System.out.println(format);
-                                // System.out.println(args[args_index]);
-                                // System.out.println("fmt: <<" + String.format(format, args) + ">>");
+                                args[args_index] = PlV.sub_sprintf_vd.apply(PlCx.SCALAR, PlArray.construct_list_of_aliases(List__.aget(args_index+1))).toString();
                                 args_index++;
                                 if (args_index > args_max) {
                                     // panic

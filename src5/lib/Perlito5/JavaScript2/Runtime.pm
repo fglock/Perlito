@@ -2,6 +2,8 @@ use v5;
 
 package Perlito5::JavaScript2::Runtime;
 
+use Perlito5::Runtime::Sprintf;
+
 sub perl5_to_js {
     my ($source, $namespace, $want, $scalar_hints, $hash_hints, $scope_js) = @_;
 

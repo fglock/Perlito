@@ -7,6 +7,7 @@ use Perlito5::Java::CORE;
 use Perlito5::Java::Crypt;
 use Perlito5::Java::JavaCompiler;
 use Perlito5::Runtime::Formline;
+use Perlito5::Runtime::Sprintf;
 
 sub perl5_to_java {
     my ($source, $namespace, $want, $scope_java) = @_;
@@ -2576,8 +2577,7 @@ class PlV {
     public static PlFileHandle STDOUT = (PlFileHandle)PlStringConstant.getConstant("main::STDOUT").fileRef.o;
     public static PlFileHandle STDERR = (PlFileHandle)PlStringConstant.getConstant("main::STDERR").fileRef.o;
     public static PlFileHandle selectedFileHandle = STDOUT;
-    public static final PlStringConstant sub_isa     = PlStringConstant.getConstant("UNIVERSAL::isa");
-    public static final PlStringConstant str_version = PlStringConstant.getConstant("version");
+    public static final PlStringConstant sub_sprintf_vd = PlStringConstant.getConstant("Perlito5::Runtime::Sprintf::sprintf_vd");
 
     // initialize special variables like $_ $\
 EOT

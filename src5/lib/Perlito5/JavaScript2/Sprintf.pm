@@ -45,6 +45,7 @@ CORE.sprintf = function(List__) {
      * (optional) alignment specifier
      * (optional) width specifier
      * (optional) precision specifier
+     * (optional) vector flag
      * type specifier:
      *  % - literal percent sign
      *  b - binary number
@@ -57,7 +58,7 @@ CORE.sprintf = function(List__) {
      *  x - hexadecimal number (lowercase characters)
      *  X - hexadecimal number (uppercase characters)
      */
-    var r = new RegExp( /%(\+)?([0 ]|'(.))?(-)?([0-9]+)?(\.([0-9]+))?([%bcdufosxX])/g );
+    var r = new RegExp( /%(\+)?([0 ]|'(.))?(-)?([0-9]+)?(\.([0-9]+))?(v)?([%bcdufosxX])/g );
 
     /**
      * Each format string is splitted into the following parts:
@@ -70,7 +71,8 @@ CORE.sprintf = function(List__) {
      * 5: width specifier
      * 6: precision specifier including the dot
      * 7: precision specifier without the dot
-     * 8: type specifier
+     * 8: vector flag
+     * 9: type specifier
      */
     var parts      = [];
     var paramIndex = 0;
@@ -104,10 +106,12 @@ CORE.sprintf = function(List__) {
             width: ( part[5] != undefined ) ? part[5] : false,
             /* precision specifier (number or false) */
             precision: ( part[7] != undefined ) ? part[7] : false,
+            /* vector flag */
+            vector_flag: ( part[8] != undefined ) ? part[8] : false,
             /* type specifier */
-            type: part[8],
+            type: part[9],
             /* the given data associated with this part converted to a string */
-            data: ( part[8] != '%' ) ? String ( list[paramIndex++] ) : false
+            data: ( part[9] != '%' ) ? String ( list[paramIndex++] ) : false
         };
     }
 
@@ -137,7 +141,13 @@ CORE.sprintf = function(List__) {
                 preSubstitution = String.fromCharCode( Math.abs( parseInt( parts[i].data ) ) );
             break;
             case 'd':
-                preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
+                if (parts[i].vector_flag) {
+                    preSubstitution = p5cget('Perlito5::Runtime::Sprintf', 'sprintf_vd')([ parts[i].data ], "");
+                    parts[i].type = "s";
+                }
+                else {
+                    preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
+                }
             break;
             case 'u':
                 // preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
