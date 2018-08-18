@@ -1213,11 +1213,11 @@ function p5regex_compile (s, flags) {
         if (flag_s) {
             if (c == "." && !is_char_class ) { out.push("[\\S\\s]"); continue }
         }
-        if (flag_i && s.toUpperCase() != s.toLowerCase()) {
+        if (flag_i && c.toUpperCase() != c.toLowerCase()) {
             if (is_char_class) {
-                out.push(s.toUpperCase() + s.toLowerCase()); continue;
+                out.push(c.toUpperCase() + c.toLowerCase()); continue;
             }
-            out.push("[" + s.toUpperCase() + s.toLowerCase() + "]"); continue;
+            out.push("[" + c.toUpperCase() + c.toLowerCase() + "]"); continue;
         }
         if (c == "(") {
             if (i+1 < cc.length && cc[i+1] == "?") {
@@ -1227,9 +1227,11 @@ function p5regex_compile (s, flags) {
                     if (cc[i+2] == "i") { flag_i = true }    // (?i) (?i:
                     if (cc[i+2] == "s") { flag_s = true }    // (?s) (?s:
                     if (i+3 < cc.length && cc[i+3] == ")") {
+                        i = i + 3;
                         continue;
                     }
                     if (i+3 < cc.length && cc[i+3] == ":") {
+                        i = i + 3;
                         out.push("(?:");
                         continue;
                     }
