@@ -1171,56 +1171,45 @@ var p5negative = function(o) {
     return -o;
 };
 
-function p5regex_s_modifier (s) {
-    var cc = s.split(/(\\.)|/);
-    var out = [];
-    var is_char_class = false;
-    for(var i = 0; i < cc.length; i++) {
-        var c = cc[i];
-        if (typeof c != "undefined") {
-            if (c == "[")                    { is_char_class = true }
-            if (c == "]" && is_char_class )  { is_char_class = false }
-            if (c == "." && !is_char_class ) { c = "[\\S\\s]" }
-            out.push(c);
-        }
+function p5regex_compile (s, flags) {
+    var flag_x = false;
+    var flag_xx = false;
+    var flag_s = false;
+    if (flags.indexOf("s") != -1) {
+        flags = flags.replace("s", "");
+        flag_s = true;
     }
-    return out.join("");
-}
-
-function p5regex_x_modifier (s) {
-    var cc = s.split(/(\\.)|/);
+    if (flags.indexOf("xx") != -1) {
+        flags = flags.replace("xx", "");
+        flag_x = true;
+        flag_xx = true;
+    }
+    if (flags.indexOf("x") != -1) {
+        flags = flags.replace("x", "");
+        flag_x = true;
+    }
+    var cc = s.split("");
     var out = [];
     var is_char_class = false;
     var is_comment = false;
     for(var i = 0; i < cc.length; i++) {
         var c = cc[i];
-        if (typeof c != "undefined") {
-            if (c == " " && !is_char_class ) { c = "" }
-            if (c == "#" && !is_char_class ) { c = ""; is_comment = true }
-            if (c == "\n" && is_comment )    { c = ""; is_comment = false }
-            if (is_comment)                  { c = ""; continue }
-            if (c == "[")                    { is_char_class = true }
-            if (c == "]" && is_char_class )  { is_char_class = false }
-            out.push(c);
+        if (flag_x) {
+            if (c == " " && flag_xx )        { continue }
+            if (c == " " && !is_char_class ) { continue }
+            if (c == "#" && !is_char_class ) { is_comment = true;  continue }
+            if (c == "\n" && is_comment )    { is_comment = false; continue }
+            if (is_comment)                  { continue }
+        } 
+        if (flag_s) {
+            if (c == "." && !is_char_class ) { c = "[\\S\\s]" }
         }
+        if (c == "[")                    { is_char_class = true }
+        if (c == "]" && is_char_class )  { is_char_class = false }
+        out.push(c);
     }
-    return out.join("");
-}
-
-function p5regex_compile (s, flags) {
-    if (s.indexOf("(?x)") == 0) {
-        flags = flags + "x";
-        s = s.substr(4);
-    }
-    if (flags.indexOf("s") != -1) {
-        flags = flags.replace("s", "");
-        s = p5regex_s_modifier(s);
-    }
-    if (flags.indexOf("x") != -1) {
-        flags = flags.replace("x", "");
-        s = p5regex_x_modifier(s);
-    }
-    return new RegExp(s, flags);
+    var sout = out.join("");
+    return new RegExp(sout, flags);
 }
 
 var p5qr = function(search, modifier) {
