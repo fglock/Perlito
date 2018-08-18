@@ -1195,12 +1195,12 @@ function p5regex_x_modifier (s) {
     for(var i = 0; i < cc.length; i++) {
         var c = cc[i];
         if (typeof c != "undefined") {
-            if (c == "[")                    { is_char_class = true }
-            if (c == "]" && is_char_class )  { is_char_class = false }
             if (c == " " && !is_char_class ) { c = "" }
             if (c == "#" && !is_char_class ) { c = ""; is_comment = true }
             if (c == "\n" && is_comment )    { c = ""; is_comment = false }
-            if (is_comment)                  { c = "" }
+            if (is_comment)                  { c = ""; continue }
+            if (c == "[")                    { is_char_class = true }
+            if (c == "]" && is_char_class )  { is_char_class = false }
             out.push(c);
         }
     }
@@ -1208,6 +1208,10 @@ function p5regex_x_modifier (s) {
 }
 
 function p5regex_compile (s, flags) {
+    if (s.indexOf("(?x)") == 0) {
+        flags = flags + "x";
+        s = s.substr(4);
+    }
     if (flags.indexOf("s") != -1) {
         flags = flags.replace("s", "");
         s = p5regex_s_modifier(s);
