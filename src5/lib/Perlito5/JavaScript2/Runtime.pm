@@ -1175,6 +1175,7 @@ function p5regex_compile (s, flags) {
     var flag_x = false;
     var flag_xx = false;
     var flag_s = false;
+    var flag_i = false;
     if (flags.indexOf("s") != -1) {
         flags = flags.replace("s", "");
         flag_s = true;
@@ -1201,8 +1202,39 @@ function p5regex_compile (s, flags) {
             if (c == "\n" && is_comment )    { is_comment = false; continue }
             if (is_comment)                  { continue }
         } 
+        if (c == "\\") {
+            out.push(c);
+            i++;
+            if (i < cc.length) {
+                out.push(cc[i]);
+            }
+            continue;
+        }
         if (flag_s) {
-            if (c == "." && !is_char_class ) { c = "[\\S\\s]" }
+            if (c == "." && !is_char_class ) { out.push("[\\S\\s]"); continue }
+        }
+        if (flag_i && s.toUpperCase() != s.toLowerCase()) {
+            if (is_char_class) {
+                out.push(s.toUpperCase() + s.toLowerCase()); continue;
+            }
+            out.push("[" + s.toUpperCase() + s.toLowerCase() + "]"); continue;
+        }
+        if (c == "(") {
+            if (i+1 < cc.length && cc[i+1] == "?") {
+                if (i+2 < cc.length && (cc[i+2] == "x" || cc[i+2] == "i" || cc[i+2] == "s") ) {
+                    // TODO - restore flags at end of pattern group
+                    if (cc[i+2] == "x") { flag_x = true }    // (?x) (?x:
+                    if (cc[i+2] == "i") { flag_i = true }    // (?i) (?i:
+                    if (cc[i+2] == "s") { flag_s = true }    // (?s) (?s:
+                    if (i+3 < cc.length && cc[i+3] == ")") {
+                        continue;
+                    }
+                    if (i+3 < cc.length && cc[i+3] == ":") {
+                        out.push("(?:");
+                        continue;
+                    }
+                }
+            }
         }
         if (c == "[")                    { is_char_class = true }
         if (c == "]" && is_char_class )  { is_char_class = false }
