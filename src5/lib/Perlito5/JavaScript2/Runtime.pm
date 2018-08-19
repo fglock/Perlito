@@ -1221,20 +1221,21 @@ function p5regex_compile (s, flags) {
         }
         if (c == "(") {
             if (i+1 < cc.length && cc[i+1] == "?") {
-                if (i+2 < cc.length && (cc[i+2] == "x" || cc[i+2] == "i" || cc[i+2] == "s") ) {
+                while (i+2 < cc.length && (cc[i+2] == "x" || cc[i+2] == "i" || cc[i+2] == "s") ) {
                     // TODO - restore flags at end of pattern group
                     if (cc[i+2] == "x") { flag_x = true }    // (?x) (?x:
                     if (cc[i+2] == "i") { flag_i = true }    // (?i) (?i:
                     if (cc[i+2] == "s") { flag_s = true }    // (?s) (?s:
-                    if (i+3 < cc.length && cc[i+3] == ")") {
-                        i = i + 3;
-                        continue;
-                    }
-                    if (i+3 < cc.length && cc[i+3] == ":") {
-                        i = i + 3;
-                        out.push("(?:");
-                        continue;
-                    }
+                    i++;
+                }
+                if (i+2 < cc.length && cc[i+2] == ")") {
+                    i = i + 2;
+                    continue;
+                }
+                if (i+2 < cc.length && cc[i+2] == ":") {
+                    i = i + 2;
+                    out.push("(?:");
+                    continue;
                 }
             }
         }
