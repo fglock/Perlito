@@ -166,6 +166,52 @@ CORE.caller = function(List__, want) {
     return p5context([null, null, null], want);
 };
 
+CORE.vec = function(List__) {
+    var sb = p5str(List__[0]);
+    var offset = p5num(List__[1]);
+    var bits = p5num(List__[2]);
+    if (offset < 0) {
+        return CORE.die(["Negative offset to vec in lvalue context: " + offset]);
+    }
+    if (bits == 1) {
+        var byteOfs = Math.floor(offset / 8);
+        var bitOfs  = offset - 8 * byteOfs;
+        var mask = 1;
+        if (byteOfs < sb.length) {
+            return (sb.charCodeAt(byteOfs) >> bitOfs) & mask;
+        }
+        else {
+            return 0;
+        }
+    }
+    if (bits == 2) {
+       var byteOfs = Math.floor(offset / 4);
+       var bitOfs  = 2 * (offset - 4 * byteOfs);
+       var mask = 3;
+       if (byteOfs < sb.length) {
+           return (sb.charCodeAt(byteOfs) >> bitOfs) & mask;
+       }
+       else {
+           return 0;
+       }
+    } 
+    if (bits == 4) {
+       var byteOfs = Math.floor(offset / 2);
+       var bitOfs  = 4 * (offset - 2 * byteOfs);
+       var mask = 15;
+       if (byteOfs < sb.length) {
+           return (sb.charCodeAt(byteOfs) >> bitOfs) & mask;
+       }
+       else {
+           return 0;
+       }
+    } 
+    if (bits == 8) {
+        return sb.charCodeAt(offset) & 255;
+    }
+    return CORE.die(["Illegal number of bits in vec: " + bits]);
+};
+
 CORE.chr = function(List__) {
     var v = p5num(List__[0]);
     return String.fromCharCode(v >= 0 ? v : 65533);
