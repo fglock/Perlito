@@ -1399,6 +1399,7 @@ var p5vec_set = function(sb, offset, bits, value) {
     if (offset < 0) {
         return CORE.die(["Negative offset to vec in lvalue context: " + offset]);
     }
+    sb = p5str(sb);
     if (bits == 1) {
         var byteOfs = Math.floor(offset / 8);
         var bitOfs  = offset - 8 * byteOfs;
@@ -1411,12 +1412,51 @@ var p5vec_set = function(sb, offset, bits, value) {
         offset = byteOfs;
         bits = 8;
     }
+    if (bits == 2) {
+        var byteOfs = Math.floor(offset / 4);
+        var bitOfs  = 2 * (offset - 4 * byteOfs);
+        var mask = 3;
+        value = (value & mask) << bitOfs;
+        mask = mask << bitOfs;
+        if (byteOfs < sb.length) {
+            value = (sb.charCodeAt(byteOfs) & ~mask) | value;
+        }
+        offset = byteOfs;
+        bits = 8;
+    }
+    if (bits == 4) {
+        var byteOfs = Math.floor(offset / 2);
+        var bitOfs  = 4 * (offset - 2 * byteOfs);
+        var mask = 15;
+        value = (value & mask) << bitOfs;
+        mask = mask << bitOfs;
+        if (byteOfs < sb.length) {
+            value = (sb.charCodeAt(byteOfs) & ~mask) | value;
+        }
+        offset = byteOfs;
+        bits = 8;
+    }
     if (bits == 8) {
-        // if (offset >= sb.length()) {
-        //     sb.setLength(offset + 1);
-        // }
-        // sb.setCharCodeAt(offset, (value & 0xFF));
-        // return this.set(new PlString(sb.toString()));
+        if (offset == 0) {
+            if (sb.length < 2) {
+                sb = String.fromCharCode(value);
+            }
+            else {
+                sb = String.fromCharCode(value) + sb.substr(1);
+            }
+        }
+        else {
+            while (offset >= sb.length) {
+                sb = sb + String.fromCharCode(0);
+            }
+            if (sb.length <= offset) {
+                sb = sb.substr(0, offset) + String.fromCharCode(value);
+            }
+            else {
+                sb = sb.substr(0, offset) + String.fromCharCode(value) + sb.substr(offset + 1);
+            }
+        }
+        return sb;
     }
     return CORE.die(["Illegal number of bits in vec: " + bits]);
 }
