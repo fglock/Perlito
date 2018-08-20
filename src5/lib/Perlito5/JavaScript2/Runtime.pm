@@ -1396,7 +1396,29 @@ var p5chomp = function(s) {
 };
 
 var p5vec_set = function(sb, offset, bits, value) {
-    CORE.die(["TODO - vec() in lvalue position"]);
+    if (offset < 0) {
+        return CORE.die(["Negative offset to vec in lvalue context: " + offset]);
+    }
+    if (bits == 1) {
+        var byteOfs = Math.floor(offset / 8);
+        var bitOfs  = offset - 8 * byteOfs;
+        var mask = 1;
+        value = (value & mask) << bitOfs;
+        mask = mask << bitOfs;
+        if (byteOfs < sb.length) {
+            value = (sb.charCodeAt(byteOfs) & ~mask) | value;
+        }
+        offset = byteOfs;
+        bits = 8;
+    }
+    if (bits == 8) {
+        // if (offset >= sb.length()) {
+        //     sb.setLength(offset + 1);
+        // }
+        // sb.setCharCodeAt(offset, (value & 0xFF));
+        // return this.set(new PlString(sb.toString()));
+    }
+    return CORE.die(["Illegal number of bits in vec: " + bits]);
 }
 
 var p5for = function(namespace, var_name, func, args, cont, label) {
