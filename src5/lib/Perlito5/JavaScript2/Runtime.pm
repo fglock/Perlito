@@ -1395,6 +1395,10 @@ var p5chomp = function(s) {
     }
 };
 
+var p5vec_set = function(sb, offset, bits, value) {
+    CORE.die(["TODO - vec() in lvalue position"]);
+}
+
 var p5for = function(namespace, var_name, func, args, cont, label) {
     var local_idx = p5LOCAL.length;
     var v_old = namespace[var_name];

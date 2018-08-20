@@ -114,6 +114,13 @@ package Perlito5::AST::Apply;
     sub emit_javascript2_set {
         my ($self, $arguments, $level, $wantarray) = @_;
         my $code = $self->{code};
+        if ($code eq 'vec') {
+            return '(' . $self->{arguments}->[0]->emit_javascript2( $level, 'scalar' ) . ' = '
+                .       'p5vec_set('
+                .           join( ', ', map( $_->emit_javascript2, (@{ $self->{arguments} }, $arguments) ) )
+                .       ')'
+                . ')';
+        }
         if ($code eq 'prefix:<$>') {
             return 'p5scalar_deref_set(' 
                 . Perlito5::JavaScript2::emit_javascript2_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . ', '
