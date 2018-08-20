@@ -1221,11 +1221,14 @@ function p5regex_compile (s, flags) {
         }
         if (c == "(") {
             if (i+1 < cc.length && cc[i+1] == "?") {
-                while (i+2 < cc.length && (cc[i+2] == "x" || cc[i+2] == "i" || cc[i+2] == "s") ) {
+                var flag = true;
+                while (i+2 < cc.length && (cc[i+2] == "-" || cc[i+2] == "x" || cc[i+2] == "i" || cc[i+2] == "s") ) {
                     // TODO - restore flags at end of pattern group
-                    if (cc[i+2] == "x") { flag_x = true }    // (?x) (?x:
-                    if (cc[i+2] == "i") { flag_i = true }    // (?i) (?i:
-                    if (cc[i+2] == "s") { flag_s = true }    // (?s) (?s:
+                    if (cc[i+2] == "-") { flag   = false }    // (?-x) (?-x:
+                    if (cc[i+2] == "x") { flag_x = flag  }    // (?x) (?x:
+                    if (cc[i+2] == "i") { flag_i = flag  }    // (?i) (?i:
+                    if (cc[i+2] == "s") { flag_s = flag  }    // (?s) (?s:
+                    if (cc[i+2] == "x" && i+3 < cc.length && cc[i+3] == "x") { flag_xx = flag  }  // (?xx) (?xx:
                     i++;
                 }
                 if (i+2 < cc.length && cc[i+2] == ")") {
