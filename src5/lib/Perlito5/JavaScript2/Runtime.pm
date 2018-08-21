@@ -1458,6 +1458,18 @@ var p5vec_set = function(sb, offset, bits, value) {
         }
         return sb;
     }
+    if (bits == 16) {
+        sb = p5vec_set(sb, offset,     8, (value >> 8) & 256);
+        sb = p5vec_set(sb, offset + 1, 8, value & 256);
+        return sb;
+    }
+    if (bits == 32) {
+        sb = p5vec_set(sb, offset,     8, (value >> 24) & 256);
+        sb = p5vec_set(sb, offset + 1, 8, (value >> 16) & 256);
+        sb = p5vec_set(sb, offset + 2, 8, (value >> 8)  & 256);
+        sb = p5vec_set(sb, offset + 3, 8, value & 256);
+        return sb;
+    }
     return CORE.die(["Illegal number of bits in vec: " + bits]);
 }
 

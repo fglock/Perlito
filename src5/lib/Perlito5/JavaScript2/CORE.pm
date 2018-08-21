@@ -209,6 +209,15 @@ CORE.vec = function(List__) {
     if (bits == 8) {
         return sb.charCodeAt(offset) & 255;
     }
+    if (bits == 16) {
+        return (sb.charCodeAt(offset) & 255) + 256 * (sb.charCodeAt(offset+1) & 255);
+    }
+    if (bits == 32) {
+        return (sb.charCodeAt(offset) & 255) +
+            256 * (sb.charCodeAt(offset+1) & 255) +
+            256 * 256 * (sb.charCodeAt(offset+2) & 255) +
+            256 * 256 * 256 * (sb.charCodeAt(offset+3) & 255);
+    }
     return CORE.die(["Illegal number of bits in vec: " + bits]);
 };
 
