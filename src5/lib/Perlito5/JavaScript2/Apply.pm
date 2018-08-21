@@ -562,6 +562,13 @@ package Perlito5::AST::Apply;
                 my $key_js = $arg->autoquote($arg->{index_exp})->emit_javascript2($level);
                 my $suffix = ((  $v->isa('Perlito5::AST::Var') && $v->{sigil} eq '$') ? '' : '._hash_');
 
+                if (!defined($v->{name})) {
+                    # delete $Module::{foo}
+                    # delete @Module::{qw/foo bar/}
+                    my $index = Perlito5::JavaScript2::escape_string($v->{namespace});
+                    return "p5deleteSymbolTable(" . $index . ', ' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . ')';
+                }
+
                 if (  (ref($v) eq 'Perlito5::AST::Var')
                    && $v->{sigil} eq '@'
                    )

@@ -1702,6 +1702,17 @@ function p5hash_delete_list(v,k) {
     }
     return res;
 }
+function p5deleteSymbolTable(v,k) {
+    if (!k instanceof Array) {
+        k = [k];
+    }
+    for (var i = 0; i < k.length; i++) {
+        delete (p5pkg[v][k[i]]);
+        delete (p5pkg[v]["v_" + k[i]]);
+        delete (p5pkg[v]["List_" + k[i]]);
+        delete (p5pkg[v]["Hash_" + k[i]]);
+    }
+}
 
 EOT
 
