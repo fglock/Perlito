@@ -88,8 +88,7 @@ Perlito5-in-JavaScript differences from "perl"
 
 - utf8 is not implemented yet.
 
-- Regex is missing some features;
-  `/x`, `/s`, `/e` modifiers are supported.
+- Regex is missing some features
 
 - Control structures are partially implemented;
   - `goto LABEL` - some use patterns work.
@@ -302,7 +301,7 @@ Regex
 
     See: http://xregexp.com https://github.com/benekastah/empcre
 
-- modifiers: g i m s x
+- modifiers supported: g i m s x e xx
 
 - From http://www.regular-expressions.info/javascript.html
 
@@ -314,15 +313,6 @@ Regex
     No mode modifiers to set matching options within the regular expression. (Work in progress)
     No conditionals.
     No regular expression comments with `(?#text)`
-
-
-
-Reference counting (TODO)
---------------
-
-- add a new attribute `_cnt_` to all references
-- lexicals, locals decrement the count when going out of scope
-- call DESTROY when count reaches zero
 
 
 
