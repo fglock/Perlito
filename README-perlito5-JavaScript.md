@@ -311,88 +311,9 @@ Regex
     No atomic grouping or possessive quantifiers
     No Unicode support, except for matching single characters with
     No named capturing groups. Use numbered capturing groups instead.
-    No mode modifiers to set matching options within the regular expression.
+    No mode modifiers to set matching options within the regular expression. (Work in progress)
     No conditionals.
     No regular expression comments with `(?#text)`
-
-
-
-Compile-time / Run-time interleaving (TODO)
---------------
-
-- See perlref:
-    named subroutines are created at compile time so their lexical variables
-    get assigned to the parent lexicals from the first execution of the parent
-    block.
-    If a parent scope is entered a second time, its lexicals are created again,
-    while the nested subs still reference the old ones.
-
-
-```bash
-    $ perl -e ' use strict; { my $x = 3; sub z { 123 } BEGIN { print "$x ", z, "\n" } INIT { $x = 4 } print "$x\n" } '
-     123
-    3
-```
-
-    open anonymous block in the compiling environment
-    add incomplete block to the AST
-    add variable my $x to the AST
-    add variable my $x to the compiling environment
-    open named sub in the compiling environment
-    add incomplete sub to the AST
-    close named sub in the compiling environment
-    add sub to the AST
-    compile and run BEGIN block in the compiling environment
-    # add BEGIN side-effects to the AST
-    compile INIT block
-    add INIT block to the AST
-    compile print
-    add print to the AST
-    close anonymous block
-    add block to the AST
-
-```perl
-    (sub {
-        my $x = 3;
-        $NAMESPACE::z = sub { 123 };  # named sub
-        push @COMPILING::RUN,  sub { 1 };        # BEGIN block result
-        push @COMPILING::INIT, sub { $x = 4 };   # INIT block
-        push @COMPILING::RUN,  sub { print "$x\n" };
-    })->();
-    $_->() for @COMPILING::INIT;
-    $_->() for @COMPILING::RUN;
-```
-
-```bash
-    $ perl -e ' use strict; my $y = 123; sub x { my $x = 3; sub z { $y } BEGIN { print "$x ", z, "\n" } INIT { $x = 4 } print "$x\n" } '
-```
-
-```perl
-    (sub {
-        my $y = 123;
-
-        (sub {
-            my $x = 3;
-            $NAMESPACE::z = sub { 123 };  # named sub
-            1;                            # BEGIN block result
-            push @COMPILING::INIT, sub { $x = 4 };   # INIT block
-        })->();
-
-        $NAMESPACE::x = sub {
-            my $x = 3;
-            1;                            # BEGIN block result
-            print "$x\n";
-        };
-
-    })->();
-    $_->() for @COMPILING::INIT;
-    $_->() for @COMPILING::RUN;
-```
-
-
-- disambiguation between block and hash should not backtrack, because any internal special blocks would be compiled/run twice
-
-- anonymous blocks, named subroutines and variables must be instantiated at compile-time
 
 
 
