@@ -1,18 +1,21 @@
 Dev Version:
 
 - Java:
--- add CORE function: formline
--- 'form' CORE function initial implementation
--- sprintf() argument "%vd"
+-- CORE functions:
+	formline()
+	form() initial implementation
+	sprintf() argument "%vd"
 
 - JavaScript:
--- implemented delete(@h{@keys})
--- sprintf() argument "%vd"
+-- CORE functions:
+	delete(@h{@keys})
+	sprintf() argument "%vd"
+	vec()
 
 - Core compiler:
 -- 'form' compiler
 -- add Perlito5/Runtime/Formline.pm for CORE::formline() implementation
--- add core module: feature.pm
+-- add core module: feature.pm, warnings.pm
 
 9.026 cpan:Perlito5 2018-06-13
 
@@ -147,9 +150,9 @@ Dev Version:
 - Parser:
 -- "->@*" support
 -- new namespaces for modules that require backend-specific implementations:
-    lib/Perlito5X/Java/ and lib/Perlito5X/JavaScript/
-    and configuration modules:
-    lib/Perlito5/Java/Lib.pm and lib/Perlito5/JavaScript/Lib.pm
+	lib/Perlito5X/Java/ and lib/Perlito5X/JavaScript/
+	and configuration modules:
+	lib/Perlito5/Java/Lib.pm and lib/Perlito5/JavaScript/Lib.pm
 - Java:
 -- '&subr', '&subr()', '\&subr' idioms
 -- '*name = \&subr' idiom
@@ -161,7 +164,7 @@ Dev Version:
 - Java:
 -- pure-typed expressions, see: misc/benchmark/benchmark_typed.pl
 -- support for primitive data types, work in progress: "long", "int"
-    see: misc/benchmark/benchmark_typed_primitive.pl
+	see: misc/benchmark/benchmark_typed_primitive.pl
 
 9.018 cpan:Perlito5  2016-03-02
 - Docs:
@@ -244,7 +247,7 @@ Dev Version:
 9.012 cpan:Perlito5  2015-11-06
 - Docs:
 -- started "Cookbook" section in Perlito5.pm POD
-   with instructions to generate perlito5.js
+	with instructions to generate perlito5.js
 
 9.011 cpan:Perlito5  2015-11-06
 - fix command line option "expand_use"
@@ -256,7 +259,7 @@ Dev Version:
 - Build:
 -- add bin/perlito5 to script_files section, add dist_abstract
 -- requires perl 5.014 because older versions don't have 'feature.pm',
-   which breaks tests
+	which breaks tests
 - Parser:
 -- update CORE prototypes to Perl v5.22 - use (+) instead of (\\[@%])
 - Perl5-to-JavaScript compiler:
@@ -312,8 +315,8 @@ dev  2015-08-17
 -- track variable redeclarations and variable scopes
 -- add the variable type to AST nodes ("real sigil")
 -- "Perlito5X" namespace re-implements CPAN modules that are not possible (or not easy)
-   to support directly in Perlito - such as Data::Dumper.
-   Some modules are inlined in the parser - such as "vars" and "constant".
+	to support directly in Perlito - such as Data::Dumper.
+	Some modules are inlined in the parser - such as "vars" and "constant".
 -- add "<<>>" (Perl 5.22)
 -- support for "__LINE__", "__FILE__", and tracking the current line number
 -- more pod implementation details, such as "=encoding"
@@ -375,7 +378,7 @@ dev  2012-04-12
 -- namespace Perlito5X contains versions of CPAN modules adapted for perlito
 -- option "-B" is now the default; this executes immediately:  perlito5 -e 'say "ok"'
 -- option "-MO=Deparse":
-   $ node perlito5.js -Isrc5/lib -MO=Deparse -e ' while (1) { say "works" } '
+	$ node perlito5.js -Isrc5/lib -MO=Deparse -e ' while (1) { say "works" } '
 -- environment variable PERL5LIB=src5/lib now works
 
 - parser:
@@ -413,13 +416,13 @@ dev  2012-04-12
 - parser:
 
 -- there is now an internal "grammar API"; new words can be added to the grammar from inside perl5 modules;
-   The non-standard "token" grammar was moved to a module
+	The non-standard "token" grammar was moved to a module
 -- here-docs
 -- new Perl5-in-Perl6 backend (experimental)
 -- new option -Bjs/-Bperl5
 -- new option -Cast-perl5
 -- added option -I
-   Note: -I./src5/lib is required to compile the compiler and also to run some of the tests
+	Note: -I./src5/lib is required to compile the compiler and also to run some of the tests
 -- runs some tests from the perl5 test suite (pmurias++)
 -- implemented prototypes (function signatures)
 -- "use", import/unimport; "use strict"/"no strict"
@@ -446,7 +449,7 @@ dev  2012-04-12
 
 -- the d8 shell (v8 javascript) doesn't support some file system functions needed by the compiler
 -- perlito5 calling convention is incompatible with native javascript
-   The last commit using native javascript calls is "e1e3316b"
+	The last commit using native javascript calls is "e1e3316b"
 
 * Perlito6 (Perl 6 compiler):
 - compiler namespace moved from Perlito to Perlito6
@@ -472,7 +475,7 @@ dev  2012-04-12
 - operators: x
 - source code moved to src6/ directory
 
-  Regressions:
+	Regressions:
 
 - removed '-B' command line flag (since 7.0)
 - backends pending upgrade to the new AST: Common Lisp, Ruby 1.9, Eval
@@ -484,14 +487,14 @@ dev  2012-04-12
 
 - added "perlito" command-line compiler and shell
 - new distribution "v6.pm" (Perlito in Perl 5)
-  This replaces Pugs::Compiler::Perl5 as the v6.pm compiler in CPAN.
+	This replaces Pugs::Compiler::Perl5 as the v6.pm compiler in CPAN.
 - correct operator precedence
 - interpolation of variables and code in strings
 - 'unless' and statement modifiers
 - several fixes in List, Hash, Array, Block, Bool, Str, Mu
 - operators: numeric autoincrements, defined-or, range
 
-  Regressions:
+	Regressions:
 
 - removed '-B' command line flag
 - backends pending upgrade to the new AST: Go, Common Lisp, Ruby 1.9, Eval
@@ -516,15 +519,15 @@ dev  2012-04-12
 
 4.0  2010-03-20
 - Go backend bootstrap.
-  The Go backend was updated to the latest Go language spec. 
+	The Go backend was updated to the latest Go language spec. 
 - Perl5 backend optimized; 30% faster
 - More library functions, added to all backends
 - New 'Eval.pm' module - implements a MiniPerl6 interpreter in MiniPerl6.
-  This should add some debugging capabilities later on.
+	This should add some debugging capabilities later on.
 - New test suite. See README on how to use 'prove' for each backend.
 - New compiler options to create binary executables
 - Currently the stable backends are: Perl5, JavaScript, JVM, Lisp, Go.
-  See README for bootstrapping instructions for all backends.
+	See README for bootstrapping instructions for all backends.
 - Removed support for features that are not standard Perl6.
 
 3.0  2010-01-21
@@ -550,11 +553,11 @@ dev  2012-04-12
 0.003  2006-12-12
 - All tests converted to TAP format
 - Parrot backend:
-  - added Parrot emitter and 'mp6-parrot' script
-  - passes several tests
-  - 'Match' class written in MP6
+	- added Parrot emitter and 'mp6-parrot' script
+	- passes several tests
+	- 'Match' class written in MP6
 - Perl5 backend:
-  - parameter binding with complex data structures 
+	- parameter binding with complex data structures 
 
 0.002  2006-11-18
 - fixed array expansion in 'for @x {...}'
@@ -568,8 +571,8 @@ dev  2012-04-12
 0.001  2006-11-17
 - MiniPerl6::Perl5::Emitter and MiniPerl6::Emitter::Token compile ok
 
-  echo 'class Main { say "hello, World" }' | perl -Ilib5 mp6-perl5-boot.pl | perl -Ilib5 
- 
+	echo 'class Main { say "hello, World" }' | perl -Ilib5 mp6-perl5-boot.pl | perl -Ilib5 
+
 2006-11-14
 - all files parsed
 - added Perl5 build script
