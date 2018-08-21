@@ -949,10 +949,6 @@ Oddities
 Deprecate
 ---------
 
-- Interpreter backend
-  - this is not being maintained; the code is still in src5/lib/Perlito5/Eval.pm just in case
-  - to compute constant foldings use `Perlito5::FoldConstant` instead
-
 - special backend option `_comp` dumps the compile-time execution environment:
 
   ```sh
