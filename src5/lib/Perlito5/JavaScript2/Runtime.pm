@@ -1219,7 +1219,7 @@ function p5regex_compile (s, flags) {
             }
             out.push("[" + c.toUpperCase() + c.toLowerCase() + "]"); continue;
         }
-        if (c == "(") {
+        if (c == "(" && !is_char_class ) {
             if (i+1 < cc.length && cc[i+1] == "?") {
                 var flag = true;
                 while (i+2 < cc.length && (cc[i+2] == "-" || cc[i+2] == "x" || cc[i+2] == "i" || cc[i+2] == "s") ) {
@@ -1241,6 +1241,9 @@ function p5regex_compile (s, flags) {
                     continue;
                 }
             }
+        }
+        if (c == ")" && !is_char_class ) {
+            // TODO - restore flags at end of pattern group
         }
         if (c == "[")                    { is_char_class = true }
         if (c == "]" && is_char_class )  { is_char_class = false }
