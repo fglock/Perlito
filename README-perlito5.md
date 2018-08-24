@@ -134,6 +134,7 @@ Libraries
 
 - add tests for core modules
 
+- lookup ".pmc" source files before ".pm"
 
 Parser
 ------
