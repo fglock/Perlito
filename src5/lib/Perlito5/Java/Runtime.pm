@@ -6722,8 +6722,7 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
         }
         return v;
     }
-    public PlObject aget(int i) {
-        int pos  = i;
+    public PlObject aget(int pos) {
         if (pos < 0) {
             pos = this.size() + pos;
         }
