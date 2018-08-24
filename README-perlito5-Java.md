@@ -1667,6 +1667,19 @@ Missing features, or partially implemented, or untested
 
         not implemented: long[], String[], Double[], char[]
 
+- Add tests
+
+  ```
+  $ java -jar perlito5.jar -I src5/lib/ -e ' my $v = ({foo => "bar"})[0]{foo}; print "$v\n" '
+  Not an ARRAY at -e
+  ```
+
+  ```
+  $ nodejs perlito5.js     -I src5/lib/ -e ' my $v = ({foo => "bar"})[0]{foo}; print "$v\n" '
+  bar
+  ```
+
+
 Regex
 -----
 
