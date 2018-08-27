@@ -4617,7 +4617,7 @@ class PlClosure extends PlReference implements Runnable {
             }
         }
         // try other things
-        return this.get().castToClass(params, pos);
+        return super.castToClass(params, pos);
     }
 
     public PlString ref() {
@@ -7254,22 +7254,6 @@ EOT
         return result.pop();
     }
 
-    public PlObject get_scalar(PlObject s) {
-        // $$x
-        int i = s.to_int();
-        PlObject o = this.a.aget(i);
-        if (o.is_undef()) {
-            PlLvalue a = new PlLvalue();
-            this.a.aset(i, new PlLvalueRef(a));
-            return a;
-        }
-        else if (o.is_scalarref()) {
-            return o.get();
-        }
-        // Modification of a read-only value attempted
-        // return PlCORE.die("Not an SCALAR reference");
-        return o;
-    }
     public PlObject aget_scalarref(int i) {
         PlObject o = this.a.aget(i);
         if (o.is_undef()) {
@@ -7930,23 +7914,6 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         }
 
         return PerlOp.push_local(this, i);
-    }
-
-    public PlObject get_scalar(PlObject arg) {
-        // $$x
-        String s = arg.toString();
-        PlObject o = this.h.get(s);
-        if (o == null || o.is_undef()) {
-            PlLvalue a = new PlLvalue();
-            this.hset(s, new PlLvalueRef(a));
-            return a;
-        }
-        else if (o.is_scalarref()) {
-            return o.get();
-        }
-        // Modification of a read-only value attempted
-        // return PlCORE.die("Not an SCALAR reference");
-        return o;
     }
 
     public PlObject hget_scalarref(String i) {
