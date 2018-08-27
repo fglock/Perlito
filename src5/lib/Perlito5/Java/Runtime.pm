@@ -6164,9 +6164,6 @@ class PlLvalue extends PlScalarObject {
 
     // Note: several versions of set()
     public PlObject set(PlObject o) {
-        if (o == null) {
-            o = PlCx.UNDEF;
-        }
         if (o.is_lvalue()) {
             o = o.get();
         }
@@ -6203,27 +6200,23 @@ class PlLvalue extends PlScalarObject {
     }
     public PlObject set(Object o) {
         // $a = new Object()
+        // $a = null
+        if (o == null) {
+            return this.set(PlCx.UNDEF);
+        }
         return this.set(PlJavaObject.fromObject(o));
     }
     public PlObject set(String s) {
-        if (s == null) {
-            this.set(PlCx.UNDEF);
-            return this;
-        }
-        this.set(new PlString(s));
-        return this;
+        return this.set(new PlString(s));
     }
     public PlObject set(boolean s) {
-        this.set(new PlBool(s));
-        return this;
+        return this.set(new PlBool(s));
     }
     public PlObject set(double s) {
-        this.set(new PlDouble(s));
-        return this;
+        return this.set(new PlDouble(s));
     }
     public PlObject set(long s) {
-        this.set(new PlInt(s));
-        return this;
+        return this.set(new PlInt(s));
     }
 
     public PlScalarImmutable length() {
