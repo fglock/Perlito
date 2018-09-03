@@ -128,7 +128,7 @@ sub autoquote {
     {
 
         my $obj = $self->obj;
-        if ($obj->sigil eq '@') {
+        if ($obj->{sigil} eq '@') {
             #  @v{ $a, $b, $c }
             return $index;
         }
