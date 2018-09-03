@@ -2,6 +2,7 @@ package Perlito5::Compiler;
 use strict;
 use warnings;
 
+use Perlito5;
 use Perlito5::Match;
 use Perlito5::Grammar;
 use Perlito5::Grammar::Statement;
