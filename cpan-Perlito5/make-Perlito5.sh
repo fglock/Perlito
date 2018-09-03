@@ -129,6 +129,7 @@ perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/s
 perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Regex6.pm      > lib/Perlito5/Grammar/Regex6.pm    
 perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Block.pm       > lib/Perlito5/Grammar/Block.pm     
 perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/String.pm      > lib/Perlito5/Grammar/String.pm    
+perl $PERLITO_ROOT/perlito5.pl --noexpand_use --bootstrapping -I $PERLITO_ROOT/src5/lib -Cperl5 $PERLITO_ROOT/src5/lib/Perlito5/Grammar/Bareword.pm    > lib/Perlito5/Grammar/CORE.pm  
 
 rm MANIFEST
 perl -e ' use ExtUtils::Manifest; ExtUtils::Manifest::mkmanifest() '
