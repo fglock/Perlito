@@ -1,5 +1,9 @@
 Dev Version:
 
+9.028 cpan:Perlito5 2018-09-03
+
+- fix a problem compiling the example from Perlito5 COOKBOOK section
+
 9.027 cpan:Perlito5 2018-09-03
 
 - fix Grammar::CORE in CPAN, the grammar was not precompiled
