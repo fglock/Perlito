@@ -1,5 +1,9 @@
 Dev Version:
 
+9.027 cpan:Perlito5 2018-09-03
+
+- fix Grammar::CORE in CPAN, the grammar was not precompiled
+
 - Java:
 -- CORE functions:
 	formline()
