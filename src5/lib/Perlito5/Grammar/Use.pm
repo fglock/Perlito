@@ -61,7 +61,36 @@ token stmt_use {
         <version_string>
         {   # "use v5", "use v5.8" - check perl version
             my $version = $MATCH->{"version_string"}{capture}{buf};
-            Perlito5::test_perl_version($version);
+            $version = Perlito5::test_perl_version($version);
+
+            my $code = feature->can('unimport');
+            if (defined($code)) {
+                # no feature ':all';
+                # use feature ':5.10';
+                my $caller = [
+                    $Perlito5::PKG_NAME,
+                    $Perlito5::FILE_NAME,      # current file name being compiled
+                    $Perlito5::LINE_NUMBER,    # current line number being compiled
+                ];
+                # make sure that caller() points to the current module under compilation
+                unshift @Perlito5::CALLER, $caller;
+                eval {
+                    feature->unimport(':all');
+                    1
+                }
+                or Perlito5::Compiler::error $@;
+                my ($v1, $v2) = $version =~ /^(\d)\.(\d{3})/;
+                $v2 = 0 + $v2;
+                my $bundle = ":" . $1 . "." . (0 + $2);
+                $bundle = ":default" if $v2 < 10;
+                eval {
+                    feature->import($bundle);
+                    1
+                }
+                or Perlito5::Compiler::error $@;
+                shift @Perlito5::CALLER;
+            }
+
             $MATCH->{capture} = Perlito5::Grammar::Block::ast_nop();
         }
     |
@@ -209,7 +238,7 @@ sub parse_time_eval {
             $Perlito5::PKG_NAME,
             $Perlito5::FILE_NAME,      # current file name being compiled
             $Perlito5::LINE_NUMBER,    # current line number being compiled
-        ],
+        ];
 
         # "require" the module
         my $filename = modulename_to_filename($module_name);

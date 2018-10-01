@@ -839,6 +839,7 @@ sub test_perl_version {
     if ($version gt $]) {
         die "Perl v$version required--this is only v$]";
     }
+    return $version;
 }
 
 sub get_label {
