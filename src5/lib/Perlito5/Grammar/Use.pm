@@ -427,7 +427,7 @@ sub require {
     # my $result = do $filename;
     my $source = slurp_file($filename);
     # print STDERR "require $filename [[ $source ]]\n";
-    local $Perlito5::FILE_NAME = $filename;
+    local $Perlito5::FILE_NAME = $INC{$filename};
     Perlito5::Grammar::Scope::check_variable_declarations();
 
     local @Perlito5::BASE_SCOPE      = (Perlito5::Grammar::Scope->new_base_scope());
