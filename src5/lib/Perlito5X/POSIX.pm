@@ -7,7 +7,7 @@ our @EXPORT_OK = qw(
 );
 
 sub strftime {
-    return "strftime not yet implemented";  # TODO
+    return "strftime not yet implemented";  # TODO See: https://metacpan.org/pod/POSIX::strftime::GNU::PP
 }
 
 1;
