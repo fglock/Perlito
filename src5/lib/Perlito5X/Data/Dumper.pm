@@ -12,6 +12,22 @@ sub new {
     bless \%args, $class;
 }
 
+sub Sortkeys {
+    return $_[0];   # TODO
+}
+sub Useqq {
+    return $_[0];   # TODO
+}
+sub Indent {
+    return $_[0];   # TODO
+}
+sub Terse {
+    return $_[0];   # TODO
+}
+sub Dump {
+    return "Data::Dumper Dump() not implemented";   # TODO
+}
+
 sub Dumper {
     my $seen  = {};
     my $level = '    ';
