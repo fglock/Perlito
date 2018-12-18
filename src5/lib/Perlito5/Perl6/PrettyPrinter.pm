@@ -128,7 +128,7 @@ our %op = (
     'infix:<//=>' => { fix => 'infix', prec => 170, str => ' //= ' },
     'infix:<~=>'  => { fix => 'infix', prec => 170, str => ' ~= ' },   
 
-    'infix:<=>>'  => { fix => 'infix', prec => 180, str => ' => ' },
+    'list:<=>>'  => { fix => 'infix', prec => 180, str => ' => ' },
 
     'list:<,>'    => { fix => 'list', prec => 190, str => ', ' },
     'infix:<:>'   => { fix => 'infix', prec => 190, str => ':' },

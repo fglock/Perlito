@@ -275,7 +275,7 @@ token stmt_package {
                 # the Perl-to-Java compiler uses this syntax for "annotations":
                 #   package Put { import => 'java.Put' };
                 my $stmt = $statements[0];
-                if ($stmt && ref($stmt) eq 'Perlito5::AST::Apply' && ( $stmt->{code} eq 'infix:<=>>' || $stmt->{code} eq 'list:<,>')) {
+                if ($stmt && ref($stmt) eq 'Perlito5::AST::Apply' && ( $stmt->{code} eq 'list:<=>>' || $stmt->{code} eq 'list:<,>')) {
                     # - wrap the "list AST into a "hashref" AST
                     push @Perlito::ANNOTATION, [
                         $namespace,

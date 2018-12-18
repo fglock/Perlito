@@ -534,7 +534,7 @@ package Perlito5::AST::Apply;
                  . Perlito5::Java::to_native_bool($self->{arguments}->[1], $level) . ') : '
                  . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray ) . ')';
         },
-        'infix:<=>>' => sub {
+        'list:<=>>' => sub {
             my ($self, $level, $wantarray) = @_;
               Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_java($level)  . ', ' 
             . $self->{arguments}[1]->emit_java($level)

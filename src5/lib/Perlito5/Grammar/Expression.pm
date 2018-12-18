@@ -8,7 +8,7 @@ use Perlito5::Grammar::Statement;
 sub expand_list_fat_arrow {
     # convert "=>" AST into an array of AST
     my $param_list = shift;
-    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'infix:<=>>') {
+    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<=>>') {
         return ( Perlito5::AST::Lookup->autoquote( $param_list->{arguments}[0] ),
                  expand_list_fat_arrow( $param_list->{arguments}[1] ),
                );
@@ -25,7 +25,7 @@ sub expand_list {
                       @{$param_list->arguments}
                ];
     }
-    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'infix:<=>>') {
+    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<=>>') {
         return [ expand_list_fat_arrow( $param_list ) ];
     }
     elsif ($param_list eq '*undef*') {
@@ -62,7 +62,7 @@ sub block_or_hash {
         # say "#  not Perlito5::AST::Apply -- not hash";
         return $o
     }
-    if (   $stmt->{code} eq 'infix:<=>>'
+    if (   $stmt->{code} eq 'list:<=>>'
         || $stmt->{code} eq 'prefix:<%>'
         || $stmt->{code} eq 'prefix:<@>'
         || $stmt->{code} eq 'list:<,>' )

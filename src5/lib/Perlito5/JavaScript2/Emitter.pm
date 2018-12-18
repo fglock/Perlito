@@ -324,11 +324,11 @@ package Perlito5::JavaScript2;
         my @items;
         for my $item ( @{$_[0]} ) {
             if (  $item->isa( 'Perlito5::AST::Apply' ) 
-               && ( $item->{code} eq 'circumfix:<( )>' || $item->{code} eq 'list:<,>' || $item->{code} eq 'infix:<=>>' )
+               && ( $item->{code} eq 'circumfix:<( )>' || $item->{code} eq 'list:<,>' || $item->{code} eq 'list:<=>>' )
                )
             {
                 if ($item->isa('Perlito5::AST::Apply')
-                   && $item->{code} eq 'infix:<=>>'
+                   && $item->{code} eq 'list:<=>>'
                    )
                 {
                     $item->{arguments}[0] = Perlito5::AST::Lookup->autoquote( $item->{arguments}[0] );
@@ -363,11 +363,11 @@ package Perlito5::JavaScript2;
         my @items;
         for my $item ( @{$_[0]} ) {
             if (  $item->isa( 'Perlito5::AST::Apply' ) 
-               && ( $item->{code} eq 'list:<,>' || $item->{code} eq 'infix:<=>>' )
+               && ( $item->{code} eq 'list:<,>' || $item->{code} eq 'list:<=>>' )
                )
             {
                 if ($item->isa('Perlito5::AST::Apply')
-                   && $item->{code} eq 'infix:<=>>'
+                   && $item->{code} eq 'list:<=>>'
                    )
                 {
                     $item->{arguments}[0] = Perlito5::AST::Lookup->autoquote( $item->{arguments}[0] );

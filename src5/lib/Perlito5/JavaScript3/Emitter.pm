@@ -326,11 +326,11 @@ package Perlito5::JavaScript3;
         my @items;
         for my $item ( @{$_[0]} ) {
             if (  $item->isa( 'Perlito5::AST::Apply' ) 
-               && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' || $item->code eq 'infix:<=>>' )
+               && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' || $item->code eq 'list:<=>>' )
                )
             {
                 if ($item->isa('Perlito5::AST::Apply')
-                   && $item->code eq 'infix:<=>>'
+                   && $item->code eq 'list:<=>>'
                    )
                 {
                     $item->{arguments}[0] = Perlito5::AST::Lookup->autoquote( $item->{arguments}[0] );
@@ -365,11 +365,11 @@ package Perlito5::JavaScript3;
         my @items;
         for my $item ( @{$_[0]} ) {
             if (  $item->isa( 'Perlito5::AST::Apply' ) 
-               && ( $item->code eq 'list:<,>' || $item->code eq 'infix:<=>>' )
+               && ( $item->code eq 'list:<,>' || $item->code eq 'list:<=>>' )
                )
             {
                 if ($item->isa('Perlito5::AST::Apply')
-                   && $item->code eq 'infix:<=>>'
+                   && $item->code eq 'list:<=>>'
                    )
                 {
                     $item->{arguments}[0] = Perlito5::AST::Lookup->autoquote( $item->{arguments}[0] );
@@ -1171,7 +1171,7 @@ package Perlito5::AST::Apply;
             my $self = $_[0];
             "var " . Perlito5::JavaScript3::pkg_new_var() . ' = p5make_package("' . $self->{namespace} . '")';
         },
-        'infix:<=>>' => sub {
+        'list:<=>>' => sub {
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;

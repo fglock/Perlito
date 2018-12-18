@@ -241,7 +241,7 @@ package Perlito5::AST::Apply;
                 . Perlito5::JavaScript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         },
-        'infix:<=>>' => sub {
+        'list:<=>>' => sub {
             my ($self, $level, $wantarray) = @_;
             return 'p5list_to_a([' .
               Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_javascript2($level)  . ', '

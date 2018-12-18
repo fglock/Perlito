@@ -382,7 +382,7 @@ package Perlito5::AST::Apply;
             return [ op => 'infix:<.>', $code->emit_perl6(), $self->emit_perl6_args() ];
         }
 
-        if ($code eq 'infix:<=>>')  { 
+        if ($code eq 'list:<=>>')  { 
             return [ op => $code, 
                      Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl6(),
                      $self->{arguments}[1]->emit_perl6() ]

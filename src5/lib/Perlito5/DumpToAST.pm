@@ -38,7 +38,7 @@ sub dump_to_ast {
             # TODO - move self-referencing outside the expression
             my $here = Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) );
             push @out, Perlito5::AST::Apply->new(
-                code => 'infix:<=>>',
+                code => 'list:<=>>',
                 arguments => [
                     Perlito5::AST::Buf->new(buf => $i),
                     dump_to_ast($obj->{$i}, $seen, $here),
@@ -199,7 +199,7 @@ sub dump_to_ast {
     for my $i ( sort keys %$obj ) {
         my $here = Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) );
         push @out, Perlito5::AST::Apply->new(
-            code => 'infix:<=>>',
+            code => 'list:<=>>',
             arguments => [
                 Perlito5::AST::Buf->new(buf => $i),
                 dump_to_ast($obj->{$i}, $seen, $here),
@@ -234,7 +234,7 @@ sub dump_to_ast_deref {
         for my $i ( sort keys %$obj ) {
             my $here = Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) ); # TODO don't deref
             push @out, Perlito5::AST::Apply->new(
-                code => 'infix:<=>>',
+                code => 'list:<=>>',
                 arguments => [
                     Perlito5::AST::Buf->new(buf => $i),
                     dump_to_ast($obj->{$i}, $seen, $here),

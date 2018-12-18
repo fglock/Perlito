@@ -88,7 +88,7 @@ package Perlito5::Java::LexicalBlock;
         elsif (
              (ref($decl) eq 'Perlito5::AST::Apply')
           && (  $decl->{code} eq "list:<,>"
-             || $decl->{code} eq "infix:<=>>"
+             || $decl->{code} eq "list:<=>>"
              || $decl->{code} eq "circumfix:<( )>"
              )
           )
@@ -97,7 +97,7 @@ package Perlito5::Java::LexicalBlock;
             # These expressions cannot be used in statement position in Java:
             #   x, y
             #   x => y
-            if ($decl->{code} eq "infix:<=>>") {
+            if ($decl->{code} eq "list:<=>>") {
                 $decl->{arguments}[0] = Perlito5::AST::Lookup->autoquote($decl->{arguments}[0]);
             }
             push @str, emit_body_statement($_)
@@ -398,7 +398,7 @@ package Perlito5::AST::CompUnit;
         #                       'buf' => 'java.Put',
         #                   }, 'Perlito5::AST::Buf'),
         #               ],
-        #               'code' => 'infix:<=>>',
+        #               'code' => 'list:<=>>',
         #               'namespace' => '',
         #           }, 'Perlito5::AST::Apply'),
         #       ],

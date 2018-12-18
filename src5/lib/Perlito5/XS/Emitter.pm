@@ -411,7 +411,7 @@ package Perlito5::AST::Apply;
         if ($code eq 'infix:<x>')  { 
             return 'join("", ' . join(' x ', map( $_->emit_xs($level+1), @{$self->{arguments}} ))  . ')'
         }
-        if ($code eq 'infix:<=>>')  { 
+        if ($code eq 'list:<=>>')  { 
             return Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_xs($level)  . ', ' 
                 . $self->{arguments}[1]->emit_xs($level)
         }

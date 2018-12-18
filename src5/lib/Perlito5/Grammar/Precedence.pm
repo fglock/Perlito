@@ -229,7 +229,7 @@ add_op(
     { assoc => 'right' } );
 # Note: "last" has the same precedence as assignment, there is a separate rule
 $prec = $prec - 1;
-add_op( 'infix', [ '=>' ],  $prec, { assoc => 'right' } );
+add_op( 'list', [ '=>' ],  $prec, { assoc => 'list' } );
 $prec = $prec - 1;
 add_op( 'list', [ ',' ],   $prec, { assoc => 'list' } );
 $prec = $prec - 1;
@@ -281,8 +281,8 @@ sub precedence_parse {
     }
     while ((defined($token)) && ($token->[0] ne 'end')) {
         my $token_is_term = ($token->[0] eq 'term') || ($token->[0] eq 'postfix_or_term') || ($token->[0] eq 'postfix');
-        if (($token->[1] eq ',') && ( ($last->[1] eq '*start*') || ($last->[1] eq ',') )) {
-            # allow (,,,)
+        if (($token->[1] eq ',' || $token->[1] eq '=>') && ( ($last->[1] eq '*start*') || ($last->[1] eq ',' || $last->[1] eq '=>') )) {
+            # allow (,,,) and (=> => =>)
             push( @$num_stack, ['term', undef] );
         }
         if ($Operator->{prefix}{$token->[1]} && ( ($last->[1] eq '*start*') || !$last_is_term )) {

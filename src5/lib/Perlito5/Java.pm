@@ -1134,11 +1134,11 @@ sub to_list_preprocess {
     my @items;
     for my $item ( @{$_[0]} ) {
         if (  (ref($item) eq 'Perlito5::AST::Apply' ) 
-           && ( $item->{code} eq 'circumfix:<( )>' || $item->{code} eq 'list:<,>' || $item->{code} eq 'infix:<=>>' )
+           && ( $item->{code} eq 'circumfix:<( )>' || $item->{code} eq 'list:<,>' || $item->{code} eq 'list:<=>>' )
            )
         {
             if ((ref($item) eq 'Perlito5::AST::Apply')
-               && $item->{code} eq 'infix:<=>>'
+               && $item->{code} eq 'list:<=>>'
                )
             {
                 $item->{arguments}[0] = Perlito5::AST::Lookup->autoquote( $item->{arguments}[0] );
@@ -1173,11 +1173,11 @@ sub to_scalar_preprocess {
     my @items;
     for my $item ( @{$_[0]} ) {
         if (  (ref($item) eq 'Perlito5::AST::Apply' ) 
-           && ( $item->{code} eq 'list:<,>' || $item->{code} eq 'infix:<=>>' )
+           && ( $item->{code} eq 'list:<,>' || $item->{code} eq 'list:<=>>' )
            )
         {
             if ((ref($item) eq 'Perlito5::AST::Apply')
-               && $item->{code} eq 'infix:<=>>'
+               && $item->{code} eq 'list:<=>>'
                )
             {
                 $item->{arguments}[0] = Perlito5::AST::Lookup->autoquote( $item->{arguments}[0] );
