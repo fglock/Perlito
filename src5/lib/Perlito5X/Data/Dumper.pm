@@ -7,6 +7,11 @@ sub import {
     return;
 }
 
+sub new {
+    my ($class, %args) = @_;
+    bless \%args, $class;
+}
+
 sub Dumper {
     my $seen  = {};
     my $level = '    ';
