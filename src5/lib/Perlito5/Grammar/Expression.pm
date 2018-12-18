@@ -9,9 +9,7 @@ sub expand_list_fat_arrow {
     # convert "=>" AST into an array of AST
     my $param_list = shift;
     if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<=>>') {
-        return ( Perlito5::AST::Lookup->autoquote( $param_list->{arguments}[0] ),
-                 expand_list_fat_arrow( $param_list->{arguments}[1] ),
-               );
+        return grep {defined} @{$param_list->arguments};
     }
     return $param_list;
 }
