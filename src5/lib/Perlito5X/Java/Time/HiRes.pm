@@ -3,7 +3,7 @@ use strict;
 
 use Exporter qw(import);
 our @EXPORT = qw();
-our @EXPORT_OK = qw(time);
+our @EXPORT_OK = qw(time alarm sleep);
 
 package Java::System { import => "java.lang.System" }
 
@@ -15,6 +15,14 @@ no strict 'refs';
 sub time {
     my $t = Java::System->currentTimeMillis();
     return $t * 0.001;
+}
+
+sub alarm {
+    return 0;
+}
+
+sub sleep {
+    return CORE::sleep($_[0]);
 }
 
 1;
