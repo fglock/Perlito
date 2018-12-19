@@ -181,7 +181,7 @@ token stmt_use {
                         push @ast, $m->{capture};
                     }
                 }
-                $MATCH->{capture} = Perlito5::AST::Block->new( stmts => \@ast );
+                $MATCH->{capture} = Perlito5::Grammar::Block::ast_nop();
             }
             else {
                 if ($Perlito5::EMIT_USE) {
