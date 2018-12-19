@@ -232,7 +232,9 @@ sub Dump {
     my $level = '    ';
     my @out;
     for my $i (0 .. $#{$s->{todump}}) {
-        my $pos   = '$VAR' . ($i + 1);
+        my $name = $s->{names}[$i++];
+        $name = $s->_refine_name($name, $val, $i);
+        my $pos   = $name;
         push @out, "$pos = " . _dumper($s->{todump}[$i], $level, $seen, $pos) . ";\n";
     }
 
@@ -244,6 +246,31 @@ sub Dump {
 #
 sub Dumper {
   return Data::Dumper->Dump([@_]);
+}
+
+sub _refine_name {
+    my $s = shift;
+    my ($name, $val, $i) = @_;
+    if (defined $name) {
+      if ($name =~ /^[*](.*)$/) {
+        if (defined $val) {
+            $name = (ref $val eq 'ARRAY') ? ( "\@" . $1 ) :
+              (ref $val eq 'HASH')  ? ( "\%" . $1 ) :
+              (ref $val eq 'CODE')  ? ( "\*" . $1 ) :
+              ( "\$" . $1 ) ;
+        }
+        else {
+          $name = "\$" . $1;
+        }
+      }
+      elsif ($name !~ /^\$/) {
+        $name = "\$" . $name;
+      }
+    }
+    else { # no names provided
+      $name = "\$" . $s->{varname} . $i;
+    }
+    return $name;
 }
 
 sub _dumper {
