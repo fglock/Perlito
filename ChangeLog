@@ -1,5 +1,9 @@
 Dev Version:
 
+-- fix: `__LINE__` returns the full path
+-- fix: `a =>=> b =>` is not a syntax error
+-- fix: `(,)` is a syntax error
+
 9.028 cpan:Perlito5 2018-09-03
 
 - fix a problem compiling the example from Perlito5 COOKBOOK section
