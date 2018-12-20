@@ -233,12 +233,11 @@ sub Dump {
     my $level = '    ';
     my @out;
     for my $i (0 .. $#{$s->{todump}}) {
-        my $name = $s->{names}[$i++];
+        my $name = $s->{names}[$i];
         $name = $s->_refine_name($name, $val, $i);
         my $pos   = $name;
         push @out, "$pos = " . _dumper($s->{todump}[$i], $level, $seen, $pos) . ";\n";
     }
-
     return wantarray ? @out : join('', @out);
 }
 
