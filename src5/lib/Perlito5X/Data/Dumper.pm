@@ -2,6 +2,7 @@ package Data::Dumper;
 use strict;
 
 sub import {
+    no strict 'refs';
     my $pkg     = shift;
     my $callpkg = caller(0);
     *{ $callpkg . "::Dumper" } = \&Dumper;
