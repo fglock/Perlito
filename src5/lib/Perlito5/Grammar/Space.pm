@@ -134,6 +134,14 @@ token pod_begin {
     ]
 };
 
+token pod_for {
+    [ <!before [ \c10 | \c13 ] ['=end'|'=cut'] > . ]*
+
+    [   [ \c10 | \c13 ] ['=end'|'=cut'] <.to_eol>
+    |   ''
+    ]
+};
+
 token start_of_line {
     <.Perlito5::Grammar::String::here_doc>
     [ '='  [
@@ -143,7 +151,7 @@ token start_of_line {
            |  'over'     <.pod_pod_begin>
            |  'back'     <.pod_pod_begin>
            |  'begin'    <.pod_begin>
-           |  'for'      <.pod_begin>  # TODO - fixme: recognize a single paragraph (double-newline)
+           |  'for'      <.pod_for>  # TODO - fixme: recognize a single paragraph (double-newline)
            |  'encoding' <.to_eol>
            |  'cut'      <.to_eol> 
            ]
