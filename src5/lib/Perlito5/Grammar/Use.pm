@@ -320,7 +320,7 @@ sub filename_lookup {
         Perlito5::Compiler::error "Compilation failed in require";
     }
 
-    if (substr($filename, 0, 2) eq './') {
+    if (substr($filename, 0, 1) eq '/' || substr($filename, 0, 2) eq './' || substr($filename, 0, 3) eq '../') {
         if (-f $filename) {
             $INC{$filename} = $filename;
             return "todo";
