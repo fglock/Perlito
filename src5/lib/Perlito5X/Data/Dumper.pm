@@ -234,7 +234,7 @@ sub Dump {
     my @out;
     for my $i (0 .. $#{$s->{todump}}) {
         my $name = $s->{names}[$i];
-        $name = $s->_refine_name($name, $val, $i);
+        $name = $s->_refine_name($name, $val, $i+1);
         my $pos   = $name;
         push @out, "$pos = " . _dumper($s->{todump}[$i], $level, $seen, $pos) . ";\n";
     }
