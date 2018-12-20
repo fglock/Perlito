@@ -64,6 +64,18 @@ token term_qr_quote {
             $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{qr_quote_parse}) ]  
         }
 };
+token term_hyphen_constant {
+    '-'  <.Perlito5::Grammar::Space::ws>?
+            <Perlito5::Grammar::ident>
+            <.Perlito5::Grammar::Space::ws>?
+            <before '=>' >
+        { $MATCH->{capture} = [ 'term',
+                Perlito5::AST::Buf->new(
+                    buf => '-' . Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}),
+                ),
+            ]
+        }
+};
 
 our $unicode_table;     # unicore/UnicodeData.txt
 sub get_unicode_table {
@@ -1173,6 +1185,7 @@ Perlito5::Grammar::Precedence::add_term( 'qr' => \&term_qr_quote );
 Perlito5::Grammar::Precedence::add_term( 's'  => \&term_s_quote );
 Perlito5::Grammar::Precedence::add_term( 'tr' => \&term_tr_quote );
 Perlito5::Grammar::Precedence::add_term( 'y'  => \&term_tr_quote );
+Perlito5::Grammar::Precedence::add_term( '-'  => \&term_hyphen_constant );
 
 
 1;
