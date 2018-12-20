@@ -282,7 +282,7 @@ sub precedence_parse {
     while ((defined($token)) && ($token->[0] ne 'end')) {
         my $token_is_term = ($token->[0] eq 'term') || ($token->[0] eq 'postfix_or_term') || ($token->[0] eq 'postfix');
 
-        if ($token->[1] eq "=>" && @$num_stack >= 1) {
+        if ($token->[1] eq "=>" && @$num_stack >= 1 && @{ $num_stack->[-1] } >= 1) {
             $num_stack->[-1][1] = Perlito5::AST::Lookup->autoquote($num_stack->[-1][1]);
         }
         if (($token->[1] eq ',' || $token->[1] eq '=>') && !@$num_stack) {
