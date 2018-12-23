@@ -1775,8 +1775,9 @@ EOT
     //     public Matcher matcher;      // regex captures
     //     public String  regex_string; // last string used in a regex
 
-    public static final PlRegexResult set_match(Matcher m, String s) {
+    public static final PlRegexResult set_match(PlRegex r, Matcher m, String s) {
         PlRegexResult match = PlV.regex_result;
+        match.regex   = r;
         match.matcher = m;
         match.regex_string = s;
         return match;
@@ -1828,12 +1829,17 @@ EOT
         }
         try {
             // System.out.println("regex_named_capture groupCount " + matcher.groupCount() );
-            var_name = var_name.replace("_", "UnderScore"); // See: regex_escape()
-            String cap = matcher.group(var_name);
-            if (cap == null) {
-                return PlCx.UNDEF;
+            PlArray internalNames = PlV.regex_result.regex.namedCaptures.hget_arrayref(var_name).array_deref_strict();
+            // System.out.println("regex_named_capture vars " + var_name + " from " + internalNames.toString() );
+            for (PlObject name : internalNames) {
+                // System.out.println("regex_named_capture vars " + name );
+                var_name = name.toString();   // See: regex_escape()
+                String cap = matcher.group(var_name);
+                if (cap != null) {
+                    return new PlString(cap);
+                }
             }
-            return new PlString(cap);
+            return PlCx.UNDEF;
         } catch (Exception e) {
         }
         return PlCx.UNDEF;
@@ -1860,7 +1866,7 @@ EOT
                     find = matcher.find(pos.to_int());
                 }
                 if (find) {
-                    PlRegexResult match = set_match(matcher, str);
+                    PlRegexResult match = set_match(pat, matcher, str);
                     set_pos(input, new PlInt(matcher.end()), match, str);
                     return PlCx.TRUE;
                 }
@@ -1875,7 +1881,7 @@ EOT
             else {
                 // scalar context, non-global match
                 if (matcher.find()) {
-                    set_match(matcher, str);
+                    set_match(pat, matcher, str);
                     return PlCx.TRUE;
                 }
                 else {
@@ -1916,7 +1922,7 @@ EOT
                 }
             }
             if (found) {
-                set_match(matcher, str);
+                set_match(pat, matcher, str);
             }
             else {
                 // reset_match();
@@ -1927,7 +1933,7 @@ EOT
         else {
             // list context, non-global match
             if (matcher.find()) {
-                set_match(matcher, str);
+                set_match(pat, matcher, str);
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     String cap = matcher.group(i);
                     if (cap == null) {
@@ -1961,7 +1967,7 @@ EOT
             int pos = 0;
             while (matcher.find()) {
                 count++;
-                set_match(matcher, str);
+                set_match(pat, matcher, str);
                 int start = matcher.start();
                 int end   = matcher.end();
                 String replace = rep.apply_do_block(PlCx.SCALAR, want, new PlArray()).toString();
@@ -1985,7 +1991,7 @@ EOT
         else {
             if (matcher.find()) {
                 count++;
-                set_match(matcher, str);
+                set_match(pat, matcher, str);
                 int start = matcher.start();
                 int end   = matcher.end();
                 String replace = rep.apply_do_block(PlCx.SCALAR, want, new PlArray()).toString();
@@ -2019,7 +2025,7 @@ EOT
             int pos = 0;
             while (matcher.find()) {
                 count++;
-                set_match(matcher, str);
+                set_match(pat, matcher, str);
                 int start = matcher.start();
                 int end   = matcher.end();
                 if (start > pos) {
@@ -2042,7 +2048,7 @@ EOT
         else {
             if (matcher.find()) {
                 count++;
-                set_match(matcher, str);
+                set_match(pat, matcher, str);
                 int start = matcher.start();
                 int end   = matcher.end();
                 final StringBuilder buf = new StringBuilder(str.length() + replace.length());
@@ -4231,7 +4237,7 @@ class PlRegex extends PlReference {
     public boolean flag_xx;
     public static final String REF_str = new String("Regexp");
     public static final PlStringConstant REF = new PlStringConstant(REF_str);
-    public PlHash named_captures;
+    public PlHash namedCaptures;
 
     public PlRegex(String p, int flags, boolean flag_xx) {
         this.flag_xx = flag_xx;
@@ -4334,11 +4340,14 @@ class PlRegex extends PlReference {
                                     // PlCORE.say("endName " + endName + " offset " + offset);
                                     if (endName > offset) {
                                         String name = s.substring(offset+3, endName);
+                                        String validName = name.replace("_", "UnderScore") + "Num" + named_capture_count; // See: regex_named_capture()
+                                        if (this.namedCaptures == null) {
+                                            this.namedCaptures = new PlHash();
+                                        }
+                                        this.namedCaptures.hget_arrayref(name).array_deref_strict().push_void(new PlString(validName));
                                         // PlCORE.say("name [" + name + "]");
-                                        name = name.replace("_", "UnderScore"); // See: regex_named_capture()
                                         sb.append("(?<");
-                                        // sb.append(name + named_capture_count);
-                                        sb.append(name);
+                                        sb.append(validName);
                                         sb.append(">");
                                         offset = endName;
                                         named_capture_count++;
@@ -4523,6 +4532,7 @@ class PlRegex extends PlReference {
     }
 }
 class PlRegexResult extends PlScalarImmutable {
+    public PlRegex regex;        // Perl regex
     public Matcher matcher;      // regex captures
     public String  regex_string; // last string used in a regex
 

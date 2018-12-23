@@ -175,7 +175,9 @@ Regex differences
     t5/unit/regex_zero_length_replace.t
     ```
 
-  - Perlito5 allows underscores in named captures. This is not allowed in Java regex.
+  - Perl5 allows underscores in named captures. This is not allowed in Java regex.
+
+  - Perl5 allows duplicate names in named captures.
 
   - TODO - check this error message, this may need to be implemented for compatibility:
 

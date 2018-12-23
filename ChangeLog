@@ -5,6 +5,9 @@ Dev Version:
 -- fix: `(,)` is a syntax error
 -- add core module POSIX with floor(), ceil(), and most of strftime()
 
+- Java:
+-- named capture in regex accepts duplicate names
+
 9.028 cpan:Perlito5 2018-09-03
 
 - fix a problem compiling the example from Perlito5 COOKBOOK section
