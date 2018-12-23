@@ -1721,201 +1721,6 @@ EOT
         return PlCx.UNDEF;
     }
 
-    private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length, boolean flag_xx,
-        StringBuilder rejected)
-    {
-        // inside [ ... ]
-        //      space    becomes: "\ " unless the /xx flag is used (flag_xx)
-        //      \120     becomes: \0120 - Java requires octal sequences to start with zero
-        //      \0       becomes: \00 - Java requires the extra zero
-        //      \b       is rejected, Java doesn't support \b inside [...]
-        boolean first = true;
-        for ( ; offset < length; ) {
-            final int c = s.codePointAt(offset);
-            switch (c) {
-                case ']':
-                    if (first) {
-                        sb.append("\\]");
-                        break;
-                    }
-                    else {
-                        sb.append(Character.toChars(c));
-                        return offset;
-                    }
-                case '[':
-                    sb.append("\\[");
-                    break;
-                case '\\':  // escape - \[ \120
-
-                    if (offset < length) {
-                        if (s.codePointAt(offset + 1) == 'b') {
-                            rejected.append("\\b");      // Java doesn't support \b inside [...]
-                            offset++;
-                            break;
-                        }
-                    }
-
-                    sb.append(Character.toChars(c));
-                    if (offset < length) {
-                        offset++;
-                        int c2 = s.codePointAt(offset);
-                        if (c2 >= '1' && c2 <= '3') {
-                            if (offset < length+1) {
-                                int off = offset;
-                                int c3 = s.codePointAt(off++);
-                                int c4 = s.codePointAt(off++);
-                                if ((c3 >= '0' && c3 <= '7') && (c4 >= '0' && c4 <= '7')) {
-                                    // a \000 octal sequence
-                                    sb.append('0');
-                                }
-                            }
-                        }
-                        else if (c2 == '0') {
-                            // rewrite \0 to \00
-                            sb.append('0');
-                        }
-                        sb.append(Character.toChars(c2));
-                    }
-                    break;
-                case ' ':
-                    if (flag_xx) {
-                        sb.append(Character.toChars(c));
-                    }
-                    else {
-                        sb.append("\\ ");   // make this space a "token", even inside /x
-                    }
-                    break;
-                default:
-                    sb.append(Character.toChars(c));
-                    break;
-            }
-            first = false;
-            offset++;
-        }
-        return offset;
-    }
-    private static int _regex_skip_comment(int offset, String s, int length) {
-        // [ ... ]
-        int offset3 = offset;
-        for ( ; offset3 < length; ) {
-            final int c3 = s.codePointAt(offset3);
-            switch (c3) {
-                case ')':
-                    return offset3;
-                case '\\':
-                    offset3++;
-                    break;
-                default:
-                    break;
-            }
-            offset3++;
-        }
-        return offset;  // possible error - end of comment not found
-    }
-
-    // regex escape rules:
-    //
-    // \[       as-is
-    // [xx xx]  becomes: [xx\ xx] - this will make sure space is a token, even when /x modifier is set
-    // \120     becomes: \0120 - Java requires octal sequences to start with zero
-    // \0       becomes: \00 - Java requires the extra zero
-    // (?#...)  inline comment is removed
-    // [xx \b xx]  becomes: (?:[xx xx]|\b) - java doesn't support \b as a character
-    //
-    public static String regex_escape(String s, boolean flag_xx) {
-        // escape spaces in character classes
-        final int length = s.length();
-        StringBuilder sb = new StringBuilder();
-        StringBuilder rejected = new StringBuilder();
-        for (int offset = 0; offset < length; ) {
-            final int c = s.codePointAt(offset);
-            switch (c) {
-                case '\\':  // escape - \[ \120
-                            sb.append(Character.toChars(c));
-                            if (offset < length) {
-                                offset++;
-                                int c2 = s.codePointAt(offset);
-                                if (c2 >= '1' && c2 <= '3') {
-                                    if (offset < length+1) {
-                                        int off = offset;
-                                        int c3 = s.codePointAt(off++);
-                                        int c4 = s.codePointAt(off++);
-                                        if ((c3 >= '0' && c3 <= '7') && (c4 >= '0' && c4 <= '7')) {
-                                            // a \000 octal sequence
-                                            sb.append('0');
-                                        }
-                                    }
-                                }
-                                else if (c2 == '0') {
-                                    // rewrite \0 to \00
-                                    sb.append('0');
-                                }
-                                sb.append(Character.toChars(c2));
-                            }
-                            break;
-                case '[':   // character class
-                            int len = sb.length();
-                            sb.append(Character.toChars(c));
-                            offset++;
-                            offset = _regex_character_class_escape(offset, s, sb, length, flag_xx, rejected);
-                            if (rejected.length() > 0) {
-                                // process \b inside character class
-                                String subseq;
-                                if ((sb.length() - len) == 2) {
-                                    subseq = "(?:" + rejected.toString() + ")";
-                                }
-                                else {
-                                    subseq = "(?:" + sb.substring(len) + "|" + rejected.toString() + ")";
-                                }
-                                // PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Rejected: " + subseq)));
-                                rejected.setLength(0);
-                                sb.setLength(len);
-                                sb.append(subseq);
-                            }
-                            break;
-                case '(':   
-                            boolean append = true;
-                            if (offset < length - 3) {
-                                int c2 = s.codePointAt(offset+1);
-                                int c3 = s.codePointAt(offset+2);
-                                int c4 = s.codePointAt(offset+3);
-                                if (c2 == '?' && c3 == '#') {
-                                    // comment (?# ... )
-                                    offset = _regex_skip_comment(offset, s, length);
-                                    append = false;
-                                }
-                                else if (c2 == '?' && c3 == '<' &&
-                                        ((c4 >= 'A' && c4 <= 'F') || (c4 >= 'a' && c4 <= 'f') || (c4 == '_'))
-                                        )
-                                {
-                                    // named capture (?<one> ... )
-                                    // TODO - replace underscore in name
-                                    int endName = s.indexOf(">", offset+3);
-                                    if (endName > offset) {
-                                        String name = s.substring(offset+3, endName);
-                                        // PlCORE.say("name [" + name + "]");
-                                        name = name.replace("_", "UnderScore"); // See: regex_named_capture()
-                                        sb.append("(?<");
-                                        sb.append(name);
-                                        sb.append(">");
-                                        offset = endName;
-                                        append = false;
-                                    }
-                                }
-                            }
-                            if (append) {
-                                sb.append(Character.toChars(c));
-                            }
-                            break;
-                default:    // normal char
-                            sb.append(Character.toChars(c));
-                            break;
-            }
-            offset++;
-        }
-        return sb.toString();
-    }
-
     public static final PlObject set_pos(PlObject vv, PlObject value, PlRegexResult matcher, String str) {
         if (!vv.is_lvalue()) {
             return value;
@@ -2022,6 +1827,7 @@ EOT
             return PlCx.UNDEF;
         }
         try {
+            // System.out.println("regex_named_capture groupCount " + matcher.groupCount() );
             var_name = var_name.replace("_", "UnderScore"); // See: regex_escape()
             String cap = matcher.group(var_name);
             if (cap == null) {
@@ -4425,10 +4231,11 @@ class PlRegex extends PlReference {
     public boolean flag_xx;
     public static final String REF_str = new String("Regexp");
     public static final PlStringConstant REF = new PlStringConstant(REF_str);
+    public PlHash named_captures;
 
     public PlRegex(String p, int flags, boolean flag_xx) {
         this.flag_xx = flag_xx;
-        this.p = Pattern.compile(PerlOp.regex_escape(p, flag_xx), flags);
+        this.p = Pattern.compile(this.regex_escape(p), flags);
     }
     public PlRegex(PlObject p, int flags, boolean flag_xx) {
         if (p.is_lvalue()) {
@@ -4439,9 +4246,212 @@ class PlRegex extends PlReference {
         }
         else {
             this.flag_xx = flag_xx;
-            this.p = Pattern.compile(PerlOp.regex_escape(p.toString(), flag_xx), flags);
+            this.p = Pattern.compile(this.regex_escape(p.toString()), flags);
         }
     }
+
+    // regex escape rules:
+    //
+    // \[       as-is
+    // [xx xx]  becomes: [xx\ xx] - this will make sure space is a token, even when /x modifier is set
+    // \120     becomes: \0120 - Java requires octal sequences to start with zero
+    // \0       becomes: \00 - Java requires the extra zero
+    // (?#...)  inline comment is removed
+    // [xx \b xx]  becomes: (?:[xx xx]|\b) - java doesn't support \b as a character
+    //
+    private String regex_escape(String s) {
+        // escape spaces in character classes
+        final int length = s.length();
+        int named_capture_count = 0;
+        StringBuilder sb = new StringBuilder();
+        StringBuilder rejected = new StringBuilder();
+        // System.out.println("regex_escape " + s );
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {
+                case '\\':  // escape - \[ \120
+                            sb.append(Character.toChars(c));
+                            if (offset < length) {
+                                offset++;
+                                int c2 = s.codePointAt(offset);
+                                if (c2 >= '1' && c2 <= '3') {
+                                    if (offset < length+1) {
+                                        int off = offset;
+                                        int c3 = s.codePointAt(off++);
+                                        int c4 = s.codePointAt(off++);
+                                        if ((c3 >= '0' && c3 <= '7') && (c4 >= '0' && c4 <= '7')) {
+                                            // a \000 octal sequence
+                                            sb.append('0');
+                                        }
+                                    }
+                                }
+                                else if (c2 == '0') {
+                                    // rewrite \0 to \00
+                                    sb.append('0');
+                                }
+                                sb.append(Character.toChars(c2));
+                            }
+                            break;
+                case '[':   // character class
+                            int len = sb.length();
+                            sb.append(Character.toChars(c));
+                            offset++;
+                            offset = _regex_character_class_escape(offset, s, sb, length, this.flag_xx, rejected);
+                            if (rejected.length() > 0) {
+                                // process \b inside character class
+                                String subseq;
+                                if ((sb.length() - len) == 2) {
+                                    subseq = "(?:" + rejected.toString() + ")";
+                                }
+                                else {
+                                    subseq = "(?:" + sb.substring(len) + "|" + rejected.toString() + ")";
+                                }
+                                // PlCORE.warn(PlCx.VOID, new PlArray(new PlString("Rejected: " + subseq)));
+                                rejected.setLength(0);
+                                sb.setLength(len);
+                                sb.append(subseq);
+                            }
+                            break;
+                case '(':   
+                            boolean append = true;
+                            if (offset < length - 3) {
+                                int c2 = s.codePointAt(offset+1);
+                                int c3 = s.codePointAt(offset+2);
+                                int c4 = s.codePointAt(offset+3);
+                                // System.out.println("regex_escape at (" + c2 + c3 + c4 );
+                                if (c2 == '?' && c3 == '#') {
+                                    // comment (?# ... )
+                                    offset = _regex_skip_comment(offset, s, length);
+                                    append = false;
+                                }
+                                else if (c2 == '?' && c3 == '<' &&
+                                        ((c4 >= 'A' && c4 <= 'Z') || (c4 >= 'a' && c4 <= 'z') || (c4 == '_'))
+                                        )
+                                {
+                                    // named capture (?<one> ... )
+                                    // replace underscore in name
+                                    int endName = s.indexOf(">", offset+3);
+                                    // PlCORE.say("endName " + endName + " offset " + offset);
+                                    if (endName > offset) {
+                                        String name = s.substring(offset+3, endName);
+                                        // PlCORE.say("name [" + name + "]");
+                                        name = name.replace("_", "UnderScore"); // See: regex_named_capture()
+                                        sb.append("(?<");
+                                        // sb.append(name + named_capture_count);
+                                        sb.append(name);
+                                        sb.append(">");
+                                        offset = endName;
+                                        named_capture_count++;
+                                        // PlCORE.say("name sb [" + sb + "]");
+                                        append = false;
+                                    }
+                                }
+                            }
+                            if (append) {
+                                sb.append(Character.toChars(c));
+                            }
+                            break;
+                default:    // normal char
+                            sb.append(Character.toChars(c));
+                            break;
+            }
+            offset++;
+        }
+        return sb.toString();
+    }
+
+    private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length, boolean flag_xx,
+        StringBuilder rejected)
+    {
+        // inside [ ... ]
+        //      space    becomes: "\ " unless the /xx flag is used (flag_xx)
+        //      \120     becomes: \0120 - Java requires octal sequences to start with zero
+        //      \0       becomes: \00 - Java requires the extra zero
+        //      \b       is rejected, Java doesn't support \b inside [...]
+        boolean first = true;
+        for ( ; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {
+                case ']':
+                    if (first) {
+                        sb.append("\\]");
+                        break;
+                    }
+                    else {
+                        sb.append(Character.toChars(c));
+                        return offset;
+                    }
+                case '[':
+                    sb.append("\\[");
+                    break;
+                case '\\':  // escape - \[ \120
+
+                    if (offset < length) {
+                        if (s.codePointAt(offset + 1) == 'b') {
+                            rejected.append("\\b");      // Java doesn't support \b inside [...]
+                            offset++;
+                            break;
+                        }
+                    }
+
+                    sb.append(Character.toChars(c));
+                    if (offset < length) {
+                        offset++;
+                        int c2 = s.codePointAt(offset);
+                        if (c2 >= '1' && c2 <= '3') {
+                            if (offset < length+1) {
+                                int off = offset;
+                                int c3 = s.codePointAt(off++);
+                                int c4 = s.codePointAt(off++);
+                                if ((c3 >= '0' && c3 <= '7') && (c4 >= '0' && c4 <= '7')) {
+                                    // a \000 octal sequence
+                                    sb.append('0');
+                                }
+                            }
+                        }
+                        else if (c2 == '0') {
+                            // rewrite \0 to \00
+                            sb.append('0');
+                        }
+                        sb.append(Character.toChars(c2));
+                    }
+                    break;
+                case ' ':
+                    if (flag_xx) {
+                        sb.append(Character.toChars(c));
+                    }
+                    else {
+                        sb.append("\\ ");   // make this space a "token", even inside /x
+                    }
+                    break;
+                default:
+                    sb.append(Character.toChars(c));
+                    break;
+            }
+            first = false;
+            offset++;
+        }
+        return offset;
+    }
+    private static int _regex_skip_comment(int offset, String s, int length) {
+        // [ ... ]
+        int offset3 = offset;
+        for ( ; offset3 < length; ) {
+            final int c3 = s.codePointAt(offset3);
+            switch (c3) {
+                case ')':
+                    return offset3;
+                case '\\':
+                    offset3++;
+                    break;
+                default:
+                    break;
+            }
+            offset3++;
+        }
+        return offset;  // possible error - end of comment not found
+    }
+
     public PlString ref() {
         if ( this.bless == null ) {
             return REF;
