@@ -4248,9 +4248,9 @@ class PlRegex extends PlReference {
     public String  original_string;
     // public Matcher m;
     public boolean flag_xx;
+    public PlHash namedCaptures;
     public static final String REF_str = new String("Regexp");
     public static final PlStringConstant REF = new PlStringConstant(REF_str);
-    public PlHash namedCaptures;
 
     public PlRegex(String p, int flags, boolean flag_xx) {
         this.flag_xx = flag_xx;
@@ -4261,7 +4261,10 @@ class PlRegex extends PlReference {
             p = p.get();
         }
         if (p.is_regex()) {
-            this.p = ((PlRegex)p).p;    // reuse compiled regex; ignore any difference in flags
+            // reuse compiled regex; ignore any difference in flags
+            this.p = ((PlRegex)p).p;
+            this.namedCaptures = ((PlRegex)p).namedCaptures;
+            this.original_string = ((PlRegex)p).original_string;
         }
         else {
             this.flag_xx = flag_xx;
