@@ -12,7 +12,7 @@ no strict 'refs';
 *import = \&Exporter::import;
 }
 
-sub time {
+sub time () {
     my $t = Java::System->currentTimeMillis();
     return $t * 0.001;
 }
