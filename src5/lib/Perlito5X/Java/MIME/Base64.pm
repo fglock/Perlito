@@ -8,7 +8,7 @@ our @EXPORT_OK = qw(encode_base64url decode_base64url encoded_base64_length deco
 # Java 8 only
 # package Java::Base64 { import => "java.util.Base64" }
 
-package Java::DatatypeConverter { import => "javax.xml.bind.DatatypeConverter" }
+package Java::Base64 { import => "java.util.Base64" }
 package String {};
 
 # encode_base64( $bytes )
@@ -25,8 +25,9 @@ package String {};
 sub encode_base64 {
     my $s = shift;
     my $eol = shift // "\n";
+    my String $str = $s;
     my $result =
-      Java::DatatypeConverter->printBase64Binary( $s->toString()->getBytes() );
+      Java::Base64->getMimeEncoder()->encodeToString( $str->getBytes() );
     my @out;
     while ($result) {
         push @out, substr($result, 0, 76);
@@ -47,8 +48,9 @@ sub decode_base64 {
     if ($end >= 0) {
         $s = substr($s, 0, $end);
     }
+    my String $str = $s;
     my $result =
-      String->new( Java::DatatypeConverter->parseBase64Binary( $s->toString() ) );
+      String->new( Java::Base64->getMimeDecoder()->decode( $str ) );
     return $result;
 }
 
