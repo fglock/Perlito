@@ -1152,6 +1152,7 @@ class PerlOp {
         PlRegexResult new_match = new PlRegexResult();
         new_match.matcher = match.matcher;
         new_match.regex_string = match.regex_string;
+        new_match.regex = match.regex;
         PlV.regex_result = new_match;
     }
     public static final PlObject push_local_named_sub(PlObject value, String name) {

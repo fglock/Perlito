@@ -1852,7 +1852,14 @@ package Perlito5::AST::If;
         return Perlito5::Java::emit_wrap_java($level, @str);
     }
     sub emit_java_get_decl { () }
-    sub emit_java_has_regex { () }
+    sub emit_java_has_regex {
+        my ($self) = @_;
+        my $cond = $self->{cond};
+        if ($cond) {
+            return $cond->emit_java_has_regex();
+        }
+        return ();
+    }
 }
 
 

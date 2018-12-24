@@ -2079,6 +2079,10 @@ package Perlito5::AST::Apply;
         if ($code eq 'p5:m' || $code eq 'p5:s' || $code eq 'infix:<=~>' || $code eq 'infix:<!~>') {
             return 1;
         }
+        if ($code eq 'infix:<&&>' || $code eq 'infix:<||>') {
+            return $self->{arguments}->[0]->emit_java_has_regex() ||
+                   $self->{arguments}->[1]->emit_java_has_regex();
+        }
         return ()
     }
 
