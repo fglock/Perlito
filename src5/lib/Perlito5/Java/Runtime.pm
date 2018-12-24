@@ -4246,6 +4246,7 @@ EOT
 class PlRegex extends PlReference {
     public Pattern p;
     public String  original_string;
+    public String  as_string;
     // public Matcher m;
     public boolean flag_xx;
     public PlHash namedCaptures;
@@ -4254,7 +4255,8 @@ class PlRegex extends PlReference {
 
     public PlRegex(String p, int flags, boolean flag_xx) {
         this.flag_xx = flag_xx;
-        this.p = Pattern.compile(this.regex_escape(p), flags);
+        this.original_string = p;
+        this.p = Pattern.compile(this.regex_escape(this.original_string), flags);
     }
     public PlRegex(PlObject p, int flags, boolean flag_xx) {
         if (p.is_lvalue()) {
@@ -4268,7 +4270,8 @@ class PlRegex extends PlReference {
         }
         else {
             this.flag_xx = flag_xx;
-            this.p = Pattern.compile(this.regex_escape(p.toString()), flags);
+            this.original_string = p.toString();
+            this.p = Pattern.compile(this.regex_escape(this.original_string), flags);
         }
     }
 
@@ -4501,7 +4504,7 @@ class PlRegex extends PlReference {
         return REF;
     }
     public String toString() {
-        if (original_string == null) {
+        if (as_string == null) {
 
             int flags = p.flags();
             StringBuilder sb = new StringBuilder();
@@ -4530,9 +4533,9 @@ class PlRegex extends PlReference {
                 sb.append("m");
 
             sb.append(":");
-            sb.append(p.toString());
+            sb.append(this.original_string);
             sb.append(")");
-            original_string = sb.toString();
+            as_string = sb.toString();
  
             // TODO - show flags
             // Pattern.CANON_EQ
@@ -4541,7 +4544,7 @@ class PlRegex extends PlReference {
             // Pattern.UNICODE_CHARACTER_CLASS
             // Pattern.UNIX_LINES
         }
-        return this.original_string;
+        return this.as_string;
     }
     public boolean is_regex() {
         return true;
