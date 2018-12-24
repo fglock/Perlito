@@ -8,11 +8,13 @@ our @EXPORT_OK = qw(md5 md5_hex md5_base64);
 
 package Java::MessageDigest { import => "java.security.MessageDigest" }
 package Java::BigInteger    { import => "java.math.BigInteger" }
+package Java::Base64        { import => "java.util.Base64" }
 package String {};
 
 sub md5_hex {
     eval {
-        my String $s = shift->toString();
+        my $arg = shift;
+        my String $s = $arg;
         my $result = Java::BigInteger->new(1, Java::MessageDigest->getInstance("MD5")->digest($s->getBytes("UTF-8")))->toString(16);
         return $result;
     }
@@ -21,7 +23,8 @@ sub md5_hex {
 
 sub md5 {
     eval {
-        my String $s = shift->toString();
+        my $arg = shift;
+        my String $s = $arg;
         my $result = String->new(Java::MessageDigest->getInstance("MD5")->digest($s->getBytes("UTF-8")));
         return $result;
     }
@@ -30,9 +33,10 @@ sub md5 {
 
 sub md5_base64 {
     eval {
-        my String $s = shift->toString();
+        my $arg = shift;
+        my String $s = $arg;
         my $result =
-            Java::DatatypeConverter->printBase64Binary( Java::MessageDigest->getInstance("MD5")->digest($s->getBytes("UTF-8")) );
+            Java::Base64->getMimeEncoder()->encodeToString( Java::MessageDigest->getInstance("MD5")->digest($s->getBytes("UTF-8")));
         $result =~ s/=+$//;
         return $result;
     }
