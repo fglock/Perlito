@@ -1228,6 +1228,12 @@ package Perlito5::AST::Var;
                 # %Module::
                 return "PerlOp.getSymbolTable(" . $index . ')';
             }
+
+            if ( $full_name eq 'main::+' && $sigil eq '%' ) {
+                # %+  => named captures from regex
+                return 'PerlOp.regex_named_capture_hash()';
+            }
+
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');

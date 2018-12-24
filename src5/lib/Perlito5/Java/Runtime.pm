@@ -1844,6 +1844,19 @@ EOT
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject regex_named_capture_hash() {
+        // the %+ hash
+        PlHash namedCaptures = PlV.regex_result.regex.namedCaptures;
+        if (namedCaptures == null) {
+            namedCaptures = new PlHash();
+        }
+        PlHash captures = new PlHash();
+        for (PlObject name : namedCaptures.keys()) {
+            String k = name.toString();
+            captures.hset(k, regex_named_capture(k));
+        }
+        return captures;
+    }
 
     // ****** end regex variables
 
