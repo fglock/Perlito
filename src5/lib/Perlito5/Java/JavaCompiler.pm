@@ -122,7 +122,7 @@ class PlJavaCompiler {
 
             StringBuilder source5 = new StringBuilder();
             source5.append(constants);
-            source5.append("    @SuppressWarnings(\"unchecked\")");
+            source5.append("    @SuppressWarnings(\"unchecked\")\n");
             source5.append("    public static PlObject runEval(int want, PlArray List__) {\n");
             source5.append("        int return_context = want;\n");
             source5.append("        try {\n");
@@ -268,7 +268,7 @@ class PlJavaCompiler {
 
             StringBuilder source5 = new StringBuilder();
             source5.append(constants);
-            source5.append("    @SuppressWarnings(\"unchecked\")");
+            source5.append("    @SuppressWarnings(\"unchecked\")\n");
             source5.append("    public static PlObject runEval(int want, Object scalar_val, Object array_val, Object hash_val, PlArray List__) {\n");
             source5.append("        int return_context = want;\n");
             for (int i = 0; i < scalar_name.length; i++) {
