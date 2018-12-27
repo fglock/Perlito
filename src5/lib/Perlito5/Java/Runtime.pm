@@ -103,6 +103,7 @@ sub perl5_to_java {
 sub eval_ast {
     my ($ast) = @_;
     my $want = 0;
+    Perlito5::Java::reset_constants();
 
     # TODO - process type annotations like:
     #   package Java::Object { import => 'java.lang.Object' }

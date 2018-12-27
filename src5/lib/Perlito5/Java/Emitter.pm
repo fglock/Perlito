@@ -501,6 +501,7 @@ package Perlito5::AST::CompUnit;
         my $wantarray = 'statement';
         my $str;
         $str .= Perlito5::Compiler::do_not_edit("//");
+        Perlito5::Java::reset_constants();
 
         # look for special 'Java' packages
         for my $ann ( @Perlito::ANNOTATION ) {
