@@ -257,6 +257,7 @@ class PlJavaCompiler {
             return PlCx.UNDEF;
         }
 
+        PlObject out = PlCx.UNDEF;
         try {
             if (initDone == null) {
                 PlJavaCompiler.init();
@@ -291,68 +292,46 @@ class PlJavaCompiler {
                 System.out.println("\neval_perl_string:\n" + cls5 + "\n");
             }
 
-            PlObject out;
-            try {
-                // TODO - retrieve errors in Java->bytecode
-                Class<?> class5 = compileClassInMemory(
-                    className,
-                    cls5
-                );
-                Method method5 = class5.getMethod("runEval", new Class[]{int.class, Object.class, Object.class, Object.class, PlArray.class});
-                out = (org.perlito.Perlito5.PlObject)method5.invoke(null, want, scalar_val, array_val, hash_val, List__);
-                // System.out.println("eval_string result: " + out.toString());
-            }
-            catch(PlReturnException e) {
-                PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
-                return e.ret;
-            }
-            catch(PlNextException e) {
-                PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
-                throw(e);
-            }
-            catch(PlLastException e) {
-                PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
-                throw(e);
-            }
-            catch(PlRedoException e) {
-                PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
-                throw(e);
-            }
-            catch(java.lang.NullPointerException e) {
-                e.printStackTrace();
-                String message = "null pointer: java.lang.NullPointerException";
-                PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
-                return PerlOp.context(want);
-            }
-            catch(Exception e) {
-                if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
-                    e.printStackTrace();
-                }
-                String message = e.getMessage();
-                PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
-                return PerlOp.context(want);
-            }
-            return out;
+            // TODO - retrieve errors in Java->bytecode
+            Class<?> class5 = compileClassInMemory(
+                className,
+                cls5
+            );
+            Method method5 = class5.getMethod("runEval", new Class[]{int.class, Object.class, Object.class, Object.class, PlArray.class});
+            out = (org.perlito.Perlito5.PlObject)method5.invoke(null, want, scalar_val, array_val, hash_val, List__);
+            // System.out.println("eval_string result: " + out.toString());
         }
         catch(PlReturnException e) {
+            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             return e.ret;
         }
         catch(PlNextException e) {
+            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             throw(e);
         }
         catch(PlLastException e) {
+            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             throw(e);
         }
         catch(PlRedoException e) {
+            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             throw(e);
         }
-        catch(Exception e) {
-            // e.printStackTrace();
-            String message = e.getMessage();
-            // System.out.println("Exception in eval_string: " + message);
+        catch(java.lang.NullPointerException e) {
+            e.printStackTrace();
+            String message = "null pointer: java.lang.NullPointerException";
             PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
+            return PerlOp.context(want);
         }
-        return PlCx.UNDEF;
+        catch(Exception e) {
+            if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                e.printStackTrace();
+            }
+            String message = e.getMessage();
+            PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
+            return PerlOp.context(want);
+        }
+        return out;
     }
 
     static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
