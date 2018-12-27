@@ -796,6 +796,57 @@ token prototype_is_ampersand {
             { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::argument_parse"}) }
 };
 
+sub term_bareword_starting_with_colon {
+    # ::e
+    my $str = $_[0];
+    my $pos = $_[1];
+
+    my $p = $pos;
+    if ( $str->[$p] ne ':' || $str->[ $p + 1 ] ne ':' ) {
+        return;
+    }
+    $p += 2;
+    while ( $str->[$p] eq ':' && $str->[ $p + 1 ] eq ':' ) {
+        $p += 2;
+    }
+    my $m_namespace =
+      Perlito5::Grammar::optional_namespace_before_ident( $str, $p );
+    my $namespace = Perlito5::Match::flat($m_namespace);
+    $p = $m_namespace->{to};
+    my $m_name = Perlito5::Grammar::ident( $str, $p );
+    my $name = Perlito5::Match::flat($m_name);
+    $p = $m_name->{to} if $m_name;
+    while ( $str->[$p] eq ':' && $str->[ $p + 1 ] eq ':' ) {
+        $name .= "::";
+        $p += 2;
+    }
+    my $full_name = 'main::' . $name;
+    $full_name = $namespace . '::' . $name if $namespace;
+    # warn "namespace [$namespace] [$name] = [$full_name]\n";
+    if ( exists( &{$full_name} ) ) {
+        return;
+    }
+    if ( exists( $Perlito5::PROTO->{$full_name} ) ) {
+        return;
+    }
+    my $bareword = join("", @{$str}[ $pos .. $p-1 ] );
+    if (length($bareword) > 2 && substr($bareword, -2, 2) eq "::") {
+        $bareword = substr($bareword, 0, -2);
+    }
+    # warn "is bareword [$bareword] $pos .. $p\n";
+    if ( $^H & $Perlito5::STRICT_SUBS ) {
+        Perlito5::Compiler::error( 'Bareword "' . $bareword . '" not allowed while "strict subs" in use' );
+    }
+    return {
+        to => $p,
+        capture => [ 'postfix_or_term', 'funcall_no_params',
+            Perlito5::AST::Apply->new( code => $bareword, namespace => '', arguments => [], bareword => 1 )
+        ],
+    };
+}
+
+Perlito5::Grammar::Precedence::add_term( '::'  => \&term_bareword_starting_with_colon );
+
 1;
 
 =begin
