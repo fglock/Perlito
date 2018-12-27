@@ -47,7 +47,7 @@ sub perl5_to_java {
     my $ast = 
         Perlito5::AST::Call->new(
             method => "postcircumfix:<( )>",
-            arguments => [],
+            arguments => [ Perlito5::AST::Var->new( sigil => "@", name => "_", namespace => "main" ) ],
             invocant => Perlito5::AST::Sub->new(
                 block => Perlito5::AST::Block->new(
                             stmts => $match->{capture},

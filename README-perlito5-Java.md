@@ -1681,6 +1681,12 @@ Missing features, or partially implemented, or untested
   bar
   ```
 
+- Add tests
+
+  ```
+  $ java -jar perlito5.jar -J DEBUG=1 -Isrc5/lib -e ' sub x { eval " \$_[0] + 1 " } print x(10), "\n" '
+  11
+  ```
 
 Regex
 -----
