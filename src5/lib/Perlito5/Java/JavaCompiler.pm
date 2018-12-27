@@ -111,6 +111,7 @@ class PlJavaCompiler {
             return PlCx.UNDEF;
         }
 
+        PlObject out = PlCx.UNDEF;
         try {
             if (initDone == null) {
                 PlJavaCompiler.init();
@@ -123,39 +124,9 @@ class PlJavaCompiler {
             StringBuilder source5 = new StringBuilder();
             source5.append(constants);
             source5.append("    @SuppressWarnings(\"unchecked\")\n");
-            source5.append("    public static PlObject runEval(int want, PlArray List__) {\n");
+            source5.append("    public static PlObject runEval(int want, PlArray List__) throws Exception {\n");
             source5.append("        int return_context = want;\n");
-            source5.append("        try {\n");
             source5.append("        " + source + "\n");
-            source5.append("        }\n");
-            source5.append("        catch(PlReturnException e) {\n");
-            source5.append("            return e.ret;\n");
-            source5.append("        }\n");
-            source5.append("        catch(PlNextException e) {\n");
-            source5.append("            throw(e);\n");
-            source5.append("        }\n");
-            source5.append("        catch(PlLastException e) {\n");
-            source5.append("            throw(e);\n");
-            source5.append("        }\n");
-            source5.append("        catch(PlRedoException e) {\n");
-            source5.append("            throw(e);\n");
-            source5.append("        }\n");
-            source5.append("        catch(java.lang.NullPointerException e) {\n");
-            source5.append("            e.printStackTrace();\n");
-            source5.append("            String message = \"null pointer: java.lang.NullPointerException\";\n");
-            source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
-            source5.append("            return PerlOp.context(want);\n");
-            source5.append("        }\n");
-            source5.append("        catch(Exception e) {\n");
-
-            if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
-                source5.append("            e.printStackTrace();\n");
-            }
-
-            source5.append("            String message = e.getMessage();\n");
-            source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
-            source5.append("            return PerlOp.context(want);\n");
-            source5.append("        }\n");
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
@@ -170,9 +141,8 @@ class PlJavaCompiler {
                 cls5
             );
             Method method5 = class5.getMethod("runEval", new Class[]{int.class, PlArray.class});
-            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID, List__);
+            out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID, List__);
             // System.out.println("eval_string result: " + out.toString());
-            return out;
         }
         catch(PlReturnException e) {
             return e.ret;
@@ -186,13 +156,21 @@ class PlJavaCompiler {
         catch(PlRedoException e) {
             throw(e);
         }
-        catch(Exception e) {
-            // e.printStackTrace();
-            String message = e.getMessage();
-            // System.out.println("Exception in eval_string: " + message);
+        catch(java.lang.NullPointerException e) {
+            e.printStackTrace();
+            String message = "null pointer: java.lang.NullPointerException";
             PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
+            return PlCx.UNDEF;
         }
-        return PlCx.UNDEF;
+        catch(Exception e) {
+            if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                e.printStackTrace();
+            }
+            String message = e.getMessage();
+            PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
+            return PlCx.UNDEF;
+        }
+        return out;
     }
 
     public static PlObject eval_perl_string(
