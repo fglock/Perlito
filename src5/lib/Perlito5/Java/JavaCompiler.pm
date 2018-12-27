@@ -269,7 +269,7 @@ class PlJavaCompiler {
             StringBuilder source5 = new StringBuilder();
             source5.append(constants);
             source5.append("    @SuppressWarnings(\"unchecked\")\n");
-            source5.append("    public static PlObject runEval(int want, Object scalar_val, Object array_val, Object hash_val, PlArray List__) {\n");
+            source5.append("    public static PlObject runEval(int want, Object scalar_val, Object array_val, Object hash_val, PlArray List__) throws Exception {\n");
             source5.append("        int return_context = want;\n");
             for (int i = 0; i < scalar_name.length; i++) {
             source5.append("        PlLvalue " + scalar_name[i] + " = ((PlLvalue[])(scalar_val))[" + i + "];\n");
@@ -280,43 +280,9 @@ class PlJavaCompiler {
             for (int i = 0; i < hash_name.length; i++) {
             source5.append("        PlHash " + hash_name[i] + " = ((PlHash[])(hash_val))[" + i + "];\n");
             }
-            source5.append("        try {\n");
-            source5.append("            PlObject ret = " + outJava + ";\n");
-            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
-            source5.append("            return ret;\n");
-            source5.append("        }\n");
-            source5.append("        catch(PlReturnException e) {\n");
-            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
-            source5.append("            return e.ret;\n");
-            source5.append("        }\n");
-            source5.append("        catch(PlNextException e) {\n");
-            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
-            source5.append("            throw(e);\n");
-            source5.append("        }\n");
-            source5.append("        catch(PlLastException e) {\n");
-            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
-            source5.append("            throw(e);\n");
-            source5.append("        }\n");
-            source5.append("        catch(PlRedoException e) {\n");
-            source5.append("            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
-            source5.append("            throw(e);\n");
-            source5.append("        }\n");
-            source5.append("        catch(java.lang.NullPointerException e) {\n");
-            source5.append("            e.printStackTrace();\n");
-            source5.append("            String message = \"null pointer: java.lang.NullPointerException\";\n");
-            source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
-            source5.append("            return PerlOp.context(want);\n");
-            source5.append("        }\n");
-            source5.append("        catch(Exception e) {\n");
-
-            if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
-                source5.append("            e.printStackTrace();\n");
-            }
-
-            source5.append("            String message = e.getMessage();\n");
-            source5.append("            PlV.Scalar_EVAL_ERROR.set(new PlString(\"\" + message));\n");
-            source5.append("            return PerlOp.context(want);\n");
-            source5.append("        }\n");
+            source5.append("        PlObject ret = " + outJava + ";\n");
+            source5.append("        PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
+            source5.append("        return ret;\n");
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
@@ -325,14 +291,47 @@ class PlJavaCompiler {
                 System.out.println("\neval_perl_string:\n" + cls5 + "\n");
             }
 
-            // TODO - retrieve errors in Java->bytecode
-            Class<?> class5 = compileClassInMemory(
-                className,
-                cls5
-            );
-            Method method5 = class5.getMethod("runEval", new Class[]{int.class, Object.class, Object.class, Object.class, PlArray.class});
-            PlObject out = (org.perlito.Perlito5.PlObject)method5.invoke(null, want, scalar_val, array_val, hash_val, List__);
-            // System.out.println("eval_string result: " + out.toString());
+            PlObject out;
+            try {
+                // TODO - retrieve errors in Java->bytecode
+                Class<?> class5 = compileClassInMemory(
+                    className,
+                    cls5
+                );
+                Method method5 = class5.getMethod("runEval", new Class[]{int.class, Object.class, Object.class, Object.class, PlArray.class});
+                out = (org.perlito.Perlito5.PlObject)method5.invoke(null, want, scalar_val, array_val, hash_val, List__);
+                // System.out.println("eval_string result: " + out.toString());
+            }
+            catch(PlReturnException e) {
+                PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
+                return e.ret;
+            }
+            catch(PlNextException e) {
+                PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
+                throw(e);
+            }
+            catch(PlLastException e) {
+                PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
+                throw(e);
+            }
+            catch(PlRedoException e) {
+                PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
+                throw(e);
+            }
+            catch(java.lang.NullPointerException e) {
+                e.printStackTrace();
+                String message = "null pointer: java.lang.NullPointerException";
+                PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
+                return PerlOp.context(want);
+            }
+            catch(Exception e) {
+                if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                    e.printStackTrace();
+                }
+                String message = e.getMessage();
+                PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
+                return PerlOp.context(want);
+            }
             return out;
         }
         catch(PlReturnException e) {
