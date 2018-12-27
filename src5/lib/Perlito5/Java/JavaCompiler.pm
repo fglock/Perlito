@@ -246,11 +246,11 @@ class PlJavaCompiler {
         }
         PlV.sset("main::" + (char)8, tmp_scalar_hints);     // restore $^H
         PlV.hash_set("main::" + (char)8, tmp_hash_hints);   // restore %^H
+        PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
 
         // return eval_java_string(outJava.toString());
 
         if (source.equals("")) {
-            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             return PlCx.UNDEF;
         }
 
@@ -278,9 +278,7 @@ class PlJavaCompiler {
             for (int i = 0; i < hash_name.length; i++) {
             source5.append("        PlHash " + hash_name[i] + " = ((PlHash[])(hash_val))[" + i + "];\n");
             }
-            source5.append("        PlObject ret = " + outJava + ";\n");
-            source5.append("        PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);\n");
-            source5.append("        return ret;\n");
+            source5.append("        return " + outJava + ";\n");
             source5.append("    }\n");
             source5.append("}\n");
             String cls5 = source5.toString();
@@ -299,19 +297,15 @@ class PlJavaCompiler {
             // System.out.println("eval_string result: " + out.toString());
         }
         catch(PlReturnException e) {
-            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             return e.ret;
         }
         catch(PlNextException e) {
-            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             throw(e);
         }
         catch(PlLastException e) {
-            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             throw(e);
         }
         catch(PlRedoException e) {
-            PlV.Scalar_EVAL_ERROR.set(PlCx.EMPTY);
             throw(e);
         }
         catch(java.lang.NullPointerException e) {
