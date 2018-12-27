@@ -497,11 +497,12 @@ package Perlito5::AST::CompUnit;
         $Perlito5::PKG_NAME = 'main';
         $Perlito5::THROW = 0;
         $Perlito5::THROW_RETURN = 0;
+        local @Perlito5::Java::Java_constants;
+        local %Perlito5::Java::Java_constant_seen;
         my $level = 0;
         my $wantarray = 'statement';
         my $str;
         $str .= Perlito5::Compiler::do_not_edit("//");
-        Perlito5::Java::reset_constants();
 
         # look for special 'Java' packages
         for my $ann ( @Perlito::ANNOTATION ) {

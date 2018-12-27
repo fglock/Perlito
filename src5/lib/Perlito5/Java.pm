@@ -257,10 +257,6 @@ sub get_java_loop_label {
 }
 
 our %Java_constant_seen;
-sub reset_constants {
-    @Perlito5::Java::Java_constants = ();
-    %Java_constant_seen = ();
-}
 sub get_constant {
     my ($type, $create) = @_;
     if (exists $Java_constant_seen{$create}) {
