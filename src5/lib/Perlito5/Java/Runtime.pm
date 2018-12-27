@@ -63,7 +63,6 @@ sub perl5_to_java {
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
-    my $java_classes = Perlito5::Java::get_java_class_info() // {};
     my $className = "PlEval" . $Perlito5::ID++;
     my $constants = join( "",
             "import org.perlito.Perlito5.*;\n",
@@ -104,7 +103,6 @@ sub eval_ast {
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
-    my $java_classes = Perlito5::Java::get_java_class_info() // {};
     my $className = "PlEval" . $Perlito5::ID++;
     $java_code = join( "",
             "import org.perlito.Perlito5.*;\n",
