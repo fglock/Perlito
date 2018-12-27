@@ -13,10 +13,10 @@ package Perlito5::AST::Apply;
         my %flags = map { $_ => 1 } split //, $modifier;
         # warn Perlito5::Dumper::Dumper(\%flags);
         my $flag_string = join( " | ", 
-            ( $flags{'i'} ? 'Pattern.CASE_INSENSITIVE' : () ),
-            ( $flags{'x'} ? 'Pattern.COMMENTS'         : () ),
-            ( $flags{'m'} ? 'Pattern.MULTILINE'        : () ),
-            ( $flags{'s'} ? 'Pattern.DOTALL'           : () ),
+            ( $flags{'i'} ? 'java.util.regex.Pattern.CASE_INSENSITIVE' : () ),
+            ( $flags{'x'} ? 'java.util.regex.Pattern.COMMENTS'         : () ),
+            ( $flags{'m'} ? 'java.util.regex.Pattern.MULTILINE'        : () ),
+            ( $flags{'s'} ? 'java.util.regex.Pattern.DOTALL'           : () ),
         ) || '0';
 
         my $flag_xx = 'false';
