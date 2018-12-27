@@ -88,9 +88,6 @@ sub perl5_to_java {
         # say "s: [[$s]] ", ref($s), "\n";
         $constants .= "    " . $s . ";\n";
     }
-    $constants .= 
-            "    public " . $className . "() {\n"
-          . "    }\n";
 
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
