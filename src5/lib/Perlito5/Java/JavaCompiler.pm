@@ -102,10 +102,8 @@ class PlJavaCompiler {
 
     public static PlObject eval_java_string(PlArray List__)
     {
-
         String className = List__.shift().toString();
         String source    = List__.shift().toString();
-        String constants = List__.shift().toString();
 
         if (source.equals("")) {
             return PlCx.UNDEF;
@@ -121,24 +119,14 @@ class PlJavaCompiler {
 
             // TODO - test local(); initialize local() stack if needed
 
-            StringBuilder source5 = new StringBuilder();
-            source5.append(constants);
-            source5.append("    @SuppressWarnings(\"unchecked\")\n");
-            source5.append("    public static PlObject runEval(int want, PlArray List__) throws Exception {\n");
-            source5.append("        int return_context = want;\n");
-            source5.append("        " + source + "\n");
-            source5.append("    }\n");
-            source5.append("}\n");
-            String cls5 = source5.toString();
-
             if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
-                System.out.println("\neval_ast:\n" + cls5 + "\n");
+                System.out.println("\neval_ast:\n" + source + "\n");
             }
 
             // TODO - retrieve errors in Java->bytecode
             Class<?> class5 = compileClassInMemory(
                 className,
-                cls5
+                source
             );
             Method method5 = class5.getMethod("runEval", new Class[]{int.class, PlArray.class});
             out = (org.perlito.Perlito5.PlObject)method5.invoke(null, PlCx.VOID, List__);

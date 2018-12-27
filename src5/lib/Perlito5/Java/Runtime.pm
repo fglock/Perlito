@@ -113,18 +113,21 @@ sub eval_ast {
 
     my $java_classes = Perlito5::Java::get_java_class_info() // {};
     my $className = "PlEval" . $Perlito5::ID++;
-    my $constants = "";
-    $constants .= 
-            "import org.perlito.Perlito5.*;\n"
-          . "public class " . $className . " {\n";
-    for my $s ( @Perlito5::Java::Java_constants ) {
-        # say "s: [[$s]] ", ref($s), "\n";
-        $constants .= "    " . $s . ";\n";
-    }
+    $java_code = join( "",
+            "import org.perlito.Perlito5.*;\n",
+            "public class ", $className, " {\n",
+            ( map {  "    ", $_, ";\n" } @Perlito5::Java::Java_constants ),
+            "    \@SuppressWarnings(\"unchecked\")\n",
+            "    public static PlObject runEval(int want, PlArray List__) throws Exception {\n",
+            "        int return_context = want;\n",
+            "        ", $java_code, "\n",
+            "    }\n",
+            "}\n",
+    );
 
-    # warn "constants [[\n$constants ]]\n";
+    # say STDERR "java-source: [" . $java_code . "]";
 
-    @_ = ($className, $java_code, $constants);
+    @_ = ($className, $java_code);
     return Java::inline('PlJavaCompiler.eval_java_string(List__)');
 }
 
