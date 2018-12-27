@@ -12,8 +12,6 @@ use Perlito5::Runtime::Sprintf;
 sub perl5_to_java {
     my ($source, $namespace, $want, $scope_java) = @_;
 
-    # say "source: [" . $source . "]";
-
     local $_;
     local ${^GLOBAL_PHASE};
     local @Perlito5::BASE_SCOPE = ($scope_java);  # ->[0];
@@ -25,6 +23,7 @@ sub perl5_to_java {
     local %Perlito5::Java::Java_constant_seen;
 
     # warn "in eval enter\n";
+    # warn "source: [" . $source . "]\n";
     # warn "External scope ", Perlito5::Dumper::Dumper($scope_java);
     # warn "BASE_SCOPE ", Perlito5::Dumper::Dumper($Perlito5::BASE_SCOPE);
     # warn "SCOPE_STMT ", Perlito5::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
@@ -57,29 +56,24 @@ sub perl5_to_java {
 
     # use lexicals from BEGIN scratchpad
     $ast = $ast->emit_begin_scratchpad();
-
     # warn "perl_to_java: ", Perlito5::Dumper::Dumper( $ast );
+
     my $java_code = $ast->emit_java(2, $want);
-
-    # say "java-source: [" . $java_code . "]";
-
-    # warn "in perl_to_java: ", Perlito5::Dumper::Dumper( \@Perlito5::Java::Java_constants );
-
-    my $java_classes = Perlito5::Java::get_java_class_info() // {};
-    my $className = "PlEval" . $Perlito5::ID++;
-    my $constants = "";
-    $constants .= 
-            "import org.perlito.Perlito5.*;\n"
-          . "public class " . $className . " {\n";
-    for my $s ( @Perlito5::Java::Java_constants ) {
-        # say "s: [[$s]] ", ref($s), "\n";
-        $constants .= "    " . $s . ";\n";
-    }
 
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
+    my $java_classes = Perlito5::Java::get_java_class_info() // {};
+    my $className = "PlEval" . $Perlito5::ID++;
+    my $constants = join( "",
+            "import org.perlito.Perlito5.*;\n",
+            "public class ", $className, " {\n",
+            ( map {  "    ", $_, ";\n" } @Perlito5::Java::Java_constants ),
+    );
+
     # warn "in eval BASE_SCOPE exit: ", Perlito5::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    # warn "java-source: [" . $java_code . "]\n";
+    # warn "constants: [" . $constants . "]\n";
 
     return ($className, $java_code, $constants);
 }
@@ -106,10 +100,9 @@ sub eval_ast {
     # warn "eval_ast: ", Perlito5::Dumper::Dumper( $ast );
 
     my $java_code = $ast->emit_java(2, $want);
-    # say STDERR "java-source: [" . $java_code . "]";
+
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
-    # warn "in eval BASE_SCOPE exit: ", Perlito5::Dumper::Dumper($Perlito5::BASE_SCOPE);
 
     my $java_classes = Perlito5::Java::get_java_class_info() // {};
     my $className = "PlEval" . $Perlito5::ID++;
@@ -125,7 +118,8 @@ sub eval_ast {
             "}\n",
     );
 
-    # say STDERR "java-source: [" . $java_code . "]";
+    # warn "in eval BASE_SCOPE exit: ", Perlito5::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    # warn "java-source: [" . $java_code . "]\n";
 
     @_ = ($className, $java_code);
     return Java::inline('PlJavaCompiler.eval_java_string(List__)');
