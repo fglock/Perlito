@@ -162,6 +162,25 @@ class PlJavaCompiler {
             PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
             return PlCx.UNDEF;
         }
+        catch(java.lang.reflect.InvocationTargetException e) {
+            String message;
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                    cause.printStackTrace();
+                }
+                message = cause.getMessage();
+            }
+            else {
+                if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                    e.printStackTrace();
+                }
+                message = e.getMessage();
+            }
+            PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
+            return PlCx.UNDEF;
+
+        }
         catch(Exception e) {
             if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
                 e.printStackTrace();
@@ -300,6 +319,25 @@ class PlJavaCompiler {
             String message = "null pointer: java.lang.NullPointerException";
             PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
             return PerlOp.context(want);
+        }
+        catch(java.lang.reflect.InvocationTargetException e) {
+            String message;
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                    cause.printStackTrace();
+                }
+                message = cause.getMessage();
+            }
+            else {
+                if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
+                    e.printStackTrace();
+                }
+                message = e.getMessage();
+            }
+            PlV.Scalar_EVAL_ERROR.set(new PlString("" + message));
+            return PlCx.UNDEF;
+
         }
         catch(Exception e) {
             if ( PlV.sget("Perlito5::Java::DEBUG").get().to_boolean() ) {
