@@ -8806,8 +8806,14 @@ EOT
         // TODO - concatenate current namespace if needed
         return PlV.aset(s, v);
     }
-    public PlObject hget(String i) {
-        return this.hash_deref("").hget(i);
+    public PlObject hget(String s) {
+        return this.hash_deref("").hget(s);
+    }
+    public PlObject hset(String s, PlLvalue v) {
+        return this.hash_deref("").hset(s, v);
+    }
+    public PlObject hset(String s, PlObject v) {
+        return this.hash_deref("").hset(s, v);
     }
     public PlObject hash_deref(String namespace) {
         int pos = s.lastIndexOf("::");
