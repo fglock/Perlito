@@ -715,6 +715,33 @@ sub term_bareword {
 
     # it's just a bareword - we will disambiguate later
 
+    my $is_label = 0;
+    my $before_block = 0;
+    my $is_core = 0;
+    {
+        my $m = Perlito5::Grammar::Space::ws( $str, $p );
+        my $p = $m->{to} if $m;
+        if ( $str->[$p] eq ':' ) {
+            # followed by `:` as in `LABEL:`
+            $is_label = 1;
+        }
+        if ( $str->[$p] eq '{' ) {
+            # followed by `{` as in `default {...}`
+            $before_block = 1;
+        }
+    }
+    if (
+            ( !$namespace || $namespace eq 'CORE' )
+            && exists $Perlito5::CORE_PROTO->{"CORE::$name"}
+        ){
+        if ($name eq 'default' && !$before_block) {
+            # maybe `default` used as bareword (Mo.pm uses this)
+        }
+        else {
+            $is_core = 1;
+        }
+    }
+
     if ( $^H & $Perlito5::STRICT_SUBS ) {
         # Allow:
         #   - close FILE
@@ -724,19 +751,11 @@ sub term_bareword {
         #   - CORE operators                in $Perlito5::CORE_PROTO
         #   - subr LABEL                    if prototype(&subr) eq '*'
 
-        my $m = Perlito5::Grammar::Space::opt_ws( $str, $p );
-        my $p = $m->{to};
-        if ( $str->[$p] eq ':' ) {
+        if ( $is_label ) {
             # looks like "LABEL:"
         }
         elsif (
-            !(
-                exists( $Perlito5::PROTO->{$effective_name} )
-                || (
-                    ( !$namespace || $namespace eq 'CORE' )
-                    && exists $Perlito5::CORE_PROTO->{"CORE::$name"}    # subroutine comes from CORE
-                )
-            )
+            !( exists( $Perlito5::PROTO->{$effective_name} ) || $is_core )
           )
         {
             # TODO
@@ -760,6 +779,16 @@ sub term_bareword {
             return $m_name;
 
         }
+    }
+
+    if (   !$is_label
+        && !exists( $Perlito5::PROTO->{$effective_name} )
+        && !$is_core )
+    {
+        my $buf = join( '', @{$str}[ $pos .. $p - 1 ] );
+        # warn "bareword [[$buf]]\n";
+        $m_name->{"capture"} = [ "term", Perlito5::AST::Buf::->new( buf => $buf ) ];
+        return $m_name;
     }
 
     $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
