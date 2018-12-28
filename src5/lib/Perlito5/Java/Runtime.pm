@@ -2554,6 +2554,22 @@ EOT
         if ( code.is_coderef() ) {
             return code;
         }
+
+        if (name.length() > 6 && name.startsWith("main::")) {
+            int pos = name.lastIndexOf("::");
+            if (pos > 4) {
+                // normalize main::X::subr to X::subr
+                return cget(name.substring(6));
+            }
+        }
+        else if (name.length() > 2 && name.startsWith("::")) {
+            int pos = name.lastIndexOf("::");
+            if (pos > 0) {
+                // normalize ::X::subr to X::subr
+                return cget(name.substring(2));
+            }
+        }
+
         int pos = name.lastIndexOf("::");
         if (pos == -1) {
             return code;
@@ -2570,7 +2586,27 @@ EOT
         return (PlLvalue)PerlOp.push_local_named_sub(PlCx.UNDEF, name);
     }
     public static final PlLvalue cget_no_autoload(String name) {
-        return PlStringConstant.getConstant(name).codeRef;
+        PlLvalue code = PlStringConstant.getConstant(name).codeRef;
+        if ( code.is_coderef() ) {
+            return code;
+        }
+
+        if (name.length() > 6 && name.startsWith("main::")) {
+            int pos = name.lastIndexOf("::");
+            if (pos > 4) {
+                // normalize main::X::subr to X::subr
+                return cget_no_autoload(name.substring(6));
+            }
+        }
+        else if (name.length() > 2 && name.startsWith("::")) {
+            int pos = name.lastIndexOf("::");
+            if (pos > 0) {
+                // normalize ::X::subr to X::subr
+                return cget_no_autoload(name.substring(2));
+            }
+        }
+
+        return code;
     }
     public static final PlObject cset(String name, PlObject v) {
         return PlStringConstant.getConstant(name).cset(v);

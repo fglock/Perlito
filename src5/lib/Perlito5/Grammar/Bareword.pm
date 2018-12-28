@@ -833,6 +833,19 @@ sub term_bareword_starting_with_colon {
     if (length($bareword) > 2 && substr($bareword, -2, 2) eq "::") {
         $bareword = substr($bareword, 0, -2);
     }
+
+    # not followed by `(` or `=>`
+    my $end_pos = $p;
+    my $m = Perlito5::Grammar::Space::ws( $str, $p );
+    $p = $m->{to} if $m;
+    if ( $str->[$p] eq '-' && $str->[$p+1] eq '>' ) {
+        return;
+    }
+    elsif ( $str->[$p] eq '(' ) {
+        return;
+    }
+    $p = $end_pos;
+
     # warn "is bareword [$bareword] $pos .. $p\n";
     if ( $^H & $Perlito5::STRICT_SUBS ) {
         Perlito5::Compiler::error( 'Bareword "' . $bareword . '" not allowed while "strict subs" in use' );

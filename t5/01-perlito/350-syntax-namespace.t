@@ -1,6 +1,6 @@
 use feature 'say';
 
-print "1..9\n";
+print "1..11\n";
 
 # TODO:
 #
@@ -73,7 +73,7 @@ my $x;
     $x = ::E; 
     $r = ">$x<";
     print "not " if $r ne ">::E<";
-    say "ok 6 - double-colon before - ::E $x # TODO Parser bug";    # E
+    say "ok 6 - double-colon before - ::E $x";
 }
 
 {
@@ -96,6 +96,27 @@ my $x;
     $r = ">$x<";
     print "not " if $r ne ">::G::a<";
     say "ok 9 - tick in constant - ::G'a $x # TODO Parser bug";
+}
+
+{
+    package main;
+    use strict; 
+    use warnings;
+
+    my $r = 3;
+    {
+        package HH;
+        sub H { $r = 4 }
+    }
+
+    ::HH->H();   
+    print "not " if $r != 4;
+    say "ok 10 - double-colon before # ::HH->H $r ";    # 4
+
+    $r = 3;
+    main::HH->H();   
+    print "not " if $r != 4;
+    say "ok 11 - double-colon before means 'main::H' # main::HH->H $r ";    # 4
 }
 
 
