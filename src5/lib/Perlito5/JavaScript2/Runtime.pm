@@ -247,15 +247,27 @@ function p5call(invocant, method, list, p5want) {
         if ( invocant._class_.hasOwnProperty(method) ) {
             return invocant._class_[method](list, p5want)
         }
-        var m = p5method_lookup(method, invocant._class_._ref_, {});
+
+        var invocant_ref = invocant._class_._ref_;
+        var m = p5method_lookup(method, invocant_ref, {});
         if (m) {
             return m(list, p5want)
         }
-
         // method can have an optional namespace
         var pkg_name = method.split(/::/);
+        var name;
+        if (pkg_name.length == 1) {
+            pkg_name = invocant_ref.split(/::/);
+            name = method;
+        }
+        else {
+            name = pkg_name.pop();
+        }
         if (pkg_name.length > 1) {
-            var name = pkg_name.pop();
+            if (pkg_name.length > 1 && pkg_name[0] === "main") {
+                // normalize main::x::get to x::get
+                pkg_name.shift();
+            }
             pkg_name = pkg_name.join("::");
             m = p5method_lookup(name, pkg_name, {});
             if (m) {
