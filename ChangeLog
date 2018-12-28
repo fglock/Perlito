@@ -4,9 +4,13 @@ Dev Version:
 -- fix: `a =>=> b =>` is not a syntax error
 -- fix: `(,)` is a syntax error
 -- add core module POSIX with floor(), ceil(), and most of strftime()
+-- add non-core module Mo.pm
 
 - Java:
 -- named capture in regex accepts duplicate names
+
+- JavaScript:
+-- fix assignment to array dereference
 
 9.028 cpan:Perlito5 2018-09-03
 
