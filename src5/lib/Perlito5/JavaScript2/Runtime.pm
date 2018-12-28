@@ -499,6 +499,7 @@ function p5array_deref_set(v, list, current_pkg_name) {
         if (!p5make_package(pkg_name)[name]) {
                 p5pkg[pkg_name][name] = [];
         }
+        p5pkg[pkg_name][name] = list;
         return p5pkg[pkg_name][name];
     }
     v._array_ = list;

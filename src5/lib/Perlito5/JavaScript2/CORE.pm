@@ -161,7 +161,10 @@ CORE.caller = function(List__, want) {
     var caller = p5pkg["Perlito5"].List_CALLER;
     if ( caller && caller[0] ) {
         // TODO
-        return caller[0]._array_
+        if (want) {
+            return caller[0]._array_;
+        }
+        return caller[0]._array_[0];
     }
     return p5context([null, null, null], want);
 };
