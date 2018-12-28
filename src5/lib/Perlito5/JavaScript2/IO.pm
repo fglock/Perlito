@@ -90,7 +90,7 @@ if (isNode) {
             if (!pkg.file_handle.buffer) {
                 // we don't have any data yet
                 var length_wanted = length + 2 * p5_extra_buffer_size;
-                var buffer = new Buffer(length_wanted);
+                var buffer = Buffer.alloc(length_wanted);
                 var bytes_read = fs.readSync(handle_id, buffer, 0, length_wanted, null);
                 if (bytes_read < length_wanted) {
                     pkg.file_handle.buffer_eof = 1;
@@ -106,7 +106,7 @@ if (isNode) {
             else if (!pkg.file_handle.buffer_eof) {
                 // we have some data; append more data to the internal buffer
                 var length_wanted = length + 2 * p5_extra_buffer_size;
-                var buffer = new Buffer(pkg.file_handle.buffer_length + length_wanted);
+                var buffer = Buffer.alloc(pkg.file_handle.buffer_length + length_wanted);
                 pkg.file_handle.buffer.copy(buffer, 0, pkg.file_handle.buffer_start, pkg.file_handle.buffer_end);
                 var bytes_read = fs.readSync(handle_id, buffer, pkg.file_handle.buffer_length, length_wanted, null);
                 if (bytes_read < length_wanted) {

@@ -1516,6 +1516,13 @@ package Perlito5::AST::Apply;
                 . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME)
                 . ')';
         }
+        if ( $self->{code} eq 'prefix:<@>' ) {
+            return 'p5array_deref_set(' 
+                . Perlito5::JavaScript2::emit_javascript2_autovivify( $self->{arguments}->[0], $level+1, 'array' ) . ', '
+                . $list . ', '
+                . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME)
+                . ')';
+        }
         die "not implemented: assign to ", $self->{code};
     }
 

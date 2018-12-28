@@ -481,6 +481,30 @@ function p5array_deref(v, current_pkg_name) {
     return v._array_;
 }
 
+function p5array_deref_set(v, list, current_pkg_name) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = current_pkg_name;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            pkg_name = 'main';
+        }
+        var name = "List_"+v;
+        if (!p5make_package(pkg_name)[name]) {
+                p5pkg[pkg_name][name] = [];
+        }
+        return p5pkg[pkg_name][name];
+    }
+    v._array_ = list;
+    return v._array_;
+}
+
 function p5hash_deref(v, current_pkg_name) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
