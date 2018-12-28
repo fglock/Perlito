@@ -61,6 +61,7 @@ sub op_parse {
             my $c2 = $str->[$pos + $len];
             if (  !($Perlito5::Grammar::is_ident_middle{$c1} && $Perlito5::Grammar::is_ident_middle{$c2} )
                && !($c1 eq '<' && $c2 eq '<')
+               && !($c1 eq ':' && $c2 eq ':')
                )
             {
                 # it looks like an end token, and it is not one of these cases:
