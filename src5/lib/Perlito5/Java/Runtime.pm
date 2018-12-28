@@ -4971,7 +4971,17 @@ class PlClass {
     public static PlClass getInstance(String s) {
         PlClass c = classes.get(s);
         if (c == null) {
-            c = new PlClass(s);
+            if (s.length() > 6 && s.startsWith("main::")) {
+                String s2 = s.substring(6);
+                c = getInstance(s2);
+            }
+            else if (s.length() > 2 && s.startsWith("::")) {
+                String s2 = s.substring(2);
+                c = getInstance(s2);
+            }
+            else {
+                c = new PlClass(s);
+            }
             classes.put(s, c);
         }
         return c;
