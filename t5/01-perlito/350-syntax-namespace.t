@@ -1,6 +1,6 @@
 use feature 'say';
 
-print "1..11\n";
+print "1..12\n";
 
 # TODO:
 #
@@ -103,12 +103,13 @@ my $x;
     use strict; 
     use warnings;
 
-    my $r = 3;
+    my $r;
     {
         package HH;
         sub H { $r = 4 }
     }
 
+    $r = 3;
     ::HH->H();   
     print "not " if $r != 4;
     say "ok 10 - double-colon before # ::HH->H $r ";    # 4
@@ -117,6 +118,20 @@ my $x;
     main::HH->H();   
     print "not " if $r != 4;
     say "ok 11 - double-colon before means 'main::H' # main::HH->H $r ";    # 4
+
+    my $o = bless {}, 'HH';
+
+    # Bareword found where operator expected
+    # $r = 3;
+    # $o->::HH::H();   
+    # print "not " if $r != 4;
+    # say "ok 12 - double-colon before # o->::HH::H $r ";    # 4
+
+    $r = 3;
+    $o->main::HH::H();   
+    print "not " if $r != 4;
+    say "ok 12 - double-colon before means 'main::H' # o->main::HH::H $r ";    # 4
+
 }
 
 
