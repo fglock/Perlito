@@ -4,6 +4,18 @@ package Perlito5::AST::Apply;
 
     sub _emit_assignment_javascript2 {
         my ($parameters, $arguments, $level, $wantarray) = @_;
+
+        if (   $parameters->isa( 'Perlito5::AST::Apply' )
+            &&  ( $parameters->{code} eq 'prefix:<@>' )
+        )
+        {
+            my $arg = $parameters;
+            $parameters = Perlito5::AST::Apply->new(
+                code => 'circumfix:<( )>',
+                arguments => [ $arg ],
+            );
+        }
+
         if (   $parameters->isa( 'Perlito5::AST::Apply' )
             &&  ( $parameters->{code} eq 'circumfix:<( )>' )
         )
