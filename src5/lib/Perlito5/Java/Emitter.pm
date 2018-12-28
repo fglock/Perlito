@@ -1671,7 +1671,7 @@ package Perlito5::AST::Call;
                 $method = Perlito5::Java::escape_string($method);
                 return 'PerlOp.callSuper('
                          . $method . ', ' 
-                         . Perlito5::Java::pkg . ', '
+                         . Perlito5::Java::pkg() . ', '
                          . Perlito5::Java::to_method_call_param_list($self->{invocant}, $self->{arguments}, $level + 1) . ', '
                          . Perlito5::Java::to_context($wantarray)
                   . ')'
@@ -2251,7 +2251,7 @@ package Perlito5::AST::Sub;
         my @closure_args = (
               $prototype,
               $captures,
-              Perlito5::Java::pkg,
+              Perlito5::Java::pkg(),
               $is_defined,
         );
         if (($self->{_do_block} || $self->{_eval_block}) && $outer_sub) {

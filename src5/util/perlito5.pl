@@ -43,7 +43,7 @@ use Perlito5::Java::Lib;
 
 use strict;
 
-my $_V5_COMPILER_NAME    = Perlito5::Compiler::compiler_name;
+my $_V5_COMPILER_NAME    = Perlito5::Compiler::compiler_name();
 my $_V5_COMPILER_VERSION = $Perlito5::VERSION;
 my $source      = '';
 my $backend     = $^O;
