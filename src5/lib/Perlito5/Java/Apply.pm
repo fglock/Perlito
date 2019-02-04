@@ -1958,7 +1958,7 @@ package Perlito5::AST::Apply;
                 $sig = $Perlito5::PROTO->{$effective_name};
             }
             elsif ( (!$self->{namespace} || $namespace eq 'CORE')
-                  && exists $Perlito5::CORE_PROTO->{"CORE::$name"}
+                  && Perlito5::is_core_sub($name)
                   )
             {
                 $effective_name = "CORE::$name";

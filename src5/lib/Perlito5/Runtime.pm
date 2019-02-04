@@ -601,7 +601,7 @@ our $CORE_PROTO = {
     'CORE::crypt'            => '$$',
     'CORE::dbmclose'         => '\\%',
     'CORE::dbmopen'          => '\\%$$',
-    'CORE::default'          => undef,
+    # 'CORE::default'        => undef,           # depends on use feature "switch"
     'CORE::defined'          => '_',             # original 'undef',
     'CORE::delete'           => '$',             # original 'undef'
     'CORE::die'              => '@',
@@ -822,6 +822,7 @@ our $CORE_PROTO = {
 };
 
 sub is_core_sub {
+    return 1 if $_[0] eq "default" && $^H{feature_switch};
     exists $Perlito5::CORE_PROTO->{"CORE::$_[0]"}
 }
 
