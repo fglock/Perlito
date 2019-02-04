@@ -821,6 +821,10 @@ our $CORE_PROTO = {
     'CORE::__DATA__'         => undef,
 };
 
+sub is_core_sub {
+    exists $Perlito5::CORE_PROTO->{"CORE::$_[0]"}
+}
+
 # this is the routine executed by statements like 'require 5.20' and 'use v5.20'
 sub test_perl_version {
     my $version = shift;
