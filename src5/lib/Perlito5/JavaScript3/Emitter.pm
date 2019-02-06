@@ -1840,7 +1840,7 @@ package Perlito5::AST::Apply;
                   )
             {
                 $effective_name = "CORE::$name";
-                $sig = $Perlito5::CORE_PROTO->{$effective_name};
+                $sig = Perlito5::get_prototype_core($effective_name);
             }
             else {
                 # this subroutine was never declared
