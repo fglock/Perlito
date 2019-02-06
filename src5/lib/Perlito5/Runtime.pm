@@ -584,7 +584,7 @@ our $CORE_PROTO = {
     'CORE::bind'             => '*$',
     'CORE::binmode'          => '*;$',
     'CORE::bless'            => '$;$',
-    'CORE::break'            => '',
+    # 'CORE::break'            => '',			# feature
     'CORE::caller'           => ';$',
     'CORE::chdir'            => ';$',
     'CORE::chmod'            => '@',
@@ -620,7 +620,7 @@ our $CORE_PROTO = {
     'CORE::exists'           => '$',             # original 'undef',
     'CORE::exit'             => ';$',
     'CORE::exp'              => '_',
-    'CORE::fc'               => '_',
+    # 'CORE::fc'               => '_',           # depends on use feature "fc"
     'CORE::fcntl'            => '*$$',
     'CORE::fileno'           => '*',
     'CORE::flock'            => '*$',
@@ -718,7 +718,7 @@ our $CORE_PROTO = {
     'CORE::rewinddir'        => '*',
     'CORE::rindex'           => '$$;$',
     'CORE::rmdir'            => '_',
-    'CORE::say'              => undef,
+    # 'CORE::say'              => undef,        # depends on feature "say"
     'CORE::scalar'           => undef,
     'CORE::seek'             => '*$$',
     'CORE::seekdir'          => '*$',
@@ -753,7 +753,7 @@ our $CORE_PROTO = {
     'CORE::sqrt'             => '_',
     'CORE::srand'            => ';$',
     'CORE::stat'             => '*',
-    'CORE::state'            => undef,
+    # 'CORE::state'            => undef,		# feature
     'CORE::study'            => undef,
     'CORE::sub'              => undef,
     'CORE::substr'           => '$$;$$',
@@ -822,10 +822,20 @@ our $CORE_PROTO = {
 };
 
 sub is_core_sub {
-    return 1 if $_[0] eq "CORE::default" && $^H{feature_switch};
+    return 1 if $_[0] eq "CORE::fc"        && $^H{feature_fc};
+    return 1 if $_[0] eq "CORE::say"       && $^H{feature_say};
+    return 1 if $_[0] eq "CORE::given"     && $^H{feature_switch};
+    return 1 if $_[0] eq "CORE::when"      && $^H{feature_switch};
+    return 1 if $_[0] eq "CORE::default"   && $^H{feature_switch};
+    return 1 if $_[0] eq "CORE::break"     && $^H{feature_switch};
+    return 1 if $_[0] eq "CORE::state"     && $^H{feature_state};
+    return 1 if $_[0] eq "CORE::evalbytes" && $^H{feature_evalbytes};
+    return 1 if $_[0] eq "CORE::__SUB__"   && $^H{feature___SUB__};
     exists $Perlito5::CORE_PROTO->{$_[0]}
 }
 sub get_prototype_core {
+    return "_" if $_[0] eq "CORE::fc"    && $^H{feature_fc};
+    return ""  if $_[0] eq "CORE::break" && $^H{feature_switch};
     $Perlito5::CORE_PROTO->{$_[0]}
 }
 
