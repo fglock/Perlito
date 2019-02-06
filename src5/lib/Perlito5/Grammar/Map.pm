@@ -62,8 +62,8 @@ token non_core_ident {
      {
          my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});  # TODO - split namespace
         return
-          if exists( $Perlito5::CORE_PROTO->{$name} )
-          || Perlito5::is_core_sub($name);
+          if Perlito5::is_core_sub($name)
+          || Perlito5::is_core_sub("CORE::$name");
      }
 };
 

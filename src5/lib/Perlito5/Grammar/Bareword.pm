@@ -88,7 +88,7 @@ sub term_bareword {
     }
     elsif (  exists( $Perlito5::PROTO->{$effective_name} )       # subroutine was predeclared
            || ( (!$namespace || $namespace eq 'CORE')
-               && Perlito5::is_core_sub($name)  # subroutine comes from CORE
+               && Perlito5::is_core_sub("CORE::$name")  # subroutine comes from CORE
              )
            )
     {
@@ -228,7 +228,7 @@ sub term_bareword {
         $namespace ||= $Perlito5::PKG_NAME;
     }
     elsif ( (!$namespace || $namespace eq 'CORE')
-          && Perlito5::is_core_sub($name) 
+          && Perlito5::is_core_sub("CORE::$name") 
           )
     {
         # subroutine comes from CORE
@@ -734,7 +734,7 @@ sub term_bareword {
                 exists( $Perlito5::PROTO->{$effective_name} )
                 || (
                     ( !$namespace || $namespace eq 'CORE' )
-                    && Perlito5::is_core_sub($name)    # subroutine comes from CORE
+                    && Perlito5::is_core_sub("CORE::$name")    # subroutine comes from CORE
                 )
             )
           )

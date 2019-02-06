@@ -110,7 +110,7 @@ sub typeglob_bareword {
         return;
     }
     if ( (!$namespace || $namespace eq 'CORE')
-          && Perlito5::is_core_sub($name)
+          && Perlito5::is_core_sub("CORE::$name")
        )
     {
         # subroutine comes from CORE

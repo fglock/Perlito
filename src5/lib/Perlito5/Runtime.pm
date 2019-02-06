@@ -822,8 +822,8 @@ our $CORE_PROTO = {
 };
 
 sub is_core_sub {
-    return 1 if $_[0] eq "default" && $^H{feature_switch};
-    exists $Perlito5::CORE_PROTO->{"CORE::$_[0]"}
+    return 1 if $_[0] eq "CORE::default" && $^H{feature_switch};
+    exists $Perlito5::CORE_PROTO->{$_[0]}
 }
 sub get_prototype_core {
     $Perlito5::CORE_PROTO->{$_[0]}
