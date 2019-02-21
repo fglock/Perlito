@@ -607,6 +607,9 @@ sub term_bareword {
     if ( $str->[$p] eq '(' ) {
         $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
         if ( !$m ) { return $m };
+
+        # TODO - test for "Undefined subroutine &xxx::yyy"
+
         my $arg = $m->{capture}[2];
         $arg = Perlito5::Grammar::Expression::expand_list( $arg );
 
@@ -644,13 +647,21 @@ sub term_bareword {
             ];
         return $m;
     }
-
+    elsif ( $str->[$p] eq ':' ) {
+        # LABEL: ...
+        $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
+                Perlito5::AST::Apply->new( code => $name, namespace => $namespace, arguments => [], bareword => 1 )
+            ];
+        return $m_name;
+    }
 
     my $m_list = Perlito5::Grammar::Expression::list_parse( $str, $p );
     my $list = $m_list->{capture};
     if ($list ne '*undef*') {
         my $param_list = Perlito5::Grammar::Expression::expand_list($list);
         # warn "Bareword ", Perlito5::Dumper::Dumper($param_list);
+
+        # TODO - test for "Number found where operator expected"
 
         if ( $^H & $Perlito5::STRICT_SUBS ) {
             for my $i (0 .. $#$param_list) {
@@ -718,18 +729,12 @@ sub term_bareword {
     if ( $^H & $Perlito5::STRICT_SUBS ) {
         # Allow:
         #   - close FILE
-        #   - LABEL: { ... }
         #   - next LABEL / goto LABEL
         #   - predeclared named subroutines in $Perlito5::PROTO
         #   - CORE operators                in $Perlito5::CORE_PROTO
         #   - subr LABEL                    if prototype(&subr) eq '*'
 
-        my $m = Perlito5::Grammar::Space::opt_ws( $str, $p );
-        my $p = $m->{to};
-        if ( $str->[$p] eq ':' ) {
-            # looks like "LABEL:"
-        }
-        elsif (
+        if (
             !(
                 exists( $Perlito5::PROTO->{$effective_name} )
                 || (
