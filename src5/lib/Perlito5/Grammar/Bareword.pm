@@ -614,15 +614,6 @@ sub term_bareword {
         $arg = Perlito5::Grammar::Expression::expand_list( $arg );
 
         if ( $namespace eq '' || $namespace eq 'CORE' ) {
-            if ( $name eq 'print' || $name eq 'say' ) {
-                if (@$arg == 0) {
-                    push @$arg, Perlito5::AST::Var->new(
-                                                namespace => '',
-                                                name      => '_',
-                                                sigil     => '$'
-                                            );
-                }
-            }
             if ( $name eq 'split' ) {
                 if (@$arg == 0) {
                     push @$arg, Perlito5::AST::Buf->new( buf => ' ' );
@@ -690,21 +681,6 @@ sub term_bareword {
     }
 
     if ( $namespace eq '' || $namespace eq 'CORE' ) {
-        if ( $name eq 'print' || $name eq 'say' ) {
-            $m_name->{capture} = [ 'term', 
-                    Perlito5::AST::Apply->new(
-                        code      => $name,
-                        namespace => $namespace,
-                        arguments => [ Perlito5::AST::Var->new(
-                                            namespace => '',
-                                            name      => '_',
-                                            sigil     => '$'
-                                        ),
-                                     ],
-                    )
-                ];
-            return $m_name;
-        }
         if ( $name eq 'split' && ($namespace eq '' || $namespace eq 'CORE') ) {
             $m_name->{capture} = [ 'term', 
                     Perlito5::AST::Apply->new(

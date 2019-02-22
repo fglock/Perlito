@@ -148,48 +148,74 @@ token term_print {
             <.Perlito5::Grammar::Space::opt_ws>
             { $MATCH->{_scope} = $#Perlito5::SCOPE_STMT }
             [ <the_object>
-              <Perlito5::Grammar::Expression::list_parse>
+              <Perlito5::Grammar::Expression::list_parse> ')'
+                { 
+                    my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
+                    return if !ref($list);
+                    $MATCH->{capture} = [
+                        'term',
+                        print_ast(
+                            Perlito5::Match::flat($MATCH->{'print_decl'}),
+                            Perlito5::Match::flat($MATCH->{'the_object'}),
+                            Perlito5::Grammar::Expression::expand_list($list),
+                        ),
+                    ]
+                }
             | { # backtrack
                 $#Perlito5::SCOPE_STMT = $MATCH->{_scope};
-                return;
               }
+                <Perlito5::Grammar::Expression::list_parse> ')'
+                { 
+                    my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
+                    if ($list eq "*undef*") {
+                        $list = Perlito5::AST::Var::SCALAR_ARG();
+                    }
+                    $MATCH->{capture} = [
+                        'term',
+                        print_ast(
+                            Perlito5::Match::flat($MATCH->{'print_decl'}),
+                            undef,
+                            Perlito5::Grammar::Expression::expand_list($list),
+                        ),
+                    ];
+                }
             ]
-        ')'
-
-        { 
-            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
-            return if !ref($list);
-            $MATCH->{capture} = [
-                'term',
-                print_ast(
-                    Perlito5::Match::flat($MATCH->{'print_decl'}),
-                    Perlito5::Match::flat($MATCH->{'the_object'}),
-                    Perlito5::Grammar::Expression::expand_list($list),
-                ),
-            ]
-        }
     |
+        <!before '=>' >
         { $MATCH->{_scope} = $#Perlito5::SCOPE_STMT }
         [ <the_object>
           <Perlito5::Grammar::Expression::list_parse>
+            { 
+                my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
+                return if !ref($list);
+                $MATCH->{capture} = [
+                    'term',
+                    print_ast(
+                        Perlito5::Match::flat($MATCH->{'print_decl'}),
+                        Perlito5::Match::flat($MATCH->{'the_object'}),
+                        Perlito5::Grammar::Expression::expand_list($list),
+                    ),
+                ]
+            }
         | { # backtrack
             $#Perlito5::SCOPE_STMT = $MATCH->{_scope};
-            return;
           }
+            <Perlito5::Grammar::Expression::list_parse>
+            { 
+                my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
+                if ($list eq "*undef*") {
+                    $list = Perlito5::AST::Var::SCALAR_ARG();
+                }
+                $MATCH->{capture} = [
+                    'term',
+                    print_ast(
+                        Perlito5::Match::flat($MATCH->{'print_decl'}),
+                        undef,
+                        Perlito5::Grammar::Expression::expand_list($list),
+                    ),
+                ];
+            }
         ]
-
-        { 
-            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
-            return if !ref($list);
-            $MATCH->{capture} = [
-                'term',
-                print_ast(
-                    Perlito5::Match::flat($MATCH->{'print_decl'}),
-                    Perlito5::Match::flat($MATCH->{'the_object'}),
-                    Perlito5::Grammar::Expression::expand_list($list),
-                ),
-            ]
-        }
     ]
 };
 
