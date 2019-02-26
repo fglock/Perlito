@@ -46,6 +46,13 @@ our %BEGIN_SCRATCHPAD = ();   # list of "my" variables captured in BEGIN blocks
 our $PROTO           = {};
 our %VARS            = ();    # implements "use vars"
 
+sub init_proto {
+    $PROTO = {};
+    # These pseudo-subroutines are "predeclared"
+    $PROTO->{"Java::inline"} = undef;
+    $PROTO->{"JS::inline"} = undef;
+}
+
 # $Perlito5::STRICT_* - See Perlito5X::strict.pm
 
 # the Perl-to-Java compiler uses this syntax for "annotations":

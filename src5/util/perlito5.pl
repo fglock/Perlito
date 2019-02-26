@@ -355,7 +355,7 @@ if ($backend) {
     }
 
     $Perlito5::PKG_NAME = 'main';
-    $Perlito5::PROTO    = {};
+    Perlito5::init_proto();
     Perlito5::set_global_phase("BEGIN");
 
     if ($source =~ /^#![^\n]+-(w|W)/) {

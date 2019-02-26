@@ -53,7 +53,7 @@ Perlito5::Compiler - Perl 5 compiler for Perlito5
 
     my $perl5_source = ' print "hello, World!\n" ';
     $Perlito5::PKG_NAME = 'main';
-    $Perlito5::PROTO    = {};
+    Perlito5::init_proto();
     my $ast = Perlito5::Grammar::exp_stmts($perl5_source, 0);
     my $js_source = Perlito5::AST::CompUnit::emit_javascript2_program(
         [

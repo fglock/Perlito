@@ -630,6 +630,51 @@ sub term_bareword {
         return $m_name;
     }
 
+    if (
+        !(
+            exists( $Perlito5::PROTO->{$effective_name} )
+            || (
+                ( !$namespace || $namespace eq 'CORE' )
+                && Perlito5::is_core_sub("CORE::$name")    # subroutine comes from CORE
+            )
+        )
+      )
+    {
+        # subroutine was not predeclared
+        # print STDERR "effective_name [$effective_name]\n";
+
+        if ( $^H & $Perlito5::STRICT_SUBS ) {
+            # Allow:
+            #   - close FILE
+            #   - next LABEL / goto LABEL
+            #   - predeclared named subroutines in $Perlito5::PROTO
+            #   - CORE operators                in $Perlito5::CORE_PROTO
+            #   - subr LABEL                    if prototype(&subr) eq '*'
+
+            # TODO
+
+            # Perlito5::Compiler::error( 'Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
+        }
+
+        $m_name->{capture} = [
+            'postfix_or_term',
+            'funcall_no_params',
+            Perlito5::AST::Apply->new(
+                code      => $name,
+                namespace => $namespace,
+                arguments => [],
+                bareword  => 1,
+                _not_a_subroutine => 1,
+            )
+        ];
+
+        # warn "Bareword ", Perlito5::Dumper::Dumper($m_name->{capture});
+        # my $bareword = join("", @{$str}[ $pos .. $pos+20 ] );
+        # warn "[ $bareword ]\n";
+
+        return $m_name;
+    }
+
     my $m_list = Perlito5::Grammar::Expression::list_parse( $str, $p );
     my $list = $m_list->{capture};
     if ($list ne '*undef*') {
@@ -662,49 +707,6 @@ sub term_bareword {
             ];
         $m_name->{to} = $m_list->{to};
         return $m_name;
-    }
-
-    # it's just a bareword - we will disambiguate later
-
-    if ( $^H & $Perlito5::STRICT_SUBS ) {
-        # Allow:
-        #   - close FILE
-        #   - next LABEL / goto LABEL
-        #   - predeclared named subroutines in $Perlito5::PROTO
-        #   - CORE operators                in $Perlito5::CORE_PROTO
-        #   - subr LABEL                    if prototype(&subr) eq '*'
-
-        if (
-            !(
-                exists( $Perlito5::PROTO->{$effective_name} )
-                || (
-                    ( !$namespace || $namespace eq 'CORE' )
-                    && Perlito5::is_core_sub("CORE::$name")    # subroutine comes from CORE
-                )
-            )
-          )
-        {
-            # TODO
-
-            # subroutine was not predeclared
-            # print STDERR "effective_name [$effective_name]\n";
-            # Perlito5::Compiler::error( 'HERE2 Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
-            # warn( 'HERE2 Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use' );
-
-            $m_name->{capture} = [
-                'postfix_or_term',
-                'funcall_no_params',
-                Perlito5::AST::Apply->new(
-                    code      => $name,
-                    namespace => $namespace,
-                    arguments => [],
-                    bareword  => 1,
-                    _not_a_subroutine => 1,
-                )
-            ];
-            return $m_name;
-
-        }
     }
 
     $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',

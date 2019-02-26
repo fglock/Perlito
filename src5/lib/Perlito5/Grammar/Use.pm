@@ -348,6 +348,8 @@ sub bootstrapping_use {
 
     my $module_name = $stmt->{mod};
 
+    $^H{feature_say} = 1 if $module_name eq "feature";  # bootstrap-time "use feature 'say'"
+
     my $filename = modulename_to_filename($module_name);
 
     return 

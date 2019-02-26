@@ -19,7 +19,7 @@ Perlito5 - a Perl5 compiler
 
     my $perl5_source = ' print "hello, World!\n" ';
     $Perlito5::PKG_NAME = 'main';
-    $Perlito5::PROTO    = {};
+    Perlito5::init_proto();
     my $ast = Perlito5::Grammar::exp_stmts($perl5_source, 0);
     print "Syntax Tree:\n";
     print Dumper Perlito5::Match::flat($ast);
