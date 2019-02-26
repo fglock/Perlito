@@ -612,22 +612,6 @@ sub term_bareword {
 
         my $arg = $m->{capture}[2];
         $arg = Perlito5::Grammar::Expression::expand_list( $arg );
-
-        if ( $namespace eq '' || $namespace eq 'CORE' ) {
-            if ( $name eq 'split' ) {
-                if (@$arg == 0) {
-                    push @$arg, Perlito5::AST::Buf->new( buf => ' ' );
-                }
-                if (@$arg == 1) {
-                    push @$arg, Perlito5::AST::Var->new(
-                                                namespace => '',
-                                                name      => '_',
-                                                sigil     => '$'
-                                            );
-                }
-            }
-        }
-
         $m->{capture} = [ 'term', 
                 Perlito5::AST::Apply->new(
                     code      => $name,
@@ -678,26 +662,6 @@ sub term_bareword {
             ];
         $m_name->{to} = $m_list->{to};
         return $m_name;
-    }
-
-    if ( $namespace eq '' || $namespace eq 'CORE' ) {
-        if ( $name eq 'split' && ($namespace eq '' || $namespace eq 'CORE') ) {
-            $m_name->{capture} = [ 'term', 
-                    Perlito5::AST::Apply->new(
-                        code      => $name,
-                        namespace => $namespace,
-                        arguments => [ 
-                                       Perlito5::AST::Buf->new( buf => ' ' ),
-                                       Perlito5::AST::Var->new(
-                                            namespace => '',
-                                            name      => '_',
-                                            sigil     => '$'
-                                        ),
-                                     ],
-                    )
-                ];
-            return $m_name;
-        }
     }
 
     # it's just a bareword - we will disambiguate later

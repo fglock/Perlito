@@ -391,6 +391,57 @@ token term_scalar {
     ]
 };
 
+token term_split {
+    'split' <.Perlito5::Grammar::Space::opt_ws> 
+    [
+        '('  <paren_parse>   ')'
+        {
+            my $args = Perlito5::Match::flat($MATCH->{paren_parse});
+            my @arguments = @{expand_list($args)};
+            if (@arguments < 1) {
+                push @arguments, Perlito5::AST::Buf->new(buf => " ");
+            }
+            if (@arguments < 2) {
+                push @arguments, Perlito5::AST::Var::SCALAR_ARG();
+            }
+            if (@arguments < 3) {
+                push @arguments, Perlito5::AST::Int->new(int => 0);
+            }
+            $MATCH->{capture} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code      => 'split',
+                    arguments => \@arguments,
+                    namespace => '',
+                    bareword  => 0,
+                 )
+               ]
+        }
+    |
+        <list_parse>
+        {
+            my $args = Perlito5::Match::flat($MATCH->{list_parse});
+            my @arguments = @{expand_list($args)};
+            if (@arguments < 1) {
+                push @arguments, Perlito5::AST::Buf->new(buf => " ");
+            }
+            if (@arguments < 2) {
+                push @arguments, Perlito5::AST::Var::SCALAR_ARG();
+            }
+            if (@arguments < 3) {
+                push @arguments, Perlito5::AST::Int->new(int => 0);
+            }
+            $MATCH->{capture} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code      => 'split',
+                    arguments => \@arguments,
+                    namespace => '',
+                    bareword  => 0,
+                 )
+               ]
+        }
+    ]
+};
+
 
 token unary_op {
      'shift' | 'pop'
@@ -531,6 +582,7 @@ Perlito5::Grammar::Precedence::add_term( 'shift'  => \&term_unary );
 Perlito5::Grammar::Precedence::add_term( 'pop'    => \&term_unary );
 Perlito5::Grammar::Precedence::add_term( 'scalar' => \&term_scalar );
 Perlito5::Grammar::Precedence::add_term( 'not'    => \&term_not );
+Perlito5::Grammar::Precedence::add_term( 'split'  => \&term_split );
 
 Perlito5::Grammar::Precedence::add_term( $_ => \&term_file_test )
     for qw( -r -w -x -o -R -W -X -O -e -z -s -f -d -l -p -S -b -c -t -u -g -k -T -B -M -A -C );
