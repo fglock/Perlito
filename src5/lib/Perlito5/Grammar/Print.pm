@@ -181,7 +181,7 @@ token term_print {
                 }
             ]
     |
-        <!before '=>' >
+        <!before '=>' | ':' >
         { $MATCH->{_scope} = $#Perlito5::SCOPE_STMT }
         [ <the_object>
           <Perlito5::Grammar::Expression::list_parse>
