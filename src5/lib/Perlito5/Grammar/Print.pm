@@ -143,6 +143,10 @@ sub print_ast {
 token term_print {
     <print_decl> 
     <.Perlito5::Grammar::Space::opt_ws>
+    {
+        # no feature "say"
+        return if Perlito5::Match::flat($MATCH->{'print_decl'}) eq "say" && !$^H{feature_say};
+    }
     [
         '('
             <.Perlito5::Grammar::Space::opt_ws>
