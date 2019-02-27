@@ -1503,4 +1503,9 @@ sub is_deeply {
     1;
 }
 
+sub subtest {
+    my ($title, $code) = @_;
+    _print( "subtest $title\n" );
+}
+
 1;
