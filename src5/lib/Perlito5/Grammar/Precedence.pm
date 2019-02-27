@@ -105,7 +105,7 @@ sub op_parse {
             my $c1 = $str->[$pos + $len - 1];
             my $c2 = $str->[$pos + $len];
             if (   (  !($Perlito5::Grammar::is_ident_middle{$c1} && $Perlito5::Grammar::is_ident_middle{$c2})   # "and" can't be followed by "_"
-                   && !($c1 eq '&' && $c2 eq '&')                       # "&" can't be followed by "&"
+                   ## && !($c1 eq '&' && $c2 eq '&')                       # "&" can't be followed by "&"
                    ) 
                 || (  $c1 eq 'x' && $c2 ge '0' && $c2 le '9'            # "x3" is ok, parses as "x 3"
                    )
