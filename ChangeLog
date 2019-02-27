@@ -5,6 +5,7 @@ Dev Version:
 -- fix: `(,)` is a syntax error
 -- add core module POSIX with floor(), ceil(), and most of strftime()
 -- add non-core module Mo.pm
+-- add lib.pm
 
 - Java:
 -- named capture in regex accepts duplicate names
