@@ -33,7 +33,7 @@ sub import {
     Exporter::import($class);
 }
 
-$Level = 1;
+our $Level = 1;
 our $test = 1;
 my $planned;
 my $noplan;
@@ -1512,6 +1512,7 @@ sub subtest {
         local $tab = "$tab    ";
         local $test = 1;
         $code->();
+        _print "1..", ($test-1), "\n";
     }
     ok(1, $title);
 }
