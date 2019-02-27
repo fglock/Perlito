@@ -1508,4 +1508,8 @@ sub subtest {
     _print( "subtest $title\n" );
 }
 
+sub BAIL_OUT {
+    exit(255);
+}
+
 1;
