@@ -34,7 +34,7 @@ sub import {
 }
 
 $Level = 1;
-my $test = 1;
+our $test = 1;
 my $planned;
 my $noplan;
 my $Perl;       # Safer version of $^X set by which_perl()
@@ -47,18 +47,20 @@ $TODO = 0;
 $NO_ENDING = 0;
 $Tests_Are_Passing = 1;
 
+our $tab = "";
+
 # Use this instead of print to avoid interference while testing globals.
 sub _print {
     local($\, $", $,) = (undef, ' ', '');
     # WORKAROUND - lack of STDOUT
-    print @_;
+    print $tab, @_;
     ##print STDOUT @_;
 }
 
 sub _print_stderr {
     local($\, $", $,) = (undef, ' ', '');
     # WORKAROUND - lack of STDERR
-    print @_;
+    print $tab, @_;
 }
 
 sub plan {
@@ -195,7 +197,7 @@ sub _ok {
 	$Tests_Are_Passing = 0 unless $pass;
     }
 
-    print "$out\n";
+    _print "$out\n";
 
     if ($pass) {
     #note @mess; # Ensure that the message is properly escaped.
@@ -1505,7 +1507,13 @@ sub is_deeply {
 
 sub subtest {
     my ($title, $code) = @_;
-    _print( "subtest $title\n" );
+    _print( "# Subtest: $title\n" );
+    {
+        local $tab = "$tab    ";
+        local $test = 1;
+        $code->();
+    }
+    ok(1, $title);
 }
 
 sub BAIL_OUT {
