@@ -52,15 +52,14 @@ our $tab = "";
 # Use this instead of print to avoid interference while testing globals.
 sub _print {
     local($\, $", $,) = (undef, ' ', '');
-    # WORKAROUND - lack of STDOUT
+    return unless @_;
     print $tab, @_;
-    ##print STDOUT @_;
 }
 
 sub _print_stderr {
     local($\, $", $,) = (undef, ' ', '');
-    # WORKAROUND - lack of STDERR
-    print $tab, @_;
+    return unless @_;
+    print STDERR $tab, @_;
 }
 
 sub plan {
