@@ -5,6 +5,8 @@ package Test::More;
 # has mappings native_to_latin1 and latin1_to_native so that fewer tests
 # on non ASCII-ish platforms need to be skipped
 
+use Perlito5::Compare;
+
 use Exporter;
 @ISA = qw(Exporter);
 our @EXPORT = qw(ok use_ok require_ok
@@ -1499,9 +1501,7 @@ sub warning_like {
 
 sub is_deeply {
     my ($obj1, $obj2, @mess) = @_;
-    local $TODO = "is_deeply() not implemented";
-    ok(0, @mess);
-    1;
+    ok( Perlito5::Compare::compare($obj1, $obj2), @mess );
 }
 
 sub subtest {
