@@ -14,7 +14,9 @@ sub _compare {
 
     my $ref1 = ref($obj1);
     my $ref2 = ref($obj2);
-    return ($obj1 eq $obj2 ? 1 : 0) if !ref1 && !$ref2;
+
+    return ($obj1 eq $obj2 ? 1 : 0) if !$ref1 && !$ref2;
+
     return 0 if $ref1 ne $ref2;
 
     if ( $ref1 eq 'ARRAY' ) {
