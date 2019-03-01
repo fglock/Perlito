@@ -1287,6 +1287,10 @@ package Perlito5::AST::Apply;
             return '(' . $self->{code}->emit_javascript2( $level ) . ')([' . join(',', @args) . '])';
         }
 
+        if ($self->{_not_a_subroutine}) {
+            return Perlito5::JavaScript2::escape_string($code);
+        }
+
         return $emit_js{$code}->($self, $level, $wantarray)
             if exists $emit_js{$code};
 
