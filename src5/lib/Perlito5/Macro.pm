@@ -211,7 +211,6 @@ sub op_auto {
 {
 package Perlito5::AST::Sub;
 use strict;
-use feature 'say';
 use Perlito5::TreeGrammar;
 # Transformation for implementing state variables (perldoc -f state) by
 # enclosing the sub in a do block, which in turn contains lexical variables

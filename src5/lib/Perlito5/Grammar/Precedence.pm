@@ -1,7 +1,6 @@
 
 package Perlito5::Grammar::Precedence;
 
-use feature 'say';
 use strict;
 
 my $Operator         = {};
@@ -353,7 +352,7 @@ sub precedence_parse {
     while (scalar(@$op_stack)) {
         Perlito5::Grammar::Expression::reduce_to_ast($op_stack, $num_stack);
     }
-    # say "# precedence return";
+    # print "# precedence return\n";
     $End_token = $last_end_token;  # restore previous 'end token' context
     $End_token_chars = $last_end_token_chars;  # restore previous 'end token' context
     return $num_stack;

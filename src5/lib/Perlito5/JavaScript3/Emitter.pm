@@ -2,7 +2,6 @@ use v5;
 
 use Perlito5::AST;
 use Perlito5::Dumper;
-use feature 'say';
 
 package Perlito5::JavaScript3;
 {
@@ -1574,10 +1573,10 @@ package Perlito5::AST::Apply;
                 # eval string
 
                 my $var_env_perl5 = Perlito5::Dumper::ast_dumper( [] );
-                # say "at eval: ", $var_env_perl5;
+                # print "at eval: ", $var_env_perl5, "\n";
                 my $m = Perlito5::Grammar::Expression::term_square( $var_env_perl5, 0 );
                 $m = Perlito5::Grammar::Expression::expand_list( Perlito5::Match::flat($m)->[2] );
-                # say Perlito5::Dumper::ast_dumper( $m );
+                # print Perlito5::Dumper::ast_dumper( $m ), "\n";
                 my $var_env_js = '(new p5ArrayRef(new p5Array(' . Perlito5::JavaScript3::to_list($m) . ')))';
                 $eval ='eval(perl5_to_js(' 
                             . Perlito5::JavaScript3::to_str($arg) . ", "
