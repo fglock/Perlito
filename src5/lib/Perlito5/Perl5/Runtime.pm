@@ -17,10 +17,6 @@ sub eval_ast {
 
 sub emit_perl5 {
     return <<'EOT';
-
-use v5.10;
-use feature 'say';
-
 EOT
 }
 
