@@ -9,7 +9,6 @@ sub Perlito5::eval_string { eval shift() }
 
 
 package Perlito5;
-use feature 'say';
 use strict;
 use warnings;
 
@@ -239,23 +238,23 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
     }
     elsif ($ARGV[0] eq '-V') {
         $backend = '';
-        say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+        print $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION, "\n";
         if ($ENV{PERL5LIB}) {
-            say '  %ENV:';
-            say qq{    PERL5LIB="$ENV{PERL5LIB}"};
+            print '  %ENV:', "\n";
+            print qq{    PERL5LIB="$ENV{PERL5LIB}"}, "\n";
         }
-        say '  @INC:';
-        say qq{    $_} for @INC;
+        print '  @INC:', "\n";
+        print qq{    $_}, "\n" for @INC;
         shift @ARGV;
     }
     elsif ($ARGV[0] eq '-v' || $ARGV[0] eq '--version') {
         $backend = '';
-        say $copyright_message;
+        print $copyright_message, "\n";
         shift @ARGV;
     }
     elsif ($ARGV[0] eq '-h' || $ARGV[0] eq '--help' || !@ARGV) {
         $backend = '';
-        say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION, $help_message;
+        print $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION, $help_message, "\n";
         shift @ARGV;
     }
     elsif ($ARGV[0] eq '--expand_use') {
@@ -547,7 +546,7 @@ elsif ($backend) {
 
                 if ($compile_only) {
                     # -c switch
-                    say $Perlito5::FILE_NAME . " syntax OK";
+                    print $Perlito5::FILE_NAME . " syntax OK\n";
                 }
                 # elsif ($backend eq 'eval') {
                 #     my $block =
@@ -571,7 +570,7 @@ elsif ($backend) {
                 }
                 elsif ($backend eq 'perl6') {
                     if ($boilerplate) {
-                        say "use v6;";
+                        print "use v6;\n";
                     }
                     if (!$boilerplate) {
                         # remove 'package main'
@@ -603,17 +602,17 @@ elsif ($backend) {
                     print Perlito5::AST::CompUnit::emit_java_program( $comp_units, expand_use => $expand_use );
                 }
                 elsif ($backend eq 'ast-perl5' || $backend eq 'ast') {
-                    say Perlito5::Dumper::ast_dumper( $comp_units );
+                    print Perlito5::Dumper::ast_dumper( $comp_units ), "\n";
                 }
                 elsif ($backend eq 'ast-json') {
-                    say Perlito5::JSON::ast_dumper( $comp_units );
+                    print Perlito5::JSON::ast_dumper( $comp_units ), "\n";
                 }
                 elsif ($backend eq 'ast-pretty') {
                     eval 'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1';
                     print $@;
                 }
                 elsif ($backend eq '_comp') {
-                    say Perlito5::Dumper::ast_dumper( \@Perlito5::BASE_SCOPE );
+                    print Perlito5::Dumper::ast_dumper( \@Perlito5::BASE_SCOPE ), "\n";
                 }
                 else {
                     die "don't know what to do with backend '$backend'";
