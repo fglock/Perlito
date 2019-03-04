@@ -1288,6 +1288,9 @@ package Perlito5::AST::Apply;
         }
 
         if ($self->{_not_a_subroutine}) {
+            if ($self->{namespace}) {
+                return Perlito5::JavaScript2::escape_string($self->{namespace} . "::" . $code);
+            }
             return Perlito5::JavaScript2::escape_string($code);
         }
 
