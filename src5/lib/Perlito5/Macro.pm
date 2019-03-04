@@ -677,9 +677,9 @@ sub split_code_too_large {
     # for my $stmt (@stmts) {
     #     split_deep_if($stmt);   # find deep nested ifs
     # }
-    while (@stmts > 20) {
+    while (@stmts > 40) {
         # print STDERR "Code too large, split ", scalar(@stmts), " nodes\n";
-        my @do = splice(@stmts, -15, 15);
+        my @do = splice(@stmts, -25, 25);
         push @stmts,
             Perlito5::AST::Apply->new(
                 'arguments' => [
