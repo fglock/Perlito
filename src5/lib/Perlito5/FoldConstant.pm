@@ -58,6 +58,26 @@ sub fold_constant {
                 return Perlito5::AST::Apply->UNDEF();
             }
         }
+        if ($self->{code} eq 'infix:<&&>') {
+            my $arg0 = fold_constant($self->{arguments}[0]);
+            my $arg1 = fold_constant($self->{arguments}[1]);
+            if (is_constant($arg0)) {
+                if ($arg0->value) {
+                    return $arg1;
+                }
+                return Perlito5::AST::Apply->UNDEF();
+            }
+        }
+        if ($self->{code} eq 'infix:<||>') {
+            my $arg0 = fold_constant($self->{arguments}[0]);
+            my $arg1 = fold_constant($self->{arguments}[1]);
+            if (is_constant($arg0)) {
+                if ($arg0->value) {
+                    return $arg0;
+                }
+                return $arg1;
+            }
+        }
 
         if (my $const = $Perlito5::CONSTANT{ $self->{namespace} . '::' . $self->{code} }) {
             return $const;
