@@ -31,7 +31,7 @@ token unless {
     |
         {
             $MATCH->{capture} = Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
+                cond      => Perlito5::FoldConstant::fold_constant(Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2]),
                 body      => Perlito5::AST::Block->new(stmts => [ ]),
                 otherwise => Perlito5::Match::flat($MATCH->{block}),
              )
@@ -68,7 +68,7 @@ token if_ {
     |
         {
             $MATCH->{capture} = Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
+                cond      => Perlito5::FoldConstant::fold_constant(Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2]),
                 body      => Perlito5::Match::flat($MATCH->{block}),
                 otherwise => Perlito5::AST::Block->new(stmts => [ ]),
              )
