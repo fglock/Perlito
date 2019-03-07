@@ -3,6 +3,7 @@
 use v5;
 
 package Perlito5;
+use feature ();
 use Perlito5;
 use Perlito5::Compiler;
 use Perlito5::Grammar::Regex6;
