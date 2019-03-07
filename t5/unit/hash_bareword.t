@@ -21,19 +21,19 @@ my %h = (
 
 $v = $ARGV[0];
 print "not " if $v ne "yy";
-print "ok 1 - shift  # $v\n";
+print "ok 1 - shift is bareword # $v\n";
 
 $v = $h{ +shift };
 print "not " if $v ne "444";
-print "ok 2 - +shift  # $v\n";
+print "ok 2 - +shift is not bareword # $v\n";
 
 $v = $h{-shift};
 print "not " if $v ne "203";
-print "ok 3 - -shift  # $v\n";
+print "ok 3 - -shift is bareword # $v\n";
 
 $v = $h{shift};
 print "not " if $v ne "789";
-print "ok 4 - shift  # $v\n";
+print "ok 4 - shift is bareword # $v\n";
 
 @ARGV = ( "yy", "zz" );
 my %j = ( yy => 777, zz => 888, );
@@ -46,11 +46,11 @@ $j{-shift}   = 608;
 
 $v = $ARGV[0];
 print "not " if $v ne "zz";
-print "ok 5 - shift  # $v\n";
+print "ok 5 - +shift is not bareword # $v\n";
 
 $v = $j{ +shift };
 print "not " if $v ne "888";
-print "ok 6 - +shift  # $v\n";
+print "ok 6 - +shift is not bareword # $v\n";
 
 @ARGV = ( "yy", "zz" );
 my %h = (
@@ -70,7 +70,7 @@ print "ok 7 - shift  # $v\n";
 
 $v = $h{ +shift };
 print "not " if $v ne "444";
-print "ok 8 - +shift  # $v\n";
+print "ok 8 - +shift is not bareword # $v\n";
 
 $v = $h{-shift};
 print "not " if $v ne "203";
@@ -78,13 +78,13 @@ print "ok 9 - -shift  # $v\n";
 
 $v = $h{'shift'};
 print "not " if $v ne "101";
-print "ok 10 - +shift  # $v\n";
+print "ok 10 - +shift is bareword before '=>' # $v\n";
 
 $v = $h{'+shift'};
 print "not " if $v ne "678";
-print "ok 11 - +shift  # $v\n";
+print "ok 11 - +shift as string # $v\n";
 
 $v = $h{'-shift'};
 print "not " if $v ne "203";
-print "ok 12 - -shift  # $v\n";
+print "ok 12 - -shift as string # $v\n";
 
