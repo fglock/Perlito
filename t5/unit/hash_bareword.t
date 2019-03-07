@@ -1,7 +1,7 @@
 
 # use Data::Dumper;
 
-print "1..12\n";
+print "1..18\n";
 
 my $v;
 
@@ -87,4 +87,47 @@ print "ok 11 - +shift as string # $v\n";
 $v = $h{'-shift'};
 print "not " if $v ne "203";
 print "ok 12 - -shift as string # $v\n";
+
+@ARGV = ( "yy", "zz", "aa", "bb", "cc" );
+my %h = (
+    yy       => 444,
+    zz       => 555,
+    aa       => 665,
+    bb       => 774,
+    cc       => 883,
+    '+CORE::shift' => 678,
+    '-CORE::shift' => 912,
+    +CORE::shift   => 101,
+    -CORE::shift   => 203,
+    'CORE::shift'  => 404,
+    '-aa'     => 123,
+    '-bb'     => 456,
+    '-cc'     => 789,
+);
+# use Data::Dumper;
+# print STDERR Dumper \%h;
+
+$v = $ARGV[0];
+print "not " if $v ne "aa";
+print "ok 13 - CORE::shift  # $v\n";
+
+$v = $h{ +CORE::shift };
+print "not " if $v ne "665";
+print "ok 14 - +CORE::shift is not bareword # $v\n";
+
+$v = $h{-CORE::shift};
+print "not " if $v ne "456";
+print "ok 15 - -CORE::shift  # $v\n";
+
+$v = $h{'CORE::shift'};
+print "not " if $v ne "404";
+print "ok 16 - +CORE::shift is bareword before '=>' # $v\n";
+
+$v = $h{'+CORE::shift'};
+print "not " if $v ne "678";
+print "ok 17 - +CORE::shift as string # $v\n";
+
+$v = $h{'-CORE::shift'};
+print "not " if $v ne "912";
+print "ok 18 - -CORE::shift as string # $v\n";
 
