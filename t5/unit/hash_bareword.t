@@ -21,19 +21,19 @@ my %h = (
 
 $v = $ARGV[0];
 print "not " if $v ne "yy";
-print "ok 1 - shift is bareword # $v\n";
+print "ok 1 - shift is bareword when used as key in hash constructor # $v\n";
 
 $v = $h{ +shift };
 print "not " if $v ne "444";
-print "ok 2 - +shift is not bareword # $v\n";
+print "ok 2 - +shift is not bareword when used as hash index # $v\n";
 
 $v = $h{-shift};
 print "not " if $v ne "203";
-print "ok 3 - -shift is bareword # $v\n";
+print "ok 3 - -shift is bareword when used as hash index # $v\n";
 
 $v = $h{shift};
 print "not " if $v ne "789";
-print "ok 4 - shift is bareword # $v\n";
+print "ok 4 - shift is bareword when used as hash index # $v\n";
 
 @ARGV = ( "yy", "zz" );
 my %j = ( yy => 777, zz => 888, );
@@ -46,11 +46,11 @@ $j{-shift}   = 608;
 
 $v = $ARGV[0];
 print "not " if $v ne "zz";
-print "ok 5 - +shift is not bareword # $v\n";
+print "ok 5 - +shift is not bareword when used as hash index # $v\n";
 
 $v = $j{ +shift };
 print "not " if $v ne "888";
-print "ok 6 - +shift is not bareword # $v\n";
+print "ok 6 - +shift is not bareword when used as hash index # $v\n";
 
 @ARGV = ( "yy", "zz" );
 my %h = (
