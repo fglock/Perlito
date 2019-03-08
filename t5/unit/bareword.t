@@ -1,5 +1,5 @@
 
-print "1..7\n";
+print "1..8\n";
 
 my $v;
 
@@ -30,4 +30,8 @@ print "ok 6 - bareword with double colon # $v\n";
 $v = this . -that;
 print "not " if $v ne "this-that";
 print "ok 7 - bareword with dash # $v\n";
+ 
+$v = this . +that;
+print "not " if $v ne "thisthat";
+print "ok 8 - bareword with plus # $v\n";
  
