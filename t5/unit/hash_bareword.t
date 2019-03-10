@@ -1,105 +1,89 @@
 
 # use Data::Dumper;
 
-print "1..18\n";
+print "1..14\n";
 
 my $v;
 
-@ARGV = ( "yy", "zz" );
 my %h = (
     aa       => 123,
     bb       => 456,
-    shift    => 789,
+    foo    => 789,
     'pop'    => 910,
-    '+shift' => 101,
-    '-shift' => 203,
+    '+foo' => 101,
+    '-foo' => 203,
     time     => 305,
     yy       => 444,
 );
 
 # print STDERR Dumper \%h;
 
-$v = $ARGV[0];
-print "not " if $v ne "yy";
-print "ok 1 - shift is bareword when used as key in hash constructor # $v\n";
-
-$v = $h{ +shift };
-print "not " if $v ne "444";
-print "ok 2 - +shift is not bareword when used as hash index # $v\n";
-
-$v = $h{-shift};
-print "not " if $v ne "203";
-print "ok 3 - -shift is bareword when used as hash index # $v\n";
-
-$v = $h{shift};
+$v = $h{ +foo };
 print "not " if $v ne "789";
-print "ok 4 - shift is bareword when used as hash index # $v\n";
+print "ok 1 - +foo is not bareword when used as hash index # $v\n";
 
-@ARGV = ( "yy", "zz" );
+$v = $h{-foo};
+print "not " if $v ne "203";
+print "ok 2 - -foo is bareword when used as hash index # $v\n";
+
+$v = $h{foo};
+print "not " if $v ne "789";
+print "ok 3 - foo is bareword when used as hash index # $v\n";
+
 my %j = ( yy => 777, zz => 888, );
 $j{time}     = 305;
-$j{shift}    = 406;
-$j{ +shift } = 507;
-$j{-shift}   = 608;
+$j{foo}    = 406;
+$j{ +foo } = 507;
+$j{-foo}   = 608;
 
 # print STDERR Dumper \%j;
 
-$v = $ARGV[0];
-print "not " if $v ne "zz";
-print "ok 5 - +shift is not bareword when used as hash index # $v\n";
+$v = $j{ +foo };
+print "not " if $v ne "507";
+print "ok 4 - +foo is not bareword when used as hash index # $v\n";
 
-$v = $j{ +shift };
-print "not " if $v ne "888";
-print "ok 6 - +shift is not bareword when used as hash index # $v\n";
-
-@ARGV = ( "yy", "zz" );
 my %h = (
     yy       => 444,
     zz       => 555,
-    '+shift' => 678,
-    '-shift' => 912,
-    +shift   => 101,
-    -shift   => 203,
+    '+foo' => 678,
+    '-foo' => 912,
+    +foo   => 101,
+    -foo   => 203,
 );
 # use Data::Dumper;
 # print STDERR Dumper \%h;
 
-$v = $ARGV[0];
-print "not " if $v ne "yy";
-print "ok 7 - shift  # $v\n";
-
-$v = $h{ +shift };
-print "not " if $v ne "444";
-print "ok 8 - +shift is not bareword # $v\n";
-
-$v = $h{-shift};
-print "not " if $v ne "203";
-print "ok 9 - -shift  # $v\n";
-
-$v = $h{'shift'};
+$v = $h{ +foo };
 print "not " if $v ne "101";
-print "ok 10 - +shift is bareword before '=>' # $v\n";
+print "ok 5 - +foo is not bareword # $v\n";
 
-$v = $h{'+shift'};
-print "not " if $v ne "678";
-print "ok 11 - +shift as string # $v\n";
-
-$v = $h{'-shift'};
+$v = $h{-foo};
 print "not " if $v ne "203";
-print "ok 12 - -shift as string # $v\n";
+print "ok 6 - -foo  # $v\n";
 
-@ARGV = ( "yy", "zz", "aa", "bb", "cc" );
+$v = $h{'foo'};
+print "not " if $v ne "101";
+print "ok 7 - +foo is bareword before '=>' # $v\n";
+
+$v = $h{'+foo'};
+print "not " if $v ne "678";
+print "ok 8 - +foo as string # $v\n";
+
+$v = $h{'-foo'};
+print "not " if $v ne "203";
+print "ok 9 - -foo as string # $v\n";
+
 my %h = (
     yy       => 444,
     zz       => 555,
     aa       => 665,
     bb       => 774,
     cc       => 883,
-    '+CORE::shift' => 678,
-    '-CORE::shift' => 912,
-    +CORE::shift   => 101,
-    -CORE::shift   => 203,
-    'CORE::shift'  => 404,
+    '+Baz::foo' => 678,
+    '-Baz::foo' => 912,
+    +Baz::foo   => 101,
+    -Baz::foo   => 203,
+    'Baz::foo'  => 404,
     '-aa'     => 123,
     '-bb'     => 456,
     '-cc'     => 789,
@@ -107,27 +91,23 @@ my %h = (
 # use Data::Dumper;
 # print STDERR Dumper \%h;
 
-$v = $ARGV[0];
-print "not " if $v ne "aa";
-print "ok 13 - CORE::shift  # $v\n";
-
-$v = $h{ +CORE::shift };
-print "not " if $v ne "665";
-print "ok 14 - +CORE::shift is not bareword # $v\n";
-
-$v = $h{-CORE::shift};
-print "not " if $v ne "456";
-print "ok 15 - -CORE::shift  # $v\n";
-
-$v = $h{'CORE::shift'};
+$v = $h{ +Baz::foo };
 print "not " if $v ne "404";
-print "ok 16 - +CORE::shift is bareword before '=>' # $v\n";
+print "ok 10 - +Baz::foo is not bareword # $v\n";
 
-$v = $h{'+CORE::shift'};
+$v = $h{-Baz::foo};
+print "not " if $v ne "203";
+print "ok 11 - -Baz::foo  # $v\n";
+
+$v = $h{'Baz::foo'};
+print "not " if $v ne "404";
+print "ok 12 - +Baz::foo is bareword before '=>' # $v\n";
+
+$v = $h{'+Baz::foo'};
 print "not " if $v ne "678";
-print "ok 17 - +CORE::shift as string # $v\n";
+print "ok 13 - +Baz::foo as string # $v\n";
 
-$v = $h{'-CORE::shift'};
-print "not " if $v ne "912";
-print "ok 18 - -CORE::shift as string # $v\n";
+$v = $h{'-Baz::foo'};
+print "not " if $v ne "203";
+print "ok 14 - -Baz::foo as string # $v\n";
 
