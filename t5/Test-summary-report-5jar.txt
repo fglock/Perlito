@@ -56,3 +56,5 @@ t5/op/utfhash.t
 
 t5/unit/hash_bareword.t     # wip
 
+t5/unit/hash_bareword_builtin.t   # wip
+
