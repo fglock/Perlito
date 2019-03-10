@@ -58,3 +58,6 @@ t5/unit/hash_bareword.t     # wip
 
 t5/unit/hash_bareword_builtin.t   # wip
 
+t5/unit/hash_bareword_sub.t       # wip
+
+
