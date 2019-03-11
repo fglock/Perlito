@@ -101,51 +101,84 @@ sub autoquote {
     # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
     # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
 
-    if ((ref($index) eq 'Perlito5::AST::Apply')
-       && $index->{bareword}
-       )
-    {
-        my $full_name = ($index->{namespace} ? $index->{namespace} . '::' : "") . $index->{code};
-        if ( !exists $Perlito5::PROTO->{$full_name} ) {
-            return Perlito5::AST::Buf->new( buf => $full_name );
+    if (ref($index) eq 'Perlito5::AST::Apply') {
+
+        if ($index->{bareword} && !$index->{namespace}) {
+            # foo ==> "foo"
+            return Perlito5::AST::Buf->new( buf => $index->{code} );
         }
-    }
-    elsif (  (ref($index) eq 'Perlito5::AST::Apply')
-          && ($index->code eq 'prefix:<->' || $index->code eq 'prefix:<+>')
-          )
-    {
-        my $arg = $index->arguments->[0];
-        return Perlito5::AST::Apply->new(
-                    code => $index->code,
-                    namespace => $index->namespace, 
-                    arguments => [ $self->autoquote($arg) ],
+
+        elsif (  ($index->{code} eq 'prefix:<->')
+              && (ref($index->{arguments}[0]) eq 'Perlito5::AST::Apply')
+              && $index->{arguments}[0]{bareword}
+              )
+        {
+            # -foo      ==> "-foo" (foo is undeclared)
+            # -Bar::foo ==> "-Bar::foo" (foo is undeclared)
+            #             or -Bar::foo() (foo is predeclared)
+            my $name = $index->{arguments}[0]{code};
+            my $namespace = $index->{arguments}[0]{namespace};
+            $namespace = '' if defined($index->{arguments}[0]{_has_namespace}) && !$index->{arguments}[0]{_has_namespace};
+            my $full_name = ($namespace ? $namespace . '::' : "") . $name;
+            if (  exists( $Perlito5::PROTO->{$full_name} )       # subroutine was predeclared
+               || Perlito5::is_core_sub($full_name)              # subroutine comes from CORE
                )
-            if $arg;
-    }
-    elsif (  (ref($index) eq 'Perlito5::AST::Apply')
-          && ($index->code eq 'list:<,>')
-          )
-    {
-
-        my $obj = $self->obj;
-        if ($obj->{sigil} eq '@') {
-            #  @v{ $a, $b, $c }
-            return $index;
+            {
+                $index->{arguments}[0]{bareword} = 0;
+                return $index;
+            }
+            else {
+                return Perlito5::AST::Buf->new( buf => '-' . $full_name );
+            }
+        }
+        elsif (  ($index->code eq 'prefix:<+>')
+              && (ref($index->{arguments}[0]) eq 'Perlito5::AST::Apply')
+              && $index->{arguments}[0]{bareword}
+              )
+        {
+            # +foo      ==> "foo" (foo is undeclared)
+            # +Bar::foo ==> "Bar::foo" (foo is undeclared)
+            #             or Bar::foo() (foo is predeclared)
+            my $name = $index->{arguments}[0]{code};
+            my $namespace = $index->{arguments}[0]{namespace};
+            my $full_name = ($namespace ? $namespace . '::' : "") . $name;
+            if (  exists( $Perlito5::PROTO->{$full_name} )       # subroutine was predeclared
+               || Perlito5::is_core_sub($full_name)              # subroutine comes from CORE
+               || Perlito5::is_core_sub("CORE::$full_name")      # subroutine comes from CORE (implicit namespace)
+               )
+            {
+                $index->{arguments}[0]{bareword} = 0;
+                return $index;
+            }
+            else {
+                return Perlito5::AST::Buf->new( buf => $full_name );
+            }
         }
 
-        #  $v{ $a, $b, $c }
-        my $args = $index->arguments;
-        return Perlito5::AST::Apply->new(
-                    code => 'join',
-                    namespace => '', 
-                    arguments => [
-                        Perlito5::AST::Var->new( name => ';', namespace => '', sigil => '$' ),
-                        map { defined($_) ? $_
-                                          : Perlito5::AST::Buf->new( buf => '' )
-                            }
-                            @$args
-                    ],
-               );
+        elsif ($index->code eq 'list:<,>')
+        {
+
+            my $obj = $self->obj;
+            if ($obj->{sigil} eq '@') {
+                #  @v{ $a, $b, $c }
+                return $index;
+            }
+
+            #  $v{ $a, $b, $c }
+            my $args = $index->arguments;
+            return Perlito5::AST::Apply->new(
+                        code => 'join',
+                        namespace => '', 
+                        arguments => [
+                            Perlito5::AST::Var->new( name => ';', namespace => '', sigil => '$' ),
+                            map { defined($_) ? $_
+                                              : Perlito5::AST::Buf->new( buf => '' )
+                                }
+                                @$args
+                        ],
+                   );
+        }
+
     }
 
     $index;

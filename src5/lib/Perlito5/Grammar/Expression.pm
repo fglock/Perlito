@@ -9,7 +9,63 @@ sub expand_list_fat_arrow {
     # convert "=>" AST into an array of AST
     my $param_list = shift;
     if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<=>>') {
-        return grep {defined} @{$param_list->arguments};
+        my @args = @{$param_list->{arguments}};
+        if (@args) {
+
+            # autoquote before '=>'
+
+            my $index = $args[0];
+            if (ref($index) eq 'Perlito5::AST::Apply') {
+
+                if ($index->{bareword} && !$index->{namespace}) {
+                    # foo ==> "foo"
+                    $args[0] = Perlito5::AST::Buf->new( buf => $index->{code} );
+                }
+                elsif (  ($index->{code} eq 'prefix:<->')
+                      && (ref($index->{arguments}[0]) eq 'Perlito5::AST::Apply')
+                      && $index->{arguments}[0]{bareword}
+                      )
+                {
+                    # -foo      ==> "-foo" (foo is undeclared)
+                    # -Bar::foo ==> "-Bar::foo" (foo is undeclared)
+                    #             or -Bar::foo() (foo is predeclared)
+                    my $name = $index->{arguments}[0]{code};
+                    my $namespace = $index->{arguments}[0]{namespace};
+                    my $full_name = ($namespace ? $namespace . '::' : "") . $name;
+                    if (  exists( $Perlito5::PROTO->{$full_name} )       # subroutine was predeclared
+                       || Perlito5::is_core_sub($full_name)              # subroutine comes from CORE
+                       )
+                    {
+                        $index->{arguments}[0]{bareword} = 0;
+                    }
+                    else {
+                        $args[0] = Perlito5::AST::Buf->new( buf => '-' . $full_name );
+                    }
+                }
+                elsif (  ($index->code eq 'prefix:<+>')
+                      && (ref($index->{arguments}[0]) eq 'Perlito5::AST::Apply')
+                      && $index->{arguments}[0]{bareword}
+                      )
+                {
+                    # +foo      ==> "foo" (foo is undeclared)
+                    # +Bar::foo ==> "Bar::foo" (foo is undeclared)
+                    #             or Bar::foo() (foo is predeclared)
+                    my $name = $index->{arguments}[0]{code};
+                    my $namespace = $index->{arguments}[0]{namespace};
+                    my $full_name = ($namespace ? $namespace . '::' : "") . $name;
+                    if (  exists( $Perlito5::PROTO->{$full_name} )       # subroutine was predeclared
+                       || Perlito5::is_core_sub($full_name)              # subroutine comes from CORE
+                       )
+                    {
+                        $index->{arguments}[0]{bareword} = 0;
+                    }
+                    else {
+                        $args[0] = Perlito5::AST::Buf->new( buf => $full_name );
+                    }
+                }
+            }
+        }
+        return grep {defined} @args;
     }
     return $param_list;
 }

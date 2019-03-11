@@ -62,6 +62,7 @@ sub term_bareword {
     }
 
     my $full_name = $name;
+    my $has_namespace = ($namespace ? 1 : 0);
     $full_name = $namespace . '::' . $name if $namespace;
 
     # we've got a bareword
@@ -178,7 +179,8 @@ sub term_bareword {
                         code      => $name,
                         namespace => $namespace,
                         arguments => [],
-                        bareword  => 1
+                        bareword  => 1,
+                        _has_namespace => $has_namespace,
                     )
                 ];
         $m_name->{to} = $p;
@@ -260,7 +262,7 @@ sub term_bareword {
            && exists $Perlito5::CORE_OVERRIDABLE->{$name}
            && exists &{$local_name}
         ) {
-            $namespace = $$Perlito5::PKG_NAME;
+            $namespace = $Perlito5::PKG_NAME;
             $effective_name = $local_name;
             if (!exists $Perlito5::PROTO->{$local_name}) {
                 $Perlito5::PROTO->{$local_name} = prototype(&{$local_name});
@@ -382,6 +384,7 @@ sub term_bareword {
                         namespace => $namespace,
                         arguments => [],
                         bareword  => 1,
+                        _has_namespace => $has_namespace,
                     )
                 ];
             $m_name->{to} = $p;
@@ -423,7 +426,8 @@ sub term_bareword {
                         code      => $name,
                         namespace => $namespace,
                         arguments => \@args,
-                        bareword  => ($has_paren == 0)
+                        bareword  => ($has_paren == 0),
+                        _has_namespace => $has_namespace,
                     )
                 ];
             }
@@ -539,7 +543,8 @@ sub term_bareword {
                         code      => $name,
                         namespace => $namespace,
                         arguments => \@args,
-                        bareword  => ($has_paren == 0)
+                        bareword  => ($has_paren == 0),
+                        _has_namespace => $has_namespace,
                     );
             if ($name eq 'eval' && !$namespace) {
                 # add scope information to eval-string
@@ -574,7 +579,8 @@ sub term_bareword {
                         code      => $name,
                         namespace => $namespace,
                         arguments => \@args,
-                        bareword  => ($has_paren == 0)
+                        bareword  => ($has_paren == 0),
+                        _has_namespace => $has_namespace,
                     );
             $m->{capture} = [ 'term', $ast ];
             return $m;
@@ -625,7 +631,13 @@ sub term_bareword {
     elsif ( $str->[$p] eq ':' ) {
         # LABEL: ...
         $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
-                Perlito5::AST::Apply->new( code => $name, namespace => $namespace, arguments => [], bareword => 1 )
+                Perlito5::AST::Apply->new(
+                    code           => $name,
+                    namespace      => $namespace,
+                    arguments      => [],
+                    bareword       => 1,
+                    _has_namespace => $has_namespace,
+                  )
             ];
         return $m_name;
     }
@@ -665,6 +677,7 @@ sub term_bareword {
                 arguments => [],
                 bareword  => 1,
                 _not_a_subroutine => 1,
+                _has_namespace => $has_namespace,
             )
         ];
 
@@ -710,7 +723,13 @@ sub term_bareword {
     }
 
     $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
-            Perlito5::AST::Apply->new( code => $name, namespace => $namespace, arguments => [], bareword => 1 )
+            Perlito5::AST::Apply->new(
+                code           => $name,
+                namespace      => $namespace,
+                arguments      => [],
+                bareword       => 1,
+                _has_namespace => $has_namespace,
+              )
         ];
     return $m_name;
 }
