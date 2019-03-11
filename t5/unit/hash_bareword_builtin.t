@@ -1,7 +1,7 @@
 
 # use Data::Dumper;
 
-print "1..18\n";
+print "1..22\n";
 
 my $v;
 
@@ -88,6 +88,31 @@ $v = $h{'-shift'};
 print "not " if $v ne "203";
 print "ok 12 - -shift as string # $v\n";
 
+
+@ARGV = ( "yy", "zz" );
+my %h = (
+    +CORE::shift   => 101,
+);
+$v = $ARGV[0];
+print "not " if $v ne "zz";
+print "ok 13 - +CORE::shift is function call before '=>'  # $v\n";
+($v) = keys %h;
+print "not " if $v ne "yy";
+print "ok 14 - +CORE::shift is function call before '=>'  # $v\n";
+
+
+@ARGV = ( "yy", "zz" );
+my %h = (
+    -CORE::shift   => 101,
+);
+$v = $ARGV[0];
+print "not " if $v ne "zz";
+print "ok 15 - -CORE::shift is function call before '=>'  # $v\n";
+($v) = keys %h;
+print "not " if $v ne "-yy";
+print "ok 16 - -CORE::shift is function call before '=>'; concatenates '-'  # $v\n";
+
+
 @ARGV = ( "yy", "zz", "aa", "bb", "cc" );
 my %h = (
     yy       => 444,
@@ -109,25 +134,25 @@ my %h = (
 
 $v = $ARGV[0];
 print "not " if $v ne "aa";
-print "ok 13 - CORE::shift  # $v\n";
+print "ok 17 - CORE::shift  # $v\n";
 
 $v = $h{ +CORE::shift };
 print "not " if $v ne "665";
-print "ok 14 - +CORE::shift is not bareword # $v\n";
+print "ok 18 - +CORE::shift is not bareword # $v\n";
 
 $v = $h{-CORE::shift};
 print "not " if $v ne "456";
-print "ok 15 - -CORE::shift  # $v\n";
+print "ok 19 - -CORE::shift  # $v\n";
 
 $v = $h{'CORE::shift'};
 print "not " if $v ne "404";
-print "ok 16 - +CORE::shift is bareword before '=>' # $v\n";
+print "ok 20 - +CORE::shift is bareword before '=>' # $v\n";
 
 $v = $h{'+CORE::shift'};
 print "not " if $v ne "678";
-print "ok 17 - +CORE::shift as string # $v\n";
+print "ok 21 - +CORE::shift as string # $v\n";
 
 $v = $h{'-CORE::shift'};
 print "not " if $v ne "912";
-print "ok 18 - -CORE::shift as string # $v\n";
+print "ok 22 - -CORE::shift as string # $v\n";
 
