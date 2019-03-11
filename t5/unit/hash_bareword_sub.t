@@ -1,7 +1,7 @@
 
 # use Data::Dumper;
 
-print "1..18\n";
+print "1..20\n";
 
 package Baz;
 sub foo { shift @ARGV }
@@ -133,4 +133,12 @@ print "ok 17 - +Baz::foo as string # $v\n";
 $v = $h{'-Baz::foo'};
 print "not " if $v ne "912";
 print "ok 18 - -Baz::foo as string # $v\n";
+
+$v = $h{yy};
+print "not " if $v ne "101";
+print "ok 19 - +Baz::foo as string # $v\n";
+
+$v = $h{zz};
+print "not " if $v ne "555";
+print "ok 20 - -Baz::foo as string # $v\n";
 
