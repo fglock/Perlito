@@ -7,6 +7,9 @@ Dev Version:
 -- add non-core module Mo.pm
 -- add lib.pm
 
+- Parser:
+-- implemented several bareword special cases, added tests
+
 - Java:
 -- named capture in regex accepts duplicate names
 
