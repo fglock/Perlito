@@ -229,5 +229,3 @@ t5/comp/decl.t      # format not implemented
 
 t5/unit/bareword.t  # feature.pm problems: "say" is not a bareword
 
-t5/unit/hash_bareword.t     # wip
-
