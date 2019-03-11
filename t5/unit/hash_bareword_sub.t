@@ -1,7 +1,9 @@
 
+no warnings;
+
 # use Data::Dumper;
 
-print "1..20\n";
+print "1..24\n";
 
 package Baz;
 sub foo { shift @ARGV }
@@ -91,6 +93,31 @@ $v = $h{'-foo'};
 print "not " if $v ne "203";
 print "ok 12 - -foo as string # $v\n";
 
+
+@ARGV = ( "yy", "zz" );
+my %h = (
+    +Baz::foo   => 101,
+);
+$v = $ARGV[0];
+print "not " if $v ne "zz";
+print "ok 13 - +Baz::foo is function call before '=>'  # $v\n";
+($v) = keys %h;
+print "not " if $v ne "yy";
+print "ok 14 - +Baz::foo is function call before '=>'  # $v\n";
+
+
+@ARGV = ( "yy", "zz" );
+my %h = (
+    -Baz::foo   => 101,
+);
+$v = $ARGV[0];
+print "not " if $v ne "zz";
+print "ok 15 - -Baz::foo is function call before '=>'  # $v\n";
+($v) = keys %h;
+print "not " if $v ne "-yy";
+print "ok 16 - -Baz::foo is function call before '=>'; concatenates '-'  # $v\n";
+
+
 @ARGV = ( "yy", "zz", "aa", "bb", "cc" );
 my %h = (
     yy       => 444,
@@ -112,33 +139,33 @@ my %h = (
 
 $v = $ARGV[0];
 print "not " if $v ne "aa";
-print "ok 13 - Baz::foo  # $v\n";
+print "ok 17 - Baz::foo  # $v\n";
 
 $v = $h{ +Baz::foo };
 print "not " if $v ne "665";
-print "ok 14 - +Baz::foo is not bareword # $v\n";
+print "ok 18 - +Baz::foo is not bareword # $v\n";
 
 $v = $h{-Baz::foo};
 print "not " if $v ne "456";
-print "ok 15 - -Baz::foo  # $v\n";
+print "ok 19 - -Baz::foo  # $v\n";
 
 $v = $h{'Baz::foo'};
 print "not " if $v ne "404";
-print "ok 16 - quoted Baz::foo is bareword before '=>' # $v\n";
+print "ok 20 - quoted Baz::foo is bareword before '=>' # $v\n";
 
 $v = $h{'+Baz::foo'};
 print "not " if $v ne "678";
-print "ok 17 - +Baz::foo as string # $v\n";
+print "ok 21 - +Baz::foo as string # $v\n";
 
 $v = $h{'-Baz::foo'};
 print "not " if $v ne "912";
-print "ok 18 - -Baz::foo as string # $v\n";
+print "ok 22 - -Baz::foo as string # $v\n";
 
 $v = $h{yy};
 print "not " if $v ne "101";
-print "ok 19 - +Baz::foo is not bareword before '=>' # $v\n";
+print "ok 23 - +Baz::foo is not bareword before '=>' # $v\n";
 
 $v = $h{zz};
 print "not " if $v ne "555";
-print "ok 20 - -Baz::foo is bareword before '=>' # $v\n";
+print "ok 24 - -Baz::foo is bareword before '=>' # $v\n";
 
