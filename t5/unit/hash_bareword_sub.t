@@ -124,7 +124,7 @@ print "ok 15 - -Baz::foo  # $v\n";
 
 $v = $h{'Baz::foo'};
 print "not " if $v ne "404";
-print "ok 16 - +Baz::foo is bareword before '=>' # $v\n";
+print "ok 16 - quoted Baz::foo is bareword before '=>' # $v\n";
 
 $v = $h{'+Baz::foo'};
 print "not " if $v ne "678";
@@ -136,9 +136,9 @@ print "ok 18 - -Baz::foo as string # $v\n";
 
 $v = $h{yy};
 print "not " if $v ne "101";
-print "ok 19 - +Baz::foo as string # $v\n";
+print "ok 19 - +Baz::foo is not bareword before '=>' # $v\n";
 
 $v = $h{zz};
 print "not " if $v ne "555";
-print "ok 20 - -Baz::foo as string # $v\n";
+print "ok 20 - -Baz::foo is bareword before '=>' # $v\n";
 
