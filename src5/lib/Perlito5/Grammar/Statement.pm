@@ -486,7 +486,7 @@ sub statement_parse_inner {
     my $pos = $_[1];
     # say "# statement_parse input: ",$str," at ",$pos;
 
-    # the rule for subroutines seems to be: 
+    # Note:
     # named subs are statements,
     # anonymous subs are plain terms.
 
@@ -501,6 +501,13 @@ sub statement_parse_inner {
         }
     }
     $res = Perlito5::Grammar::Expression::exp_parse($str, $pos);
+    if ($res) {
+        # looks like an expression, apply some post-processing if needed
+        my $ast = $res->{capture};
+        if ( ref( $ast ) eq 'Perlito5::AST::Apply' && $ast->{code} eq 'list:<=>>') {
+            $ast->{arguments} = [ Perlito5::Grammar::Expression::autoquote_fat_arrow( @{$ast->{arguments}} ) ];
+        }
+    }
     if (!$res) {
         # say "# not a statement or expression";
         return;

@@ -5,11 +5,8 @@ use Perlito5::Grammar::Bareword;
 use Perlito5::Grammar::Attribute;
 use Perlito5::Grammar::Statement;
 
-sub expand_list_fat_arrow {
-    # convert "=>" AST into an array of AST
-    my $param_list = shift;
-    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<=>>') {
-        my @args = @{$param_list->{arguments}};
+sub autoquote_fat_arrow {
+        my @args = @_;
 
         my $i = 0;
         while ($i < $#args) {
@@ -70,6 +67,13 @@ sub expand_list_fat_arrow {
             $i ++;    # next "key"
         }
         return grep {defined} @args;
+}
+
+sub expand_list_fat_arrow {
+    # convert "=>" AST into an array of AST
+    my $param_list = shift;
+    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<=>>') {
+        return autoquote_fat_arrow( @{$param_list->{arguments}} );
     }
     return $param_list;
 }
