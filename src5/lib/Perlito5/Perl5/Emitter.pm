@@ -285,7 +285,7 @@ package Perlito5::AST::Apply;
         }
         if ($self->{code} eq 'list:<=>>')  { 
             return [ op => $self->{code}, 
-                     Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl5(),
+                     $self->{arguments}[0]->emit_perl5(),
                      $self->{arguments}[1]->emit_perl5() ]
         }
 
