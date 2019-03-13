@@ -328,13 +328,6 @@ package Perlito5::JavaScript3;
                && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' || $item->code eq 'list:<=>>' )
                )
             {
-                if ($item->isa('Perlito5::AST::Apply')
-                   && $item->code eq 'list:<=>>'
-                   )
-                {
-                    $item->{arguments}[0] = Perlito5::AST::Lookup->autoquote( $item->{arguments}[0] );
-                }
-
                 for my $arg ( @{ to_list_preprocess($item->arguments) } ) {
                     push( @items, $arg);
                 }
@@ -367,13 +360,6 @@ package Perlito5::JavaScript3;
                && ( $item->code eq 'list:<,>' || $item->code eq 'list:<=>>' )
                )
             {
-                if ($item->isa('Perlito5::AST::Apply')
-                   && $item->code eq 'list:<=>>'
-                   )
-                {
-                    $item->{arguments}[0] = Perlito5::AST::Lookup->autoquote( $item->{arguments}[0] );
-                }
-
                 for my $arg ( @{ to_scalar_preprocess($item->arguments) } ) {
                     push( @items, $arg);
                 }
