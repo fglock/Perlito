@@ -129,7 +129,6 @@ sub block_or_hash {
         || $stmt->{code} eq 'prefix:<@>'
         || $stmt->{code} eq 'list:<,>' )
     {
-
         if ( @{ $stmt->{arguments} } ) {
             my $arg = $stmt->{arguments}[0];
             if ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'prefix:<&>' ) {
@@ -137,14 +136,6 @@ sub block_or_hash {
                 return $o;
             }
         }
-
-        # the argument is a single pair
-        # say "#  single pair -- is hash";
-        return Perlito5::AST::Apply->new(
-            code      => 'circumfix:<{ }>',
-            namespace => '',
-            arguments => [$stmt]
-        );
     }
     return Perlito5::AST::Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => expand_list($stmt));
 }
