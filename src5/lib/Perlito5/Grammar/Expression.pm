@@ -10,16 +10,18 @@ sub expand_list_fat_arrow {
     my $param_list = shift;
     if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<=>>') {
         my @args = @{$param_list->{arguments}};
-        if (@args) {
+
+        my $i = 0;
+        while ($i < $#args) {
 
             # autoquote before '=>'
 
-            my $index = $args[0];
+            my $index = $args[$i];
             if (ref($index) eq 'Perlito5::AST::Apply') {
 
                 if ($index->{bareword} && !$index->{namespace}) {
                     # foo ==> "foo"
-                    $args[0] = Perlito5::AST::Buf->new( buf => $index->{code} );
+                    $args[$i] = Perlito5::AST::Buf->new( buf => $index->{code} );
                 }
                 elsif (  ($index->{code} eq 'prefix:<->')
                       && (ref($index->{arguments}[0]) eq 'Perlito5::AST::Apply')
@@ -39,7 +41,7 @@ sub expand_list_fat_arrow {
                         $index->{arguments}[0]{bareword} = 0;
                     }
                     else {
-                        $args[0] = Perlito5::AST::Buf->new( buf => '-' . $full_name );
+                        $args[$i] = Perlito5::AST::Buf->new( buf => '-' . $full_name );
                     }
                 }
                 elsif (  ($index->code eq 'prefix:<+>')
@@ -60,10 +62,12 @@ sub expand_list_fat_arrow {
                         $index->{arguments}[0]{bareword} = 0;
                     }
                     else {
-                        $args[0] = Perlito5::AST::Buf->new( buf => $full_name );
+                        $args[$i] = Perlito5::AST::Buf->new( buf => $full_name );
                     }
                 }
             }
+
+            $i ++;    # next "key"
         }
         return grep {defined} @args;
     }
