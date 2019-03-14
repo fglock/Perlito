@@ -843,12 +843,12 @@ package Perlito5::AST::Apply;
                     if (!defined($v->{name})) {
                         # delete $Module::{foo}
                         my $index = Perlito5::Java::escape_string($v->{namespace} . '::');
-                        return "PerlOp.deleteSymbolTable(" . $index . ', ' . $arg->{index_exp}->emit_java($level) . ')';
+                        return "PerlOp.deleteSymbolTable(" . $index . ', ' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                     }
 
                     return $v->emit_java($level) . '.hdelete('
                         . Perlito5::Java::to_context($wantarray) . ', '
-                        . $arg->{index_exp}->emit_java($level) . ')';
+                        . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
                 if (  (ref($v) eq 'Perlito5::AST::Apply')
                    && $v->{code} eq 'prefix:<$>'
@@ -864,7 +864,7 @@ package Perlito5::AST::Apply;
                 else {
                     return $v->emit_java($level, $wantarray, 'hash') . '.hdelete('
                         . Perlito5::Java::to_context($wantarray) . ', '
-                        . $arg->{index_exp}->emit_java($level) . ')';
+                        . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
             }
             if ((ref($arg) eq 'Perlito5::AST::Index' )) {
@@ -899,7 +899,7 @@ package Perlito5::AST::Apply;
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
                     return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.hdelete('
                         . Perlito5::Java::to_context($wantarray) . ', '
-                        . $arg->{arguments}->emit_java($level) . ')';
+                        . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
                     return $arg->invocant->emit_java($level, $wantarray, 'array') . '.adelete('
@@ -1660,7 +1660,7 @@ package Perlito5::AST::Apply;
                 {
                     # $v->{sigil} = '%';
                     return $v->emit_java($level, $wantarray) . '.hexists('
-                        .   Perlito5::Java::to_native_str($arg->{index_exp}, $level)
+                        .   Perlito5::Java::to_native_str($arg->autoquote($arg->{index_exp}), $level)
                         . ')';
                 }
 
@@ -1677,7 +1677,7 @@ package Perlito5::AST::Apply;
                 }
                 else {
                     return $v->emit_java($level, $wantarray, 'hash') . '.hexists('
-                        .   Perlito5::Java::to_native_str($arg->{index_exp}, $level)
+                        .   Perlito5::Java::to_native_str($arg->autoquote($arg->{index_exp}), $level)
                         . ')';
                 }
             }
@@ -1709,7 +1709,7 @@ package Perlito5::AST::Apply;
             if ((ref($arg) eq 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
                     return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.hexists('
-                        .   Perlito5::Java::to_native_str($arg->{arguments}, $level)
+                        .   Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($arg->{arguments}), $level)
                         . ')';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
