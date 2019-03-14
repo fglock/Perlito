@@ -131,7 +131,7 @@ package Perlito5::AST::Lookup;
               )
            )
         {
-            return [ apply => '{', $self->{obj}->emit_perl5(), $self->{index_exp}->emit_perl5() ];
+            return [ apply => '{', $self->{obj}->emit_perl5(), $self->autoquote($self->{index_exp})->emit_perl5() ];
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<%>'
@@ -142,7 +142,7 @@ package Perlito5::AST::Lookup;
            )
         {
             # perl5.20:  %a{ x, y }
-            return [ apply => '{', $self->{obj}->emit_perl5(), $self->{index_exp}->emit_perl5() ];
+            return [ apply => '{', $self->{obj}->emit_perl5(), $self->autoquote($self->{index_exp})->emit_perl5() ];
         }
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
@@ -150,10 +150,10 @@ package Perlito5::AST::Lookup;
         {
             # $$a{0} ==> $a->{0}
             return [ op => 'infix:<->>', $self->{obj}{arguments}[0]->emit_perl5(), 
-                     [ op => 'circumfix:<{ }>', $self->{index_exp}->emit_perl5() ] ];
+                     [ op => 'circumfix:<{ }>', $self->autoquote($self->{index_exp})->emit_perl5() ] ];
         }
         return [ op => 'infix:<->>', $self->{obj}->emit_perl5(), 
-                 [ op => 'circumfix:<{ }>', $self->{index_exp}->emit_perl5() ] ];
+                 [ op => 'circumfix:<{ }>', $self->autoquote($self->{index_exp})->emit_perl5() ] ];
     }
 }
 
@@ -208,7 +208,7 @@ package Perlito5::AST::Call;
         }
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
             return [ op => 'infix:<->>', $invocant, 
-                     [ op => 'circumfix:<{ }>', $self->{arguments}->emit_perl5() ] ];
+                     [ op => 'circumfix:<{ }>', Perlito5::AST::Lookup->autoquote($self->{arguments})->emit_perl5() ] ];
         }
         my $meth = $self->{method};
         if  ($meth eq 'postcircumfix:<( )>')  {

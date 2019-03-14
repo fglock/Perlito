@@ -187,7 +187,7 @@ sub pop_term {
             return $v;
         }
         if ($v->[1] eq '.{ }') {
-            $v = Perlito5::AST::Lookup->new( obj => undef, index_exp =>  Perlito5::AST::Lookup->autoquote($v->[2]) );
+            $v = Perlito5::AST::Lookup->new( obj => undef, index_exp => $v->[2] );
             return $v;
         }
         return $v->[1];
@@ -200,7 +200,7 @@ sub reduce_postfix {
     my $value = shift;
     my $v = $op;
     if ($v->[1] eq '.{ }') {
-        $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => Perlito5::AST::Lookup->autoquote($v->[2]) );
+        $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v->[2] );
         return $v;
     }
     if ($v->[1] eq '.[ ]') {
@@ -287,7 +287,7 @@ sub reduce_postfix {
             $value->{_real_sigil} = '%';
             $value->{_real_sigil} = '*' if $value->{sigil} eq '*';  # *main{CODE}
         }
-        $v = Perlito5::AST::Lookup->new( obj => $value, index_exp => Perlito5::AST::Lookup->autoquote($v->[2][0]) );
+        $v = Perlito5::AST::Lookup->new( obj => $value, index_exp => $v->[2][0] );
         return $v;
     }
     if ($v->[1] eq '.( )') {
