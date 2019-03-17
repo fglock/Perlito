@@ -844,7 +844,7 @@ package Perlito5::AST::Index;
         }
         if ($localize) {
             return $self->emit_java_container($level) . '.aget_lvalue_local('
-                    . Perlito5::Java::autoquote($self->{index_exp}, $level) . ').set('
+                    . Perlito5::Java::to_native_str($self->{index_exp}, $level) . ').set('
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
             . ')';
         }
@@ -1075,7 +1075,7 @@ package Perlito5::AST::Lookup;
         }
         if ($localize) {
             return $self->emit_java_container($level) . '.hget_lvalue_local('
-                    . Perlito5::Java::autoquote($self->{index_exp}, $level) . ').set('
+                    . Perlito5::Java::to_native_str($self->{index_exp}, $level) . ').set('
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
             . ')';
         }
@@ -1087,7 +1087,7 @@ package Perlito5::AST::Lookup;
             # $$a{x} ==> $a->{x}
             my $obj = Perlito5::Java::emit_java_autovivify( $self->{obj}->{arguments}[0], $level+1, 'hash' );
             return $obj . '.hset('
-                    . Perlito5::Java::autoquote($self->{index_exp}, $level) . ', '
+                    . Perlito5::Java::to_native_str($self->{index_exp}, $level) . ', '
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
                 . ')';
         }

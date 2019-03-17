@@ -1234,13 +1234,6 @@ sub to_context {
     :                           'want'    # default = 'runtime'
 }
 
-sub autoquote {
-    my $index = shift;
-    my $level = shift;
-    $index = Perlito5::AST::Lookup->autoquote($index);
-    return to_native_str($index, $level);
-}
-
 sub emit_java_autovivify {
     my $obj = shift;
     my $level = shift;
