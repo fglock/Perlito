@@ -54,5 +54,3 @@ t5/opbasic/qq.t
 
 t5/op/utfhash.t
 
-t5/unit/hash_multi.t
-

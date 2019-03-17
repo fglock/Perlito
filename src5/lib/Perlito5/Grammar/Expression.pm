@@ -98,6 +98,37 @@ sub expand_list {
     }
 }
 
+sub process_hash_lookup {
+    my ($obj, $key) = @_;
+    my $param_list = $key;
+    if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'circumfix:<( )>') {
+        $param_list->{code} = 'list:<,>';
+    }
+    $param_list = expand_list($param_list);
+    if ( ref($obj) eq 'Perlito5::AST::Var' && $obj->{sigil} eq "$" && @$param_list > 1 ) {
+        #  $v{ $a, $b, $c }
+        $param_list = [ Perlito5::AST::Apply->new(
+                    code => 'join',
+                    namespace => '', 
+                    arguments => [
+                        Perlito5::AST::Var->new( name => ';', namespace => '', sigil => '$' ),
+                        map { defined($_) ? $_
+                                          : Perlito5::AST::Buf->new( buf => '' )
+                            }
+                            @$param_list
+                    ],
+               ) ];
+    }
+    my $index;
+    if (@$param_list > 1) {
+        $index = Perlito5::AST::Apply->new( code => 'list:<,>', arguments => $param_list );
+    }
+    else {
+        $index = $param_list->[0];
+    }
+    return $index;
+}
+
 sub block_or_hash {
     # convert a block AST into a hash literal AST, if possible
     my $o = shift;
@@ -175,19 +206,6 @@ sub pop_term {
         if ($v->[1] eq 'block') {
             $v = Perlito5::AST::Block->new( stmts => $v->[2], sig => $v->[3] );
             $v = block_or_hash($v);
-            # TODO: $v = Perlito5::AST::Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => $v->[2] );
-            return $v;
-        }
-        if ($v->[1] eq '.( )') {
-            $v = Perlito5::AST::Call->new( invocant => undef, method => 'postcircumfix:<( )>', arguments => $v->[2] );
-            return $v;
-        }
-        if ($v->[1] eq '.[ ]') {
-            $v = Perlito5::AST::Index->new( obj => undef, index_exp => $v->[2] );
-            return $v;
-        }
-        if ($v->[1] eq '.{ }') {
-            $v = Perlito5::AST::Lookup->new( obj => undef, index_exp => $v->[2] );
             return $v;
         }
         return $v->[1];
@@ -200,7 +218,23 @@ sub reduce_postfix {
     my $value = shift;
     my $v = $op;
     if ($v->[1] eq '.{ }') {
-        $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v->[2] );
+        # $value->{$v}
+
+        my $index = process_hash_lookup( $value, $v->[2] );
+
+        $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $index );
+        return $v;
+    }
+    if ($v->[1] eq 'block') {
+        # $value{$v}
+
+        my $index = process_hash_lookup( $value, $v->[2][0] );
+
+        if (ref($value) eq 'Perlito5::AST::Var') {
+            $value->{_real_sigil} = '%';
+            $value->{_real_sigil} = '*' if $value->{sigil} eq '*';  # *main{CODE}
+        }
+        $v = Perlito5::AST::Lookup->new( obj => $value, index_exp => $index );
         return $v;
     }
     if ($v->[1] eq '.[ ]') {
@@ -280,14 +314,6 @@ sub reduce_postfix {
             $value->{_real_sigil} = '@';
         }
         $v = Perlito5::AST::Index->new( obj => $value, index_exp => $v->[2] );
-        return $v;
-    }
-    if ($v->[1] eq 'block') {
-        if (ref($value) eq 'Perlito5::AST::Var') {
-            $value->{_real_sigil} = '%';
-            $value->{_real_sigil} = '*' if $value->{sigil} eq '*';  # *main{CODE}
-        }
-        $v = Perlito5::AST::Lookup->new( obj => $value, index_exp => $v->[2][0] );
         return $v;
     }
     if ($v->[1] eq '.( )') {

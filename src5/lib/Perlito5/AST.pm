@@ -154,33 +154,7 @@ sub autoquote {
                 return Perlito5::AST::Buf->new( buf => $full_name );
             }
         }
-
-        elsif ($index->code eq 'list:<,>')
-        {
-
-            my $obj = $self->obj;
-            if ($obj->{sigil} eq '@') {
-                #  @v{ $a, $b, $c }
-                return $index;
-            }
-
-            #  $v{ $a, $b, $c }
-            my $args = $index->arguments;
-            return Perlito5::AST::Apply->new(
-                        code => 'join',
-                        namespace => '', 
-                        arguments => [
-                            Perlito5::AST::Var->new( name => ';', namespace => '', sigil => '$' ),
-                            map { defined($_) ? $_
-                                              : Perlito5::AST::Buf->new( buf => '' )
-                                }
-                                @$args
-                        ],
-                   );
-        }
-
     }
-
     $index;
 }
 
