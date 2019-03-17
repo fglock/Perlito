@@ -1083,9 +1083,10 @@ sub double_quoted_var_with_subscript {
         if (ref($value) eq 'Perlito5::AST::Var') {
             $value->{_real_sigil} = '%';
         }
+        my $index = Perlito5::Grammar::Expression::process_hash_lookup( $value, Perlito5::Match::flat($m_index)->[2][0] );
         $m_index->{capture} = Perlito5::AST::Lookup->new(
                 obj       => $value,
-                index_exp => Perlito5::Match::flat($m_index)->[2][0],
+                index_exp => $index,
             );
         return double_quoted_var_with_subscript($m_index, $interpolate);
     }

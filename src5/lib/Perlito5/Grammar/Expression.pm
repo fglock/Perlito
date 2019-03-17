@@ -102,6 +102,8 @@ sub process_hash_lookup {
     my ($obj, $key) = @_;
     my $param_list = $key;
     if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'circumfix:<( )>') {
+        return $param_list
+          if !@{$param_list->{arguments}};
         $param_list->{code} = 'list:<,>';
     }
     $param_list = expand_list($param_list);
@@ -125,6 +127,7 @@ sub process_hash_lookup {
     }
     else {
         $index = $param_list->[0];
+        $index = Perlito5::AST::Lookup->autoquote($index);
     }
     return $index;
 }
