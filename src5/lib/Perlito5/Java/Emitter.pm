@@ -97,9 +97,6 @@ package Perlito5::Java::LexicalBlock;
             # These expressions cannot be used in statement position in Java:
             #   x, y
             #   x => y
-            if ($decl->{code} eq "list:<=>>") {
-                $decl->{arguments}[0] = Perlito5::AST::Lookup->autoquote($decl->{arguments}[0]);
-            }
             push @str, emit_body_statement($_)
                 for @{$decl->{arguments}};
         }
@@ -1001,7 +998,7 @@ package Perlito5::AST::Lookup;
                 'arguments' => $self->{index_exp},
             )->emit_java($level, $wantarray, $autovivification_type);
         }
-        my $index = Perlito5::AST::Lookup->autoquote($self->{index_exp});
+        my $index = $self->{index_exp};
 
         if (  $self->{obj}->isa('Perlito5::AST::Var')
            && $self->{obj}->{name} eq '+'
@@ -1095,7 +1092,7 @@ package Perlito5::AST::Lookup;
                 . ')';
         }
 
-        my $index = Perlito5::AST::Lookup->autoquote($self->{index_exp});
+        my $index = $self->{index_exp};
         return $self->emit_java_container($level) . '.hset('
                     . Perlito5::Java::to_native_str($index, $level) . ', '
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
@@ -1629,7 +1626,7 @@ package Perlito5::AST::Call;
 
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
                 . '.' . $method . '('
-                .       Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($self->{arguments}), $level + 1, 'list')
+                .       Perlito5::Java::to_native_str($self->{arguments}, $level + 1, 'list')
                 . ')';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
@@ -1787,7 +1784,7 @@ package Perlito5::AST::Call;
 
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
                     . '.hset(' 
-                        . Perlito5::Java::to_native_str(Perlito5::AST::Lookup->autoquote($self->{arguments}), $level + 1, 'list') . ', '
+                        . Perlito5::Java::to_native_str($self->{arguments}, $level + 1, 'list') . ', '
                         . Perlito5::Java::to_scalar([$arguments], $level+1)
                     . ')';
         }
