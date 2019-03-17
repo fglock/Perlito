@@ -571,14 +571,14 @@ package Perlito5::AST::Apply;
             if ($arg->isa( 'Perlito5::AST::Lookup' )) {
                 my $v = $arg->obj;
                 my $v_js = $v->emit_javascript2();
-                my $key_js = $arg->autoquote($arg->{index_exp})->emit_javascript2($level);
+                my $key_js = $arg->{index_exp}->emit_javascript2($level);
                 my $suffix = ((  $v->isa('Perlito5::AST::Var') && $v->{sigil} eq '$') ? '' : '._hash_');
 
                 if (!defined($v->{name})) {
                     # delete $Module::{foo}
                     # delete @Module::{qw/foo bar/}
                     my $index = Perlito5::JavaScript2::escape_string($v->{namespace});
-                    return "p5deleteSymbolTable(" . $index . ', ' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . ')';
+                    return "p5deleteSymbolTable(" . $index . ', ' . $arg->{index_exp}->emit_javascript2($level) . ')';
                 }
 
                 if (  (ref($v) eq 'Perlito5::AST::Var')
@@ -602,7 +602,7 @@ package Perlito5::AST::Apply;
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return '(delete ' . $arg->invocant->emit_javascript2() . '._hash_[' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_javascript2($level) . '])';
+                    return '(delete ' . $arg->invocant->emit_javascript2() . '._hash_[' . $arg->{arguments}->emit_javascript2($level) . '])';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
                     return '(delete ' . $arg->invocant->emit_javascript2() . '._array_[' . $arg->{arguments}->emit_javascript2($level) . '])';
@@ -1186,9 +1186,9 @@ package Perlito5::AST::Apply;
                    )
                 {
                     $v->{sigil} = '%';
-                    return '(' . $v->emit_javascript2() . ').hasOwnProperty(' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . ')';
+                    return '(' . $v->emit_javascript2() . ').hasOwnProperty(' . $arg->{index_exp}->emit_javascript2($level) . ')';
                 }
-                return '(' . $v->emit_javascript2() . ')._hash_.hasOwnProperty(' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . ')';
+                return '(' . $v->emit_javascript2() . ')._hash_.hasOwnProperty(' . $arg->{index_exp}->emit_javascript2($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
@@ -1202,7 +1202,7 @@ package Perlito5::AST::Apply;
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return Perlito5::JavaScript2::emit_javascript2_autovivify( $arg->invocant, $level, 'hash' ) . '._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_javascript2($level) . ')';
+                    return Perlito5::JavaScript2::emit_javascript2_autovivify( $arg->invocant, $level, 'hash' ) . '._hash_.hasOwnProperty(' . $arg->{arguments}->emit_javascript2($level) . ')';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
                     return Perlito5::JavaScript2::emit_javascript2_autovivify( $arg->invocant, $level, 'array' ) . '._array_.hasOwnProperty(' . $arg->{arguments}->emit_javascript2($level) . ')';

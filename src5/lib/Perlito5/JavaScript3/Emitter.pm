@@ -170,7 +170,7 @@ package Perlito5::JavaScript3;
                && $cond->{arguments} && @{$cond->{arguments}}
                ) 
             {
-                return to_str( $cond->{arguments}[0], $level )
+                return Perlito5::JavaScript3::to_str( $cond->{arguments}[0], $level )
             }
 
             if  (  ($cond->isa( 'Perlito5::AST::Buf' ))
@@ -384,30 +384,6 @@ package Perlito5::JavaScript3;
             .   join(', ', map( $_->emit_javascript3($level, $wantarray), @$items ))
             . ']'
             . ', p5want)'
-    }
-
-    sub autoquote {
-        my $index = shift;
-        my $level = shift;
-    
-        # ok   ' sub x () { 123 } $v{x()} = 12; use Data::Dumper; print Dumper \%v '       # '123'     => 12
-        # ok   ' sub x () { 123 } $v{x} = 12; use Data::Dumper; print Dumper \%v '         # 'x'       => 12
-        # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
-        # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
-    
-        if ($index->isa('Perlito5::AST::Apply')
-           && $index->{bareword}
-           )
-        {
-            my $full_name = ($index->{namespace} ? $index->{namespace} . '::' : "") . $index->{code};
-            if ( !exists $Perlito5::PROTO->{$full_name} ) {
-                $index = Perlito5::AST::Buf->new( 
-                    buf => $full_name
-                );
-            }
-        }
-   
-        return to_str($index, $level);
     }
 
     sub emit_javascript3_autovivify {
@@ -834,7 +810,7 @@ package Perlito5::AST::Lookup;
         {
             my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name );
             return Perlito5::JavaScript3::emit_javascript3_autovivify( $v, $level, 'hash' ) 
-                . '.hget(' . Perlito5::JavaScript3::autoquote($self->{index_exp}, $level) . ', ' . $type . ')';
+                . '.hget(' . Perlito5::JavaScript3::to_str($self->{index_exp}, $level) . ', ' . $type . ')';
         }
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
@@ -842,11 +818,11 @@ package Perlito5::AST::Lookup;
         {
             # $$a{0} ==> $a->{0}
             return Perlito5::JavaScript3::emit_javascript3_autovivify( $self->{obj}{arguments}[0], $level, 'hash' )
-                . '.hget(' . Perlito5::JavaScript3::autoquote($self->{index_exp}, $level, 'list') . ', ' . $type . ')';
+                . '.hget(' . Perlito5::JavaScript3::to_str($self->{index_exp}, $level, 'list') . ', ' . $type . ')';
         }
 
           Perlito5::JavaScript3::emit_javascript3_autovivify( $self->{obj}, $level, 'hash' )
-        . '.hget(' . Perlito5::JavaScript3::autoquote($self->{index_exp}, $level) . ', ' . $type . ')';
+        . '.hget(' . Perlito5::JavaScript3::to_str($self->{index_exp}, $level) . ', ' . $type . ')';
     }
     sub emit_javascript3_set {
         my $self      = shift;
@@ -861,7 +837,7 @@ package Perlito5::AST::Lookup;
         {
             my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name );
             return $v->emit_javascript3($level)
-                . '.hset(' . Perlito5::JavaScript3::autoquote($self->{index_exp}, $level) . ', '
+                . '.hset(' . Perlito5::JavaScript3::to_str($self->{index_exp}, $level) . ', '
                     . Perlito5::JavaScript3::to_scalar([$arguments], $level+1)
                 . ')';
         }
@@ -871,13 +847,13 @@ package Perlito5::AST::Lookup;
         {
             # $$a{0} ==> $a->{0}
             return Perlito5::JavaScript3::emit_javascript3_autovivify( $self->{obj}{arguments}[0], $level, 'hash' )
-                . '.hset(' . Perlito5::JavaScript3::autoquote($self->{index_exp}, $level, 'list') . ', '
+                . '.hset(' . Perlito5::JavaScript3::to_str($self->{index_exp}, $level, 'list') . ', '
                     . Perlito5::JavaScript3::to_scalar([$arguments], $level+1)
                 . ')';
         }
 
         Perlito5::JavaScript3::emit_javascript3_autovivify( $self->{obj}, $level, 'hash' )
-            . '.hset(' . Perlito5::JavaScript3::autoquote($self->{index_exp}, $level) . ', '
+            . '.hset(' . Perlito5::JavaScript3::to_str($self->{index_exp}, $level) . ', '
                    . Perlito5::JavaScript3::to_scalar([$arguments], $level+1)
             . ')';
     }
@@ -1028,7 +1004,7 @@ package Perlito5::AST::Call;
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
             return Perlito5::JavaScript3::emit_javascript3_autovivify( $self->{invocant}, $level, 'hash' )
-                . '.hget(' . Perlito5::JavaScript3::autoquote($self->{arguments}, $level, 'list') . ', ' . $type . ')';
+                . '.hget(' . Perlito5::JavaScript3::to_str($self->{arguments}, $level, 'list') . ', ' . $type . ')';
         }
 
         my $invocant = $self->{invocant}->emit_javascript3($level, 'scalar');
@@ -1160,7 +1136,7 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-              Perlito5::JavaScript3::autoquote($self->{arguments}[0], $level)  . ', ' 
+              Perlito5::JavaScript3::to_str($self->{arguments}[0], $level)  . ', ' 
             . $self->{arguments}[1]->emit_javascript3($level)
         },
         'infix:<cmp>' => sub {
@@ -1445,7 +1421,7 @@ package Perlito5::AST::Apply;
             elsif ( $parameters->isa( 'Perlito5::AST::Call' ) && $parameters->{method} eq 'postcircumfix:<{ }>' ) {
                 return Perlito5::JavaScript3::emit_javascript3_autovivify( $parameters->{invocant}, $level, 'hash' )
                     . '.hset(' 
-                            . Perlito5::JavaScript3::autoquote($parameters->{arguments}, $level) . ', '
+                            . Perlito5::JavaScript3::to_str($parameters->{arguments}, $level) . ', '
                             . Perlito5::JavaScript3::to_scalar([$arguments], $level+1)
                     . ')';
             }
@@ -1719,13 +1695,13 @@ package Perlito5::AST::Apply;
                    )
                 {
                     $v = Perlito5::AST::Var->new( sigil => '%', namespace => $v->namespace, name => $v->name );
-                    return '(' . $v->emit_javascript3() . ').exists(' . Perlito5::JavaScript3::autoquote($arg->{index_exp}, $level) . ')';
+                    return '(' . $v->emit_javascript3() . ').exists(' . Perlito5::JavaScript3::to_str($arg->{index_exp}, $level) . ')';
                 }
-                return '(' . $v->emit_javascript3() . ').hderef().exists(' . Perlito5::JavaScript3::autoquote($arg->{index_exp}, $level) . ')';
+                return '(' . $v->emit_javascript3() . ').hderef().exists(' . Perlito5::JavaScript3::to_str($arg->{index_exp}, $level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return '(' . $arg->invocant->emit_javascript3() . ').hderef().exists(' . Perlito5::JavaScript3::autoquote($arg->{arguments}, $level) . ')';
+                    return '(' . $arg->invocant->emit_javascript3() . ').hderef().exists(' . Perlito5::JavaScript3::to_str($arg->{arguments}, $level) . ')';
                 }
             }
         },

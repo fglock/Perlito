@@ -183,7 +183,7 @@ package Perlito5::AST::Lookup;
            )
         {
             my $v = $self->{obj};
-            return $v->emit_xs($level) . '{' . $self->autoquote($self->{index_exp})->emit_xs($level) . '}';
+            return $v->emit_xs($level) . '{' . $self->{index_exp}->emit_xs($level) . '}';
         }
 
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
@@ -191,10 +191,10 @@ package Perlito5::AST::Lookup;
            )
         {
             # $$a{0} ==> $a->{0}
-            return $self->{obj}{arguments}[0]->emit_xs($level) . '->{' . $self->autoquote($self->{index_exp})->emit_xs($level) . '}';
+            return $self->{obj}{arguments}[0]->emit_xs($level) . '->{' . $self->{index_exp}->emit_xs($level) . '}';
         }
 
-        $self->{obj}->emit_xs($level) . '->{' . $self->autoquote($self->{index_exp})->emit_xs($level) . '}';
+        $self->{obj}->emit_xs($level) . '->{' . $self->{index_exp}->emit_xs($level) . '}';
     }
 }
 
@@ -244,7 +244,7 @@ package Perlito5::AST::Call;
             return $invocant . '->[' . $self->{arguments}->emit_xs($level+1) . ']'
         }
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
-            return $invocant . '->{' . Perlito5::AST::Lookup->autoquote($self->{arguments})->emit_xs($level) . '}'
+            return $invocant . '->{' . $self->{arguments}->emit_xs($level) . '}'
         }
         my $meth = $self->{method};
         if  ($meth eq 'postcircumfix:<( )>')  {

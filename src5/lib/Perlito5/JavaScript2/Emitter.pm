@@ -178,7 +178,7 @@ package Perlito5::JavaScript2;
                && $cond->{arguments} && @{$cond->{arguments}}
                ) 
             {
-                return to_str( $cond->{arguments}[0], $level )
+                return Perlito5::JavaScript2::to_str( $cond->{arguments}[0], $level )
             }
 
             if  (  ($cond->isa( 'Perlito5::AST::Buf' ))
@@ -391,20 +391,6 @@ package Perlito5::JavaScript2;
         :$wantarray eq 'scalar' ? '""'
         :$wantarray eq 'void'   ? 'null'
         :                         'p5want'
-    }
-
-    sub autoquote {
-        my $index = shift;
-        my $level = shift;
-    
-        # ok   ' sub x () { 123 } $v{x()} = 12; use Data::Dumper; print Dumper \%v '       # '123'     => 12
-        # ok   ' sub x () { 123 } $v{x} = 12; use Data::Dumper; print Dumper \%v '         # 'x'       => 12
-        # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
-        # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
-    
-        $index = Perlito5::AST::Lookup->autoquote($index);
-    
-        return to_str($index, $level);
     }
 
     sub emit_javascript2_autovivify {
@@ -1016,7 +1002,7 @@ package Perlito5::AST::Lookup;
                    . ')'
         }
         return $self->emit_javascript2_container($level) . '.' . $method . '('
-                . Perlito5::JavaScript2::autoquote($self->{index_exp}, $level)
+                . Perlito5::JavaScript2::to_str($self->{index_exp}, $level)
             . ')';
     }
     sub emit_javascript2_set {
@@ -1052,7 +1038,7 @@ package Perlito5::AST::Lookup;
             )
         }
         return $self->emit_javascript2_container($level) . '.p5hset('
-                    . Perlito5::JavaScript2::autoquote($self->{index_exp}, $level) . ', '
+                    . Perlito5::JavaScript2::to_str($self->{index_exp}, $level) . ', '
                     . Perlito5::JavaScript2::to_scalar([$arguments], $level+1)
             . ')';
     }
@@ -1089,7 +1075,7 @@ package Perlito5::AST::Lookup;
             )
         }
         return $self->emit_javascript2_container($level) . '.p5hset('
-                    . Perlito5::JavaScript2::autoquote($self->{index_exp}, $level) . ', '
+                    . Perlito5::JavaScript2::to_str($self->{index_exp}, $level) . ', '
                     . $list . '.shift()'
             . ')';
     }
@@ -1382,7 +1368,7 @@ package Perlito5::AST::Call;
             $method = 'p5hget_array' if $autovivification_type eq 'array';
             $method = 'p5hget_hash'  if $autovivification_type eq 'hash';
             return Perlito5::JavaScript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'hash' )
-                . '._hash_.' . $method . '(' . Perlito5::JavaScript2::autoquote($self->{arguments}, $level+1, 'list')
+                . '._hash_.' . $method . '(' . Perlito5::JavaScript2::to_str($self->{arguments}, $level+1, 'list')
                 . ')';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
@@ -1418,7 +1404,7 @@ package Perlito5::AST::Call;
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
             return Perlito5::JavaScript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'hash' )
                     . '._hash_.p5hset(' 
-                        . Perlito5::JavaScript2::autoquote($self->{arguments}, $level+1, 'list') . ', '
+                        . Perlito5::JavaScript2::to_str($self->{arguments}, $level+1, 'list') . ', '
                         . Perlito5::JavaScript2::to_scalar([$arguments], $level+1)
                     . ')';
         }
@@ -1436,7 +1422,7 @@ package Perlito5::AST::Call;
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
             return Perlito5::JavaScript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'hash' )
                     . '._hash_.p5hset(' 
-                        . Perlito5::JavaScript2::autoquote($self->{arguments}, $level+1, 'list') . ', '
+                        . Perlito5::JavaScript2::to_str($self->{arguments}, $level+1, 'list') . ', '
                         . $list  . '.shift()'
                     . ')';
         }
