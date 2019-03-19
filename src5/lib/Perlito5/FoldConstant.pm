@@ -15,6 +15,17 @@ sub fold_constant {
             || $ref eq 'Perlito5::AST::Buf';
  
     if ($ref eq 'Perlito5::AST::Apply' ) {
+        if ( $self->{code} eq 'circumfix:<( )>'
+          || $self->{code} eq 'circumfix:<[ ]>'
+          || $self->{code} eq 'circumfix:<{ }>'
+          || $self->{code} eq 'list:<,>'
+           )
+        {
+            for my $pos ( 0 .. $#{ $self->{arguments} } ) {
+                $self->{arguments}[$pos] = fold_constant($self->{arguments}[$pos]);
+            }
+            return $self;
+        }
         if ($self->{code} eq 'infix:<+>') {
             my $arg0 = fold_constant($self->{arguments}[0]);
             my $arg1 = fold_constant($self->{arguments}[1]);
