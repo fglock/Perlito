@@ -67,11 +67,18 @@ token if_ {
         }
     |
         {
-            $MATCH->{capture} = Perlito5::AST::If->new(
-                cond      => Perlito5::FoldConstant::fold_constant(Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2]),
-                body      => Perlito5::Match::flat($MATCH->{block}),
-                otherwise => Perlito5::AST::Block->new(stmts => [ ]),
-             )
+            my $cond = Perlito5::FoldConstant::fold_constant(Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2]);
+            if (Perlito5::FoldConstant::is_constant($cond) && !$cond->value) {
+                # if-condition is always false
+                $MATCH->{capture} = $cond;
+            }
+            else {
+                $MATCH->{capture} = Perlito5::AST::If->new(
+                    cond      => Perlito5::FoldConstant::fold_constant(Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2]),
+                    body      => Perlito5::Match::flat($MATCH->{block}),
+                    otherwise => Perlito5::AST::Block->new(stmts => [ ]),
+                );
+            }
         }
     ]
     { Perlito5::Grammar::Scope::end_compile_time_scope() }
