@@ -65,7 +65,7 @@ sub fold_constant {
                 if ($arg0->value) {
                     return $arg1;
                 }
-                return Perlito5::AST::Apply->UNDEF();
+                return $arg0;
             }
         }
         if ($self->{code} eq 'infix:<||>') {

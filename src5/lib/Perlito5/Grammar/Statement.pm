@@ -507,6 +507,7 @@ sub statement_parse_inner {
         if ( ref( $ast ) eq 'Perlito5::AST::Apply' && $ast->{code} eq 'list:<=>>') {
             $ast->{arguments} = [ Perlito5::Grammar::Expression::autoquote_fat_arrow( @{$ast->{arguments}} ) ];
         }
+        $res->{capture} = Perlito5::FoldConstant::fold_constant($ast);
     }
     if (!$res) {
         # say "# not a statement or expression";
@@ -558,6 +559,7 @@ sub statement_parse_inner {
         # TODO - require a statement terminator
         return $res;
     }
+    $modifier->{capture} = Perlito5::FoldConstant::fold_constant($modifier->{capture});
     return $modifier;
 }
 
