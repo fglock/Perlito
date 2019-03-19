@@ -92,7 +92,7 @@ sub is_constant {
     return     $ref eq 'Perlito5::AST::Int'
             || $ref eq 'Perlito5::AST::Num'
             || $ref eq 'Perlito5::AST::Buf'
-            || ( $ref eq 'Perlito5::AST::Apply' && $self->{code} eq 'undef' );
+            || ( $ref eq 'Perlito5::AST::Apply' && $self->{code} eq 'undef' && !@{$self->{arguments}});
 }
  
 1;
