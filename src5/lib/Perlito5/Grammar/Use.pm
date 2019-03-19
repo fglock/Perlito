@@ -167,12 +167,17 @@ token stmt_use {
                         }
                     }
                     else {
-                        my $code = 'sub ' . $name . ' () { (' 
-                            . join(', ', 
+                        my $code = 'sub ' . $name . ' () { ';
+                        if (@$list != 1) {
+                            $code .= '(' . join(', ', 
                                 map { Perlito5::Dumper::_dumper($_) }
                                     @$list
-                              )
-                            . ') }';
+                              ) . ')';
+                        }
+                        else {
+                            $code .= Perlito5::Dumper::_dumper($list->[0]);
+                        }
+                        $code .= ' }';
                         # say "will do: $code";
                         my $m = Perlito5::Grammar::Statement::statement_parse( [ split "", $code ], 0);
                         Perlito5::Compiler::error "not a valid constant: @$list"
