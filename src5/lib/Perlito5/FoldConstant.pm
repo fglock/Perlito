@@ -89,6 +89,24 @@ sub fold_constant {
                 return $arg1;
             }
         }
+        if ($self->{code} eq 'int') {
+            my $arg0 = fold_constant($self->{arguments}[0]);
+            if (is_constant($arg0)) {
+                return Perlito5::AST::Int->new(int => int($arg0->value));
+            }
+        }
+        if ($self->{code} eq 'ord') {
+            my $arg0 = fold_constant($self->{arguments}[0]);
+            if (is_constant($arg0)) {
+                return Perlito5::AST::Int->new(int => ord($arg0->value));
+            }
+        }
+        if ($self->{code} eq 'chr') {
+            my $arg0 = fold_constant($self->{arguments}[0]);
+            if (is_constant($arg0)) {
+                return Perlito5::AST::Buf->new(buf => chr($arg0->value));
+            }
+        }
 
         if (my $const = $Perlito5::CONSTANT{ $self->{namespace} . '::' . $self->{code} }) {
             return $const;
