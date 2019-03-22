@@ -469,9 +469,11 @@ sub escape_string {
     my $has_char = 0;
     return '""' if $s eq '';
     my $v;
+    my $need_paren;
     for my $c ( split "", $s ) {
         $v = $safe_char{$c};
         if ( !defined $v ) {
+            $need_paren = 1;
             if (ord($c) > 65535) {
     
                 # this is necessary to support characters with code > 65535
@@ -486,7 +488,9 @@ sub escape_string {
         push @out, $v;
     }
     push @out, "\"";
-    return join("", @out);
+    return '(' . join("", @out) . ')';
+    # return '(' . join("", @out) . ')' if $need_paren;
+    # return join("", @out);
 }
 
 sub is_native {

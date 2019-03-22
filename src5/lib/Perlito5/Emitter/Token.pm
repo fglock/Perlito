@@ -111,14 +111,19 @@ sub emit_perl5 {
         return $self->{or_list}[0]->emit_perl5;
     }
 
-    my $pos = '$' . Perlito5::get_label();
-
-    '(do { '
-        . 'my ' . $pos . ' = $MATCH->{to}; ('
-        . join( ') || ($MATCH->{to} = ' . $pos . ', ',
-              map( $_->emit_perl5, @{$self->{or_list}} )
+    '('
+        . 'push(@STACK, $MATCH->{to}) && '
+        . '('
+        . join( ' || ',
+              map(
+                    '(1+($MATCH->{to} = $STACK[-1]) && (' . $_->emit_perl5 . '))', 
+                    @{$self->{or_list}} 
+                )
             )
-    . ') })';
+        . ' ? pop(@STACK) || 1'
+        . ' : pop(@STACK) && 0'
+        . ')'
+    .')';
 }
 sub set_captures_to_array {
     my $self = $_[0];
@@ -271,11 +276,11 @@ sub rule_exp { $_[0]->{rule_exp} }
 sub emit_perl5 {
     my $self = $_[0];
 
-    '(push(@STACK, $MATCH) && ' .
-    '($MATCH = { \'from\' => $MATCH->{to}, \'to\' => $MATCH->{to} }) && ' .
-    $self->{rule_exp}->emit_perl5() .
-    ' ? ($MATCH = pop(@STACK))' .
-    ' : ($MATCH = pop(@STACK)) && 0) ' .
+          '(push(@STACK, $MATCH->{to}) && '
+        . $self->{rule_exp}->emit_perl5()
+        . ' ? ($MATCH->{to} = pop(@STACK)) || 1'
+        . ' : ($MATCH->{to} = pop(@STACK)) && 0'
+        . ')'
 }
 sub set_captures_to_array {
     my $self = $_[0];
@@ -289,11 +294,11 @@ sub rule_exp { $_[0]->{rule_exp} }
 sub emit_perl5 {
     my $self = $_[0];
 
-    '(push(@STACK, $MATCH) && ' .
-    '($MATCH = { \'from\' => $MATCH->{to}, \'to\' => $MATCH->{to} }) && ' .
-    $self->{rule_exp}->emit_perl5() .
-    ' ? ($MATCH = pop(@STACK)) && 0' .
-    ' : ($MATCH = pop(@STACK))) ' .
+          '(push(@STACK, $MATCH->{to}) && '
+        . $self->{rule_exp}->emit_perl5()
+        . ' ? ($MATCH->{to} = pop(@STACK)) && 0'
+        . ' : ($MATCH->{to} = pop(@STACK)) || 1'
+        . ')'
 }
 sub set_captures_to_array {
     my $self = $_[0];
