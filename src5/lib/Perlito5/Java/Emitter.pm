@@ -293,7 +293,7 @@ package Perlito5::Java::LexicalBlock;
                 if $block_label;
 
             my @continue;
-            if ($self->{continue}) {
+            if ( $self->{continue} && @{$self->{continue}{stmts}} ) {
 
                 # TODO - set up next/last/redo inside continue block
 
