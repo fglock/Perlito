@@ -20,6 +20,7 @@ token term_token {
                 'my $str     = $_[0]; ' .
                 'my $pos     = $_[1]; ' .
                 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' .
+                'my @STACK; ' .
                 'my $tmp = ( ' .
                     Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex6::rule"})->emit_perl5() .
                 '); ' .

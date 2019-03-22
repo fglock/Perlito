@@ -271,15 +271,11 @@ sub rule_exp { $_[0]->{rule_exp} }
 sub emit_perl5 {
     my $self = $_[0];
 
-    '(do { ' .
-        'my $tmp = $MATCH; ' .
-        '$MATCH = { \'from\' => $tmp->{to}, \'to\' => $tmp->{to} }; ' .
-        'my $res = ' .
-            $self->{rule_exp}->emit_perl5() .
-        '; ' .
-        '$MATCH = $tmp; ' .
-        '$res ? 1 : 0 ' .
-    '})'
+    '(push(@STACK, $MATCH) && ' .
+    '($MATCH = { \'from\' => $MATCH->{to}, \'to\' => $MATCH->{to} }) && ' .
+    $self->{rule_exp}->emit_perl5() .
+    ' ? ($MATCH = pop(@STACK))' .
+    ' : ($MATCH = pop(@STACK)) && 0) ' .
 }
 sub set_captures_to_array {
     my $self = $_[0];
@@ -293,15 +289,11 @@ sub rule_exp { $_[0]->{rule_exp} }
 sub emit_perl5 {
     my $self = $_[0];
 
-    '(do { ' .
-        'my $tmp = $MATCH; ' .
-        '$MATCH = { \'from\' => $tmp->{to}, \'to\' => $tmp->{to} }; ' .
-        'my $res = ' .
-            $self->{rule_exp}->emit_perl5() .
-        '; ' .
-        '$MATCH = $tmp; ' .
-        '$res ? 0 : 1 ' .
-    '})'
+    '(push(@STACK, $MATCH) && ' .
+    '($MATCH = { \'from\' => $MATCH->{to}, \'to\' => $MATCH->{to} }) && ' .
+    $self->{rule_exp}->emit_perl5() .
+    ' ? ($MATCH = pop(@STACK)) && 0' .
+    ' : ($MATCH = pop(@STACK))) ' .
 }
 sub set_captures_to_array {
     my $self = $_[0];
