@@ -172,8 +172,8 @@ sub emit_perl5 {
           '(push(@STACK, $MATCH->{to}) && '
         .  'push(@STACK, scalar(' . $meth . '($str, $MATCH->{to}))) && '
         .  '$STACK[-1]'
-        .  ' ? (1+($MATCH->{to} = $STACK[-1]{to}) && 1+($MATCH->{\'' . $meth . '\'} = pop(@STACK)) && pop(@STACK)) || 1'
-        .  ' : 1+pop(@STACK) && pop(@STACK) && 0'
+        .  ' ? (1+($MATCH->{to} = $STACK[-1]{to}) && ($MATCH->{\'' . $meth . '\'} = pop(@STACK)) && pop(@STACK)) || 1'
+        .  ' : (pop(@STACK) || pop(@STACK)) && 0'
         . ')'
     }
     elsif ($self->{captures} > 1) {
@@ -184,7 +184,15 @@ sub emit_perl5 {
                 . '} else { 0 }; '
     }
     else {
-        $code = 'if ($m2) { $MATCH->{to} = $m2->{to}; 1 } else { 0 }; '
+        # $code = 'if ($m2) { $MATCH->{to} = $m2->{to}; 1 } else { 0 }; '
+
+        return
+          '(push(@STACK, $MATCH->{to}) && '
+        .  'push(@STACK, scalar(' . $meth . '($str, $MATCH->{to}))) && '
+        .  '$STACK[-1]'
+        .  ' ? (1+($MATCH->{to} = $STACK[-1]{to}) && pop(@STACK) && pop(@STACK)) || 1'
+        .  ' : (pop(@STACK) || pop(@STACK)) && 0'
+        . ')'
     }
 
     '(do { '
