@@ -1,5 +1,6 @@
 use v5;
 
+use strict;
 
 package Perlito5::AST::CompUnit;
 sub new {

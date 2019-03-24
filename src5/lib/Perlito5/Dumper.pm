@@ -1,5 +1,7 @@
 package Perlito5::Dumper;
 
+use strict;
+
 sub ast_dumper {
     my $seen  = {};
     my $level = '';
