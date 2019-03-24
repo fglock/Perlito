@@ -5,6 +5,8 @@ use Perlito5::Grammar::Bareword;
 use Perlito5::Grammar::Attribute;
 use Perlito5::Grammar::Statement;
 
+use strict;
+
 sub autoquote_fat_arrow {
         my @args = @_;
 

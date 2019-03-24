@@ -13,6 +13,8 @@ use Perlito5::Grammar::Map;
 use Perlito5::Grammar::Attribute;
 use Perlito5::Grammar::Number;
 
+use strict;
+
 our %is_ident_start = map { $_ => 1 } (
     'a' .. 'z',
     'A' .. 'Z',

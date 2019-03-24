@@ -2,6 +2,8 @@ package Perlito5::Grammar::Space;
 
 use Perlito5::Grammar::Precedence;
 
+use strict;
+
 my %line_index;
 sub count_line {
     my $pos = $_[0];

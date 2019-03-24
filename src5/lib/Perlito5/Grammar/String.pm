@@ -4,6 +4,8 @@ package Perlito5::Grammar::String;
 
 use Perlito5::Grammar::Precedence;
 
+use strict;
+
 token term_q_quote {
     [ 'q' [ '#' | <.Perlito5::Grammar::Space::opt_ws> <!before '=>' > . ]
     | \'
