@@ -43,7 +43,7 @@ sub autoquote_fat_arrow {
                         $args[$i] = Perlito5::AST::Buf->new( buf => '-' . $full_name );
                     }
                 }
-                elsif (  ($index->code eq 'prefix:<+>')
+                elsif (  ($index->{code} eq 'prefix:<+>')
                       && (ref($index->{arguments}[0]) eq 'Perlito5::AST::Apply')
                       && $index->{arguments}[0]{bareword}
                       )
@@ -86,7 +86,7 @@ sub expand_list {
     if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<,>') {
         return [  map { expand_list_fat_arrow($_) }
                  grep {defined}
-                      @{$param_list->arguments}
+                      @{$param_list->{arguments}}
                ];
     }
     if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->{code} eq 'list:<=>>') {
@@ -275,11 +275,11 @@ sub reduce_postfix {
     }
     if ($v->[1] eq '( )') {
         my $param_list = expand_list($v->[2]);
-        if ( ref($value) eq 'Perlito5::AST::Apply' && !(defined($value->arguments))) {
+        if ( ref($value) eq 'Perlito5::AST::Apply' && !(defined($value->{arguments}))) {
             $value->{arguments} = $param_list;
             return $value;
         }
-        if ( ref($value) eq 'Perlito5::AST::Call' && !(defined($value->arguments))) {
+        if ( ref($value) eq 'Perlito5::AST::Call' && !(defined($value->{arguments}))) {
             $value->{arguments} = $param_list;
             return $value;
         }
@@ -387,7 +387,7 @@ sub reduce_to_ast {
                     Perlito5::AST::Apply->new(
                         namespace => $v2->namespace,
                         code      => $v2->{code},
-                        arguments => [ @{ $v2->arguments } ],
+                        arguments => [ @{ $v2->{arguments} } ],
                       );
             }
             else {
@@ -412,8 +412,8 @@ sub reduce_to_ast {
             push @$num_stack,
                 Perlito5::AST::Apply->new(
                     namespace => '',
-                    code      => ($arg->[0])->{code},
-                    arguments => [ @{ ($arg->[0])->arguments }, $arg->[1] ],
+                    code      => $arg->[0]{code},
+                    arguments => [ @{ $arg->[0]{arguments} }, $arg->[1] ],
                   );
             return;
         }

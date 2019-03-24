@@ -32,7 +32,7 @@ package Perlito5::AST::Apply;
             #     return join( ";\n" . Perlito5::JavaScript2::tab($level),
             #         'var ' . $tmp  . ' = ' . Perlito5::JavaScript2::to_list([$arguments], $level+1),
             #         ( map $_->emit_javascript2_set_list($level, $tmp),
-            #             @{ $parameters->arguments }
+            #             @{ $parameters->{arguments} }
             #         ),
             #     );
             # }
@@ -43,7 +43,7 @@ package Perlito5::AST::Apply;
                 'var ' . $tmp  . ' = ' . Perlito5::JavaScript2::to_list([$arguments], $level+1) . ";",
                 'var ' . $tmp2 . ' = ' . $tmp . ".slice(0);",
                 ( map $_->emit_javascript2_set_list($level+1, $tmp) . ";",
-                    @{ $parameters->arguments }
+                    @{ $parameters->{arguments} }
                 ),
                 'return ' . $tmp2,
             );

@@ -327,7 +327,7 @@ package Perlito5::JavaScript2;
                && ( $item->{code} eq 'circumfix:<( )>' || $item->{code} eq 'list:<,>' || $item->{code} eq 'list:<=>>' )
                )
             {
-                for my $arg ( @{ to_list_preprocess($item->arguments) } ) {
+                for my $arg ( @{ to_list_preprocess($item->{arguments}) } ) {
                     push( @items, $arg);
                 }
             }
@@ -359,7 +359,7 @@ package Perlito5::JavaScript2;
                && ( $item->{code} eq 'list:<,>' || $item->{code} eq 'list:<=>>' )
                )
             {
-                for my $arg ( @{ to_scalar_preprocess($item->arguments) } ) {
+                for my $arg ( @{ to_scalar_preprocess($item->{arguments}) } ) {
                     push( @items, $arg);
                 }
             }
@@ -968,7 +968,7 @@ package Perlito5::AST::Lookup;
             if ( $self->{obj}->isa('Perlito5::AST::Var') ) {
                 $v = $self->{obj};
             }
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->{arguments} )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
             return 'p5list_lookup_slice('
@@ -992,7 +992,7 @@ package Perlito5::AST::Lookup;
             if ( $self->{obj}->isa('Perlito5::AST::Var') ) {
                 $v = $self->{obj};
             }
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->{arguments} )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
             return 'p5hash_lookup_slice('
@@ -1020,7 +1020,7 @@ package Perlito5::AST::Lookup;
             my $v;
             $v = $self->{obj}
                 if $self->{obj}->isa('Perlito5::AST::Var');
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->{arguments} )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
             return Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, 
                     'var a = [];',
@@ -1058,7 +1058,7 @@ package Perlito5::AST::Lookup;
             my $v;
             $v = $self->{obj}
                 if $self->{obj}->isa('Perlito5::AST::Var');
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->{arguments} )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
             return Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, 
                     'var a = [];',

@@ -620,7 +620,7 @@ sub insert_return {
             );
     }
     if ( (ref($self) eq 'Perlito5::AST::Apply' ) ) {
-        if ( $self->code eq 'return' ) {
+        if ( $self->{code} eq 'return' ) {
             return $self;
         }
         return Perlito5::AST::Apply->new(

@@ -956,7 +956,7 @@ package Perlito5::AST::Lookup;
             if ( $self->{obj}->isa('Perlito5::AST::Var') ) {
                 $v = $self->{obj};
             }
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->{arguments} )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
             return '((PlHash)' . $v->emit_java($level, 'scalar') . ").hget_list_of_aliases("
@@ -979,7 +979,7 @@ package Perlito5::AST::Lookup;
             if ( $self->{obj}->isa('Perlito5::AST::Var') ) {
                 $v = $self->{obj};
             }
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->{arguments} )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
             return $v->emit_java($level) . '.hget_hash_list_of_aliases('

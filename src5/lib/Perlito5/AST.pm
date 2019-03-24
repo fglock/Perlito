@@ -132,7 +132,7 @@ sub autoquote {
                 return Perlito5::AST::Buf->new( buf => '-' . $full_name );
             }
         }
-        elsif (  ($index->code eq 'prefix:<+>')
+        elsif (  ($index->{code} eq 'prefix:<+>')
               && (ref($index->{arguments}[0]) eq 'Perlito5::AST::Apply')
               && $index->{arguments}[0]{bareword}
               )
@@ -247,15 +247,15 @@ package Perlito5::AST::Call;
 sub new { my $class = shift; bless {@_}, $class }
 sub invocant { $_[0]->{invocant} }
 sub method { $_[0]->{method} }
-sub arguments { $_[0]->{arguments} }
+# sub arguments { $_[0]->{arguments} }
 
 
 
 package Perlito5::AST::Apply;
 sub new { my $class = shift; bless {@_}, $class }
-sub code        { $_[0]->{code}        }    # print
+# sub code        { $_[0]->{code}        }    # print
 sub special_arg { $_[0]->{special_arg} }    # STDOUT
-sub arguments   { $_[0]->{arguments}   }    # 1,2,3
+# sub arguments   { $_[0]->{arguments}   }    # 1,2,3
 sub namespace   { $_[0]->{namespace}   }    # CORE
 # ignore_proto                              # &mysub
 
