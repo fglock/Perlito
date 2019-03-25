@@ -5111,14 +5111,14 @@ class PlClass {
     }
 
     public PlObject method_lookup(String method, int level) {
-        if (this.methodCache.containsKey(method)) {
+        PlObject methodCode = this.methodCache.get(method);
+        if (methodCode != null) {
             // retrieve from method cache
             // PlCORE.warn("match " + method);
-            return this.methodCache.get(method);
+            return methodCode;
         }
         // PlCORE.warn("miss " + method);
 
-        PlObject methodCode;
         int pos = method.indexOf("::");
         if (pos != -1) {
             // fully qualified method name
