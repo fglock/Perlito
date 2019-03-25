@@ -5053,6 +5053,10 @@ class PlClass {
         if (methodCode.is_undef()) {
             // method not found
             // "overload" methods have no AUTOLOAD
+            //
+            // TODO: handle "nomethod", "fallback"
+            // TODO: cache overload_lookup()
+            //
             // lookup in @ISA
           search:
             for (PlObject className : the_isa.arrayRef.o.array_deref_strict()) {
