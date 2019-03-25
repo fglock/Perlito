@@ -819,23 +819,6 @@ class PerlOp {
 
     // objects
 
-    public static final PlObject callSuper( String method, String packageName, PlArray args, int context ) {
-        // SUPER calls:  $v->SUPER::x;
-        PlObject methodCode = PlCx.UNDEF;
-      ISA:
-        for (PlObject className : PlV.array_get(packageName + "::ISA")) {
-            methodCode = PlClass.getInstance(className).method_lookup(method, 0);
-            if (!methodCode.is_undef()) {
-                break ISA;
-            }
-        }
-        if (methodCode.is_undef()) {
-            PlCORE.die( "Can't locate object method \"" + method
-                + "\" via package \"" + packageName + "\"");
-        }
-        return PerlOp.call(methodCode, args, context);
-    }
-
     // coderef methods can be called on ANY invocant
     //  $m = sub {...};
     //  $a->$m
@@ -5125,7 +5108,22 @@ class PlClass {
         if (pos != -1) {
             // fully qualified method name
             if (method.startsWith("SUPER::")) {
-                PlCORE.die("not implemented: " + method); 
+
+                // SUPER calls:  $v->SUPER::x;
+                method = method.substring(7);
+              ISA:
+                for (PlObject className : the_isa.arrayRef.o.array_deref_strict()) {
+                    methodCode = PlClass.getInstance(className).method_lookup(method, level+1);
+                    if (!methodCode.is_undef()) {
+                        break ISA;
+                    }
+                }
+                if (methodCode.is_undef()) {
+                    PlCORE.die( "Can't locate object method \"SUPER::" + method
+                        + "\" via package \"" + className + "\"");
+                }
+                return methodCode;
+
             }
             return PlV.cget(method);
         }

@@ -1661,19 +1661,6 @@ package Perlito5::AST::Call;
                         . Perlito5::Java::to_list($self->{arguments})
                     . ')';
         }
-        if  (substr($meth, 0, 7) eq 'SUPER::')  {
-            # $x->SUPER::meth
-            my $method = substr($meth, 7);
-            if ($method) {
-                $method = Perlito5::Java::escape_string($method);
-                return 'PerlOp.callSuper('
-                         . $method . ', ' 
-                         . Perlito5::Java::pkg() . ', '
-                         . Perlito5::Java::to_method_call_param_list($self->{invocant}, $self->{arguments}, $level + 1) . ', '
-                         . Perlito5::Java::to_context($wantarray)
-                  . ')'
-            }
-        }
 
         # class method call in native 'Java' packages
         #
