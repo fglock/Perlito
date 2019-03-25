@@ -5006,6 +5006,7 @@ class PlClass {
     public Boolean overload_flag;
     public Boolean overload_fallback_flag;
     public HashMap<String, PlObject> methodCache;
+    public PlStringConstant the_isa;
 
     protected PlClass(String s) {
         this.className = s;
@@ -5013,6 +5014,7 @@ class PlClass {
         this.overload_flag = null;
         this.overload_fallback_flag = null;
         this.methodCache = new HashMap<String, PlObject>();
+        this.the_isa = PlStringConstant.getConstant(s + "::ISA");
     }
     public static PlClass getInstance(PlObject s) {
         return PlClass.getInstance(s.toString());
@@ -5070,7 +5072,7 @@ class PlClass {
             // "overload" methods have no AUTOLOAD
             // lookup in @ISA
           search:
-            for (PlObject className : PlV.array_get(className + "::ISA")) {
+            for (PlObject className : the_isa.arrayRef.o.array_deref_strict()) {
                 // prevent infinite loop
                 if (level >= 100) {
                     PlCORE.die("Recursive inheritance detected in package '" + className + "'");
@@ -5101,7 +5103,7 @@ class PlClass {
             this.methodCache.remove(method);
         }
         // TODO - lookup in all classes that inherit from us
-        // for (PlObject className : PlV.array_get(className + "::ISA")) {
+        // for (PlObject className : the_isa.arrayRef.o.array_deref_strict()) {
         //     // prevent infinite loop
         //     if (level >= 100) {
         //         PlCORE.die("Recursive inheritance detected in package '" + className + "'");
@@ -5150,7 +5152,7 @@ class PlClass {
             }
 
             // lookup in @ISA
-            for (PlObject className : PlV.array_get(className + "::ISA")) {
+            for (PlObject className : the_isa.arrayRef.o.array_deref_strict()) {
                 // prevent infinite loop
                 if (level >= 100) {
                     PlCORE.die("Recursive inheritance detected in package '" + className + "'");
@@ -5175,7 +5177,7 @@ class PlClass {
         }
 
         // lookup in @ISA
-        for (PlObject isa_item : PlV.array_get(className + "::ISA")) {
+        for (PlObject isa_item : the_isa.arrayRef.o.array_deref_strict()) {
             String className = isa_item.toString();
             // prevent infinite loop
             if (level >= 100) {
