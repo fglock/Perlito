@@ -1212,7 +1212,7 @@ package Perlito5::AST::Var;
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
-                $s = $scalar . '.arrayRef.o.array_deref_strict()';
+                $s = $scalar . '.arrayRef.ar';
             }
             if ($self->{sigil} eq '$#') {
                 return $s . '.end_of_array_index()'
@@ -1310,7 +1310,7 @@ package Perlito5::AST::Var;
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
-                return $scalar . '.arrayRef.o.array_deref_set(' .  Perlito5::Java::to_list([$arguments], $level+1) . ')';
+                return $scalar . '.arrayRef.ar.set(' .  Perlito5::Java::to_list([$arguments], $level+1) . ')';
             }
             return "PlV.array_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }

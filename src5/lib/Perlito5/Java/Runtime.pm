@@ -745,7 +745,7 @@ class PerlOp {
         PlStringConstant glob = PlStringConstant.getConstant(sname);
         glob.codeRef.set(PlCx.UNDEF);
         glob.scalarRef.set(PlCx.UNDEF);
-        glob.arrayRef.set(new PlArrayRef());
+        glob.arrayRef = new PlArrayRef();
         glob.hashRef.set(new PlHashRef());
         glob.fileRef.set(new PlFileHandle(sname));
         return PlCx.UNDEF; 
@@ -1128,10 +1128,8 @@ class PerlOp {
         PlV.local_stack.a.add(new PlString(name));
         PlV.local_stack.a.add(glob.arrayRef);
         PlV.local_stack.a.add(new PlInt(21));       // XXX magic number
-        PlLvalue newValue = new PlLvalue();
-        newValue.set(value);
-        glob.arrayRef = newValue;
-        return newValue;
+        glob.arrayRef = (PlArrayRef)value;
+        return value;
     }
     public static final PlObject push_local_hash(PlObject value, String name) {
         PlStringConstant glob = PlStringConstant.getConstant(name);
@@ -1205,7 +1203,7 @@ EOT
                     break;
                 case 21:      // XXX magic number
                     index     = PlV.local_stack.pop();
-                    PlStringConstant.getConstant(index.toString()).arrayRef = (PlLvalue)v;
+                    PlStringConstant.getConstant(index.toString()).arrayRef = (PlArrayRef)(v.get());
                     break;
                 case 22:      // XXX magic number
                     index     = PlV.local_stack.pop();
@@ -2638,34 +2636,32 @@ EOT
 
     // array
     public static final PlArray array_get(String name) {
-        return PlStringConstant.getConstant(name).arrayRef.array_deref_strict();
+        return PlStringConstant.getConstant(name).arrayRef.ar;
     }
     public static final PlArray array_get_local(String name) {
-        PlLvalue o = (PlLvalue)PerlOp.push_local_array(new PlArrayRef(), name);
-        return o.array_deref_strict();
+        return ((PlArrayRef)PerlOp.push_local_array(new PlArrayRef(), name)).ar;
     }
     public static final PlObject array_set(String name, PlObject v) {
-        PlLvalue o = PlStringConstant.getConstant(name).arrayRef;
-        return o.array_deref_set(v);
+        return PlStringConstant.getConstant(name).arrayRef.ar.set(v);
     }
     public static final PlObject array_set_local(String name, PlObject v) {
-        PlLvalue o = (PlLvalue)PerlOp.push_local_array(new PlArrayRef(), name);
+        PlObject o = PerlOp.push_local_array(new PlArrayRef(), name);
         return o.array_deref_set(v);
     }
     public static final PlLvalue aget(String name) {
-        return PlStringConstant.getConstant(name).arrayRef;
+        return new PlLvalue(PlStringConstant.getConstant(name).arrayRef);
     }
     public static final PlLvalue aget_local(String name) {
         return (PlLvalue)PerlOp.push_local_array(new PlArrayRef(), name);
     }
     public static final PlObject aset(String name, PlObject v) {
-        return PlStringConstant.getConstant(name).arrayRef.array_deref_set(v);
+        return PlStringConstant.getConstant(name).arrayRef.ar.set(v);
     }
     public static final PlObject aset_local(String name, PlObject v) {
-        return (PlLvalue)PerlOp.push_local_array(v, name);
+        return PerlOp.push_local_array(v, name);
     }
     public static final void aset_alias(String name, PlArray v) {
-        PlStringConstant.getConstant(name).arrayRef = new PlLvalue(v);
+        PlStringConstant.getConstant(name).arrayRef.ar = v;
     }
 
     // filehandle
@@ -2724,7 +2720,10 @@ EOT
             PlV.hset(name, value);
         }
         else if (value.is_arrayref()) {
-            PlStringConstant.getConstant(name).arrayRef.set(value);
+            if (value.is_lvalue()) {
+                value = value.get();
+            }
+            PlStringConstant.getConstant(name).arrayRef = (PlArrayRef)value;
         }
         else if (value.is_scalarref()) {
             PlV.sset(name, value.scalar_deref(nameSpace));
@@ -5059,7 +5058,7 @@ class PlClass {
             //
             // lookup in @ISA
           search:
-            for (PlObject className : the_isa.arrayRef.o.array_deref_strict()) {
+            for (PlObject className : the_isa.arrayRef.ar) {
                 // prevent infinite loop
                 if (level >= 100) {
                     PlCORE.die("Recursive inheritance detected in package '" + className + "'");
@@ -5090,7 +5089,7 @@ class PlClass {
             this.methodCache.remove(method);
         }
         // TODO - lookup in all classes that inherit from us
-        // for (PlObject className : the_isa.arrayRef.o.array_deref_strict()) {
+        // for (PlObject className : the_isa.arrayRef.ar) {
         //     // prevent infinite loop
         //     if (level >= 100) {
         //         PlCORE.die("Recursive inheritance detected in package '" + className + "'");
@@ -5116,7 +5115,7 @@ class PlClass {
                 // SUPER calls:  $v->SUPER::x;
                 method = method.substring(7);
               ISA:
-                for (PlObject className : the_isa.arrayRef.o.array_deref_strict()) {
+                for (PlObject className : the_isa.arrayRef.ar) {
                     methodCode = PlClass.getInstance(className).method_lookup(method, level+1);
                     if (!methodCode.is_undef()) {
                         break ISA;
@@ -5154,7 +5153,7 @@ class PlClass {
             }
 
             // lookup in @ISA
-            for (PlObject className : the_isa.arrayRef.o.array_deref_strict()) {
+            for (PlObject className : the_isa.arrayRef.ar) {
                 // prevent infinite loop
                 if (level >= 100) {
                     PlCORE.die("Recursive inheritance detected in package '" + className + "'");
@@ -5179,7 +5178,7 @@ class PlClass {
         }
 
         // lookup in @ISA
-        for (PlObject isa_item : the_isa.arrayRef.o.array_deref_strict()) {
+        for (PlObject isa_item : the_isa.arrayRef.ar) {
             String className = isa_item.toString();
             // prevent infinite loop
             if (level >= 100) {
@@ -8644,7 +8643,7 @@ class PlStringConstant extends PlString {
     private PlClass cls;
     public PlLvalue codeRef;   // CODE
     public PlLvalue scalarRef; // SCALAR
-    public PlLvalue arrayRef;  // ARRAY
+    public PlArrayRef arrayRef;  // ARRAY
     public PlLvalue hashRef;   // HASH
     public PlLvalue fileRef;   // IO
     // TODO - "FORMAT"
@@ -8663,7 +8662,7 @@ class PlStringConstant extends PlString {
 
         this.codeRef = new PlLvalue();
         this.scalarRef = new PlLvalue();
-        this.arrayRef = new PlLvalue(new PlArrayRef());
+        this.arrayRef = new PlArrayRef();
         this.hashRef = new PlLvalue(new PlHashRef());
         this.fileRef = new PlLvalue(new PlFileHandle(s));
     }
