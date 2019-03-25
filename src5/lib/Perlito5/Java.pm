@@ -999,6 +999,65 @@ sub to_native_bool {
                 }
                 return '!' . $arg->emit_java($level, 'scalar') . '.is_undef()';
             }
+
+            if (  $cond->{code} eq 'exists' ) {
+                my $arg = $cond->{arguments}[0];
+
+                if ((ref($arg) eq 'Perlito5::AST::Lookup' )) {
+                    my $v = $arg->obj;
+                    if (  (ref($v) eq 'Perlito5::AST::Var')
+                       && $v->{sigil} eq '$'
+                       )
+                    {
+                        # $v->{sigil} = '%';
+                        return $v->emit_java($level, $wantarray) . '.hexists_boolean('
+                            .   Perlito5::Java::to_native_str($arg->{index_exp}, $level)
+                            . ')';
+                    }
+
+                    if (  (ref($v) eq 'Perlito5::AST::Apply')
+                       && $v->{code} eq 'prefix:<$>'
+                       )
+                    {
+                        # $$a{0} ==> $a->{0}
+                        $arg = Perlito5::AST::Call->new(
+                            'method' => 'postcircumfix:<{ }>',
+                            'invocant' => $v->{arguments}[0],
+                            'arguments' => $arg->{index_exp},
+                        );
+                    }
+                    else {
+                        return $v->emit_java($level, $wantarray, 'hash') . '.hexists_boolean('
+                            .   Perlito5::Java::to_native_str($arg->{index_exp}, $level)
+                            . ')';
+                    }
+                }
+                if ((ref($arg) eq 'Perlito5::AST::Call' )) {
+                    if ( $arg->method eq 'postcircumfix:<{ }>' ) {
+                        return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.hexists_boolean('
+                            .   Perlito5::Java::to_native_str($arg->{arguments}, $level)
+                            . ')';
+                    }
+                }
+                if (  (ref($arg) eq 'Perlito5::AST::Var')
+                   && $arg->{sigil} eq '&'
+                   )
+                {
+                    # TODO exist() + 'my sub'
+                    my $name = $arg->{name};
+                    my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
+                    return 'PlV.cget_no_autoload(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ').is_coderef()';
+                }
+                if (  (ref($arg) eq 'Perlito5::AST::Apply')
+                   && $arg->{code} eq 'prefix:<&>'
+                   )
+                {
+                    my $arg2 = $arg->{arguments}->[0];
+                    return 'PlV.code_lookup_by_name_no_autoload(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg2->emit_java($level) . ')'
+                        . '.is_coderef()';
+                }
+            }   # /exists
+
             if (  $cond->{code} eq 'prefix:<@>'
                )
             {

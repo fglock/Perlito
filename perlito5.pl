@@ -18544,6 +18544,35 @@ CORE.sprintf = function(List__) {
                 }
                 return "!" . $arg->emit_java($level, "scalar") . ".is_undef()"
             }
+            if ($cond->{"code"} eq "exists") {
+                my $arg = $cond->{"arguments"}->[0];
+                if ((ref($arg) eq "Perlito5::AST::Lookup")) {
+                    my $v = $arg->obj();
+                    if ((ref($v) eq "Perlito5::AST::Var") && $v->{"sigil"} eq "\$") {;
+                        return $v->emit_java($level, $wantarray) . ".hexists_boolean(" . Perlito5::Java::to_native_str($arg->{"index_exp"}, $level) . ")"
+                    }
+                    if ((ref($v) eq "Perlito5::AST::Apply") && $v->{"code"} eq "prefix:<\$>") {;
+                        $arg = Perlito5::AST::Call::->new("method", "postcircumfix:<{ }>", "invocant", $v->{"arguments"}->[0], "arguments", $arg->{"index_exp"})
+                    }
+                    else {;
+                        return $v->emit_java($level, $wantarray, "hash") . ".hexists_boolean(" . Perlito5::Java::to_native_str($arg->{"index_exp"}, $level) . ")"
+                    }
+                }
+                if ((ref($arg) eq "Perlito5::AST::Call")) {;
+                    if ($arg->method() eq "postcircumfix:<{ }>") {;
+                        return $arg->invocant()->emit_java($level, $wantarray, "hash") . ".hexists_boolean(" . Perlito5::Java::to_native_str($arg->{"arguments"}, $level) . ")"
+                    }
+                }
+                if ((ref($arg) eq "Perlito5::AST::Var") && $arg->{"sigil"} eq "&") {
+                    my $name = $arg->{"name"};
+                    my $namespace = $arg->{"namespace"} || $Perlito5::PKG_NAME;
+                    return "PlV.cget_no_autoload(" . Perlito5::Java::escape_string($namespace . "::" . $name) . ").is_coderef()"
+                }
+                if ((ref($arg) eq "Perlito5::AST::Apply") && $arg->{"code"} eq "prefix:<&>") {
+                    my $arg2 = $arg->{"arguments"}->[0];
+                    return "PlV.code_lookup_by_name_no_autoload(" . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ", " . $arg2->emit_java($level) . ")" . ".is_coderef()"
+                }
+            }
             if ($cond->{"code"} eq "prefix:<\@>") {;
                 if (@{$cond->{"arguments"}} == 1) {;
                     return $cond->emit_java($level, "list") . ".length_of_array_boolean()"
@@ -25414,6 +25443,13 @@ class PlObject implements Cloneable, Iterable<PlObject> {
     public PlObject hexists(PlObject i) {
         return this.hexists(i.toString());
     }
+    public boolean hexists_boolean(String i) {
+        PlCORE.die(\"exists argument is not a HASH or ARRAY element or a subroutine\");
+        return false;
+    }
+    public boolean hexists_boolean(PlObject i) {
+        return this.hexists_boolean(i.toString());
+    }
     public PlObject adelete(int want, PlObject i) {
         PlCORE.die(\"delete argument is not a HASH or ARRAY element or slice\");
         return this;
@@ -27168,6 +27204,12 @@ class PlHashRef extends PlReference {
     public PlObject hexists(PlObject i) {
         return this.ha.hexists(i);
     }
+    public boolean hexists_boolean(String i) {
+        return this.ha.hexists_boolean(i);
+    }
+    public boolean hexists_boolean(PlObject i) {
+        return this.ha.hexists_boolean(i);
+    }
     public PlObject hdelete(int want, PlObject a) {
         return this.ha.hdelete(want, a);
     }
@@ -28382,6 +28424,14 @@ class PlLvalue extends PlScalarObject {
     public PlObject hexists(PlObject a) {
         // exists \$v->{\$a}
         return this.get().hexists(a);
+    }
+    public boolean hexists_boolean(String a) {
+        // exists \$v->{\$a}
+        return this.get().hexists_boolean(a);
+    }
+    public boolean hexists_boolean(PlObject a) {
+        // exists \$v->{\$a}
+        return this.get().hexists_boolean(a);
     }
     public PlObject aexists(PlObject a) {
         // exists \$v->[\$a]
@@ -30078,6 +30128,12 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     }
     public PlObject hexists(PlObject i) {
         return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
+    }
+    public boolean hexists_boolean(String i) {
+        return this.h.containsKey(i);
+    }
+    public boolean hexists_boolean(PlObject i) {
+        return this.h.containsKey(i.toString());
     }
     public PlObject hdelete(int want, PlObject i) {
         PlObject r = this.h.remove(i.toString());

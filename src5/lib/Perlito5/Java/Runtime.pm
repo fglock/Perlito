@@ -3156,6 +3156,13 @@ EOT
     public PlObject hexists(PlObject i) {
         return this.hexists(i.toString());
     }
+    public boolean hexists_boolean(String i) {
+        PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
+        return false;
+    }
+    public boolean hexists_boolean(PlObject i) {
+        return this.hexists_boolean(i.toString());
+    }
     public PlObject adelete(int want, PlObject i) {
         PlCORE.die("delete argument is not a HASH or ARRAY element or slice");
         return this;
@@ -4964,6 +4971,12 @@ class PlHashRef extends PlReference {
     public PlObject hexists(PlObject i) {
         return this.ha.hexists(i);
     }
+    public boolean hexists_boolean(String i) {
+        return this.ha.hexists_boolean(i);
+    }
+    public boolean hexists_boolean(PlObject i) {
+        return this.ha.hexists_boolean(i);
+    }
     public PlObject hdelete(int want, PlObject a) {
         return this.ha.hdelete(want, a);
     }
@@ -6283,6 +6296,14 @@ class PlLvalue extends PlScalarObject {
     public PlObject hexists(PlObject a) {
         // exists $v->{$a}
         return this.get().hexists(a);
+    }
+    public boolean hexists_boolean(String a) {
+        // exists $v->{$a}
+        return this.get().hexists_boolean(a);
+    }
+    public boolean hexists_boolean(PlObject a) {
+        // exists $v->{$a}
+        return this.get().hexists_boolean(a);
     }
     public PlObject aexists(PlObject a) {
         // exists $v->[$a]
@@ -8040,6 +8061,12 @@ class PlHash extends PlObject implements Iterable<PlObject> {
     }
     public PlObject hexists(PlObject i) {
         return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
+    }
+    public boolean hexists_boolean(String i) {
+        return this.h.containsKey(i);
+    }
+    public boolean hexists_boolean(PlObject i) {
+        return this.h.containsKey(i.toString());
     }
     public PlObject hdelete(int want, PlObject i) {
         PlObject r = this.h.remove(i.toString());
