@@ -37,6 +37,16 @@ sub fold_constant {
                 return Perlito5::AST::Num->new(num => $v);
             }
         }
+        if ($self->{code} eq 'prefix:<->') {
+            my $arg0 = fold_constant($self->{arguments}[0]);
+            if (is_constant($arg0)) {
+                my $v = -$arg0->value;
+                if ($v == int($v)) {
+                    return Perlito5::AST::Int->new(int => $v);
+                }
+                return Perlito5::AST::Num->new(num => $v);
+            }
+        }
         if ($self->{code} eq 'infix:<*>') {
             my $arg0 = fold_constant($self->{arguments}[0]);
             my $arg1 = fold_constant($self->{arguments}[1]);

@@ -318,7 +318,7 @@ sub reduce_postfix {
         if (ref($value) eq 'Perlito5::AST::Var') {
             $value->{_real_sigil} = '@';
         }
-        $v = Perlito5::AST::Index->new( obj => $value, index_exp => $v->[2] );
+        $v = Perlito5::AST::Index->new( obj => $value, index_exp => Perlito5::FoldConstant::fold_constant($v->[2]) );
         return $v;
     }
     if ($v->[1] eq '.( )') {
