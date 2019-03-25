@@ -2024,7 +2024,7 @@ package Perlito5::AST::For;
                         . $local_label . '++';
                 }
                 else {
-                    $loop_expression = 'PlObject ' . $local_label
+                    $loop_expression = 'PlLvalue ' . $local_label
                         . ' : new PerlRange('
                               . $arg1->emit_java($level + 1) . ', '
                               . $arg2->emit_java($level + 1)
