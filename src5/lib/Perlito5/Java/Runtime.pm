@@ -512,14 +512,14 @@ class PerlCompare implements Comparator<PlObject> {
         return this.sorter.apply( PlCx.SCALAR, list__ ).to_int();
     }
 }
-class PerlRangeString implements Iterator<PlObject> {
+class PerlRangeString implements Iterator<PlLvalue> {
     public PlString v_start;
     public String   v_end;
     public PerlRangeString(PlString v_start, String v_end) {
         this.v_start = v_start;
         this.v_end = v_end;
     }
-    public PlObject next() {
+    public PlLvalue next() {
         PlString ret = v_start;
         PlObject incr = v_start._incr();
         if (incr.is_string()) {
@@ -535,14 +535,14 @@ class PerlRangeString implements Iterator<PlObject> {
                || (v_start.int_length() == v_end.length() && v_start.boolean_str_le(v_end)) );
     }
 }
-class PerlRangeInt implements Iterator<PlObject> {
+class PerlRangeInt implements Iterator<PlLvalue> {
     public long     v_start;
     public long     v_end;
     public PerlRangeInt(long v_start, long v_end) {
         this.v_start = v_start;
         this.v_end = v_end;
     }
-    public PlObject next() {
+    public PlLvalue next() {
         PlInt ret = new PlInt(v_start);
         v_start++;
         return new PlLvalue(ret);
@@ -551,13 +551,13 @@ class PerlRangeInt implements Iterator<PlObject> {
         return v_start <= v_end;
     }
 }
-class PlLvalueIterator implements Iterator<PlObject> {
+class PlLvalueIterator implements Iterator<PlLvalue> {
     public PlLvalue v_start;
     public PlLvalueIterator(PlLvalue v_start) {
         this.v_start = v_start;
     }
-    public PlObject next() {
-        PlObject ret = v_start;
+    public PlLvalue next() {
+        PlLvalue ret = v_start;
         v_start = null;
         return ret;
     }
@@ -565,17 +565,17 @@ class PlLvalueIterator implements Iterator<PlObject> {
         return (v_start != null);
     }
 }
-class PerlRange0 implements Iterator<PlObject> {
+class PerlRange0 implements Iterator<PlLvalue> {
     public PerlRange0() {
     }
-    public PlObject next() {
-        return new PlObject();
+    public PlLvalue next() {
+        return new PlLvalue();
     }
     public boolean hasNext() {
         return false;
     }
 }
-class PerlRange implements Iterable<PlObject> {
+class PerlRange implements Iterable<PlLvalue> {
     public PlObject v_start;
     public PlObject v_end;
     private static HashMap<String, Integer> flip_flop = new HashMap<String, Integer>();
@@ -583,7 +583,7 @@ class PerlRange implements Iterable<PlObject> {
         this.v_start = v_start;
         this.v_end = v_end;
     }
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         if (this.v_start.is_string() && this.v_end.is_string()) {
             String s = v_start.toString();
             final int length = s.length();
@@ -2823,11 +2823,11 @@ EOT
     }
 
 }
-class PlObject implements Cloneable, Iterable<PlObject> {
+class PlObject implements Cloneable, Iterable<PlLvalue> {
     public static final String REF_str = new String("");
     public static final PlStringConstant REF = new PlStringConstant(REF_str);
 
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         // if (this.is_array()) {
         //     return ((PlArray)this).iterator();
         // }
@@ -5899,7 +5899,7 @@ class PlLvalue extends PlScalarObject {
         return this.get().castToClass(params, pos);
     }
 
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         return new PlLvalueIterator(this); 
     }
 
@@ -6757,7 +6757,6 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
         this.aset(pos, PlCx.UNDEF);
         return res;
     }
-
     public PlObject set_end_of_array_index(int i) {
         int size = i + 1;
         while (this.size() < size) {
@@ -6829,7 +6828,7 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
         return PlCx.UNDEF;
     }
 }
-class PlArrayLvalueIterator implements Iterator<PlObject> {
+class PlArrayLvalueIterator implements Iterator<PlLvalue> {
     private final PlArray ar;
     private final PlArrayList a;
     private int pos;
@@ -6838,14 +6837,14 @@ class PlArrayLvalueIterator implements Iterator<PlObject> {
         this.a = ar.a;
         this.pos = 0;
     }
-    public PlObject next() {
+    public PlLvalue next() {
         PlObject o = this.a.get(pos);
         if (o == null) {
             return new PlLazyIndex(this.ar, pos++);
         }
         if (o.is_lvalue()) {
             pos++;
-            return o;
+            return (PlLvalue)o;
         }
         PlLvalue la = new PlLvalue(o);
         this.a.set(pos++, la);
@@ -6855,11 +6854,11 @@ class PlArrayLvalueIterator implements Iterator<PlObject> {
         return pos < this.a.size();
     }
 }
-class PlArray extends PlObject implements Iterable<PlObject> {
+class PlArray extends PlObject implements Iterable<PlLvalue> {
     public PlArrayList a;
     public int each_iterator;
 
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         return new PlArrayLvalueIterator(this); 
     }
 
@@ -7711,7 +7710,7 @@ class PlHashMap extends HashMap<String, PlObject> implements Iterable<Map.Entry<
         return PlCx.UNDEF;
     }
 }
-class PlHashLvalueIterator implements Iterator<PlObject> {
+class PlHashLvalueIterator implements Iterator<PlLvalue> {
     private final PlHash hr;
     private final PlHashMap h;
     private Iterator<Map.Entry<String, PlObject>> each_iterator;
@@ -7725,7 +7724,7 @@ class PlHashLvalueIterator implements Iterator<PlObject> {
         this.each_iterator = this.h.iterator();
         this.is_key = true;
     }
-    public PlObject next() {
+    public PlLvalue next() {
         if (is_key) {
             is_key = false;
             this.entry = this.each_iterator.next();
@@ -7738,7 +7737,7 @@ class PlHashLvalueIterator implements Iterator<PlObject> {
             return new PlLazyLookup(this.hr, this.key);
         }
         if (o.is_lvalue()) {
-            return o;
+            return (PlLvalue)o;
         }
         PlLvalue lh = new PlLvalue(o);
         this.h.put(this.key, lh);
@@ -7751,11 +7750,11 @@ class PlHashLvalueIterator implements Iterator<PlObject> {
         return true;
     }
 }
-class PlHash extends PlObject implements Iterable<PlObject> {
+class PlHash extends PlObject implements Iterable<PlLvalue> {
     public PlHashMap h;
     public Iterator<Map.Entry<String, PlObject>> each_iterator;
 
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         return new PlHashLvalueIterator(this); 
     }
 
