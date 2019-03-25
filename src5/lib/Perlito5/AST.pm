@@ -192,10 +192,10 @@ sub clone {
 
 sub plain_name {
     my $self = shift;
-    if ($self->namespace) {
-        return $self->namespace . '::' . $self->name
+    if ($self->{namespace}) {
+        return $self->{namespace} . '::' . $self->{name}
     }
-    return $self->name
+    return $self->{name}
 }
 
 our %Special_var = (
