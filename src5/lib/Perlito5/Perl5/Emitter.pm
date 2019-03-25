@@ -90,7 +90,7 @@ package Perlito5::AST::Index;
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && ( $self->{obj}->sigil eq '$' || $self->{obj}->sigil eq '@' )
+              && ( $self->{obj}->{sigil} eq '$' || $self->{obj}->{sigil} eq '@' )
               )
            )
         {
@@ -100,7 +100,7 @@ package Perlito5::AST::Index;
               && $self->{obj}->{code} eq 'prefix:<%>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && ( $self->{obj}->sigil eq '%' )
+              && ( $self->{obj}->{sigil} eq '%' )
               )
            )
         {
@@ -127,7 +127,7 @@ package Perlito5::AST::Lookup;
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && ( $self->{obj}->sigil eq '$' || $self->{obj}->sigil eq '@' )
+              && ( $self->{obj}->{sigil} eq '$' || $self->{obj}->{sigil} eq '@' )
               )
            )
         {
@@ -137,7 +137,7 @@ package Perlito5::AST::Lookup;
               && $self->{obj}->{code} eq 'prefix:<%>'
               )
            || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && ( $self->{obj}->sigil eq '%' )
+              && ( $self->{obj}->{sigil} eq '%' )
               )
            )
         {

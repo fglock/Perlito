@@ -152,7 +152,7 @@ package Perlito5::AST::Index;
         
 
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+           && $self->{obj}->{sigil} eq '$'
            )
         {
             my $v = $self->{obj};
@@ -179,7 +179,7 @@ package Perlito5::AST::Lookup;
         
 
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+           && $self->{obj}->{sigil} eq '$'
            )
         {
             my $v = $self->{obj};

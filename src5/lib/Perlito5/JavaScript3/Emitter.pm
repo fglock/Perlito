@@ -266,7 +266,7 @@ package Perlito5::JavaScript3;
         return
              !$v
              ? 'null'                                           # null - this shouldn't happen!
-             : $v->isa('Perlito5::AST::Var') && $v->sigil eq '$'
+             : $v->isa('Perlito5::AST::Var') && $v->{sigil} eq '$'
              ? $v->emit_javascript3($level, $wantarray) . '.FETCH()'     # no lvalues here
              : $v->emit_javascript3($level, $wantarray);
     }
@@ -733,7 +733,7 @@ package Perlito5::AST::Index;
         $type = $type ? '"' . $type . '"' : 'null';
 
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+           && $self->{obj}->{sigil} eq '$'
            )
         {
             my $v = Perlito5::AST::Var->new( sigil => '@', namespace => $self->{obj}->{namespace}, name => $self->{obj}->{name} );
@@ -760,7 +760,7 @@ package Perlito5::AST::Index;
         my $level     = shift;
 
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+           && $self->{obj}->{sigil} eq '$'
            )
         {
             my $v = Perlito5::AST::Var->new( sigil => '@', namespace => $self->{obj}->{namespace}, name => $self->{obj}->{name} );
@@ -805,7 +805,7 @@ package Perlito5::AST::Lookup;
         # return $var . '[' . $self->{index_exp}->emit_javascript3() . ']'
 
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+           && $self->{obj}->{sigil} eq '$'
            )
         {
             my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->{namespace}, name => $self->{obj}->{name} );
@@ -832,7 +832,7 @@ package Perlito5::AST::Lookup;
         # return $var . '[' . $self->{index_exp}->emit_javascript3() . ']'
 
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+           && $self->{obj}->{sigil} eq '$'
            )
         {
             my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->{namespace}, name => $self->{obj}->{name} );
@@ -946,10 +946,10 @@ package Perlito5::AST::Decl;
         if ($self->{decl} eq 'my') {
             my $str = "";
             $str = $str . 'var ' . $self->{var}->emit_javascript3() . ' = ';
-            if ($self->{var}->sigil eq '%') {
+            if ($self->{var}->{sigil} eq '%') {
                 $str = $str . 'new p5Hash({});';
             }
-            elsif ($self->{var}->sigil eq '@') {
+            elsif ($self->{var}->{sigil} eq '@') {
                 $str = $str . 'new p5Array([]);';
             }
             else {
@@ -1236,16 +1236,16 @@ package Perlito5::AST::Apply;
             my $level = $_[1];
             my $arg   = $self->{arguments}->[0];
             if ( $arg->isa('Perlito5::AST::Var') ) {
-                if ( $arg->sigil eq '@' ) {
+                if ( $arg->{sigil} eq '@' ) {
                     return '(new p5ArrayRef(' . $arg->emit_javascript3($level) . '))';
                 }
-                if ( $arg->sigil eq '%' ) {
+                if ( $arg->{sigil} eq '%' ) {
                     return '(new p5HashRef(' . $arg->emit_javascript3($level) . '))';
                 }
-                if ( $arg->sigil eq '*' ) {
+                if ( $arg->{sigil} eq '*' ) {
                     return '(new p5GlobRef(' . $arg->emit_javascript3($level) . '))';
                 }
-                if ( $arg->sigil eq '&' ) {
+                if ( $arg->{sigil} eq '&' ) {
                     if ( $arg->{namespace} ) {
                         return 'p5pkg["' . $arg->{namespace} . '"].' . $arg->{name};
                     }
@@ -1389,11 +1389,11 @@ package Perlito5::AST::Apply;
                             (
                             map +( $_->isa('Perlito5::AST::Apply') && $_->{code} eq 'undef'
                                  ? $tmp . '.shift()' 
-                                 : $_->sigil eq '$' 
+                                 : $_->{sigil} eq '$' 
                                  ? $_->emit_javascript3() . '.assign(' . $tmp . '.shift())'
-                                 : $_->sigil eq '@' 
+                                 : $_->{sigil} eq '@' 
                                  ? $_->emit_javascript3() . '.assign(' . $tmp . '); ' . $tmp . ' = []'
-                                 : $_->sigil eq '%' 
+                                 : $_->{sigil} eq '%' 
                                  ? $_->emit_javascript3() . '.assign(p5a_to_h(' . $tmp . ')); ' . $tmp . ' = []'
                                  : die("not implemented")
                                  ),
@@ -1404,8 +1404,8 @@ package Perlito5::AST::Apply;
                 . ' })()'
             }
 
-            if (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '$'
-               ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '$'
+            if (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->{sigil} eq '$'
+               ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->{sigil} eq '$'
                )
             {
                 return '' . $parameters->emit_javascript3() . '.assign(' . Perlito5::JavaScript3::to_scalar([$arguments], $level+1) . ')'
@@ -1431,20 +1431,20 @@ package Perlito5::AST::Apply;
             elsif  (   $parameters->isa( 'Perlito5::AST::Lookup') ) {
                 return $parameters->emit_javascript3_set($arguments, $level+1);
             }
-            if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '@' ) {
+            if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->{sigil} eq '@' ) {
                 return $parameters->emit_javascript3() . '.assign(new p5Array(' . Perlito5::JavaScript3::to_list([$arguments], $level+1) . '))'
             }
-            elsif  ( $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '@' ) {
+            elsif  ( $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->{sigil} eq '@' ) {
                 return $parameters->var->emit_javascript3() . '.assign(new p5Array(' . Perlito5::JavaScript3::to_list([$arguments], $level+1) . '))'
             }
-            elsif ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '%'
-                ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
+            elsif ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->{sigil} eq '%'
+                ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->{sigil} eq '%'
                 )
             {
                 return $parameters->emit_javascript3() . '.assign(new p5Hash(' . Perlito5::JavaScript3::to_list([$arguments], $level+1, 'hash') . '))' 
             }
 
-            if ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '*' ) {
+            if ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->{sigil} eq '*' ) {
                 return '(' . $parameters->emit_javascript3( $level ) . ' = ' . $arguments->emit_javascript3( $level+1 ) . ')';
             }
 
@@ -1691,7 +1691,7 @@ package Perlito5::AST::Apply;
             if ($arg->isa( 'Perlito5::AST::Lookup' )) {
                 my $v = $arg->obj;
                 if (  $v->isa('Perlito5::AST::Var')
-                   && $v->sigil eq '$'
+                   && $v->{sigil} eq '$'
                    )
                 {
                     $v = Perlito5::AST::Var->new( sigil => '%', namespace => $v->{namespace}, name => $v->{name} );

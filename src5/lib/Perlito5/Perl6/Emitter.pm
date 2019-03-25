@@ -209,7 +209,7 @@ package Perlito5::AST::Index;
             return [ apply => '[', $self->{obj}->emit_perl6(), $self->emit_perl6_index ];
         }
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && ( $self->{obj}->sigil eq '$' || $self->{obj}->sigil eq '@' )
+           && ( $self->{obj}->{sigil} eq '$' || $self->{obj}->{sigil} eq '@' )
            )
         {
             $self->{obj}{sigil} = '@';
@@ -240,7 +240,7 @@ package Perlito5::AST::Lookup;
             return [ apply => '{', $self->{obj}->emit_perl6(), $self->{index_exp}->emit_perl6() ];
         }
         if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && ( $self->{obj}->sigil eq '$' || $self->{obj}->sigil eq '@' )
+           && ( $self->{obj}->{sigil} eq '$' || $self->{obj}->{sigil} eq '@' )
            )
         {
             $self->{obj}{sigil} = '%';
