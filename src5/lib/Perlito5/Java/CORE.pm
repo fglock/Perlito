@@ -138,7 +138,7 @@ EOT
         // string output before each top of page (except the first) is stored in $^L
         // ($FORMAT_FORMFEED).
 
-        PlHash formats = PlStringConstant.getConstant("Perlito5::FORMAT").hashRef.ha;
+        PlHash formats = PlStringConstant.getConstant("Perlito5::FORMAT").hashRef.o.hash_deref_strict();
         PlLvalue accumulator = PlStringConstant.getConstant("main::" + (char)1).scalarRef;    // $^A
 
         String name = PlStringConstant.getConstant("main::~").scalarRef.toString();

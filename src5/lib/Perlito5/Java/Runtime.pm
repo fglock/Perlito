@@ -746,7 +746,7 @@ class PerlOp {
         glob.codeRef.set(PlCx.UNDEF);
         glob.scalarRef.set(PlCx.UNDEF);
         glob.arrayRef = new PlArrayRef();
-        glob.hashRef = new PlHashRef();
+        glob.hashRef.set(new PlHashRef());
         glob.fileRef.set(new PlFileHandle(sname));
         return PlCx.UNDEF; 
     }
@@ -1136,8 +1136,10 @@ class PerlOp {
         PlV.local_stack.a.add(new PlString(name));
         PlV.local_stack.a.add(glob.hashRef);
         PlV.local_stack.a.add(new PlInt(22));       // XXX magic number
-        glob.hashRef = (PlHashRef)value;
-        return value;
+        PlLvalue newValue = new PlLvalue();
+        newValue.set(value);
+        glob.hashRef = newValue;
+        return newValue;
     }
     public static final PlObject push_local_file(PlObject value, String name) {
         PlStringConstant glob = PlStringConstant.getConstant(name);
@@ -1205,7 +1207,7 @@ EOT
                     break;
                 case 22:      // XXX magic number
                     index     = PlV.local_stack.pop();
-                    PlStringConstant.getConstant(index.toString()).hashRef = (PlHashRef)(v.get());
+                    PlStringConstant.getConstant(index.toString()).hashRef = (PlLvalue)v;
                     break;
                 case 23:      // XXX magic number
                     index     = PlV.local_stack.pop();
@@ -2599,32 +2601,37 @@ EOT
 
     // hash
     public static final PlHash hash_get(String name) {
-        return PlStringConstant.getConstant(name).hashRef.ha;
+        return PlStringConstant.getConstant(name).hashRef.hash_deref_strict();
     }
     public static final PlHash hash_get_local(String name) {
-        return ((PlHashRef)PerlOp.push_local_hash(new PlHashRef(), name)).ha;
+        PlLvalue o = (PlLvalue)PerlOp.push_local_hash(new PlHashRef(), name);
+        return o.hash_deref_strict();
     }
     public static final PlObject hash_set(String name, PlObject v) {
-        return PlStringConstant.getConstant(name).hashRef.ha.set(PlCx.VOID, v);
+        PlLvalue o = PlStringConstant.getConstant(name).hashRef;
+        return o.hash_deref_set(v);
     }
     public static final PlObject hash_set_local(String name, PlObject v) {
-        PlObject o = PerlOp.push_local_hash(new PlHashRef(), name);
+        PlLvalue o = (PlLvalue)PerlOp.push_local_hash(new PlHashRef(), name);
         return o.hash_deref_set(v);
     }
     public static final PlLvalue hget(String name) {
-        return new PlLvalue(PlStringConstant.getConstant(name).hashRef);
+        return PlStringConstant.getConstant(name).hashRef;
     }
     public static final PlLvalue hget_local(String name) {
         return (PlLvalue)PerlOp.push_local_hash(new PlHashRef(), name);
     }
     public static final PlObject hset(String name, PlObject v) {
-        return PlStringConstant.getConstant(name).hashRef.ha.set(PlCx.VOID, v);
+        return PlStringConstant.getConstant(name).hashRef.set(v);
+    }
+    public static final PlObject hset(String name, PlLvalue v) {
+        return PlStringConstant.getConstant(name).hashRef.set(v);
     }
     public static final PlObject hset_local(String name, PlObject v) {
-        return PerlOp.push_local_hash(v, name);
+        return (PlLvalue)PerlOp.push_local_hash(v, name);
     }
     public static final void hset_alias(String name, PlHash v) {
-        PlStringConstant.getConstant(name).hashRef.ha = v;
+        PlStringConstant.getConstant(name).hashRef = new PlLvalue(v);
     }
 
     // array
@@ -8637,7 +8644,7 @@ class PlStringConstant extends PlString {
     public PlLvalue codeRef;   // CODE
     public PlLvalue scalarRef; // SCALAR
     public PlArrayRef arrayRef;  // ARRAY
-    public PlHashRef hashRef;   // HASH
+    public PlLvalue hashRef;   // HASH
     public PlLvalue fileRef;   // IO
     // TODO - "FORMAT"
 
@@ -8656,7 +8663,7 @@ class PlStringConstant extends PlString {
         this.codeRef = new PlLvalue();
         this.scalarRef = new PlLvalue();
         this.arrayRef = new PlArrayRef();
-        this.hashRef = new PlHashRef();
+        this.hashRef = new PlLvalue(new PlHashRef());
         this.fileRef = new PlLvalue(new PlFileHandle(s));
     }
 
