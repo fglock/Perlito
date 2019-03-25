@@ -385,7 +385,7 @@ sub reduce_to_ast {
             if ( ref($v2) eq 'Perlito5::AST::Apply' && $v2->{code} eq ('list:<' . $last_op->[1] . '>')) {
                 push @$num_stack,
                     Perlito5::AST::Apply->new(
-                        namespace => $v2->namespace,
+                        namespace => $v2->{namespace},
                         code      => $v2->{code},
                         arguments => [ @{ $v2->{arguments} } ],
                       );

@@ -956,7 +956,7 @@ package Perlito5::AST::Lookup;
             if ( $self->{obj}->isa('Perlito5::AST::Var') ) {
                 $v = $self->{obj};
             }
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->{arguments} )
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->{namespace}, arguments => $self->{obj}->{arguments} )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
             return '((PlHash)' . $v->emit_java($level, 'scalar') . ").hget_list_of_aliases("
@@ -979,7 +979,7 @@ package Perlito5::AST::Lookup;
             if ( $self->{obj}->isa('Perlito5::AST::Var') ) {
                 $v = $self->{obj};
             }
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->{arguments} )
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->{namespace}, arguments => $self->{obj}->{arguments} )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
             return $v->emit_java($level) . '.hget_hash_list_of_aliases('
@@ -1240,7 +1240,7 @@ package Perlito5::AST::Var;
             }
             return "PlV.hash_get$local(" . $index . ')';
         }
-        die "don't know how to access variable ", $sigil, $self->name;
+        die "don't know how to access variable ", $sigil, $self->{name};
     }
 
     sub emit_java_global_set {
@@ -1331,7 +1331,7 @@ package Perlito5::AST::Var;
         if ( $sigil eq '&' ) {
             # return 'PlV.apply(' . $index . ', ' . Perlito5::Java::to_context($wantarray) . ', List__)';
         }
-        die "don't know how to assign to variable ", $sigil, $self->name;
+        die "don't know how to assign to variable ", $sigil, $self->{name};
     }
 
     sub emit_java_global_set_alias {
@@ -1493,7 +1493,7 @@ package Perlito5::AST::Var;
             .   Perlito5::Java::to_scalar([$arguments], $level+1)
             . ')'
         }
-        die "don't know how to assign to variable ", $sigil, $self->name;
+        die "don't know how to assign to variable ", $sigil, $self->{name};
     }
 
     sub emit_java_get_decl { () }
