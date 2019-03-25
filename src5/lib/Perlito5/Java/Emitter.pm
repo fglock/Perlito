@@ -1236,7 +1236,7 @@ package Perlito5::AST::Var;
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
-                return $scalar . '.hashRef.o.hash_deref_strict()';
+                return $scalar . '.hashRef.ha';
             }
             return "PlV.hash_get$local(" . $index . ')';
         }
@@ -1318,7 +1318,7 @@ package Perlito5::AST::Var;
             if (!$local) {
                 # create a PlStringConstant
                 my $scalar = Perlito5::AST::Buf->new( buf => $full_name )->emit_java($level, 'scalar');
-                return $scalar . '.hashRef.o.hash_deref_set(' .  Perlito5::Java::to_list([$arguments], $level+1) . ')';
+                return $scalar . '.hashRef.ha.set(PlCx.VOID, ' .  Perlito5::Java::to_list([$arguments], $level+1) . ')';
             }
             return "PlV.hash_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }
