@@ -696,6 +696,9 @@ package Perlito5::AST::Num;
         if ($self->{num} == $inf) {
             $s = "new PlDouble(Double.POSITIVE_INFINITY)";
         }
+        elsif ($self->{num} == -$inf) {
+            $s = "new PlDouble(Double.NEGATIVE_INFINITY)";
+        }
         else {
             $s = "new PlDouble(" . $self->{num} . "d)";
         }

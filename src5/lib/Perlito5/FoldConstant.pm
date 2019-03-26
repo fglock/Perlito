@@ -15,20 +15,15 @@ sub fold_constant {
             || $ref eq 'Perlito5::AST::Buf';
  
     if ($ref eq 'Perlito5::AST::Apply' ) {
-        if ( $self->{code} eq 'circumfix:<( )>'
-          || $self->{code} eq 'circumfix:<[ ]>'
-          || $self->{code} eq 'circumfix:<{ }>'
-          || $self->{code} eq 'list:<,>'
-           )
-        {
-            for my $pos ( 0 .. $#{ $self->{arguments} } ) {
-                $self->{arguments}[$pos] = fold_constant($self->{arguments}[$pos]);
-            }
-            return $self;
+
+        for my $pos ( 0 .. $#{ $self->{arguments} } ) {
+            $self->{arguments}[$pos] = fold_constant($self->{arguments}[$pos]);
         }
-        if ($self->{code} eq 'infix:<+>') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
-            my $arg1 = fold_constant($self->{arguments}[1]);
+
+        my $code = $self->{code};
+        my ($arg0, $arg1) = @{ $self->{arguments} };
+
+        if ($code eq 'infix:<+>') {
             if (is_constant($arg0) && is_constant($arg1)) {
                 my $v = $arg0->value + $arg1->value;
                 if ($v == int($v)) {
@@ -37,8 +32,7 @@ sub fold_constant {
                 return Perlito5::AST::Num->new(num => $v);
             }
         }
-        if ($self->{code} eq 'prefix:<->') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
+        if ($code eq 'prefix:<->') {
             if (is_constant($arg0)) {
                 my $v = -$arg0->value;
                 if ($v == int($v)) {
@@ -47,9 +41,7 @@ sub fold_constant {
                 return Perlito5::AST::Num->new(num => $v);
             }
         }
-        if ($self->{code} eq 'infix:<*>') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
-            my $arg1 = fold_constant($self->{arguments}[1]);
+        if ($code eq 'infix:<*>') {
             if (is_constant($arg0) && is_constant($arg1)) {
                 my $v = $arg0->value * $arg1->value;
                 if ($v == int($v)) {
@@ -58,9 +50,16 @@ sub fold_constant {
                 return Perlito5::AST::Num->new(num => $v);
             }
         }
-        if ($self->{code} eq 'infix:<!=>') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
-            my $arg1 = fold_constant($self->{arguments}[1]);
+        if ($code eq 'infix:<**>') {
+            if (is_constant($arg0) && is_constant($arg1)) {
+                my $v = $arg0->value ** $arg1->value;
+                # if ($v == int($v)) {
+                #     return Perlito5::AST::Int->new(int => $v);
+                # }
+                return Perlito5::AST::Num->new(num => $v);
+            }
+        }
+        if ($code eq 'infix:<!=>') {
             if (is_constant($arg0) && is_constant($arg1)) {
                 my $v = $arg0->value != $arg1->value;
                 if ($v) {
@@ -69,8 +68,7 @@ sub fold_constant {
                 return Perlito5::AST::Apply->UNDEF();
             }
         }
-        if ($self->{code} eq 'prefix:<!>') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
+        if ($code eq 'prefix:<!>') {
             if (is_constant($arg0)) {
                 my $v = !$arg0->value;
                 if ($v) {
@@ -79,9 +77,7 @@ sub fold_constant {
                 return Perlito5::AST::Apply->UNDEF();
             }
         }
-        if ($self->{code} eq 'infix:<&&>') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
-            my $arg1 = fold_constant($self->{arguments}[1]);
+        if ($code eq 'infix:<&&>') {
             if (is_constant($arg0)) {
                 if ($arg0->value) {
                     return $arg1;
@@ -89,9 +85,7 @@ sub fold_constant {
                 return $arg0;
             }
         }
-        if ($self->{code} eq 'infix:<||>') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
-            my $arg1 = fold_constant($self->{arguments}[1]);
+        if ($code eq 'infix:<||>') {
             if (is_constant($arg0)) {
                 if ($arg0->value) {
                     return $arg0;
@@ -99,26 +93,23 @@ sub fold_constant {
                 return $arg1;
             }
         }
-        if ($self->{code} eq 'int') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
+        if ($code eq 'int') {
             if (is_constant($arg0)) {
                 return Perlito5::AST::Int->new(int => int($arg0->value));
             }
         }
-        if ($self->{code} eq 'ord') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
+        if ($code eq 'ord') {
             if (is_constant($arg0)) {
                 return Perlito5::AST::Int->new(int => ord($arg0->value));
             }
         }
-        if ($self->{code} eq 'chr') {
-            my $arg0 = fold_constant($self->{arguments}[0]);
+        if ($code eq 'chr') {
             if (is_constant($arg0)) {
                 return Perlito5::AST::Buf->new(buf => chr($arg0->value));
             }
         }
 
-        if (my $const = $Perlito5::CONSTANT{ $self->{namespace} . '::' . $self->{code} }) {
+        if (my $const = $Perlito5::CONSTANT{ $self->{namespace} . '::' . $code }) {
             return $const;
         }
     }
