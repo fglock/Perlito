@@ -3635,6 +3635,9 @@ EOT
         }
         return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type '"), arg2.ref(), new PlString("'")));
     }
+    public PlLvalue to_lvalue() {
+        return new PlLvalue(this);
+    }
 
 EOT
     , ((map {
@@ -6446,6 +6449,9 @@ class PlLvalue extends PlScalarObject {
     public PlObject self_assign_and(PlObject s) {
         return (this.to_boolean() ? this.set(s) : this);
     }
+    public PlLvalue to_lvalue() {
+        return this;
+    }
 EOT
     , ((map {
             my $perl = $_;
@@ -7004,10 +7010,7 @@ class PlArray extends PlObject implements Iterable<PlLvalue> {
         }
         else if (s.is_hash()) {
             // ( %x );
-            s = ((PlHash)s).to_list_of_aliases();
-            for (int i = 0; i < s.to_long(); i++) {
-                aa.add(s.aget_lvalue(i));
-            }
+            ((PlHash)s).to_list_of_aliases(aa);
         }
         else if (s.is_array()) {
             // ( @x, @y );
@@ -7029,10 +7032,7 @@ class PlArray extends PlObject implements Iterable<PlLvalue> {
             }
             else if (s.is_hash()) {
                 // ( %x );
-                s = ((PlHash)s).to_list_of_aliases();
-                for (int i = 0; i < s.to_long(); i++) {
-                    aa.add(s.aget_lvalue(i));
-                }
+                ((PlHash)s).to_list_of_aliases(aa);
             }
             else if (s.is_array()) {
                 // ( @x, @y );
@@ -7056,10 +7056,7 @@ class PlArray extends PlObject implements Iterable<PlLvalue> {
             }
             else if (s.is_hash()) {
                 // ( %x );
-                s = ((PlHash)s).to_list_of_aliases();
-                for (int i = 0; i < s.to_long(); i++) {
-                    aa.add(s.aget_lvalue(i));
-                }
+                ((PlHash)s).to_list_of_aliases(aa);
             }
             else if (s.is_array()) {
                 // ( @x, @y );
@@ -7881,7 +7878,9 @@ class PlHash extends PlObject implements Iterable<PlLvalue> {
         }
         this.each_iterator = null;
         if (want == PlCx.LIST) {
-            return this.to_list_of_aliases();
+            PlArrayList aa = new PlArrayList();
+            this.to_list_of_aliases(aa);
+            return new PlSlice(aa);
         }
         return s.scalar();
     }
@@ -7897,16 +7896,13 @@ class PlHash extends PlObject implements Iterable<PlLvalue> {
         return aa;
     }
 
-    public PlArray to_list_of_aliases() {
-        PlArrayList aa = new PlArrayList();
+    public void to_list_of_aliases(PlArrayList aa) {
         for (Map.Entry<String, PlObject> entry : this.h) {
             String key = entry.getKey();
             aa.add(new PlString(key));
             PlObject value = this.hget_lvalue(key);
             aa.add(value);
         }
-        PlSlice result = new PlSlice(aa);
-        return result;
     }
 
     public PlObject hget(String i) {
