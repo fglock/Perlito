@@ -5081,9 +5081,7 @@ class PlClass {
     }
 
     public void invalidate_method_cache(String method, int level) {
-        if (this.methodCache.containsKey(method)) {
-            this.methodCache.remove(method);
-        }
+        this.methodCache.remove(method);
         // TODO - lookup in all classes that inherit from us
         // for (PlObject className : the_isa.arrayRef.ar) {
         //     // prevent infinite loop
