@@ -72,7 +72,16 @@ sub fold_constant {
                 return Perlito5::AST::Apply->UNDEF();
             }
         }
-        if ($code eq 'prefix:<!>') {
+        if ($code eq 'infix:<==>') {
+            if (is_constant($arg0) && is_constant($arg1)) {
+                my $v = $arg0->value == $arg1->value;
+                if ($v) {
+                    return Perlito5::AST::Int->new(int => 1);
+                }
+                return Perlito5::AST::Apply->UNDEF();
+            }
+        }
+        if ($code eq 'prefix:<!>' || $code eq 'prefix:<not>' ) {
             if (is_constant($arg0)) {
                 my $v = !$arg0->value;
                 if ($v) {
@@ -81,7 +90,7 @@ sub fold_constant {
                 return Perlito5::AST::Apply->UNDEF();
             }
         }
-        if ($code eq 'infix:<&&>') {
+        if ($code eq 'infix:<&&>' || $code eq 'infix:<and>' ) {
             if (is_constant($arg0)) {
                 if ($arg0->value) {
                     return $arg1;
@@ -89,7 +98,7 @@ sub fold_constant {
                 return $arg0;
             }
         }
-        if ($code eq 'infix:<||>') {
+        if ($code eq 'infix:<||>' || $code eq 'infix:<or>' ) {
             if (is_constant($arg0)) {
                 if ($arg0->value) {
                     return $arg0;
