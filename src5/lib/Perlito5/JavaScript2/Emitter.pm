@@ -161,7 +161,7 @@ package Perlito5::JavaScript2;
                 $tmp = $tmp . '\\\\';
             }
             else {
-                push @out, "'$tmp'" if $tmp ne '';
+                push @out, "'$tmp'";
                 push @out, "String.fromCharCode(" . ord($c) . ")";
                 $tmp = '';
             }
@@ -715,8 +715,18 @@ package Perlito5::AST::Int;
 
 package Perlito5::AST::Num;
 {
+    my $inf = 1000 ** 1000 ** 1000;
+
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
+
+        if ($self->{num} == $inf) {
+            return "Infinity";
+        }
+        elsif ($self->{num} == -$inf) {
+            return "-Infinity";
+        }
+
         $self->{num};
     }
     sub emit_javascript2_get_decl { () }
