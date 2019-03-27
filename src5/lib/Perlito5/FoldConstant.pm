@@ -35,7 +35,11 @@ sub fold_constant {
         if ($code eq 'prefix:<->') {
             if (is_constant($arg0)) {
                 my $v = -$arg0->value;
-                if ($v == int($v)) {
+                if ( ref($arg0) eq 'Perlito5::AST::Buf' ) {
+                    # negate string
+                    return Perlito5::AST::Buf->new(buf => $v);
+                }
+                if ( ref($arg0) eq 'Perlito5::AST::Int' ) {
                     return Perlito5::AST::Int->new(int => $v);
                 }
                 return Perlito5::AST::Num->new(num => $v);
