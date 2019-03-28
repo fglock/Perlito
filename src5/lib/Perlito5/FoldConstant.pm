@@ -54,6 +54,15 @@ sub fold_constant {
                 return Perlito5::AST::Num->new(num => $v);
             }
         }
+        if ($code eq 'infix:</>') {
+            if (is_constant($arg0) && is_constant($arg1)) {
+                my $v = $arg0->value / $arg1->value;
+                if ($v == int($v)) {
+                    return Perlito5::AST::Int->new(int => $v);
+                }
+                return Perlito5::AST::Num->new(num => $v);
+            }
+        }
         if ($code eq 'infix:<**>') {
             if (is_constant($arg0) && is_constant($arg1)) {
                 my $v = $arg0->value ** $arg1->value;
