@@ -661,11 +661,14 @@ package Perlito5::AST::Int;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        my $v = $self->{int};
-        if ( length($v) > 19 || $v > 2**62 ) {
+        my $v = 0 + $self->{int};
+        if ( length($v) > 19 || $v >= 2**62 ) {
             # max value is 2**63 - 1
-            if ( length($v) > 19 || $v >= 9223372036854775806.0 ) {
-                return "new PlDouble(" . $v . ".0d)";
+            # integer number too large: 9223372036854775808
+            if ( length($v) > 19 || $v > 9223372036854775807 ) {
+                $v = "$v";
+                $v = $v . ".0" if $v !~ m{\.};
+                return "new PlDouble(" . $v . "d)";
             }
             return "new PlInt(" . $v . "L)";
         }
@@ -700,7 +703,8 @@ package Perlito5::AST::Num;
             $s = "new PlDouble(Double.NEGATIVE_INFINITY)";
         }
         else {
-            $s = "new PlDouble(" . $self->{num} . "d)";
+            # 9.223372036854776e+18.0d
+            $s = "new PlDouble(" . (0 + $self->{num}) . "d)";
         }
         return Perlito5::Java::get_constant( "PlDouble", $s );
     }
