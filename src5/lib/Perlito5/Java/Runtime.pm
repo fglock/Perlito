@@ -5861,6 +5861,9 @@ class PlLvalue extends PlScalarObject {
         this.o = new PlInt(o);
     }
     public PlLvalue(PlObject o) {
+        if (o.is_lvalue()) {
+            o = o.get();
+        }
         this.o = (PlScalarImmutable)o;
     }
     public PlLvalue(PlScalarImmutable o) {
