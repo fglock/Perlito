@@ -468,7 +468,7 @@ package Perlito5::AST::Apply;
                 ( $op => sub {
                     my ($self, $level, $wantarray) = @_;
                     if ( $wantarray eq 'statement' ) {
-                        if ( !grep { $_->{decl} eq 'local' || $_->{decl} eq 'my' } $self->emit_java_get_decl() ) {
+                        if ( !grep { $_->{decl} eq 'local' } $self->emit_java_get_decl() ) {
                             return
                                 Perlito5::AST::If->new(
                                     cond => $self->{arguments}[0],
@@ -497,7 +497,7 @@ package Perlito5::AST::Apply;
                 ( $op => sub {
                     my ($self, $level, $wantarray) = @_;
                     if ( $wantarray eq 'statement' ) {
-                        if ( !grep { $_->{decl} eq 'local' || $_->{decl} eq 'my' } $self->emit_java_get_decl() ) {
+                        if ( !grep { $_->{decl} eq 'local' } $self->emit_java_get_decl() ) {
                             return
                                 Perlito5::AST::If->new(
                                     cond => $self->{arguments}[0],
@@ -923,21 +923,12 @@ package Perlito5::AST::Apply;
         'ternary:<? :>' => sub {
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'statement') {
-                if ( !grep { $_->{decl} eq 'local' || $_->{decl} eq 'my' } $self->emit_java_get_decl() ) {
-                  return
+                return
                     Perlito5::AST::If->new(
                         cond => $self->{arguments}[0],
                         body => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[1] ] ),
                         otherwise => Perlito5::AST::Block->new( stmts => [ $self->{arguments}[2] ] ),
                     )->emit_java($level, $wantarray);
-                }
-                $wantarray = 'scalar';  # ternary doesn't work with void context
-                return 'PerlOp.context('
-                    . Perlito5::Java::to_context('void') . ', '
-                            . Perlito5::Java::to_native_bool( $self->{arguments}->[0], $level )
-                    . ' ? ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray )
-                    . ' : ' . ( $self->{arguments}->[2] )->emit_java( $level, $wantarray )
-                . ')';
             }
                '( ' . Perlito5::Java::to_native_bool( $self->{arguments}->[0], $level )
             . ' ? ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray )
