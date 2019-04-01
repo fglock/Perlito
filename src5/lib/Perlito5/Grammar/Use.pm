@@ -63,6 +63,15 @@ token stmt_use {
             my $version = $MATCH->{"version_string"}{capture}{buf};
             $version = Perlito5::test_perl_version($version);
 
+            # load feature.pm
+            parse_time_eval(
+                {
+                    mod       => "feature",
+                    code      => "use",
+                    arguments => [],    # skip import
+                }
+            );
+
             my $code = feature->can('unimport');
             if (defined($code)) {
                 # no feature ':all';
