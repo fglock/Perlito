@@ -72,6 +72,17 @@ token stmt_use {
                 }
             );
 
+            if ($version ge '5.011') {
+                # use strict
+                parse_time_eval(
+                    {
+                        mod       => "strict",
+                        code      => "use",
+                        arguments => undef,
+                    }
+                );
+            }
+
             my $code = feature->can('unimport');
             if (defined($code)) {
                 # no feature ':all';
