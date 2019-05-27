@@ -254,7 +254,7 @@ token stmt_package {
             $MATCH->{_version} = $version;
 
             my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
-            ${ $name . "::VERSION" } = Perlito5::test_perl_version($version->{buf});
+            ${ $name . "::VERSION" } = $version->{buf};
 
         }
         <.Perlito5::Grammar::Space::opt_ws>
