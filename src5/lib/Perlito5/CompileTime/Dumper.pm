@@ -244,6 +244,7 @@ sub emit_globals_after_BEGIN {
     );
     for my $pkg (keys %{$Perlito5::PACKAGES}) {;
         push @dump_these, '@' . $pkg . "::ISA";     # dump @ISA
+        push @dump_these, '$' . $pkg . "::VERSION"; # dump $VERSION
     }
   DUMP:
     for my $v ( @dump_these ) {

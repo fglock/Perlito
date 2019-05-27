@@ -252,6 +252,10 @@ token stmt_package {
         <Perlito5::Grammar::Use::version_string>
         {   my $version = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Use::version_string"});
             $MATCH->{_version} = $version;
+
+            my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
+            ${ $name . "::VERSION" } = Perlito5::test_perl_version($version->{buf});
+
         }
         <.Perlito5::Grammar::Space::opt_ws>
     |
@@ -288,20 +292,6 @@ token stmt_package {
                 }
             }
 
-            if ($MATCH->{_version}) {
-                unshift @statements,
-                    Perlito5::AST::Apply->new(
-                        'arguments' => [
-                            Perlito5::AST::Var->new(
-                                'name' => 'VERSION',
-                                'namespace' => $namespace,
-                                'sigil' => '$',
-                            ),
-                            $MATCH->{_version},
-                        ],
-                        'code' => 'infix:<=>',
-                    );
-            }
             $MATCH->{capture} = 
                 Perlito5::AST::Block->new(
                     stmts => [
