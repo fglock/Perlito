@@ -1898,6 +1898,8 @@
         my $tmp = (((("p" eq $str->[($MATCH->{"to"}) + 0]) && ("a" eq $str->[($MATCH->{"to"}) + 1]) && ("c" eq $str->[($MATCH->{"to"}) + 2]) && ("k" eq $str->[($MATCH->{"to"}) + 3]) && ("a" eq $str->[($MATCH->{"to"}) + 4]) && ("g" eq $str->[($MATCH->{"to"}) + 5]) && ("e" eq $str->[($MATCH->{"to"}) + 6]) && ($MATCH->{"to"} += 7)) && (push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::Space::ws($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && pop(@STACK) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0) && (push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::full_ident($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && ($MATCH->{"Perlito5::Grammar::full_ident"} = pop(@STACK)) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0) && (push(@STACK, $MATCH->{"to"}) && ((1 + ($MATCH->{"to"} = $STACK[-1]) && (((push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::Space::ws($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && pop(@STACK) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0) && (push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::Use::version_string($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && ($MATCH->{"Perlito5::Grammar::Use::version_string"} = pop(@STACK)) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0) && (do {
             my $version = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Use::version_string"});
             $MATCH->{"_version"} = $version;
+            my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
+            ${$name . "::VERSION"} = $version->{"buf"};
             1
         }) && (push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && pop(@STACK) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0)))) || (1 + ($MATCH->{"to"} = $STACK[-1]) && ((push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::Space::opt_ws($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && pop(@STACK) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0))) ? pop(@STACK) || 1 : pop(@STACK) && 0)) && (push(@STACK, $MATCH->{"to"}) && ((1 + ($MATCH->{"to"} = $STACK[-1]) && (((do {
             my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
@@ -1913,9 +1915,6 @@
                 if ($stmt && ref($stmt) eq "Perlito5::AST::Apply" && ($stmt->{"code"} eq "list:<=>>" || $stmt->{"code"} eq "list:<,>")) {;
                     push(@Perlito::ANNOTATION, [$namespace, Perlito5::AST::Apply::->new("arguments", [$stmt], "code", "circumfix:<{ }>")])
                 }
-            }
-            if ($MATCH->{"_version"}) {;
-                unshift(@statements, Perlito5::AST::Apply::->new("arguments", [Perlito5::AST::Var::->new("name", "VERSION", "namespace", $namespace, "sigil", "\$"), $MATCH->{"_version"}], "code", "infix:<=>"))
             }
             $MATCH->{"capture"} = Perlito5::AST::Block::->new("stmts", [Perlito5::AST::Apply::->new("code", "package", "arguments", [], "namespace", $namespace), @statements]);
             $Perlito5::PKG_NAME = $MATCH->{"_package"};
@@ -2280,7 +2279,7 @@
             if (ref($value) eq "Perlito5::AST::Var") {;
                 $value->{"_real_sigil"} = "\@"
             }
-            $v = Perlito5::AST::Index::->new("obj", $value, "index_exp", $v->[2]);
+            $v = Perlito5::AST::Index::->new("obj", $value, "index_exp", Perlito5::FoldConstant::fold_constant($v->[2]));
             return $v
         }
         if ($v->[1] eq ".( )") {
@@ -2316,7 +2315,7 @@
             if (scalar(@{$num_stack}) < 2) {
                 my $v2 = Perlito5::Grammar::Expression::pop_term($num_stack);
                 if (ref($v2) eq "Perlito5::AST::Apply" && $v2->{"code"} eq ("list:<" . ($last_op->[1]) . ">")) {;
-                    push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", $v2->namespace(), "code", $v2->{"code"}, "arguments", [@{$v2->{"arguments"}}]))
+                    push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", $v2->{"namespace"}, "code", $v2->{"code"}, "arguments", [@{$v2->{"arguments"}}]))
                 }
                 else {;
                     push(@{$num_stack}, Perlito5::AST::Apply::->new("namespace", '', "code", "list:<" . ($last_op->[1]) . ">", "arguments", [$v2]))
@@ -3900,6 +3899,10 @@
         my $tmp = (((push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::Use::use_decl($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && ($MATCH->{"use_decl"} = pop(@STACK)) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0) && (push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::Space::ws($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && pop(@STACK) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0) && (push(@STACK, $MATCH->{"to"}) && ((1 + ($MATCH->{"to"} = $STACK[-1]) && (((push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::Use::version_string($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && ($MATCH->{"version_string"} = pop(@STACK)) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0) && (do {
             my $version = $MATCH->{"version_string"}->{"capture"}->{"buf"};
             $version = Perlito5::test_perl_version($version);
+            Perlito5::Grammar::Use::parse_time_eval({"mod", "feature", "code", "use", "arguments", []});
+            if ($version ge 5.011) {;
+                Perlito5::Grammar::Use::parse_time_eval({"mod", "strict", "code", "use", "arguments", undef})
+            }
             my $code = feature::->can("unimport");
             if (defined($code)) {
                 my $caller = [$Perlito5::PKG_NAME, $Perlito5::FILE_NAME, $Perlito5::LINE_NUMBER];
@@ -4416,10 +4419,10 @@
     }
     sub Perlito5::AST::Var::plain_name {
         my $self = shift;
-        if ($self->namespace()) {;
-            return $self->namespace() . "::" . $self->name()
+        if ($self->{"namespace"}) {;
+            return ($self->{"namespace"}) . "::" . ($self->{"name"})
         }
-        return $self->name()
+        return $self->{"name"}
     }
     our %Special_var = ("ARGV", 1, "INC", 1, "ENV", 1, "SIG", 1, "_", 1);
     our %NonSpecial_var = map {;
@@ -4458,12 +4461,6 @@
     sub Perlito5::AST::Apply::new {
         my $class = shift;
         bless({@_, }, $class)
-    }
-    sub Perlito5::AST::Apply::special_arg {;
-        $_[0]->{"special_arg"}
-    }
-    sub Perlito5::AST::Apply::namespace {;
-        $_[0]->{"namespace"}
     }
     sub Perlito5::AST::Apply::PUSH {
         (my $var, my $value) = @_;
@@ -5137,15 +5134,12 @@
         my $ref = ref($self);
         ($ref eq "Perlito5::AST::Int" || $ref eq "Perlito5::AST::Num" || $ref eq "Perlito5::AST::Buf") && return $self;
         if ($ref eq "Perlito5::AST::Apply") {
-            if ($self->{"code"} eq "circumfix:<( )>" || $self->{"code"} eq "circumfix:<[ ]>" || $self->{"code"} eq "circumfix:<{ }>" || $self->{"code"} eq "list:<,>") {
-                for my $pos (0 .. $#{$self->{"arguments"}}) {;
-                    $self->{"arguments"}->[$pos] = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[$pos])
-                }
-                return $self
+            for my $pos (0 .. $#{$self->{"arguments"}}) {;
+                $self->{"arguments"}->[$pos] = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[$pos])
             }
-            if ($self->{"code"} eq "infix:<+>") {
-                my $arg0 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[0]);
-                my $arg1 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[1]);
+            my $code = $self->{"code"};
+            (my $arg0, my $arg1) = @{$self->{"arguments"}};
+            if ($code eq "infix:<+>") {;
                 if (Perlito5::FoldConstant::is_constant($arg0) && Perlito5::FoldConstant::is_constant($arg1)) {
                     my $v = $arg0->value() + $arg1->value();
                     if ($v == int($v)) {;
@@ -5154,9 +5148,19 @@
                     return Perlito5::AST::Num::->new("num", $v)
                 }
             }
-            if ($self->{"code"} eq "infix:<*>") {
-                my $arg0 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[0]);
-                my $arg1 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[1]);
+            if ($code eq "prefix:<->") {;
+                if (Perlito5::FoldConstant::is_constant($arg0)) {
+                    my $v = -$arg0->value();
+                    if (ref($arg0) eq "Perlito5::AST::Buf") {;
+                        return Perlito5::AST::Buf::->new("buf", $v)
+                    }
+                    if (ref($arg0) eq "Perlito5::AST::Int") {;
+                        return Perlito5::AST::Int::->new("int", $v)
+                    }
+                    return Perlito5::AST::Num::->new("num", $v)
+                }
+            }
+            if ($code eq "infix:<*>") {;
                 if (Perlito5::FoldConstant::is_constant($arg0) && Perlito5::FoldConstant::is_constant($arg1)) {
                     my $v = $arg0->value() * $arg1->value();
                     if ($v == int($v)) {;
@@ -5165,9 +5169,22 @@
                     return Perlito5::AST::Num::->new("num", $v)
                 }
             }
-            if ($self->{"code"} eq "infix:<!=>") {
-                my $arg0 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[0]);
-                my $arg1 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[1]);
+            if ($code eq "infix:</>") {;
+                if (Perlito5::FoldConstant::is_constant($arg0) && Perlito5::FoldConstant::is_constant($arg1)) {
+                    my $v = $arg0->value() / $arg1->value();
+                    if ($v == int($v)) {;
+                        return Perlito5::AST::Int::->new("int", $v)
+                    }
+                    return Perlito5::AST::Num::->new("num", $v)
+                }
+            }
+            if ($code eq "infix:<**>") {;
+                if (Perlito5::FoldConstant::is_constant($arg0) && Perlito5::FoldConstant::is_constant($arg1)) {
+                    my $v = $arg0->value()**$arg1->value();
+                    return Perlito5::AST::Num::->new("num", $v)
+                }
+            }
+            if ($code eq "infix:<!=>") {;
                 if (Perlito5::FoldConstant::is_constant($arg0) && Perlito5::FoldConstant::is_constant($arg1)) {
                     my $v = $arg0->value() != $arg1->value();
                     if ($v) {;
@@ -5176,8 +5193,16 @@
                     return Perlito5::AST::Apply::->UNDEF()
                 }
             }
-            if ($self->{"code"} eq "prefix:<!>") {
-                my $arg0 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[0]);
+            if ($code eq "infix:<==>") {;
+                if (Perlito5::FoldConstant::is_constant($arg0) && Perlito5::FoldConstant::is_constant($arg1)) {
+                    my $v = $arg0->value() == $arg1->value();
+                    if ($v) {;
+                        return Perlito5::AST::Int::->new("int", 1)
+                    }
+                    return Perlito5::AST::Apply::->UNDEF()
+                }
+            }
+            if ($code eq "prefix:<!>" || $code eq "prefix:<not>") {;
                 if (Perlito5::FoldConstant::is_constant($arg0)) {
                     my $v = !$arg0->value();
                     if ($v) {;
@@ -5186,9 +5211,7 @@
                     return Perlito5::AST::Apply::->UNDEF()
                 }
             }
-            if ($self->{"code"} eq "infix:<&&>") {
-                my $arg0 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[0]);
-                my $arg1 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[1]);
+            if ($code eq "infix:<&&>" || $code eq "infix:<and>") {;
                 if (Perlito5::FoldConstant::is_constant($arg0)) {
                     if ($arg0->value()) {;
                         return $arg1
@@ -5196,9 +5219,7 @@
                     return $arg0
                 }
             }
-            if ($self->{"code"} eq "infix:<||>") {
-                my $arg0 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[0]);
-                my $arg1 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[1]);
+            if ($code eq "infix:<||>" || $code eq "infix:<or>") {;
                 if (Perlito5::FoldConstant::is_constant($arg0)) {
                     if ($arg0->value()) {;
                         return $arg0
@@ -5206,25 +5227,22 @@
                     return $arg1
                 }
             }
-            if ($self->{"code"} eq "int") {
-                my $arg0 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[0]);
+            if ($code eq "int") {;
                 if (Perlito5::FoldConstant::is_constant($arg0)) {;
                     return Perlito5::AST::Int::->new("int", int($arg0->value()))
                 }
             }
-            if ($self->{"code"} eq "ord") {
-                my $arg0 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[0]);
+            if ($code eq "ord") {;
                 if (Perlito5::FoldConstant::is_constant($arg0)) {;
                     return Perlito5::AST::Int::->new("int", ord($arg0->value()))
                 }
             }
-            if ($self->{"code"} eq "chr") {
-                my $arg0 = Perlito5::FoldConstant::fold_constant($self->{"arguments"}->[0]);
+            if ($code eq "chr") {;
                 if (Perlito5::FoldConstant::is_constant($arg0)) {;
                     return Perlito5::AST::Buf::->new("buf", chr($arg0->value()))
                 }
             }
-            if (my $const = $Perlito5::CONSTANT{($self->{"namespace"}) . "::" . ($self->{"code"})}) {;
+            if (my $const = $Perlito5::CONSTANT{($self->{"namespace"}) . "::" . $code}) {;
                 return $const
             }
         }
@@ -7710,8 +7728,9 @@
         delete($scope->{"\@main::_"});
         local $_;
         my @dump_these = ("\$main::0", "\$main::a", "\$main::b", "\$main::_", "%main::INC", "\@Perlito5::END_BLOCK", "\@Perlito5::INIT_BLOCK", "%Perlito5::DATA_SECTION", "%Perlito5::BEGIN_SCRATCHPAD");
-        for my $pkg (keys(%{$Perlito5::PACKAGES})) {;
-            push(@dump_these, "\@" . $pkg . "::ISA")
+        for my $pkg (keys(%{$Perlito5::PACKAGES})) {
+            push(@dump_these, "\@" . $pkg . "::ISA");
+            push(@dump_these, "\$" . $pkg . "::VERSION")
         }
         DUMP:
         for my $v (@dump_these) {
@@ -9269,7 +9288,7 @@
                     $tmp = $tmp . "\\\\"
                 }
                 else {
-                    $tmp ne '' && push(@out, "'" . $tmp . "'");
+                    push(@out, "'" . $tmp . "'");
                     push(@out, "String.fromCharCode(" . ord($c) . ")");
                     $tmp = ''
                 }
@@ -9638,8 +9657,15 @@
     }
     package Perlito5::AST::Num;
     {
+        my $inf = 1000**1000**1000;
         sub Perlito5::AST::Num::emit_javascript2 {
             (my $self, my $level, my $wantarray) = @_;
+            if ($self->{"num"} == $inf) {;
+                return "Infinity"
+            }
+            elsif ($self->{"num"} == -$inf) {;
+                return "-Infinity"
+            }
             $self->{"num"}
         }
         sub Perlito5::AST::Num::emit_javascript2_get_decl {;
@@ -9773,7 +9799,7 @@
                 if ($self->{"obj"}->isa("Perlito5::AST::Var")) {;
                     $v = $self->{"obj"}
                 }
-                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->namespace(), "arguments", $self->{"obj"}->{"arguments"}));
+                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->{"namespace"}, "arguments", $self->{"obj"}->{"arguments"}));
                 return "p5list_lookup_slice(" . $v->emit_javascript2($level, "list") . ", " . Perlito5::JavaScript2::to_list([$self->{"index_exp"}], $level) . ", " . Perlito5::JavaScript2::to_context($wantarray) . ")"
             }
             if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<%>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && $self->{"obj"}->{"sigil"} eq "%")) {
@@ -9781,7 +9807,7 @@
                 if ($self->{"obj"}->isa("Perlito5::AST::Var")) {;
                     $v = $self->{"obj"}
                 }
-                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->namespace(), "arguments", $self->{"obj"}->{"arguments"}));
+                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->{"namespace"}, "arguments", $self->{"obj"}->{"arguments"}));
                 return "p5hash_lookup_slice(" . $v->emit_javascript2($level, "list") . ", " . Perlito5::JavaScript2::to_list([$self->{"index_exp"}], $level) . ", " . Perlito5::JavaScript2::to_context($wantarray) . ")"
             }
             return $self->emit_javascript2_container($level) . "." . $method . "(" . Perlito5::JavaScript2::to_str($self->{"index_exp"}, $level) . ")"
@@ -9791,7 +9817,7 @@
             if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\@>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && $self->{"obj"}->{"sigil"} eq "\@")) {
                 my $v;
                 $self->{"obj"}->isa("Perlito5::AST::Var") && ($v = $self->{"obj"});
-                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->namespace(), "arguments", $self->{"obj"}->{"arguments"}));
+                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->{"namespace"}, "arguments", $self->{"obj"}->{"arguments"}));
                 return Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, "var a = [];", "var v = " . Perlito5::JavaScript2::to_list([$self->{"index_exp"}], $level) . ";", "var src=" . Perlito5::JavaScript2::to_list([$arguments], $level) . ";", "var out=" . $v->emit_javascript2($level) . ";", "var tmp" . ";", "for (var i=0, l=v.length; i<l; ++i)" . "{", ["tmp = src.p5hget(i);", "out.p5hset(v[i], tmp);", "a.push(tmp)"], "}", "return a")
             }
             return $self->emit_javascript2_container($level) . ".p5hset(" . Perlito5::JavaScript2::to_str($self->{"index_exp"}, $level) . ", " . Perlito5::JavaScript2::to_scalar([$arguments], $level + 1) . ")"
@@ -9802,7 +9828,7 @@
             if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\@>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && $self->{"obj"}->{"sigil"} eq "\@")) {
                 my $v;
                 $self->{"obj"}->isa("Perlito5::AST::Var") && ($v = $self->{"obj"});
-                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->namespace(), "arguments", $self->{"obj"}->{"arguments"}));
+                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->{"namespace"}, "arguments", $self->{"obj"}->{"arguments"}));
                 return Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, "var a = [];", "var v = " . Perlito5::JavaScript2::to_list([$self->{"index_exp"}], $level) . ";", "var out=" . $v->emit_javascript2($level) . ";", "var tmp" . ";", "for (var i=0, l=v.length; i<l; ++i)" . "{", ["tmp = " . $list . ".shift();", "out.p5hset(v[i], tmp);", "a.push(tmp)"], "}", "return a")
             }
             return $self->emit_javascript2_container($level) . ".p5hset(" . Perlito5::JavaScript2::to_str($self->{"index_exp"}, $level) . ", " . $list . ".shift()" . ")"
@@ -9927,7 +9953,7 @@
                 my $namespace = $self->{"namespace"} || $self->{"_namespace"};
                 return "p5typeglob_set(" . Perlito5::JavaScript2::escape_string($namespace) . ", " . Perlito5::JavaScript2::escape_string($self->{"name"}) . ", " . Perlito5::JavaScript2::to_scalar([$arguments], $level + 1) . ")"
             }
-            die("don't know how to assign to variable ", $sigil, $self->name())
+            die("don't know how to assign to variable ", $sigil, $self->{"name"})
         }
         sub Perlito5::AST::Var::emit_javascript2_set_list {
             (my $self, my $level, my $list) = @_;
@@ -9943,7 +9969,7 @@
                 return join(";
 " . Perlito5::JavaScript2::tab($level), $self->emit_javascript2() . " = p5a_to_h(" . $list . ")", $list . " = []")
             }
-            die("don't know how to assign to variable ", $sigil, $self->name())
+            die("don't know how to assign to variable ", $sigil, $self->{"name"})
         }
         sub Perlito5::AST::Var::emit_javascript2_get_decl {;
             ()
@@ -13981,10 +14007,10 @@ CORE.sprintf = function(List__) {
     {;
         sub Perlito5::AST::Index::emit_perl5 {
             my $self = $_[0];
-            if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\@>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->sigil() eq "\$" || $self->{"obj"}->sigil() eq "\@"))) {;
+            if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\@>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->{"sigil"} eq "\$" || $self->{"obj"}->{"sigil"} eq "\@"))) {;
                 return ["apply", "[", $self->{"obj"}->emit_perl5(), $self->{"index_exp"}->emit_perl5()]
             }
-            if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<%>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->sigil() eq "%"))) {;
+            if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<%>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->{"sigil"} eq "%"))) {;
                 return ["apply", "[", $self->{"obj"}->emit_perl5(), $self->{"index_exp"}->emit_perl5()]
             }
             if ($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\$>") {;
@@ -13997,10 +14023,10 @@ CORE.sprintf = function(List__) {
     {;
         sub Perlito5::AST::Lookup::emit_perl5 {
             my $self = $_[0];
-            if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\@>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->sigil() eq "\$" || $self->{"obj"}->sigil() eq "\@"))) {;
+            if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\@>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->{"sigil"} eq "\$" || $self->{"obj"}->{"sigil"} eq "\@"))) {;
                 return ["apply", "{", $self->{"obj"}->emit_perl5(), $self->{"index_exp"}->emit_perl5()]
             }
-            if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<%>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->sigil() eq "%"))) {;
+            if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<%>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->{"sigil"} eq "%"))) {;
                 return ["apply", "{", $self->{"obj"}->emit_perl5(), $self->{"index_exp"}->emit_perl5()]
             }
             if ($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\$>") {;
@@ -14858,7 +14884,7 @@ CORE.sprintf = function(List__) {
             if ($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\@>") {;
                 return ["apply", "[", $self->{"obj"}->emit_perl6(), $self->emit_perl6_index()]
             }
-            if ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->sigil() eq "\$" || $self->{"obj"}->sigil() eq "\@")) {
+            if ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->{"sigil"} eq "\$" || $self->{"obj"}->{"sigil"} eq "\@")) {
                 $self->{"obj"}->{"sigil"} = "\@";
                 return ["apply", "[", $self->{"obj"}->emit_perl6(), $self->emit_perl6_index()]
             }
@@ -14876,7 +14902,7 @@ CORE.sprintf = function(List__) {
                 $self->{"obj"}->{"sigil"} = "%";
                 return ["apply", "{", $self->{"obj"}->emit_perl6(), $self->{"index_exp"}->emit_perl6()]
             }
-            if ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->sigil() eq "\$" || $self->{"obj"}->sigil() eq "\@")) {
+            if ($self->{"obj"}->isa("Perlito5::AST::Var") && ($self->{"obj"}->{"sigil"} eq "\$" || $self->{"obj"}->{"sigil"} eq "\@")) {
                 $self->{"obj"}->{"sigil"} = "%";
                 return ["apply", "{", $self->{"obj"}->emit_perl6(), $self->{"index_exp"}->emit_perl6()]
             }
@@ -15780,10 +15806,12 @@ CORE.sprintf = function(List__) {
     {
         sub Perlito5::AST::Int::emit_java {
             (my $self, my $level, my $wantarray) = @_;
-            my $v = $self->{"int"};
-            if (length($v) > 19 || $v > 2**62) {
-                if (length($v) > 19 || $v >= 9223372036854775806.0) {;
-                    return "new PlDouble(" . $v . ".0d)"
+            my $v = 0 + ($self->{"int"});
+            if (length($v) > 19 || $v >= 2**62) {
+                if (length($v) > 19 || $v > 9223372036854775807) {
+                    $v = '' . $v;
+                    $v !~ m/\./ && ($v = $v . ".0");
+                    return "new PlDouble(" . $v . "d)"
                 }
                 return "new PlInt(" . $v . "L)"
             }
@@ -15815,8 +15843,11 @@ CORE.sprintf = function(List__) {
             if ($self->{"num"} == $inf) {;
                 $s = "new PlDouble(Double.POSITIVE_INFINITY)"
             }
+            elsif ($self->{"num"} == -$inf) {;
+                $s = "new PlDouble(Double.NEGATIVE_INFINITY)"
+            }
             else {;
-                $s = "new PlDouble(" . ($self->{"num"}) . "d)"
+                $s = "new PlDouble(" . (0 + ($self->{"num"})) . "d)"
             }
             return Perlito5::Java::get_constant("PlDouble", $s)
         }
@@ -15957,7 +15988,7 @@ CORE.sprintf = function(List__) {
                 if ($self->{"obj"}->isa("Perlito5::AST::Var")) {;
                     $v = $self->{"obj"}
                 }
-                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->namespace(), "arguments", $self->{"obj"}->{"arguments"}));
+                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->{"namespace"}, "arguments", $self->{"obj"}->{"arguments"}));
                 return "((PlHash)" . $v->emit_java($level, "scalar") . ").hget_list_of_aliases(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list([$self->{"index_exp"}], $level) . ")"
             }
             if (($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<%>") || ($self->{"obj"}->isa("Perlito5::AST::Var") && $self->{"obj"}->{"sigil"} eq "%")) {
@@ -15965,7 +15996,7 @@ CORE.sprintf = function(List__) {
                 if ($self->{"obj"}->isa("Perlito5::AST::Var")) {;
                     $v = $self->{"obj"}
                 }
-                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->namespace(), "arguments", $self->{"obj"}->{"arguments"}));
+                $self->{"obj"}->isa("Perlito5::AST::Apply") && ($v = Perlito5::AST::Apply::->new("code", "prefix:<%>", "namespace", $self->{"obj"}->{"namespace"}, "arguments", $self->{"obj"}->{"arguments"}));
                 return $v->emit_java($level) . ".hget_hash_list_of_aliases(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list([$self->{"index_exp"}], $level) . ")"
             }
             if ($self->{"obj"}->isa("Perlito5::AST::Apply") && $self->{"obj"}->{"code"} eq "prefix:<\$>") {;
@@ -16087,7 +16118,7 @@ CORE.sprintf = function(List__) {
                 my $s = "PlV.array_get" . $local . "(" . $index . ")";
                 if (!$local) {
                     my $scalar = Perlito5::AST::Buf::->new("buf", $full_name)->emit_java($level, "scalar");
-                    $s = $scalar . ".arrayRef.o.array_deref_strict()"
+                    $s = $scalar . ".arrayRef.ar"
                 }
                 if ($self->{"sigil"} eq "\$#") {;
                     return $s . ".end_of_array_index()"
@@ -16106,11 +16137,11 @@ CORE.sprintf = function(List__) {
                 }
                 if (!$local) {
                     my $scalar = Perlito5::AST::Buf::->new("buf", $full_name)->emit_java($level, "scalar");
-                    return $scalar . ".hashRef.o.hash_deref_strict()"
+                    return $scalar . ".hashRef.ha"
                 }
                 return "PlV.hash_get" . $local . "(" . $index . ")"
             }
-            die("don't know how to access variable ", $sigil, $self->name())
+            die("don't know how to access variable ", $sigil, $self->{"name"})
         }
         sub Perlito5::AST::Var::emit_java_global_set {
             (my $self, my $arguments, my $level, my $wantarray, my $localize) = @_;
@@ -16158,14 +16189,14 @@ CORE.sprintf = function(List__) {
                 }
                 if (!$local) {
                     my $scalar = Perlito5::AST::Buf::->new("buf", $full_name)->emit_java($level, "scalar");
-                    return $scalar . ".arrayRef.o.array_deref_set(" . Perlito5::Java::to_list([$arguments], $level + 1) . ")"
+                    return $scalar . ".arrayRef.ar.set(" . Perlito5::Java::to_list([$arguments], $level + 1) . ")"
                 }
                 return "PlV.array_set" . $local . "(" . $index . ", " . Perlito5::Java::to_list([$arguments], $level + 1) . ")"
             }
             if ($sigil eq "%") {
                 if (!$local) {
                     my $scalar = Perlito5::AST::Buf::->new("buf", $full_name)->emit_java($level, "scalar");
-                    return $scalar . ".hashRef.o.hash_deref_set(" . Perlito5::Java::to_list([$arguments], $level + 1) . ")"
+                    return $scalar . ".hashRef.ha.set(PlCx.VOID, " . Perlito5::Java::to_list([$arguments], $level + 1) . ")"
                 }
                 return "PlV.hash_set" . $local . "(" . $index . ", " . Perlito5::Java::to_list([$arguments], $level + 1) . ")"
             }
@@ -16173,7 +16204,7 @@ CORE.sprintf = function(List__) {
                 return "PlV.glob_set" . $local . "(" . $index . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ", " . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ")"
             }
             if ($sigil eq "&") {}
-            die("don't know how to assign to variable ", $sigil, $self->name())
+            die("don't know how to assign to variable ", $sigil, $self->{"name"})
         }
         sub Perlito5::AST::Var::emit_java_global_set_alias {
             (my $self, my $arguments, my $level, my $wantarray, my $localize) = @_;
@@ -16278,7 +16309,7 @@ CORE.sprintf = function(List__) {
                 my $namespace = $self->{"namespace"} || $self->{"_namespace"};
                 return "p5typeglob_set(" . Perlito5::Java::escape_string($namespace) . ", " . Perlito5::Java::escape_string($self->{"name"}) . ", " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ")"
             }
-            die("don't know how to assign to variable ", $sigil, $self->name())
+            die("don't know how to assign to variable ", $sigil, $self->{"name"})
         }
         sub Perlito5::AST::Var::emit_java_get_decl {;
             ()
@@ -16413,13 +16444,6 @@ CORE.sprintf = function(List__) {
                     $invocant = $self->{"invocant"}->emit_java($level, "scalar")
                 }
                 return $invocant . ".apply(" . Perlito5::Java::to_context($wantarray) . ", " . Perlito5::Java::to_list($self->{"arguments"}) . ")"
-            }
-            if (substr($meth, 0, 7) eq "SUPER::") {
-                my $method = substr($meth, 7);
-                if ($method) {
-                    $method = Perlito5::Java::escape_string($method);
-                    return "PerlOp.callSuper(" . $method . ", " . Perlito5::Java::pkg() . ", " . Perlito5::Java::to_method_call_param_list($self->{"invocant"}, $self->{"arguments"}, $level + 1) . ", " . Perlito5::Java::to_context($wantarray) . ")"
-                }
             }
             if (ref($self->{"invocant"}) eq "Perlito5::AST::Var" && $self->{"invocant"}->{"sigil"} eq "::") {
                 my $Java_class = Perlito5::Java::get_java_class_info();
@@ -16626,7 +16650,7 @@ CORE.sprintf = function(List__) {
                         $loop_expression = "long " . $local_label . " = " . ($arg1->{"int"}) . "; " . $local_label . " <= " . ($arg2->{"int"}) . "; " . $local_label . "++"
                     }
                     else {;
-                        $loop_expression = "PlObject " . $local_label . " : new PerlRange(" . $arg1->emit_java($level + 1) . ", " . $arg2->emit_java($level + 1) . ")"
+                        $loop_expression = "PlLvalue " . $local_label . " : new PerlRange(" . $arg1->emit_java($level + 1) . ", " . $arg2->emit_java($level + 1) . ")"
                     }
                 }
                 elsif ((ref($cond) eq "Perlito5::AST::Apply") && $cond->{"code"} eq "list:<,>") {
@@ -18885,7 +18909,7 @@ CORE.sprintf = function(List__) {
         // string output before each top of page (except the first) is stored in \$^L
         // (\$FORMAT_FORMFEED).
 
-        PlHash formats = PlStringConstant.getConstant(\"Perlito5::FORMAT\").hashRef.o.hash_deref_strict();
+        PlHash formats = PlStringConstant.getConstant(\"Perlito5::FORMAT\").hashRef.ha;
         PlLvalue accumulator = PlStringConstant.getConstant(\"main::\" + (char)1).scalarRef;    // \$^A
 
         String name = PlStringConstant.getConstant(\"main::~\").scalarRef.toString();
@@ -22824,14 +22848,14 @@ class PlCx {
         return this.sorter.apply( PlCx.SCALAR, list__ ).to_int();
     }
 }
-class PerlRangeString implements Iterator<PlObject> {
+class PerlRangeString implements Iterator<PlLvalue> {
     public PlString v_start;
     public String   v_end;
     public PerlRangeString(PlString v_start, String v_end) {
         this.v_start = v_start;
         this.v_end = v_end;
     }
-    public PlObject next() {
+    public PlLvalue next() {
         PlString ret = v_start;
         PlObject incr = v_start._incr();
         if (incr.is_string()) {
@@ -22847,14 +22871,14 @@ class PerlRangeString implements Iterator<PlObject> {
                || (v_start.int_length() == v_end.length() && v_start.boolean_str_le(v_end)) );
     }
 }
-class PerlRangeInt implements Iterator<PlObject> {
+class PerlRangeInt implements Iterator<PlLvalue> {
     public long     v_start;
     public long     v_end;
     public PerlRangeInt(long v_start, long v_end) {
         this.v_start = v_start;
         this.v_end = v_end;
     }
-    public PlObject next() {
+    public PlLvalue next() {
         PlInt ret = new PlInt(v_start);
         v_start++;
         return new PlLvalue(ret);
@@ -22863,13 +22887,13 @@ class PerlRangeInt implements Iterator<PlObject> {
         return v_start <= v_end;
     }
 }
-class PlLvalueIterator implements Iterator<PlObject> {
+class PlLvalueIterator implements Iterator<PlLvalue> {
     public PlLvalue v_start;
     public PlLvalueIterator(PlLvalue v_start) {
         this.v_start = v_start;
     }
-    public PlObject next() {
-        PlObject ret = v_start;
+    public PlLvalue next() {
+        PlLvalue ret = v_start;
         v_start = null;
         return ret;
     }
@@ -22877,17 +22901,17 @@ class PlLvalueIterator implements Iterator<PlObject> {
         return (v_start != null);
     }
 }
-class PerlRange0 implements Iterator<PlObject> {
+class PerlRange0 implements Iterator<PlLvalue> {
     public PerlRange0() {
     }
-    public PlObject next() {
-        return new PlObject();
+    public PlLvalue next() {
+        return new PlLvalue();
     }
     public boolean hasNext() {
         return false;
     }
 }
-class PerlRange implements Iterable<PlObject> {
+class PerlRange implements Iterable<PlLvalue> {
     public PlObject v_start;
     public PlObject v_end;
     private static HashMap<String, Integer> flip_flop = new HashMap<String, Integer>();
@@ -22895,7 +22919,7 @@ class PerlRange implements Iterable<PlObject> {
         this.v_start = v_start;
         this.v_end = v_end;
     }
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         if (this.v_start.is_string() && this.v_end.is_string()) {
             String s = v_start.toString();
             final int length = s.length();
@@ -23057,8 +23081,8 @@ class PerlOp {
         PlStringConstant glob = PlStringConstant.getConstant(sname);
         glob.codeRef.set(PlCx.UNDEF);
         glob.scalarRef.set(PlCx.UNDEF);
-        glob.arrayRef.set(new PlArrayRef());
-        glob.hashRef.set(new PlHashRef());
+        glob.arrayRef = new PlArrayRef();
+        glob.hashRef = new PlHashRef();
         glob.fileRef.set(new PlFileHandle(sname));
         return PlCx.UNDEF; 
     }
@@ -23130,23 +23154,6 @@ class PerlOp {
     }
 
     // objects
-
-    public static final PlObject callSuper( String method, String packageName, PlArray args, int context ) {
-        // SUPER calls:  \$v->SUPER::x;
-        PlObject methodCode = PlCx.UNDEF;
-      ISA:
-        for (PlObject className : PlV.array_get(packageName + \"::ISA\")) {
-            methodCode = PlClass.getInstance(className).method_lookup(method, 0);
-            if (!methodCode.is_undef()) {
-                break ISA;
-            }
-        }
-        if (methodCode.is_undef()) {
-            PlCORE.die( \"Can't locate object method \\\"\" + method
-                + \"\\\" via package \\\"\" + packageName + \"\\\"\");
-        }
-        return PerlOp.call(methodCode, args, context);
-    }
 
     // coderef methods can be called on ANY invocant
     //  \$m = sub {...};
@@ -23457,20 +23464,16 @@ class PerlOp {
         PlV.local_stack.a.add(new PlString(name));
         PlV.local_stack.a.add(glob.arrayRef);
         PlV.local_stack.a.add(new PlInt(21));       // XXX magic number
-        PlLvalue newValue = new PlLvalue();
-        newValue.set(value);
-        glob.arrayRef = newValue;
-        return newValue;
+        glob.arrayRef = (PlArrayRef)value;
+        return value;
     }
     public static final PlObject push_local_hash(PlObject value, String name) {
         PlStringConstant glob = PlStringConstant.getConstant(name);
         PlV.local_stack.a.add(new PlString(name));
         PlV.local_stack.a.add(glob.hashRef);
         PlV.local_stack.a.add(new PlInt(22));       // XXX magic number
-        PlLvalue newValue = new PlLvalue();
-        newValue.set(value);
-        glob.hashRef = newValue;
-        return newValue;
+        glob.hashRef = (PlHashRef)value;
+        return value;
     }
     public static final PlObject push_local_file(PlObject value, String name) {
         PlStringConstant glob = PlStringConstant.getConstant(name);
@@ -23531,11 +23534,11 @@ class PerlOp {
                     break;
                 case 21:      // XXX magic number
                     index     = PlV.local_stack.pop();
-                    PlStringConstant.getConstant(index.toString()).arrayRef = (PlLvalue)v;
+                    PlStringConstant.getConstant(index.toString()).arrayRef = (PlArrayRef)(v.get());
                     break;
                 case 22:      // XXX magic number
                     index     = PlV.local_stack.pop();
-                    PlStringConstant.getConstant(index.toString()).hashRef = (PlLvalue)v;
+                    PlStringConstant.getConstant(index.toString()).hashRef = (PlHashRef)(v.get());
                     break;
                 case 23:      // XXX magic number
                     index     = PlV.local_stack.pop();
@@ -24914,69 +24917,62 @@ class PlV {
 
     // hash
     public static final PlHash hash_get(String name) {
-        return PlStringConstant.getConstant(name).hashRef.hash_deref_strict();
+        return PlStringConstant.getConstant(name).hashRef.ha;
     }
     public static final PlHash hash_get_local(String name) {
-        PlLvalue o = (PlLvalue)PerlOp.push_local_hash(new PlHashRef(), name);
-        return o.hash_deref_strict();
+        return ((PlHashRef)PerlOp.push_local_hash(new PlHashRef(), name)).ha;
     }
     public static final PlObject hash_set(String name, PlObject v) {
-        PlLvalue o = PlStringConstant.getConstant(name).hashRef;
-        return o.hash_deref_set(v);
+        return PlStringConstant.getConstant(name).hashRef.ha.set(PlCx.VOID, v);
     }
     public static final PlObject hash_set_local(String name, PlObject v) {
-        PlLvalue o = (PlLvalue)PerlOp.push_local_hash(new PlHashRef(), name);
+        PlObject o = PerlOp.push_local_hash(new PlHashRef(), name);
         return o.hash_deref_set(v);
     }
     public static final PlLvalue hget(String name) {
-        return PlStringConstant.getConstant(name).hashRef;
+        return new PlLvalue(PlStringConstant.getConstant(name).hashRef);
     }
     public static final PlLvalue hget_local(String name) {
         return (PlLvalue)PerlOp.push_local_hash(new PlHashRef(), name);
     }
     public static final PlObject hset(String name, PlObject v) {
-        return PlStringConstant.getConstant(name).hashRef.set(v);
-    }
-    public static final PlObject hset(String name, PlLvalue v) {
-        return PlStringConstant.getConstant(name).hashRef.set(v);
+        return PlStringConstant.getConstant(name).hashRef.ha.set(PlCx.VOID, v);
     }
     public static final PlObject hset_local(String name, PlObject v) {
-        return (PlLvalue)PerlOp.push_local_hash(v, name);
+        return PerlOp.push_local_hash(v, name);
     }
     public static final void hset_alias(String name, PlHash v) {
-        PlStringConstant.getConstant(name).hashRef = new PlLvalue(v);
+        PlStringConstant.getConstant(name).hashRef.ha = v;
     }
 
     // array
     public static final PlArray array_get(String name) {
-        return PlStringConstant.getConstant(name).arrayRef.array_deref_strict();
+        return PlStringConstant.getConstant(name).arrayRef.ar;
     }
     public static final PlArray array_get_local(String name) {
-        PlLvalue o = (PlLvalue)PerlOp.push_local_array(new PlArrayRef(), name);
-        return o.array_deref_strict();
+        return ((PlArrayRef)PerlOp.push_local_array(new PlArrayRef(), name)).ar;
     }
     public static final PlObject array_set(String name, PlObject v) {
-        PlLvalue o = PlStringConstant.getConstant(name).arrayRef;
-        return o.array_deref_set(v);
+        return PlStringConstant.getConstant(name).arrayRef.ar.set(v);
     }
     public static final PlObject array_set_local(String name, PlObject v) {
-        PlLvalue o = (PlLvalue)PerlOp.push_local_array(new PlArrayRef(), name);
+        PlObject o = PerlOp.push_local_array(new PlArrayRef(), name);
         return o.array_deref_set(v);
     }
     public static final PlLvalue aget(String name) {
-        return PlStringConstant.getConstant(name).arrayRef;
+        return new PlLvalue(PlStringConstant.getConstant(name).arrayRef);
     }
     public static final PlLvalue aget_local(String name) {
         return (PlLvalue)PerlOp.push_local_array(new PlArrayRef(), name);
     }
     public static final PlObject aset(String name, PlObject v) {
-        return PlStringConstant.getConstant(name).arrayRef.array_deref_set(v);
+        return PlStringConstant.getConstant(name).arrayRef.ar.set(v);
     }
     public static final PlObject aset_local(String name, PlObject v) {
-        return (PlLvalue)PerlOp.push_local_array(v, name);
+        return PerlOp.push_local_array(v, name);
     }
     public static final void aset_alias(String name, PlArray v) {
-        PlStringConstant.getConstant(name).arrayRef = new PlLvalue(v);
+        PlStringConstant.getConstant(name).arrayRef.ar = v;
     }
 
     // filehandle
@@ -25032,10 +25028,16 @@ class PlV {
             PlV.cset(name, value);
         }
         else if (value.is_hashref()) {
-            PlV.hset(name, value);
+            if (value.is_lvalue()) {
+                value = value.get();
+            }
+            PlStringConstant.getConstant(name).hashRef = (PlHashRef)value;
         }
         else if (value.is_arrayref()) {
-            PlStringConstant.getConstant(name).arrayRef.set(value);
+            if (value.is_lvalue()) {
+                value = value.get();
+            }
+            PlStringConstant.getConstant(name).arrayRef = (PlArrayRef)value;
         }
         else if (value.is_scalarref()) {
             PlV.sset(name, value.scalar_deref(nameSpace));
@@ -25063,8 +25065,8 @@ class PlV {
             PlV.fset(name, PlV.fget(typeglob_name));
             PlV.cset_alias(name, PlV.cget(typeglob_name));
             PlV.sset_alias(name, PlV.sget(typeglob_name));
-            PlV.aset(name, PlV.aget(typeglob_name));
-            PlV.hset(name, PlV.hget(typeglob_name));
+            PlStringConstant.getConstant(name).arrayRef = PlStringConstant.getConstant(typeglob_name).arrayRef;
+            PlStringConstant.getConstant(name).hashRef = PlStringConstant.getConstant(typeglob_name).hashRef;
         }
         else {
             PlCORE.die(\"not implemented assign \" + value.ref() + \" to typeglob\");
@@ -25134,11 +25136,11 @@ class PlV {
     }
 
 }
-class PlObject implements Cloneable, Iterable<PlObject> {
+class PlObject implements Cloneable, Iterable<PlLvalue> {
     public static final String REF_str = new String(\"\");
     public static final PlStringConstant REF = new PlStringConstant(REF_str);
 
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         // if (this.is_array()) {
         //     return ((PlArray)this).iterator();
         // }
@@ -25940,6 +25942,9 @@ class PlObject implements Cloneable, Iterable<PlObject> {
             // TODO - right side is regex
         }
         return PlCORE.die(PlCx.VOID, new PlArray(new PlString(\"Not implemented: smartmatch operator with argument type '\"), arg2.ref(), new PlString(\"'\")));
+    }
+    public PlLvalue to_lvalue() {
+        return new PlLvalue(this);
     }
 
 "), ((map {
@@ -27239,6 +27244,7 @@ class PlClass {
     public Boolean overload_flag;
     public Boolean overload_fallback_flag;
     public HashMap<String, PlObject> methodCache;
+    public PlStringConstant the_isa;
 
     protected PlClass(String s) {
         this.className = s;
@@ -27246,6 +27252,7 @@ class PlClass {
         this.overload_flag = null;
         this.overload_fallback_flag = null;
         this.methodCache = new HashMap<String, PlObject>();
+        this.the_isa = PlStringConstant.getConstant(s + \"::ISA\");
     }
     public static PlClass getInstance(PlObject s) {
         return PlClass.getInstance(s.toString());
@@ -27301,9 +27308,13 @@ class PlClass {
         if (methodCode.is_undef()) {
             // method not found
             // \"overload\" methods have no AUTOLOAD
+            //
+            // TODO: handle \"nomethod\", \"fallback\"
+            // TODO: cache overload_lookup()
+            //
             // lookup in \@ISA
           search:
-            for (PlObject className : PlV.array_get(className + \"::ISA\")) {
+            for (PlObject className : the_isa.arrayRef.ar) {
                 // prevent infinite loop
                 if (level >= 100) {
                     PlCORE.die(\"Recursive inheritance detected in package '\" + className + \"'\");
@@ -27330,11 +27341,9 @@ class PlClass {
     }
 
     public void invalidate_method_cache(String method, int level) {
-        if (this.methodCache.containsKey(method)) {
-            this.methodCache.remove(method);
-        }
+        this.methodCache.remove(method);
         // TODO - lookup in all classes that inherit from us
-        // for (PlObject className : PlV.array_get(className + \"::ISA\")) {
+        // for (PlObject className : the_isa.arrayRef.ar) {
         //     // prevent infinite loop
         //     if (level >= 100) {
         //         PlCORE.die(\"Recursive inheritance detected in package '\" + className + \"'\");
@@ -27344,19 +27353,34 @@ class PlClass {
     }
 
     public PlObject method_lookup(String method, int level) {
-        if (this.methodCache.containsKey(method)) {
+        PlObject methodCode = this.methodCache.get(method);
+        if (methodCode != null) {
             // retrieve from method cache
             // PlCORE.warn(\"match \" + method);
-            return this.methodCache.get(method);
+            return methodCode;
         }
         // PlCORE.warn(\"miss \" + method);
 
-        PlObject methodCode;
         int pos = method.indexOf(\"::\");
         if (pos != -1) {
             // fully qualified method name
             if (method.startsWith(\"SUPER::\")) {
-                PlCORE.die(\"not implemented: \" + method); 
+
+                // SUPER calls:  \$v->SUPER::x;
+                method = method.substring(7);
+              ISA:
+                for (PlObject className : the_isa.arrayRef.ar) {
+                    methodCode = PlClass.getInstance(className).method_lookup(method, level+1);
+                    if (!methodCode.is_undef()) {
+                        break ISA;
+                    }
+                }
+                if (methodCode.is_undef()) {
+                    PlCORE.die( \"Can't locate object method \\\"SUPER::\" + method
+                        + \"\\\" via package \\\"\" + className + \"\\\"\");
+                }
+                return methodCode;
+
             }
             return PlV.cget(method);
         }
@@ -27383,7 +27407,7 @@ class PlClass {
             }
 
             // lookup in \@ISA
-            for (PlObject className : PlV.array_get(className + \"::ISA\")) {
+            for (PlObject className : the_isa.arrayRef.ar) {
                 // prevent infinite loop
                 if (level >= 100) {
                     PlCORE.die(\"Recursive inheritance detected in package '\" + className + \"'\");
@@ -27408,7 +27432,7 @@ class PlClass {
         }
 
         // lookup in \@ISA
-        for (PlObject isa_item : PlV.array_get(className + \"::ISA\")) {
+        for (PlObject isa_item : the_isa.arrayRef.ar) {
             String className = isa_item.toString();
             // prevent infinite loop
             if (level >= 100) {
@@ -28023,7 +28047,7 @@ class PlLvalue extends PlScalarObject {
         return this.get().castToClass(params, pos);
     }
 
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         return new PlLvalueIterator(this); 
     }
 
@@ -28577,6 +28601,9 @@ class PlLvalue extends PlScalarObject {
     public PlObject self_assign_and(PlObject s) {
         return (this.to_boolean() ? this.set(s) : this);
     }
+    public PlLvalue to_lvalue() {
+        return this;
+    }
 "), ((map {
             my $perl = $_;
             "    public PlObject " . $perl . "(PlObject s) {
@@ -28833,7 +28860,6 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
         this.aset(pos, PlCx.UNDEF);
         return res;
     }
-
     public PlObject set_end_of_array_index(int i) {
         int size = i + 1;
         while (this.size() < size) {
@@ -28905,7 +28931,7 @@ class PlArrayList extends ArrayList<PlObject> implements Iterable<PlObject> {
         return PlCx.UNDEF;
     }
 }
-class PlArrayLvalueIterator implements Iterator<PlObject> {
+class PlArrayLvalueIterator implements Iterator<PlLvalue> {
     private final PlArray ar;
     private final PlArrayList a;
     private int pos;
@@ -28914,14 +28940,14 @@ class PlArrayLvalueIterator implements Iterator<PlObject> {
         this.a = ar.a;
         this.pos = 0;
     }
-    public PlObject next() {
+    public PlLvalue next() {
         PlObject o = this.a.get(pos);
         if (o == null) {
             return new PlLazyIndex(this.ar, pos++);
         }
         if (o.is_lvalue()) {
             pos++;
-            return o;
+            return (PlLvalue)o;
         }
         PlLvalue la = new PlLvalue(o);
         this.a.set(pos++, la);
@@ -28931,11 +28957,11 @@ class PlArrayLvalueIterator implements Iterator<PlObject> {
         return pos < this.a.size();
     }
 }
-class PlArray extends PlObject implements Iterable<PlObject> {
+class PlArray extends PlObject implements Iterable<PlLvalue> {
     public PlArrayList a;
     public int each_iterator;
 
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         return new PlArrayLvalueIterator(this); 
     }
 
@@ -29088,10 +29114,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         }
         else if (s.is_hash()) {
             // ( %x );
-            s = ((PlHash)s).to_list_of_aliases();
-            for (int i = 0; i < s.to_long(); i++) {
-                aa.add(s.aget_lvalue(i));
-            }
+            ((PlHash)s).to_list_of_aliases(aa);
         }
         else if (s.is_array()) {
             // ( \@x, \@y );
@@ -29113,10 +29136,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
             }
             else if (s.is_hash()) {
                 // ( %x );
-                s = ((PlHash)s).to_list_of_aliases();
-                for (int i = 0; i < s.to_long(); i++) {
-                    aa.add(s.aget_lvalue(i));
-                }
+                ((PlHash)s).to_list_of_aliases(aa);
             }
             else if (s.is_array()) {
                 // ( \@x, \@y );
@@ -29140,10 +29160,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
             }
             else if (s.is_hash()) {
                 // ( %x );
-                s = ((PlHash)s).to_list_of_aliases();
-                for (int i = 0; i < s.to_long(); i++) {
-                    aa.add(s.aget_lvalue(i));
-                }
+                ((PlHash)s).to_list_of_aliases(aa);
             }
             else if (s.is_array()) {
                 // ( \@x, \@y );
@@ -29774,7 +29791,7 @@ class PlHashMap extends HashMap<String, PlObject> implements Iterable<Map.Entry<
         return PlCx.UNDEF;
     }
 }
-class PlHashLvalueIterator implements Iterator<PlObject> {
+class PlHashLvalueIterator implements Iterator<PlLvalue> {
     private final PlHash hr;
     private final PlHashMap h;
     private Iterator<Map.Entry<String, PlObject>> each_iterator;
@@ -29788,7 +29805,7 @@ class PlHashLvalueIterator implements Iterator<PlObject> {
         this.each_iterator = this.h.iterator();
         this.is_key = true;
     }
-    public PlObject next() {
+    public PlLvalue next() {
         if (is_key) {
             is_key = false;
             this.entry = this.each_iterator.next();
@@ -29801,7 +29818,7 @@ class PlHashLvalueIterator implements Iterator<PlObject> {
             return new PlLazyLookup(this.hr, this.key);
         }
         if (o.is_lvalue()) {
-            return o;
+            return (PlLvalue)o;
         }
         PlLvalue lh = new PlLvalue(o);
         this.h.put(this.key, lh);
@@ -29814,11 +29831,11 @@ class PlHashLvalueIterator implements Iterator<PlObject> {
         return true;
     }
 }
-class PlHash extends PlObject implements Iterable<PlObject> {
+class PlHash extends PlObject implements Iterable<PlLvalue> {
     public PlHashMap h;
     public Iterator<Map.Entry<String, PlObject>> each_iterator;
 
-    public Iterator<PlObject> iterator() {
+    public Iterator<PlLvalue> iterator() {
         return new PlHashLvalueIterator(this); 
     }
 
@@ -29952,7 +29969,9 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         }
         this.each_iterator = null;
         if (want == PlCx.LIST) {
-            return this.to_list_of_aliases();
+            PlArrayList aa = new PlArrayList();
+            this.to_list_of_aliases(aa);
+            return new PlSlice(aa);
         }
         return s.scalar();
     }
@@ -29968,16 +29987,13 @@ class PlHash extends PlObject implements Iterable<PlObject> {
         return aa;
     }
 
-    public PlArray to_list_of_aliases() {
-        PlArrayList aa = new PlArrayList();
+    public void to_list_of_aliases(PlArrayList aa) {
         for (Map.Entry<String, PlObject> entry : this.h) {
             String key = entry.getKey();
             aa.add(new PlString(key));
             PlObject value = this.hget_lvalue(key);
             aa.add(value);
         }
-        PlSlice result = new PlSlice(aa);
-        return result;
     }
 
     public PlObject hget(String i) {
@@ -30698,8 +30714,8 @@ class PlStringConstant extends PlString {
     private PlClass cls;
     public PlLvalue codeRef;   // CODE
     public PlLvalue scalarRef; // SCALAR
-    public PlLvalue arrayRef;  // ARRAY
-    public PlLvalue hashRef;   // HASH
+    public PlArrayRef arrayRef;  // ARRAY
+    public PlHashRef hashRef;   // HASH
     public PlLvalue fileRef;   // IO
     // TODO - \"FORMAT\"
 
@@ -30717,8 +30733,8 @@ class PlStringConstant extends PlString {
 
         this.codeRef = new PlLvalue();
         this.scalarRef = new PlLvalue();
-        this.arrayRef = new PlLvalue(new PlArrayRef());
-        this.hashRef = new PlLvalue(new PlHashRef());
+        this.arrayRef = new PlArrayRef();
+        this.hashRef = new PlHashRef();
         this.fileRef = new PlLvalue(new PlFileHandle(s));
     }
 
