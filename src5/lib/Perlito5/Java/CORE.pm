@@ -1683,10 +1683,34 @@ EOT
                 // result.push_void(unpack_a(List__.shift().toString(), size));
                 break;
             }
+            case 'x':
+            {
+                if (size < 0) {
+                        inputIndex = input.length();
+                }
+                else {
+                        inputIndex += size;
+                }
+                break;
+            }
             case 'A':
             {
-                // TODO
-                // result.push_void(unpack_A(List__.shift().toString(), size));
+                if (size < 0) {
+                        if (inputIndex < input.length()) {
+                            result.push_void( new PlString( input.substring(inputIndex) ) );
+                        }
+                        inputIndex = input.length();
+                }
+                else {
+                        if (inputIndex < input.length()) {
+                            int endIndex = inputIndex + size;
+                            if ( endIndex > input.length() ) {
+                                endIndex = input.length();
+                            }
+                            result.push_void( new PlString( input.substring(inputIndex, endIndex) ) );
+                        }
+                        inputIndex += size;
+                }
                 break;
             }
             case 'Z':
@@ -1853,12 +1877,6 @@ EOT
         }
         String padding = new String(new char[size - s.length()]).replace('\0', ' ');
         return s + padding;    
-    }
-    private static final String unpack_A(String s, int size) {
-        if(s.length() >= size) {
-            return s.substring(0,size);
-        }
-        return s; 
     }
     private static final String pack_Z(String s, int size) {
         s = s.substring(0, java.lang.Math.min(size - 1, s.length()));
