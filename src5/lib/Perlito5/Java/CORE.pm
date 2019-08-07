@@ -1712,7 +1712,13 @@ EOT
                 else {
                     for (int j = 0; j < size; j++) {
                         if (inputIndex < input.length()) {
-                            result.push_void( new PlString( Integer.toHexString( input.charAt(inputIndex++) & 0xFF ) ) );
+                            if (j < size-1) {
+                                result.push_void( new PlString( Integer.toHexString( input.charAt(inputIndex++) & 0xFF ) ) );
+                                j++;
+                            }
+                            else {
+                                result.push_void( new PlString( Integer.toHexString( ( input.charAt(inputIndex++) & 0xFF ) >> 4 ) ) );
+                            }
                         }
                     }
                 }
