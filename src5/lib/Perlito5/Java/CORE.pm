@@ -1702,6 +1702,22 @@ EOT
                 break;
             }
 
+            case 'H':
+            {
+                if (size < 0) {
+                        while (inputIndex < input.length()) {
+                            result.push_void( new PlString( Integer.toHexString( input.charAt(inputIndex++) & 0xFF ) ) );
+                        }
+                }
+                else {
+                    for (int j = 0; j < size; j++) {
+                        if (inputIndex < input.length()) {
+                            result.push_void( new PlString( Integer.toHexString( input.charAt(inputIndex++) & 0xFF ) ) );
+                        }
+                    }
+                }
+                break;
+            }
             case 'C':
             {
                 if (size == 0) {
@@ -1720,7 +1736,7 @@ EOT
                         }
                     }
                 }
-                break;        
+                break;
             }
             case 'W':
             {
