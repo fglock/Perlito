@@ -1419,14 +1419,20 @@ EOT
 
         for(int i = 0; i < template.length(); ++i) {
             int size;
+            int code = template.charAt(i);
             if (template.length() > (i+1) && template.charAt(i+1) == '*') {
-                size = List__.to_int();
+                if (code == 'A') {
+                    size = -1;
+                }
+                else {
+                    size = List__.to_int();
+                }
             }
             else {
                 size = pack_size(template, i);
             }
 
-            switch(template.charAt(i)) {
+            switch(code) {
             case 'a':
             {
                 result.append(pack_a(List__.shift().toString(), size));
@@ -1872,6 +1878,9 @@ EOT
         return s; 
     }
     private static final String pack_A(String s, int size) {
+        if (size < 0) {
+            return s;
+        }
         if(s.length() >= size) {
             return s.substring(0,size);
         }
