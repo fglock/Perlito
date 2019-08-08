@@ -1756,6 +1756,7 @@ EOT
             }
             case 'C':
             {
+                // An unsigned char (octet) value
                 if (size == 0) {
                     // C0
                     characterMode = true;
@@ -1776,10 +1777,19 @@ EOT
             }
             case 'W':
             {
-                // TODO
-                // for (int j = 0; j < size; j++) {
-                //     result.pushCodePoint( List__.shift().to_int() );
-                // }
+                // An unsigned char value (can be greater than 255)
+                if (size < 0) {
+                        while (inputIndex < input.length()) {
+                            result.push_void( new PlInt( input.charAt(inputIndex++) ) );
+                        }
+                }
+                else {
+                    for (int j = 0; j < size; j++) {
+                        if (inputIndex < input.length()) {
+                            result.push_void( new PlInt( input.charAt(inputIndex++) ) );
+                        }
+                    }
+                }
                 break;        
             }
             case 'U':

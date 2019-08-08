@@ -12,7 +12,7 @@ Dev Version:
 
 - Java:
 -- named capture in regex accepts duplicate names
--- unpack 'A', 'H', 'x'
+-- unpack 'A', 'H', 'W', 'x',
 
 - JavaScript:
 -- fix assignment to array dereference

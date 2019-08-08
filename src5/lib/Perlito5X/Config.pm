@@ -68,6 +68,7 @@ sub import {
 %Config = (
     archlibexp       => '/usr/local/lib/perl5/5.22.0/darwin-2level',
     archname         => 'darwin-2level',
+    byteorder        => '12345678',
     cc               => 'cc',
     d_double_has_inf => '1',
     d_double_has_nan => '1',
