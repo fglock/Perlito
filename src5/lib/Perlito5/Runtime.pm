@@ -54,6 +54,56 @@ sub init_proto {
 }
 
 # $Perlito5::STRICT_* - See Perlito5X::strict.pm
+# from perl.h in Perl source
+$Perlito5::HINT_INTEGER        = 0x00000001;    #  integer pragma
+$Perlito5::HINT_STRICT_REFS    = 0x00000002;    #  strict pragma
+$Perlito5::HINT_LOCALE         = 0x00000004;    #  locale pragma
+$Perlito5::HINT_BYTES          = 0x00000008;    #  bytes pragma
+$Perlito5::HINT_LOCALE_PARTIAL = 0x00000010;    #  locale, but a subset of categories
+
+$Perlito5::HINT_EXPLICIT_STRICT_REFS = 0x00000020;    #  strict.pm
+$Perlito5::HINT_EXPLICIT_STRICT_SUBS = 0x00000040;    #  strict.pm
+$Perlito5::HINT_EXPLICIT_STRICT_VARS = 0x00000080;    #  strict.pm
+
+$Perlito5::HINT_BLOCK_SCOPE = 0x00000100;
+$Perlito5::HINT_STRICT_SUBS = 0x00000200;             #  strict pragma
+$Perlito5::HINT_STRICT_VARS = 0x00000400;             #  strict pragma
+$Perlito5::HINT_UNI_8_BIT   = 0x00000800;             #  unicode_strings feature
+
+#  The HINT_NEW_* constants are used by the overload pragma
+$Perlito5::HINT_NEW_INTEGER    = 0x00001000;
+$Perlito5::HINT_NEW_FLOAT      = 0x00002000;
+$Perlito5::HINT_NEW_BINARY     = 0x00004000;
+$Perlito5::HINT_NEW_STRING     = 0x00008000;
+$Perlito5::HINT_NEW_RE         = 0x00010000;
+$Perlito5::HINT_LOCALIZE_HH    = 0x00020000;          #  %^H needs to be copied
+$Perlito5::HINT_LEXICAL_IO_IN  = 0x00040000;          #  ${^OPEN} is set for input
+$Perlito5::HINT_LEXICAL_IO_OUT = 0x00080000;          #  ${^OPEN} is set for output
+
+$Perlito5::HINT_RE_TAINT = 0x00100000;                #  re pragma
+$Perlito5::HINT_RE_EVAL  = 0x00200000;                #  re pragma
+
+$Perlito5::HINT_FILETEST_ACCESS = 0x00400000;         #  filetest pragma
+$Perlito5::HINT_UTF8            = 0x00800000;         #  utf8 pragma
+
+$Perlito5::HINT_NO_AMAGIC = 0x01000000;               #  overloading pragma
+
+$Perlito5::HINT_RE_FLAGS = 0x02000000;                #  re '/xism' pragma
+
+$Perlito5::HINT_FEATURE_MASK = 0x1c000000;            #  3 bits for feature bundles
+
+#  The following are stored in $^H{sort}, not in PL_hints
+$Perlito5::HINT_SORT_STABLE   = 0x00000100;           #  sort styles
+$Perlito5::HINT_SORT_UNSTABLE = 0x00000200;
+
+my %constants = (
+              'integer'   => $Perlito5::HINT_NEW_INTEGER,
+              'float'     => $Perlito5::HINT_NEW_FLOAT,
+              'binary'    => $Perlito5::HINT_NEW_BINARY,
+              'q'         => $Perlito5::HINT_NEW_STRING,
+              'qr'        => $Perlito5::HINT_NEW_RE,
+             );
+
 
 # the Perl-to-Java compiler uses this syntax for "annotations":
 #   package Put { import => 'java.Put' };
