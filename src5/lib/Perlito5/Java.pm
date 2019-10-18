@@ -834,6 +834,13 @@ sub to_native_int {
             {
                 return to_native_int( $cond->{arguments}[0], $level, $java_type ) . " - " . to_native_int( $cond->{arguments}[1], $level, $java_type );
             }
+            if (  $cond->{code} eq 'infix:<*>'
+               && (   $cond->{arguments}[0]->isa( 'Perlito5::AST::Int' )
+                  ||  $cond->{arguments}[1]->isa( 'Perlito5::AST::Int' ) )
+               )
+            {
+                return to_native_int( $cond->{arguments}[0], $level, $java_type ) . " * " . to_native_int( $cond->{arguments}[1], $level, $java_type );
+            }
 
         }
 
