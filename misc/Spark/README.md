@@ -31,13 +31,21 @@ $SPARK_HOME/bin/spark-shell
 Start Perlito
 -------------
 
+check that `spark.pl` is valid Perl:
+
+```
+perl -c -I src5/lib/Perlito5X/Java misc/Spark/spark.pl
+```
+
+run:
+
 ```
 export CLASSPATH=.:spark-2.4.4-bin-hadoop2.7/jars/*
 
 java org.perlito.Perlito5.Main -I src5/lib misc/Spark/spark.pl 3
 ```
 
-example translated to Perl from:
+Note: example translated from Java to Perl from:
 https://github.com/apache/spark/blob/master/examples/src/main/java/org/apache/spark/examples/JavaSparkPi.java
 
 
