@@ -3702,6 +3702,9 @@ EOT
       ))
 
     , <<'EOT'
+    public PlObject mul(int v) {
+        return this.mul(new PlInt(v));
+    }
 }
 class PlScalarObject extends PlObject {
     public PlScalarObject() {
