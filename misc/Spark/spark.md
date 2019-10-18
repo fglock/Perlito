@@ -1,0 +1,52 @@
+Perlito + Spark
+===============
+
+Download and start Spark
+--------------
+
+get Spark from https://spark.apache.org/downloads.html
+
+```sh
+tar -xzvf spark-2.4.4-bin-hadoop2.7.tgz
+
+export SPARK_HOME=spark-2.4.4-bin-hadoop2.7
+
+$SPARK_HOME/sbin/start-master.sh
+```
+
+view the status screen at http://localhost:8080
+
+start slave
+
+```sh
+$SPARK_HOME/sbin/start-slave.sh spark://localhost:7077
+```
+
+## start shell
+## 
+## ```sh
+## $SPARK_HOME/bin/spark-shell
+## ```
+
+Start Perlito
+-------------
+
+```
+export CLASSPATH=.:spark-2.4.4-bin-hadoop2.7/jars/*
+
+java org.perlito.Perlito5.Main -I src5/lib misc/Spark/spark.pl 3
+```
+
+example translated to Perl from:
+https://github.com/apache/spark/blob/master/examples/src/main/java/org/apache/spark/examples/JavaSparkPi.java
+
+
+Teardown
+--------
+
+```sh
+$ $SPARK_HOME/sbin/stop-slave.sh
+$ $SPARK_HOME/sbin/stop-master.sh
+```
+
+
