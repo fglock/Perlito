@@ -20,7 +20,6 @@ my SparkSession $spark = SparkSession
 my JavaSparkContext $jsc = JavaSparkContext->new($spark->sparkContext());
 
 my Integer $slices = $ARGV[0] // 2;
-# my Integer $n = 100000 * $slices;
 my $n = 100000 * $slices;
 
 print "slices: $slices; n: $n\n";
@@ -38,4 +37,17 @@ sub pi_func {
       my $y = rand(2) - 1;
       return ($x * $x + $y * $y <= 1) ? 1 : 0;
 }
+
+my $count;
+
+# TODO
+# $count = $dataSet->map(
+#         ...
+#     )->reduce(
+#         ...
+#     );
+
+print "Pi is roughly ", 4.0 * $count / $n, "\n";
+
+$spark->stop();
 
