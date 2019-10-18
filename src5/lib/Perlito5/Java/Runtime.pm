@@ -2818,7 +2818,7 @@ EOT
     }
 
 }
-class PlObject implements Cloneable, Iterable<PlLvalue> {
+class PlObject implements Cloneable, Iterable<PlLvalue>, Serializable {
     public static final String REF_str = new String("");
     public static final PlStringConstant REF = new PlStringConstant(REF_str);
 
