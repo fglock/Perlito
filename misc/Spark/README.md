@@ -22,11 +22,11 @@ start slave
 $SPARK_HOME/sbin/start-slave.sh spark://localhost:7077
 ```
 
-## start shell
-## 
-## ```sh
-## $SPARK_HOME/bin/spark-shell
-## ```
+quick test: start shell
+
+```sh
+$SPARK_HOME/bin/spark-shell
+```
 
 Start Perlito
 -------------
