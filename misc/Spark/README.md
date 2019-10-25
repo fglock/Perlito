@@ -60,5 +60,10 @@ $ $SPARK_HOME/sbin/stop-master.sh
 See also
 --------
 
+Spark + Nashorn (deprecated?)
+
 https://github.com/EclairJS/eclairjs-nashorn
+
+https://stackoverflow.com/questions/49829959/apache-spark-implementation-in-nodejs-application
+
 
