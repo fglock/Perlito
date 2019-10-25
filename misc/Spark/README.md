@@ -57,4 +57,8 @@ $ $SPARK_HOME/sbin/stop-slave.sh
 $ $SPARK_HOME/sbin/stop-master.sh
 ```
 
+See also
+--------
+
+https://github.com/EclairJS/eclairjs-nashorn
 
