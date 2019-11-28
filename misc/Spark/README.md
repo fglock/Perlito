@@ -6,8 +6,12 @@ Install or select Java 8
 
 Spark requires Java 8
 
-If you have previously compiled Perlito for a newer Java, you should probably
-recompile for Java 8:
+If using Ubuntu, you can select the Java version using:
+
+    sudo update-java-alternatives -l
+    update-java-alternatives -s java-1.8.0-openjdk-amd64
+
+Recompile Perlito with Java 8:
 
     cd Perlito      # Perlito source code directory
     make clean
