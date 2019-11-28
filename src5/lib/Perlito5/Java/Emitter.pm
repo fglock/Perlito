@@ -2274,8 +2274,8 @@ package Perlito5::AST::Sub;
 
         my $closure_type = "PlClosure";                             # aka "Runnable"
         if (defined($self->{sig})) {
-            $closure_type = "PlUnaryClosure"  if $self->{sig} eq "$";     # aka "UnaryOperator"
-            $closure_type = "PlBinaryClosure" if $self->{sig} eq "$$";    # aka "BinaryOperator"
+            $closure_type = "PlUnaryClosure"  if $self->{sig} eq '$';     # aka "UnaryOperator"
+            $closure_type = "PlBinaryClosure" if $self->{sig} eq '$$';    # aka "BinaryOperator"
         }
 
         my @s = (
