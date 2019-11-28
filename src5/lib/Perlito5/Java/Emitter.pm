@@ -2272,8 +2272,14 @@ package Perlito5::AST::Sub;
             unshift @js_block, "int return_context = want;";
         }
 
+        my $closure_type = "PlClosure";                             # aka "Runnable"
+        if (defined($self->{sig})) {
+            $closure_type = "PlUnaryClosure"  if $self->{sig} eq "$";     # aka "UnaryOperator"
+            $closure_type = "PlBinaryClosure" if $self->{sig} eq "$$";    # aka "BinaryOperator"
+        }
+
         my @s = (
-            "new PlClosure(" . join( ", ", @closure_args ) . ") {",
+            "new $closure_type(" . join( ", ", @closure_args ) . ") {",
                 [
                   @perl_pos,
                   "public StackTraceElement firstLine() {",

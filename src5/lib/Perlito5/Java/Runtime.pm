@@ -265,6 +265,7 @@ sub emit_java {
 
 // use perlito5-lib.jar
 import org.perlito.Perlito5.*;
+import java.util.function.*;
 import java.util.regex.Pattern;
 import java.time.*;
 import java.time.format.*;
@@ -391,6 +392,7 @@ import java.nio.ByteBuffer;
 import static java.nio.file.attribute.PosixFilePermission.*;
 import java.time.*;
 import java.time.format.*;
+import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
@@ -4552,6 +4554,35 @@ class PlRegexResult extends PlScalarImmutable {
         return true;
     }
 }
+
+class PlUnaryClosure extends PlClosure implements UnaryOperator<PlObject> {
+    public PlUnaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
+        super(prototype, env, pkg_name, is_defined);
+    }
+    public PlUnaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined, PlClosure currentSub) {
+        // this is the constructor for do-BLOCK; currentSub points to the "sub" outside
+        super(prototype, env, pkg_name, is_defined, currentSub);
+    }
+
+    public PlObject apply(PlObject v1) {
+        // run as UnaryOperator
+        return this.apply(PlCx.SCALAR, new PlArray(v1));
+    }
+}
+class PlBinaryClosure extends PlClosure implements BinaryOperator<PlObject> {
+    public PlBinaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
+        super(prototype, env, pkg_name, is_defined);
+    }
+    public PlBinaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined, PlClosure currentSub) {
+        // this is the constructor for do-BLOCK; currentSub points to the "sub" outside
+        super(prototype, env, pkg_name, is_defined, currentSub);
+    }
+
+    public PlObject apply(PlObject v1, PlObject v2) {
+        // run as BinaryOperator
+        return this.apply(PlCx.SCALAR, new PlArray(v1, v2));
+    }
+}
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
     public PlObject prototype;   // '$$$'
@@ -4637,7 +4668,7 @@ class PlClosure extends PlReference implements Runnable {
         return null;
     }
     public void run() {
-        // run as a thread
+        // run as Runnable - this is used to start a Thread
         this.apply(PlCx.VOID, new PlArray());
     }
 

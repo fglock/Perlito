@@ -85,3 +85,13 @@ https://github.com/EclairJS/eclairjs-nashorn
 https://stackoverflow.com/questions/49829959/apache-spark-implementation-in-nodejs-application
 
 
+Extensions for Perlito + Spark
+=============================
+
+Perlito Closure extends java.util.function.UnaryOperator, BinaryOperator:
+
+    sub ($) { ... }         # UnaryOperator<PerlObject>
+
+    sub ($, $) { ... }      # BinaryOperator<PerlObject>
+
+
