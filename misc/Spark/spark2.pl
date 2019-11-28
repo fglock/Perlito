@@ -1,5 +1,5 @@
 
-package JavaRDD::PlObject { import => "org.apache.spark.api.java.JavaRDD<PlObject>" }
+package JavaRDD::String { import => "org.apache.spark.api.java.JavaRDD<String>" }
 
 package JavaSparkContext { import => "org.apache.spark.api.java.JavaSparkContext" }
 
@@ -7,14 +7,19 @@ package SparkSession { import => "org.apache.spark.sql.SparkSession" }
 
 package Integer { import => "java.lang.Integer" }
 
-package List { import => "java.util.ArrayList<PlObject>" }
+package List { import => "java.util.ArrayList<String>" }
 
 use strict;
 use warnings;
 use Java;
 
 my SparkSession $spark =
-  SparkSession->builder()->appName("JavaSparkPi")->config( "spark.master", "local" )->getOrCreate();
+  SparkSession
+  ->builder()
+  ->appName("JavaSparkPi")
+  ->config( "spark.master", "local" )
+  # ->config( "spark.jars", "./perlito5.jar,./spark-2.4.4-bin-hadoop2.7/jars/*" )
+  ->getOrCreate();
 
 my JavaSparkContext $jsc = JavaSparkContext->new( $spark->sparkContext() );
 
@@ -25,10 +30,10 @@ print "slices: $slices; n: $n\n";
 
 my List $list = List->new();
 for ( 0 .. $n - 1 ) {
-    $list->add($_);
+    $list->add("$_");
 }
 
-my JavaRDD::PlObject $dataSet = $jsc->parallelize( $list, $slices );
+my JavaRDD::String $dataSet = $jsc->parallelize( $list, $slices );
 
 my $count;
 
@@ -49,16 +54,16 @@ $count = $dataSet->map(
         }
     )
 
-)->reduce(
+  )->reduce(
 
     Java::inline q(
         (arg1, arg2) -> {
             // TODO use $reduce
-            return new PlLvalue(arg1.add(arg2));
+            return new PlString(arg1).add(new PlString(arg2)).toString();
         }
     )
 
-);
+  );
 
 print "Pi is roughly ", 4.0 * $count / $n, "\n";
 

@@ -29,8 +29,13 @@ for ( 0 .. $n - 1 ) {
 
 my $dataSet = $jsc->parallelize($list, $slices);
 
-
 my $count;
+$count = $dataSet->count();
+print "Count: $count\n";
+
+# TODO
+# my $sum = $dataSet->reduce( sub ($$) { $_[0] + $_[1] } );
+# print "Sum: $sum\n";
 
 # TODO
 # $count = $dataSet->map(
@@ -42,8 +47,7 @@ my $count;
 #     )->reduce(
 #         sub ($$) { $_[0] + $_[1] }
 #     );
-
-print "Pi is roughly ", 4.0 * $count / $n, "\n";
+# print "Pi is roughly ", 4.0 * $count / $n, "\n";
 
 $spark->stop();
 
