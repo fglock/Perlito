@@ -34,6 +34,10 @@ $count = $dataSet->count();
 print "Count: $count\n";
 
 # TODO
+my $sum = $dataSet->map( sub ($) { $_[0] + 1 } );
+print "Map: done\n";
+
+# # TODO
 # my $sum = $dataSet->reduce( sub ($$) { $_[0] + $_[1] } );
 # print "Sum: $sum\n";
 
