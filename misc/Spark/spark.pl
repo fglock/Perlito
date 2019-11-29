@@ -4,6 +4,7 @@ package JavaSparkContext { import => "org.apache.spark.api.java.JavaSparkContext
 package SparkSession { import => "org.apache.spark.sql.SparkSession" }
 package Integer { import => "java.lang.Integer" }
 package List { import => "java.util.ArrayList<PlObject>" }
+package JavaRDD::Perl { import => "org.apache.spark.api.java.JavaRDD<PlObject>" }
 
 use strict;
 use warnings;
@@ -27,14 +28,25 @@ for ( 0 .. $n - 1 ) {
     $list->add($_);
 }
 
-my $dataSet = $jsc->parallelize($list, $slices);
+my JavaRDD::Perl $dataSet = $jsc->parallelize($list, $slices);
 
 my $count;
 $count = $dataSet->count();
 print "Count: $count\n";
 
 # TODO
-my $sum = $dataSet->map( sub ($) { $_[0] + 1 } );
+my $sum = $dataSet->map(
+
+    # sub ($) { $_[0] + 1 } 
+
+
+    Java::inline q(
+        arg -> {
+            // TODO use $map
+            return arg;
+        }
+    )
+);
 print "Map: done\n";
 
 # # TODO
