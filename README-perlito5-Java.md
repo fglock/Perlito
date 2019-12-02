@@ -497,7 +497,7 @@ Calling a Perl subroutine from Java
           ScriptEngineManager factory = new ScriptEngineManager();
           ScriptEngine engine = factory.getEngineByName("Perl5");
       
-          Object o = engine.eval(" $x = 456; say 123 + $x; \"value was $x\" ");
+          Object o = engine.eval(" $x = 456; print 123 + $x; \"value was $x\" ");
           System.out.println("result: " + o);
       }
   }
