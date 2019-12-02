@@ -5,6 +5,9 @@ package SparkSession { import => "org.apache.spark.sql.SparkSession" }
 package Integer { import => "java.lang.Integer" }
 package List { import => "java.util.ArrayList<PlObject>" }
 package JavaRDD::Perl { import => "org.apache.spark.api.java.JavaRDD<PlObject>" }
+package Function { import => "org.apache.spark.api.java.function.Function<PlObject, PlObject>" }
+package Function2 { import => "org.apache.spark.api.java.function.Function2<PlObject, PlObject, PlObject>" }
+package PlObject { import => "org.perlito.Perlito5.PlObject" }
 
 use strict;
 use warnings;
@@ -14,6 +17,7 @@ my SparkSession $spark = SparkSession
       ->builder()
       ->appName("JavaSparkPi")
       ->config("spark.master", "local")
+      ->config("spark.jars", "perlito5.jar")
       ->getOrCreate();
 
 my JavaSparkContext $jsc = JavaSparkContext->new($spark->sparkContext());
@@ -34,24 +38,17 @@ my $count;
 $count = $dataSet->count();
 print "Count: $count\n";
 
+
 # TODO
-my $sum = $dataSet->map(
+# my Function $fun = sub ($) { $_[0] + 1 };
+# my JavaRDD::Perl $sum = $dataSet->map( $fun );
+# $count = $sum->count();
+# print "Map count: $count\n";
 
-    # sub ($) { $_[0] + 1 } 
-
-
-    Java::inline q(
-        arg -> {
-            // TODO use $map
-            return arg;
-        }
-    )
-);
-print "Map: done\n";
-
-# # TODO
-# my $sum = $dataSet->reduce( sub ($$) { $_[0] + $_[1] } );
-# print "Sum: $sum\n";
+# TODO
+# my Function2 $add = sub ($$) { $_[0] + $_[1] };
+# my PlObject $res = $dataSet->reduce( $add );
+# print "Sum: $res\n";
 
 # TODO
 # $count = $dataSet->map(
