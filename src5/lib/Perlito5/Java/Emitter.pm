@@ -1439,6 +1439,8 @@ package Perlito5::AST::Var;
                         my $arg_sigil = $arguments->{_real_sigil} || $arguments->{sigil};
                         my $arg_id    = $arguments->{_id};
                         if ( $arg_sigil eq '$' ) {
+                            # <<<  my Typed $var = $argument  >>>
+
                             my $arg_type = 'PlLvalue';
                             $arg_type = $Java_var->{ $arg_id }{type}
                                 if $arg_id && $Java_var->{ $arg_id }{type};
@@ -1468,6 +1470,28 @@ package Perlito5::AST::Var;
                             }
                         }
                     }
+
+                    if (ref($arguments) eq "Perlito5::AST::Sub") {
+                        if ($arguments->{sig} && $arguments->{sig} eq '$') {
+                            # <<<  my Typed $var = sub ($) { ... }  >>>
+
+                            # print STDERR "HERE2 src5/lib/Perlito5/Java/Emitter.pm 1488\n", Perlito5::Dumper::Dumper($class_info->{$type});
+                            # print STDERR Perlito5::Dumper::Dumper($arguments);
+
+                            return $self->emit_java($level) . ' = '
+                                . '(x) -> ' . Perlito5::Java::to_scalar([$arguments], $level+1) . '.apply(PlCx.SCALAR, new PlArray(x))';
+                        }
+                        if ($arguments->{sig} && $arguments->{sig} eq '$$') {
+                            # <<<  my Typed $var = sub ($$) { ... }  >>>
+
+                            # print STDERR "HERE2 src5/lib/Perlito5/Java/Emitter.pm 1488\n", Perlito5::Dumper::Dumper($class_info->{$type});
+                            # print STDERR Perlito5::Dumper::Dumper($arguments);
+
+                            return $self->emit_java($level) . ' = '
+                                . '(x, y) -> ' . Perlito5::Java::to_scalar([$arguments], $level+1) . '.apply(PlCx.SCALAR, new PlArray(x, y))';
+                        }
+                    }
+
                     my $java_type = $class_info->{$type}{java_type};
                     return $self->emit_java($level) . ' = ' . Perlito5::Java::to_native_args([$arguments], $level+1, $java_type);
                 }
@@ -2273,10 +2297,10 @@ package Perlito5::AST::Sub;
         }
 
         my $closure_type = "PlClosure";                             # aka "Runnable"
-        if (defined($self->{sig})) {
-            $closure_type = "PlUnaryClosure"  if $self->{sig} eq '$';     # aka "UnaryOperator"
-            $closure_type = "PlBinaryClosure" if $self->{sig} eq '$$';    # aka "BinaryOperator"
-        }
+        # if (defined($self->{sig})) {
+        #     $closure_type = "PlUnaryClosure"  if $self->{sig} eq '$';     # aka "UnaryOperator"
+        #     $closure_type = "PlBinaryClosure" if $self->{sig} eq '$$';    # aka "BinaryOperator"
+        # }
 
         my @s = (
             "new $closure_type(" . join( ", ", @closure_args ) . ") {",

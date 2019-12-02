@@ -4555,20 +4555,27 @@ class PlRegexResult extends PlScalarImmutable {
     }
 }
 
-class PlUnaryClosure extends PlClosure implements UnaryOperator<PlObject> {
-    public PlUnaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
-        super(prototype, env, pkg_name, is_defined);
-    }
-    public PlUnaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined, PlClosure currentSub) {
-        // this is the constructor for do-BLOCK; currentSub points to the "sub" outside
-        super(prototype, env, pkg_name, is_defined, currentSub);
-    }
-
-    public PlObject apply(PlObject v1) {
-        // run as UnaryOperator
-        return this.apply(PlCx.SCALAR, new PlArray(v1));
-    }
-}
+// class PlUnaryClosure extends PlClosure implements UnaryOperator<PlObject>,
+//     Function<PlObject,PlObject> 
+//     // org.apache.spark.api.java.function.Function<PlObject,PlObject> 
+// {
+//     public PlUnaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
+//         super(prototype, env, pkg_name, is_defined);
+//     }
+//     public PlUnaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined, PlClosure currentSub) {
+//         // this is the constructor for do-BLOCK; currentSub points to the "sub" outside
+//         super(prototype, env, pkg_name, is_defined, currentSub);
+//     }
+// 
+//     public PlObject apply(PlObject v1) {
+//         // run as UnaryOperator
+//         return this.apply(PlCx.SCALAR, new PlArray(v1));
+//     }
+//     public PlObject call(PlObject v1) {
+//         // run as Spark Function
+//         return this.apply(PlCx.SCALAR, new PlArray(v1));
+//     }
+// }
 class PlBinaryClosure extends PlClosure implements BinaryOperator<PlObject> {
     public PlBinaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
         super(prototype, env, pkg_name, is_defined);
