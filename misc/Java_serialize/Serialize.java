@@ -3,6 +3,7 @@
 // $ java -cp .:perlito5.jar Serialize
 
 import javax.script.*;
+import java.util.*;
 import java.io.*;
 
 public class Serialize {
@@ -11,10 +12,17 @@ public class Serialize {
         ScriptEngineManager factory = new ScriptEngineManager();
         ScriptEngine engine = factory.getEngineByName("Perl5");
 
-        org.perlito.Perlito5.PlObject o = (org.perlito.Perlito5.PlObject) engine.eval("  456 ");
+        // org.perlito.Perlito5.PlObject o = (org.perlito.Perlito5.PlObject) engine.eval("  [1,2,3] ");
+        // org.perlito.Perlito5.PlObject o = (org.perlito.Perlito5.PlObject) engine.eval("  'abc' ");
+
+        // TODO
+        // org.perlito.Perlito5.PlObject o = (org.perlito.Perlito5.PlObject) engine.eval("  sub { 123 } ");
+
+        org.perlito.Perlito5.PlObject o = (org.perlito.Perlito5.PlObject) engine.eval("  123 ");
+
         System.out.println("result: " + o);
 
-        System.out.println( pickle(o) );
+        System.out.println( Arrays.toString( pickle(o) ) );
         System.out.println( unpickle( pickle(o), org.perlito.Perlito5.PlObject.class ) );
     }
 
