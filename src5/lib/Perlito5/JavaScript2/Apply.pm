@@ -77,16 +77,33 @@ package Perlito5::AST::Apply;
             else {
                 $fun = Perlito5::JavaScript2::emit_function_javascript2($level+2, $wantarray, $replace);
             }
+
+            my $tmp_var = Perlito5::AST::Var->new(
+                    '_decl' => "my",
+                    '_id' => Perlito5::JavaScript2::get_label(),
+                    'name' => "tmp",
+                    'namespace' => '',
+                    'sigil' => "\@",
+            ); 
+
             $str = Perlito5::JavaScript2::emit_wrap_javascript2($level+1, $wantarray, 
-                "var tmp = p5s("
+                "var " . $tmp_var->emit_javascript2() . " = p5s("
                     . $var->emit_javascript2() . ', '
                     . $regex_args->[0]->emit_javascript2() . ', '
                     . $fun . ', '
                     . Perlito5::JavaScript2::escape_string($modifier) . ', '
                     . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
                   . ");",
-                $var->emit_javascript2() . " = tmp[0];",
-                "return tmp[1];",
+                $var->emit_javascript2_set(
+                    Perlito5::AST::Index->new(
+                        index_exp => Perlito5::AST::Int->new( int => 0 ),
+                        obj       => $tmp_var,
+                    ),
+                ) . ";",
+                "return " . Perlito5::AST::Index->new(
+                        index_exp => Perlito5::AST::Int->new( int => 1 ),
+                        obj       => $tmp_var,
+                    )->emit_javascript2() . ";",
             );
         }
         elsif ($code eq 'p5:m') {

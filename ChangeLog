@@ -19,6 +19,7 @@ Dev Version:
 
 - JavaScript:
 -- fix assignment to array dereference
+-- fix $var[0] =~ s///
 
 9.028 cpan:Perlito5 2018-09-03
 
