@@ -3040,7 +3040,7 @@
         }
         else {
             $interpolate = 1;
-            $delimiter eq chr(39) && ($interpolate = 3);
+            $delimiter eq "'" && ($interpolate = 3);
             my $m = Perlito5::Grammar::String::string_interpolation_parse([$open_delimiter, @replace, $closing_delimiter], 1, $open_delimiter, $closing_delimiter, $interpolate);
             if (!$m) {;
                 Perlito5::Compiler::error("syntax error")
@@ -3430,7 +3430,8 @@
             }
             if (join('', @{$str}[$p .. ($p + length($delimiter)) - 1]) eq $delimiter) {
                 my $c = $str->[$p + length($delimiter)];
-                if ($c eq '' || $c eq " " || $c eq "\x{9}" || $c eq chr(10) || $c eq chr(13)) {
+                if ($c eq '' || $c eq " " || $c eq "\x{9}" || $c eq "
+" || $c eq "\x{d}") {
                     my @here_string = split("
 ", join('', @{$str}[$pos .. $p - 1]), -1);
                     if (length($spaces)) {
@@ -3471,10 +3472,12 @@
                     }
                 }
             }
-            while ($p < @{$str} && ($str->[$p] ne chr(10) && $str->[$p] ne chr(13))) {;
+            while ($p < @{$str} && ($str->[$p] ne "
+" && $str->[$p] ne "\x{d}")) {;
                 $p++
             }
-            while ($p < @{$str} && ($str->[$p] eq chr(10) || $str->[$p] eq chr(13))) {;
+            while ($p < @{$str} && ($str->[$p] eq "
+" || $str->[$p] eq "\x{d}")) {;
                 $p++
             }
         }
@@ -3489,7 +3492,7 @@
             $m = {"str", $str, "from", $pos, "to", $pos + 2, "capture", Perlito5::AST::Buf::->new("buf", chr($escape_sequence{$c2}))}
         }
         elsif ($c2 eq "c") {
-            my $c3 = (ord(uc($str->[$pos + 2])) - ord("A")) + 1;
+            my $c3 = (ord(uc($str->[$pos + 2])) - 65) + 1;
             $c3 < 0 && ($c3 = 128 + $c3);
             $m = {"str", $str, "from", $pos, "to", $pos + 3, "capture", Perlito5::AST::Buf::->new("buf", chr($c3))}
         }
@@ -5606,27 +5609,29 @@
     my %space = ("#", sub {
         my $m = Perlito5::Grammar::Space::to_eol($_[0], $_[1]);
         $m->{"to"}
-    }, chr(9), sub {;
+    }, "\x{9}", sub {;
         $_[1]
-    }, chr(10), sub {
+    }, "
+", sub {
         my $str = $_[0];
         my $pos = $_[1];
         Perlito5::Grammar::Space::count_line($pos);
-        $str->[$pos] eq chr(13) && $pos++;
+        $str->[$pos] eq "\x{d}" && $pos++;
         my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
         $m->{"to"}
-    }, chr(12), sub {;
+    }, "\x{c}", sub {;
         $_[1]
-    }, chr(13), sub {
+    }, "\x{d}", sub {
         my $str = $_[0];
         my $pos = $_[1];
-        if ($str->[$pos] eq chr(10)) {
+        if ($str->[$pos] eq "
+") {
             Perlito5::Grammar::Space::count_line($pos);
             $pos++
         }
         my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
         $m->{"to"}
-    }, chr(32), sub {;
+    }, " ", sub {;
         $_[1]
     });
     sub Perlito5::Grammar::Space::term_space {
@@ -5658,11 +5663,12 @@
         if ($str->[$p] eq chr(10)) {
             Perlito5::Grammar::Space::count_line($p);
             $p++;
-            $str->[$p] eq chr(13) && $p++
+            $str->[$p] eq "\x{d}" && $p++
         }
-        elsif ($str->[$p] eq chr(13)) {
+        elsif ($str->[$p] eq "\x{d}") {
             $p++;
-            if ($str->[$p] eq chr(10)) {
+            if ($str->[$p] eq "
+") {
                 Perlito5::Grammar::Space::count_line($p);
                 $p++
             }
@@ -5685,11 +5691,12 @@
         return $ret
     }
     Perlito5::Grammar::Precedence::add_term("#", \&term_space);
-    Perlito5::Grammar::Precedence::add_term(chr(9), \&term_space);
-    Perlito5::Grammar::Precedence::add_term(chr(10), \&term_space);
-    Perlito5::Grammar::Precedence::add_term(chr(12), \&term_space);
-    Perlito5::Grammar::Precedence::add_term(chr(13), \&term_space);
-    Perlito5::Grammar::Precedence::add_term(chr(32), \&term_space);
+    Perlito5::Grammar::Precedence::add_term("\x{9}", \&term_space);
+    Perlito5::Grammar::Precedence::add_term("
+", \&term_space);
+    Perlito5::Grammar::Precedence::add_term("\x{c}", \&term_space);
+    Perlito5::Grammar::Precedence::add_term("\x{d}", \&term_space);
+    Perlito5::Grammar::Precedence::add_term(" ", \&term_space);
     Perlito5::Grammar::Precedence::add_term("__END__", \&term_end);
     Perlito5::Grammar::Precedence::add_term("__DATA__", \&term_end);
     Perlito5::Grammar::Statement::add_statement("__END__", \&stmt_end);
@@ -6564,7 +6571,7 @@
             $pos++;
             $c = $str->[$pos];
             ($c lt "A" || $c gt "Z") && return 0;
-            $c = chr((ord($c) - ord("A")) + 1)
+            $c = chr((ord($c) - 65) + 1)
         }
         elsif (Perlito5::Grammar::Space::ws($_[0], $pos)) {;
             return
@@ -6631,7 +6638,7 @@
             $MATCH->{"capture"} = "main";
             $name ne '' && ($MATCH->{"capture"} .= "::" . $name);
             1
-        })))) || (1 + ($MATCH->{"to"} = $STACK[-1]) && ((1 && (do {
+        })))) || (1 + ($MATCH->{"to"} = $STACK[-1]) && (((do {
             $MATCH->{"capture"} = '';
             1
         })))) ? pop(@STACK) || 1 : pop(@STACK) && 0)));
@@ -6684,7 +6691,7 @@
         }) && (push(@STACK, $MATCH->{"to"}) && push(@STACK, scalar(Perlito5::Grammar::full_ident($str, $MATCH->{"to"}))) && $STACK[-1] ? (1 + ($MATCH->{"to"} = $STACK[-1]->{"to"}) && ($MATCH->{"full_ident"} = pop(@STACK)) && pop(@STACK)) || 1 : (pop(@STACK) || pop(@STACK)) && 0) && (do {
             $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"full_ident"});
             1
-        })))) || (1 + ($MATCH->{"to"} = $STACK[-1]) && ((1 && (do {
+        })))) || (1 + ($MATCH->{"to"} = $STACK[-1]) && (((do {
             $MATCH->{"capture"} = '';
             1
         })))) ? pop(@STACK) || 1 : pop(@STACK) && 0)));
@@ -7180,11 +7187,12 @@
     package Perlito5;
     our @PERL_VERSION = (5, 26, 0);
     defined(${^O}) || (${^O} = "perlito5");
-    defined($/) || ($/ = chr(10));
+    defined($/) || ($/ = "
+");
     defined(${"\""}) || (${"\""} = " ");
     defined(${","}) || (${","} = undef);
     defined(${"!"}) || (${"!"} = '');
-    defined(${";"}) || (${";"} = chr(28));
+    defined(${";"}) || (${";"} = "\x{1c}");
     defined(${"?"}) || (${"?"} = 0);
     ${"]"} || (${"]"} = sprintf("%d.%03d%03d", @PERL_VERSION));
     defined(${^V}) || (${^V} = bless({"original", "v" . join(".", @PERL_VERSION), "qv", 1, "version", [@PERL_VERSION]}, "version"));
@@ -7217,6 +7225,36 @@
         $PROTO->{"Java::inline"} = undef;
         $PROTO->{"JS::inline"} = undef
     }
+    $Perlito5::HINT_INTEGER = 1;
+    $Perlito5::HINT_STRICT_REFS = 2;
+    $Perlito5::HINT_LOCALE = 4;
+    $Perlito5::HINT_BYTES = 8;
+    $Perlito5::HINT_LOCALE_PARTIAL = 16;
+    $Perlito5::HINT_EXPLICIT_STRICT_REFS = 32;
+    $Perlito5::HINT_EXPLICIT_STRICT_SUBS = 64;
+    $Perlito5::HINT_EXPLICIT_STRICT_VARS = 128;
+    $Perlito5::HINT_BLOCK_SCOPE = 256;
+    $Perlito5::HINT_STRICT_SUBS = 512;
+    $Perlito5::HINT_STRICT_VARS = 1024;
+    $Perlito5::HINT_UNI_8_BIT = 2048;
+    $Perlito5::HINT_NEW_INTEGER = 4096;
+    $Perlito5::HINT_NEW_FLOAT = 8192;
+    $Perlito5::HINT_NEW_BINARY = 16384;
+    $Perlito5::HINT_NEW_STRING = 32768;
+    $Perlito5::HINT_NEW_RE = 65536;
+    $Perlito5::HINT_LOCALIZE_HH = 131072;
+    $Perlito5::HINT_LEXICAL_IO_IN = 262144;
+    $Perlito5::HINT_LEXICAL_IO_OUT = 524288;
+    $Perlito5::HINT_RE_TAINT = 1048576;
+    $Perlito5::HINT_RE_EVAL = 2097152;
+    $Perlito5::HINT_FILETEST_ACCESS = 4194304;
+    $Perlito5::HINT_UTF8 = 8388608;
+    $Perlito5::HINT_NO_AMAGIC = 16777216;
+    $Perlito5::HINT_RE_FLAGS = 33554432;
+    $Perlito5::HINT_FEATURE_MASK = 469762048;
+    $Perlito5::HINT_SORT_STABLE = 256;
+    $Perlito5::HINT_SORT_UNSTABLE = 512;
+    my %constants = ("integer", $Perlito5::HINT_NEW_INTEGER, "float", $Perlito5::HINT_NEW_FLOAT, "binary", $Perlito5::HINT_NEW_BINARY, "q", $Perlito5::HINT_NEW_STRING, "qr", $Perlito5::HINT_NEW_RE);
     our @ANNOTATION;
     sub Perlito5::set_global_phase {
         my $phase = shift;
@@ -7258,7 +7296,7 @@
         $version =~ s/^v//;
         if ($version && ord(substr($version, 0, 1)) < 10) {
             my @v = split(m//, $version, 0);
-            push(@v, chr(0))
+            push(@v, "\x{0}")
                 while @v < 3;
             $version = sprintf("%d.%03d%03d", map {;
                 ord($_)
@@ -8204,7 +8242,7 @@
             return Perlito5::Rul::Subrule::->new("metasyntax", "space", "captures", 0)->emit_perl5()
         }
         if ($char eq "t") {;
-            return Perlito5::Rul::constant(chr(9))
+            return Perlito5::Rul::constant("\x{9}")
         }
         return Perlito5::Rul::constant($char)
     }
@@ -8384,7 +8422,8 @@
                 else {;
                     $fun = Perlito5::JavaScript2::emit_function_javascript2($level + 2, $wantarray, $replace)
                 }
-                $str = Perlito5::JavaScript2::emit_wrap_javascript2($level + 1, $wantarray, "var tmp = p5s(" . $var->emit_javascript2() . ", " . $regex_args->[0]->emit_javascript2() . ", " . $fun . ", " . Perlito5::JavaScript2::escape_string($modifier) . ", " . ($wantarray eq "runtime" ? "p5want" : $wantarray eq "list" ? 1 : 0) . ");", $var->emit_javascript2() . " = tmp[0];", "return tmp[1];")
+                my $tmp_var = Perlito5::AST::Var::->new("_decl", "my", "_id", Perlito5::JavaScript2::get_label(), "name", "tmp", "namespace", '', "sigil", "\@");
+                $str = Perlito5::JavaScript2::emit_wrap_javascript2($level + 1, $wantarray, "var " . $tmp_var->emit_javascript2() . " = p5s(" . $var->emit_javascript2() . ", " . $regex_args->[0]->emit_javascript2() . ", " . $fun . ", " . Perlito5::JavaScript2::escape_string($modifier) . ", " . ($wantarray eq "runtime" ? "p5want" : $wantarray eq "list" ? 1 : 0) . ");", $var->emit_javascript2_set(Perlito5::AST::Index::->new("index_exp", Perlito5::AST::Int::->new("int", 0), "obj", $tmp_var)) . ";", "return " . Perlito5::AST::Index::->new("index_exp", Perlito5::AST::Int::->new("int", 1), "obj", $tmp_var)->emit_javascript2() . ";")
             }
             elsif ($code eq "p5:m") {;
                 $str = "p5m(" . $var->emit_javascript2() . ", " . $regex_args->[0]->emit_javascript2() . ", " . Perlito5::JavaScript2::escape_string($regex_args->[1]->{"buf"}) . ", " . ($wantarray eq "runtime" ? "p5want" : $wantarray eq "list" ? 1 : 0) . ")"
@@ -9657,7 +9696,7 @@
     }
     package Perlito5::AST::Num;
     {
-        my $inf = 1000**1000**1000;
+        my $inf = Inf;
         sub Perlito5::AST::Num::emit_javascript2 {
             (my $self, my $level, my $wantarray) = @_;
             if ($self->{"num"} == $inf) {;
@@ -10632,6 +10671,28 @@ function p5call(invocant, method, list, p5want) {
                 return p5pkg[pkg_name][\"AUTOLOAD\"](list, p5want);
             }
         }
+
+        var fun;
+        if (typeof invocant_original === \"string\") {
+            fun = eval(invocant_original + \".\" + method);
+        }
+        else {
+            fun = invocant_original.method;
+        }
+        if (typeof fun === \"function\") {
+            // method
+
+            // TODO - disambiguate based on parenthesis:
+            //  Math->max(4, 5)                         // \"max\" as a method call
+            //  Math->max->apply(undef, \$numbers)       // \"max\" as a property
+
+            return fun.apply(list.shift(), list);
+        }
+        if (list.length == 0) {
+            // property
+            return fun;
+        }
+
         p5pkg.CORE.die([p5method_not_found(method, invocant._class_._ref_)]);
     }
     p5pkg.CORE.die([\"Can't call method \", method, \" on unblessed reference\"]);
@@ -14043,7 +14104,7 @@ CORE.sprintf = function(List__) {
             my $str_name = $self->{"name"};
             my $c = substr($str_name, 0, 1);
             if ($c ne '' && $c lt " " && $self->{"sigil"} ne "::") {;
-                return ($self->{"sigil"}) . "{^" . chr((ord($c) + ord("A")) - 1) . substr($str_name, 1) . "}"
+                return ($self->{"sigil"}) . "{^" . chr((ord($c) + 65) - 1) . substr($str_name, 1) . "}"
             }
             my $ns = '';
             if ($self->{"namespace"}) {
@@ -14990,7 +15051,7 @@ CORE.sprintf = function(List__) {
     }
     package Perlito5::AST::Apply;
     {
-        my %special_var = (chr(15), "\$*VM");
+        my %special_var = ("\x{f}", "\$*VM");
         my %op_translate = ("list:<.>", "list:<~>", "infix:<.=>", "infix:<~=>", "infix:<=~>", "infix:<~~>", "infix:<!~>", "infix:<!~~>", "infix:<cmp>", "infix:<leq>", "ternary:<? :>", "ternary:<?? !!>", "reverse", "flip");
         sub Perlito5::AST::Apply::emit_perl6_args {
             my $self = $_[0];
@@ -15807,7 +15868,7 @@ CORE.sprintf = function(List__) {
         sub Perlito5::AST::Int::emit_java {
             (my $self, my $level, my $wantarray) = @_;
             my $v = 0 + ($self->{"int"});
-            if (length($v) > 19 || $v >= 2**62) {
+            if (length($v) > 19 || $v >= 4.61168601842739e+18) {
                 if (length($v) > 19 || $v > 9223372036854775807) {
                     $v = '' . $v;
                     $v !~ m/\./ && ($v = $v . ".0");
@@ -15836,7 +15897,7 @@ CORE.sprintf = function(List__) {
     }
     package Perlito5::AST::Num;
     {
-        my $inf = 1000**1000**1000;
+        my $inf = Inf;
         sub Perlito5::AST::Num::emit_java {
             (my $self, my $level, my $wantarray) = @_;
             my $s;
@@ -16056,7 +16117,7 @@ CORE.sprintf = function(List__) {
     }
     package Perlito5::AST::Var;
     {
-        my $inf = 1000**1000**1000;
+        my $inf = Inf;
         sub Perlito5::AST::Var::emit_java_global {
             (my $self, my $level, my $wantarray, my $localize) = @_;
             my $local = $localize ? "_local" : '';
@@ -16285,6 +16346,14 @@ CORE.sprintf = function(List__) {
                                         return $self->emit_java($level) . " = " . "(" . $t . ")(" . Perlito5::Java::to_scalar([$arguments], $level + 1) . ".toJava())"
                                     }
                                 }
+                            }
+                        }
+                        if (ref($arguments) eq "Perlito5::AST::Sub") {
+                            if ($arguments->{"sig"} && $arguments->{"sig"} eq "\$") {;
+                                return $self->emit_java($level) . " = " . "(x) -> " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ".apply(PlCx.SCALAR, new PlArray(x))"
+                            }
+                            if ($arguments->{"sig"} && $arguments->{"sig"} eq "\$\$") {;
+                                return $self->emit_java($level) . " = " . "(x, y) -> " . Perlito5::Java::to_scalar([$arguments], $level + 1) . ".apply(PlCx.SCALAR, new PlArray(x, y))"
                             }
                         }
                         my $java_type = $class_info->{$type}->{"java_type"};
@@ -16819,7 +16888,8 @@ CORE.sprintf = function(List__) {
                 $method_decl = "public PlObject apply(int want, PlArray List__)";
                 unshift(@js_block, "int return_context = want;")
             }
-            my @s = ("new PlClosure(" . join(", ", @closure_args) . ") {", [@perl_pos, "public StackTraceElement firstLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}", "\@SuppressWarnings(\"unchecked\")", $method_decl . " {", [@js_block], "}", "public StackTraceElement lastLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}"], "}");
+            my $closure_type = "PlClosure";
+            my @s = ("new " . $closure_type . "(" . join(", ", @closure_args) . ") {", [@perl_pos, "public StackTraceElement firstLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}", "\@SuppressWarnings(\"unchecked\")", $method_decl . " {", [@js_block], "}", "public StackTraceElement lastLine() {", ["return PlCx.mainThread.getStackTrace()[1];"], "}"], "}");
             if ($self->{"name"}) {;
                 return Perlito5::Java::emit_wrap_java($level, "PlV.cset(", [Perlito5::Java::escape_string(($self->{"namespace"}) . "::" . ($self->{"name"})) . ",", @s], ");")
             }
@@ -18191,7 +18261,8 @@ CORE.sprintf = function(List__) {
     our %native_op_to_boolean = ("infix:<!=>", "!=", "infix:<==>", "==", "infix:<<=>", "<=", "infix:<>=>", ">=", "infix:<>>", ">", "infix:<<>", "<");
     our %valid_java_statement = ("delete", 1, "die", 1, "do", 1, "infix:<=>", 1, "last", 1, "next", 1, "postfix:<++>", 1, "postfix:<-->", 1, "prefix:<++>", 1, "prefix:<-->", 1, "print", 1, "printf", 1, "push", 1, "redo", 1, "return", 1, "say", 1, "shift", 1, "tie", 1, "unshift", 1, "untie", 1, "warn", 1);
     our %special_scalar = ("_", "Scalar_ARG", "\\", "Scalar_OUTPUT_RECORD_SEPARATOR", "|", "Scalar_AUTOFLUSH", "\@", "Scalar_EVAL_ERROR");
-    my %safe_char = ("\\", "\\\\", "\"", "\\\"", chr(10), "\\n", chr(13), "\\r", map {;
+    my %safe_char = ("\\", "\\\\", "\"", "\\\"", "
+", "\\n", "\x{d}", "\\r", map {;
         $_ => $_
     } ("A" .. "Z", "a" .. "z", 0 .. 9, " ", "!", "#", "\$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "\@", "[", "]", "^", "_", "`", "{", "|", "}", "~"));
     sub Perlito5::Java::escape_string {
@@ -20160,14 +20231,20 @@ class PlCORE {
 
         for(int i = 0; i < template.length(); ++i) {
             int size;
+            int code = template.charAt(i);
             if (template.length() > (i+1) && template.charAt(i+1) == '*') {
-                size = List__.to_int();
+                if (code == 'A') {
+                    size = -1;
+                }
+                else {
+                    size = List__.to_int();
+                }
             }
             else {
                 size = pack_size(template, i);
             }
 
-            switch(template.charAt(i)) {
+            switch(code) {
             case 'a':
             {
                 result.append(pack_a(List__.shift().toString(), size));
@@ -20424,10 +20501,34 @@ class PlCORE {
                 // result.push_void(unpack_a(List__.shift().toString(), size));
                 break;
             }
+            case 'x':
+            {
+                if (size < 0) {
+                        inputIndex = input.length();
+                }
+                else {
+                        inputIndex += size;
+                }
+                break;
+            }
             case 'A':
             {
-                // TODO
-                // result.push_void(unpack_A(List__.shift().toString(), size));
+                if (size < 0) {
+                        if (inputIndex < input.length()) {
+                            result.push_void( new PlString( input.substring(inputIndex) ) );
+                        }
+                        inputIndex = input.length();
+                }
+                else {
+                        if (inputIndex < input.length()) {
+                            int endIndex = inputIndex + size;
+                            if ( endIndex > input.length() ) {
+                                endIndex = input.length();
+                            }
+                            result.push_void( new PlString( input.substring(inputIndex, endIndex) ) );
+                        }
+                        inputIndex += size;
+                }
                 break;
             }
             case 'Z':
@@ -20443,8 +20544,31 @@ class PlCORE {
                 break;
             }
 
+            case 'H':
+            {
+                if (size < 0) {
+                        while (inputIndex < input.length()) {
+                            result.push_void( new PlString( Integer.toHexString( input.charAt(inputIndex++) & 0xFF ) ) );
+                        }
+                }
+                else {
+                    for (int j = 0; j < size; j++) {
+                        if (inputIndex < input.length()) {
+                            if (j < size-1) {
+                                result.push_void( new PlString( Integer.toHexString( input.charAt(inputIndex++) & 0xFF ) ) );
+                                j++;
+                            }
+                            else {
+                                result.push_void( new PlString( Integer.toHexString( ( input.charAt(inputIndex++) & 0xFF ) >> 4 ) ) );
+                            }
+                        }
+                    }
+                }
+                break;
+            }
             case 'C':
             {
+                // An unsigned char (octet) value
                 if (size == 0) {
                     // C0
                     characterMode = true;
@@ -20461,14 +20585,23 @@ class PlCORE {
                         }
                     }
                 }
-                break;        
+                break;
             }
             case 'W':
             {
-                // TODO
-                // for (int j = 0; j < size; j++) {
-                //     result.pushCodePoint( List__.shift().to_int() );
-                // }
+                // An unsigned char value (can be greater than 255)
+                if (size < 0) {
+                        while (inputIndex < input.length()) {
+                            result.push_void( new PlInt( input.charAt(inputIndex++) ) );
+                        }
+                }
+                else {
+                    for (int j = 0; j < size; j++) {
+                        if (inputIndex < input.length()) {
+                            result.push_void( new PlInt( input.charAt(inputIndex++) ) );
+                        }
+                    }
+                }
                 break;        
             }
             case 'U':
@@ -20567,17 +20700,14 @@ class PlCORE {
         return s; 
     }
     private static final String pack_A(String s, int size) {
+        if (size < 0) {
+            return s;
+        }
         if(s.length() >= size) {
             return s.substring(0,size);
         }
         String padding = new String(new char[size - s.length()]).replace('\\0', ' ');
         return s + padding;    
-    }
-    private static final String unpack_A(String s, int size) {
-        if(s.length() >= size) {
-            return s.substring(0,size);
-        }
-        return s; 
     }
     private static final String pack_Z(String s, int size) {
         s = s.substring(0, java.lang.Math.min(size - 1, s.length()));
@@ -21794,7 +21924,7 @@ class PlJavaCompiler {
             cp.append(systemCp);
         }
         optionList.addAll(Arrays.asList(\"-classpath\", cp.toString()));
-        optionList.addAll(Arrays.asList(\"-source\",    \"7\"));
+        optionList.addAll(Arrays.asList(\"-source\",    \"8\"));
         // optionList.addAll(Arrays.asList(\"-Xlint:deprecation\"));
     }
 
@@ -22723,6 +22853,7 @@ class SourceCode extends SimpleJavaFileObject {
             return (("
 // use perlito5-lib.jar
 import org.perlito.Perlito5.*;
+import java.util.function.*;
 import java.util.regex.Pattern;
 import java.time.*;
 import java.time.format.*;
@@ -22758,6 +22889,7 @@ import java.nio.ByteBuffer;
 import static java.nio.file.attribute.PosixFilePermission.*;
 import java.time.*;
 import java.time.format.*;
+import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
@@ -25136,7 +25268,7 @@ class PlV {
     }
 
 }
-class PlObject implements Cloneable, Iterable<PlLvalue> {
+class PlObject implements Cloneable, Iterable<PlLvalue>, Serializable {
     public static final String REF_str = new String(\"\");
     public static final PlStringConstant REF = new PlStringConstant(REF_str);
 
@@ -25989,7 +26121,10 @@ class PlObject implements Cloneable, Iterable<PlLvalue> {
 "
         } sort {;
             $a cmp $b
-        } ("string_replicate", keys(%self_assign_number_binop)))), ("}
+        } ("string_replicate", keys(%self_assign_number_binop)))), ("    public PlObject mul(int v) {
+        return this.mul(new PlInt(v));
+    }
+}
 class PlScalarObject extends PlObject {
     public PlScalarObject() {
     }
@@ -26806,6 +26941,42 @@ class PlRegexResult extends PlScalarImmutable {
         return true;
     }
 }
+
+// class PlUnaryClosure extends PlClosure implements UnaryOperator<PlObject>,
+//     Function<PlObject,PlObject> 
+//     // org.apache.spark.api.java.function.Function<PlObject,PlObject> 
+// {
+//     public PlUnaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
+//         super(prototype, env, pkg_name, is_defined);
+//     }
+//     public PlUnaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined, PlClosure currentSub) {
+//         // this is the constructor for do-BLOCK; currentSub points to the \"sub\" outside
+//         super(prototype, env, pkg_name, is_defined, currentSub);
+//     }
+// 
+//     public PlObject apply(PlObject v1) {
+//         // run as UnaryOperator
+//         return this.apply(PlCx.SCALAR, new PlArray(v1));
+//     }
+//     public PlObject call(PlObject v1) {
+//         // run as Spark Function
+//         return this.apply(PlCx.SCALAR, new PlArray(v1));
+//     }
+// }
+class PlBinaryClosure extends PlClosure implements BinaryOperator<PlObject> {
+    public PlBinaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined) {
+        super(prototype, env, pkg_name, is_defined);
+    }
+    public PlBinaryClosure(PlObject prototype, PlObject[] env, String pkg_name, boolean is_defined, PlClosure currentSub) {
+        // this is the constructor for do-BLOCK; currentSub points to the \"sub\" outside
+        super(prototype, env, pkg_name, is_defined, currentSub);
+    }
+
+    public PlObject apply(PlObject v1, PlObject v2) {
+        // run as BinaryOperator
+        return this.apply(PlCx.SCALAR, new PlArray(v1, v2));
+    }
+}
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
     public PlObject prototype;   // '\$\$\$'
@@ -26891,7 +27062,7 @@ class PlClosure extends PlReference implements Runnable {
         return null;
     }
     public void run() {
-        // run as a thread
+        // run as Runnable - this is used to start a Thread
         this.apply(PlCx.VOID, new PlArray());
     }
 
