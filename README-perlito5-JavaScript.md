@@ -130,6 +130,23 @@ Calling Perl subroutines from JavaScript
     Method call.
 
 
+Calling JavaScript methods from Perl
+=========
+
+The Perl `AUTOLOAD` mechanism is used to fallback to JavaScript: if a method doesn't exist in Perl,
+it will retry in native JavaScript.
+
+```
+$ node perlito5.js -I src5/lib -e ' console->log(123); console->log( Math->max(2,3) ); '
+```
+
+Alternately, use the `JS::inline()` method:
+
+```
+$ node perlito5.js -I src5/lib -e ' JS::inline(" console.log(123); "); '
+```
+
+
 Internals
 =========
 

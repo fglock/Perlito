@@ -293,6 +293,28 @@ function p5call(invocant, method, list, p5want) {
                 return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);
             }
         }
+
+        var fun;
+        if (typeof invocant_original === "string") {
+            fun = eval(invocant_original + "." + method);
+        }
+        else {
+            fun = invocant_original.method;
+        }
+        if (typeof fun === "function") {
+            // method
+
+            // TODO - disambiguate based on parenthesis:
+            //  Math->max(4, 5)                         // "max" as a method call
+            //  Math->max->apply(undef, $numbers)       // "max" as a property
+
+            return fun.apply(list.shift(), list);
+        }
+        if (list.length == 0) {
+            // property
+            return fun;
+        }
+
         p5pkg.CORE.die([p5method_not_found(method, invocant._class_._ref_)]);
     }
     p5pkg.CORE.die(["Can't call method ", method, " on unblessed reference"]);
