@@ -296,23 +296,36 @@ function p5call(invocant, method, list, p5want) {
 
         var fun;
         if (typeof invocant_original === "string") {
-            fun = eval(invocant_original + "." + method);
+            var js_global_scope = isNode ? global : window;
+            invocant = js_global_scope[invocant_original];
         }
         else {
-            fun = invocant_original.method;
+            invocant = invocant_original;
         }
-        if (typeof fun === "function") {
-            // method
+        if (typeof invocant !== "undefined") {
+            fun = invocant[method];
+            if (typeof fun === "undefined") {
+                var parent = invocant.prototype;
+                if (typeof parent !== "undefined") {
+                    fun = parent[method];
+                    // TODO - lookup parent method recursively
+                }
+            }
 
-            // TODO - disambiguate based on parenthesis:
-            //  Math->max(4, 5)                         // "max" as a method call
-            //  Math->max->apply(undef, $numbers)       // "max" as a property
+            if (typeof fun === "function") {
+                // method
 
-            return fun.apply(list.shift(), list);
-        }
-        if (list.length == 0) {
-            // property
-            return fun;
+                // TODO - disambiguate based on parenthesis:
+                //  Math->max(4, 5)                         // "max" as a method call
+                //  Math->max->apply(undef, $numbers)       // "max" as a property
+
+                return fun.apply(list.shift(), list);
+            }
+            if (list.length == 0) {
+                // property
+                return fun;
+            }
+            p5pkg.CORE.die([p5method_not_found(method, invocant)]);
         }
 
         p5pkg.CORE.die([p5method_not_found(method, invocant._class_._ref_)]);
