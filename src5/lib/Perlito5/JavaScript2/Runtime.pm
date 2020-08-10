@@ -327,16 +327,23 @@ function p5call(invocant, method, list, p5want, no_params) {
 
                 list.shift();
 
-                if ( fun === fun.apply ) {
-                    // fun is "apply"
-                    // print Math->max->apply(undef,[9,2,3,7])
-                    var invox = list.shift();
-                    var argsx = list.shift();
-                    var args = p5array_deref( argsx , "" );
-                    return invocant.apply(invox, args);
+                var args = [];
+                for(var i = 0; i < list.length; i++) {
+                    if (typeof list[i] === "undefined" || list[i] == null) {
+                        args.push(null);
+                    }
+                    else if (list[i].hasOwnProperty("_array_")) {
+                        args.push(list[i]._array_);   // array deref
+                    }
+                    else if (list[i].hasOwnProperty("_hash_")) {
+                        args.push(list[i]._hash_);    // hash deref
+                    }
+                    else {
+                        args.push(list[i]);
+                    }
                 }
 
-                return fun.apply(invocant, list);
+                return fun.apply(invocant, args);
             }
             if (list.length == 0) {
                 // property
