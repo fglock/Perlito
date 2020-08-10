@@ -1398,7 +1398,8 @@ package Perlito5::AST::Call;
         return 'p5call(' . $invocant . ', ' 
                          . $meth . ', ' 
                          . Perlito5::JavaScript2::to_list($self->{arguments}) . ', '
-                         . Perlito5::JavaScript2::to_context($wantarray)
+                         . Perlito5::JavaScript2::to_context($wantarray) . ', '
+                         . ( $self->{_no_params} ? 'true' : 'false' )
                   . ')'
     }
 

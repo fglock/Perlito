@@ -229,7 +229,7 @@ function p5method_not_found(method, class_name) {
         + class_name + "\"?)";
 }
 
-function p5call(invocant, method, list, p5want) {
+function p5call(invocant, method, list, p5want, no_params) {
     var invocant_original = invocant;
     if (typeof invocant === "string") {
         list.unshift(invocant);
@@ -293,7 +293,9 @@ function p5call(invocant, method, list, p5want) {
                 return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);
             }
         }
+    }
 
+    if (typeof invocant !== "undefined") {
         var fun;
         if (typeof invocant_original === "string") {
             var js_global_scope = isNode ? global : window;
@@ -312,6 +314,10 @@ function p5call(invocant, method, list, p5want) {
                 }
             }
 
+            if (no_params) {
+                // property
+                return fun;
+            }
             if (typeof fun === "function") {
                 // method
 
@@ -319,7 +325,18 @@ function p5call(invocant, method, list, p5want) {
                 //  Math->max(4, 5)                         // "max" as a method call
                 //  Math->max->apply(undef, $numbers)       // "max" as a property
 
-                return fun.apply(list.shift(), list);
+                list.shift();
+
+                if ( fun === fun.apply ) {
+                    // fun is "apply"
+                    // print Math->max->apply(undef,[9,2,3,7])
+                    var invox = list.shift();
+                    var argsx = list.shift();
+                    var args = p5array_deref( argsx , "" );
+                    return invocant.apply(invox, args);
+                }
+
+                return fun.apply(invocant, list);
             }
             if (list.length == 0) {
                 // property
@@ -327,7 +344,9 @@ function p5call(invocant, method, list, p5want) {
             }
             p5pkg.CORE.die([p5method_not_found(method, invocant)]);
         }
+    }
 
+    if ( invocant.hasOwnProperty("_class_") ) {
         p5pkg.CORE.die([p5method_not_found(method, invocant._class_._ref_)]);
     }
     p5pkg.CORE.die(["Can't call method ", method, " on unblessed reference"]);

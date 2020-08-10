@@ -138,6 +138,14 @@ it will retry in native JavaScript.
 
 ```
 $ node perlito5.js -I src5/lib -e ' console->log(123); console->log( Math->max(2,3) ); '
+123
+3
+```
+
+```
+$ node perlito5.js -I src5/lib -e '  Math->max(); print Math->max(9,2,5), "\n";  print Math->max->apply(undef,[9,2,3,7]), "\n"; '
+9
+9
 ```
 
 Alternately, use the `JS::inline()` method:
