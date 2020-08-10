@@ -10114,7 +10114,7 @@
             else {;
                 $meth = Perlito5::JavaScript2::escape_string($meth)
             }
-            return "p5call(" . $invocant . ", " . $meth . ", " . Perlito5::JavaScript2::to_list($self->{"arguments"}) . ", " . Perlito5::JavaScript2::to_context($wantarray) . ")"
+            return "p5call(" . $invocant . ", " . $meth . ", " . Perlito5::JavaScript2::to_list($self->{"arguments"}) . ", " . Perlito5::JavaScript2::to_context($wantarray) . ", " . ($self->{"_no_params"} ? "true" : "false") . ")"
         }
         sub Perlito5::AST::Call::emit_javascript2_set {
             (my $self, my $arguments, my $level, my $wantarray) = @_;
@@ -10607,7 +10607,7 @@ function p5method_not_found(method, class_name) {
         + class_name + \"\\\"?)\";
 }
 
-function p5call(invocant, method, list, p5want) {
+function p5call(invocant, method, list, p5want, no_params) {
     var invocant_original = invocant;
     if (typeof invocant === \"string\") {
         list.unshift(invocant);
@@ -10671,28 +10671,67 @@ function p5call(invocant, method, list, p5want) {
                 return p5pkg[pkg_name][\"AUTOLOAD\"](list, p5want);
             }
         }
+    }
 
+    if (typeof invocant !== \"undefined\") {
         var fun;
         if (typeof invocant_original === \"string\") {
-            fun = eval(invocant_original + \".\" + method);
+            var js_global_scope = isNode ? global : window;
+            invocant = js_global_scope[invocant_original];
         }
         else {
-            fun = invocant_original.method;
+            invocant = invocant_original;
         }
-        if (typeof fun === \"function\") {
-            // method
+        if (typeof invocant !== \"undefined\") {
+            fun = invocant[method];
+            if (typeof fun === \"undefined\") {
+                var parent = invocant.prototype;
+                if (typeof parent !== \"undefined\") {
+                    fun = parent[method];
+                    // TODO - lookup parent method recursively
+                }
+            }
 
-            // TODO - disambiguate based on parenthesis:
-            //  Math->max(4, 5)                         // \"max\" as a method call
-            //  Math->max->apply(undef, \$numbers)       // \"max\" as a property
+            if (no_params) {
+                // property
+                return fun;
+            }
+            if (typeof fun === \"function\") {
+                // method
 
-            return fun.apply(list.shift(), list);
+                // TODO - disambiguate based on parenthesis:
+                //  Math->max(4, 5)                         // \"max\" as a method call
+                //  Math->max->apply(undef, \$numbers)       // \"max\" as a property
+
+                list.shift();
+
+                var args = [];
+                for(var i = 0; i < list.length; i++) {
+                    if (typeof list[i] === \"undefined\" || list[i] == null) {
+                        args.push(null);
+                    }
+                    else if (list[i].hasOwnProperty(\"_array_\")) {
+                        args.push(list[i]._array_);   // array deref
+                    }
+                    else if (list[i].hasOwnProperty(\"_hash_\")) {
+                        args.push(list[i]._hash_);    // hash deref
+                    }
+                    else {
+                        args.push(list[i]);
+                    }
+                }
+
+                return fun.apply(invocant, args);
+            }
+            if (list.length == 0) {
+                // property
+                return fun;
+            }
+            p5pkg.CORE.die([p5method_not_found(method, invocant)]);
         }
-        if (list.length == 0) {
-            // property
-            return fun;
-        }
+    }
 
+    if ( invocant.hasOwnProperty(\"_class_\") ) {
         p5pkg.CORE.die([p5method_not_found(method, invocant._class_._ref_)]);
     }
     p5pkg.CORE.die([\"Can't call method \", method, \" on unblessed reference\"]);
