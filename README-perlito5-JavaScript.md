@@ -154,6 +154,12 @@ Alternately, use the `JS::inline()` method:
 $ node perlito5.js -I src5/lib -e ' JS::inline(" console.log(123); "); '
 ```
 
+TODO - nice to have - assignment to object attribute like:
+
+```
+document->getElementById("print-result")->value = "abc";
+```
+
 
 Internals
 =========
