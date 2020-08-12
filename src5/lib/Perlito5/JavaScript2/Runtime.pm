@@ -296,6 +296,27 @@ function p5call(invocant, method, list, p5want, no_params) {
     }
 
     if (typeof invocant !== "undefined") {
+
+        // preprocess argument list; start in "1" because "0" is the invocant
+
+        var args = [];
+        for(var i = 1; i < list.length; i++) {
+            if (typeof list[i] === "undefined" || list[i] == null) {
+                args.push(null);
+            }
+            else if (list[i].hasOwnProperty("_array_")) {
+                args.push(list[i]._array_);   // array deref
+            }
+            else if (list[i].hasOwnProperty("_hash_")) {
+                args.push(list[i]._hash_);    // hash deref
+            }
+            else {
+                args.push(list[i]);
+            }
+        }
+
+        // retrieve the method
+
         var fun;
         if (typeof invocant_original === "string") {
             var js_global_scope = isNode ? global : window;
@@ -307,6 +328,19 @@ function p5call(invocant, method, list, p5want, no_params) {
         if (typeof invocant !== "undefined") {
             fun = invocant[method];
             if (typeof fun === "undefined") {
+
+                // method not found
+
+                if (method === "new") {
+
+                    // method looks like a constructor
+
+                    // https://stackoverflow.com/questions/4226646/how-to-construct-javascript-object-using-apply/4226801#4226801
+
+                    var constr = invocant.prototype.constructor;
+                    return new (constr.bind.apply(constr, [ null, ...args] ));
+                }
+
                 var parent = invocant.prototype;
                 if (typeof parent !== "undefined") {
                     fun = parent[method];
@@ -325,27 +359,9 @@ function p5call(invocant, method, list, p5want, no_params) {
                 //  Math->max(4, 5)                         // "max" as a method call
                 //  Math->max->apply(undef, $numbers)       // "max" as a property
 
-                list.shift();
-
-                var args = [];
-                for(var i = 0; i < list.length; i++) {
-                    if (typeof list[i] === "undefined" || list[i] == null) {
-                        args.push(null);
-                    }
-                    else if (list[i].hasOwnProperty("_array_")) {
-                        args.push(list[i]._array_);   // array deref
-                    }
-                    else if (list[i].hasOwnProperty("_hash_")) {
-                        args.push(list[i]._hash_);    // hash deref
-                    }
-                    else {
-                        args.push(list[i]);
-                    }
-                }
-
                 return fun.apply(invocant, args);
             }
-            if (list.length == 0) {
+            if (args.length == 0) {
                 // property
                 return fun;
             }

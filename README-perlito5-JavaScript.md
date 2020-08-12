@@ -148,6 +148,13 @@ $ node perlito5.js -I src5/lib -e '  Math->max(); print Math->max(9,2,5), "\n"; 
 9
 ```
 
+Calling constructors using `new`:
+
+```
+$ node perlito5.js -I src5/lib -e ' my $r = RegExp->new("abc", "g"); print $r->toString(), " ", $r->test("xabcx"), " ", $r->lastIndex, "\n";'
+/abc/g 1 4
+```
+
 Alternately, use the `JS::inline()` method:
 
 ```
