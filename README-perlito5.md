@@ -35,11 +35,11 @@ Running the tests using "node.js"
 
 - this command will compile "perlito5.js" without using `make`
 
-  `perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js`
+  `perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js`
 
 - this will run a single test script
 
-  `node perlito5.js -Isrc5/lib t5/01-perlito/01-sanity.t`
+  `node perlito5.js -Isrc5/lib t5/01-perlito/010-sanity.t`
 
 - this will run all tests without using `make`
 
@@ -55,7 +55,7 @@ Compile the compiler to JavaScript (`perlito5.js`)
 
 - using node.js and perlito5.js:
 
-  `node perlito5.js -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js`
+  `node perlito5.js --bootstrapping -Isrc5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js`
 
 Compile the compiler to Perl5 using perl
 ----------------------------------------
