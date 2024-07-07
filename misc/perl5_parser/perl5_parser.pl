@@ -239,6 +239,10 @@ my %PRECEDENCE = (
     '(' => 21,    # function call
     '{' => 21,    # hash element
     '[' => 21,    # array elemnt
+
+    '$' => 22,
+    '@' => 22,
+    '%' => 22,
 );
 
 my %LIST = (
@@ -252,6 +256,9 @@ my %PREFIX = (
     '+'   => 1,
     '--'  => 1,
     '++'  => 1,
+    '$'   => 1,
+    '@'   => 1,
+    '%'   => 1,
 );
 my %POSTFIX = (
     '--' => 1,
@@ -512,6 +519,77 @@ sub parse_number {
 
 my %escape_sequence = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
 
+my %quote_pair = (
+    '{' => '}',
+    '(' => ')',
+    '[' => ']',
+    '<' => '>',
+);
+
+sub parse_single_quote_string {
+    my ( $tokens, $index, $pos, $quote ) = @_;
+
+    # 'abc'
+    my $value;
+    while ( $pos < @$tokens ) {
+        if ( $quote eq $tokens->[$pos][1] ) {
+            return { type => 'STRING', index => $index, value => $value, next => $pos + 1 };
+        }
+        if ( $tokens->[$pos][0] == ESCAPE() ) {
+            if ( $tokens->[ $pos + 1 ][1] eq $quote || $tokens->[ $pos + 1 ][0] == ESCAPE() ) {
+                $pos++;
+            }
+        }
+        $value .= $tokens->[$pos][1];
+        $pos++;
+    }
+}
+
+sub parse_double_quote_string {
+    my ( $tokens, $index, $pos, $quote ) = @_;
+
+    # "abc"
+    my @ops;
+    my $value = '';
+    while ( $pos < @$tokens ) {
+        my $type = $tokens->[$pos][0];
+        if ( $quote eq $tokens->[$pos][1] ) {
+            if ( length($value) > 0 || @ops < 1 ) {
+                push @ops, { type => 'STRING', index => $index, value => $value, next => $pos + 1 };
+            }
+            if ( @ops == 1 ) {
+                return $ops[0];
+            }
+            return { type => 'JOIN', index => $index, value => [ '', @ops ], next => $pos + 1 };
+        }
+        if ( $type == ESCAPE() ) {
+            if ( $tokens->[ $pos + 1 ][1] eq $quote || $tokens->[ $pos + 1 ][0] == ESCAPE() ) {
+                $pos++;
+            }
+            my $c2 = $tokens->[ $pos + 1 ][1];
+            if ( exists $escape_sequence{$c2} ) {
+                $value .= chr( $escape_sequence{$c2} );
+                $pos++;
+                $pos++;
+                next;
+            }
+        }
+        if ( $type == SIGIL() ) {
+            my $expr = parse_variable( $tokens, $pos );
+            if ( $expr->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+            push @ops, { type => 'STRING', index => $index, value => $value, next => $pos };
+            push @ops, $expr;
+            $value = '';
+            $pos   = $expr->{next};
+            next;
+        }
+        $value .= $tokens->[$pos][1];
+        $pos++;
+    }
+}
+
 sub parse_string {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
@@ -519,64 +597,10 @@ sub parse_string {
         my $quote = $tokens->[$pos][1];
         $pos++;    # "
         if ( $quote eq "'" ) {
-
-            # 'abc'
-            my $value;
-            while ( $pos < @$tokens ) {
-                if ( $tokens->[$pos][0] == STRING_DELIM() && $quote eq $tokens->[$pos][1] ) {
-                    return { type => 'STRING', index => $index, value => $value, next => $pos + 1 };
-                }
-                if ( $tokens->[$pos][0] == ESCAPE() ) {
-                    if ( $tokens->[ $pos + 1 ][1] eq $quote || $tokens->[ $pos + 1 ][0] == ESCAPE() ) {
-                        $pos++;
-                    }
-                }
-                $value .= $tokens->[$pos][1];
-                $pos++;
-            }
+            return parse_single_quote_string( $tokens, $index, $pos, $quote );
         }
         elsif ( $quote eq '"' ) {
-
-            # "abc"
-            my @ops;
-            my $value = '';
-            while ( $pos < @$tokens ) {
-                my $type = $tokens->[$pos][0];
-                if ( $type == STRING_DELIM() && $quote eq $tokens->[$pos][1] ) {
-                    if ( length($value) > 0 || @ops < 1 ) {
-                        push @ops, { type => 'STRING', index => $index, value => $value, next => $pos + 1 };
-                    }
-                    if ( @ops == 1 ) {
-                        return $ops[0];
-                    }
-                    return { type => 'JOIN', index => $index, value => [ '', @ops ], next => $pos + 1 };
-                }
-                if ( $type == ESCAPE() ) {
-                    if ( $tokens->[ $pos + 1 ][1] eq $quote || $tokens->[ $pos + 1 ][0] == ESCAPE() ) {
-                        $pos++;
-                    }
-                    my $c2 = $tokens->[ $pos + 1 ][1];
-                    if ( exists $escape_sequence{$c2} ) {
-                        $value .= chr( $escape_sequence{$c2} );
-                        $pos++;
-                        $pos++;
-                        next;
-                    }
-                }
-                if ( $type == SIGIL() ) {
-                    my $expr = parse_variable( $tokens, $pos );
-                    if ( $expr->{FAIL} ) {
-                        return parse_fail( $tokens, $index );
-                    }
-                    push @ops, { type => 'STRING', index => $index, value => $value, next => $pos };
-                    push @ops, $expr;
-                    $value = '';
-                    $pos   = $expr->{next};
-                    next;
-                }
-                $value .= $tokens->[$pos][1];
-                $pos++;
-            }
+            return parse_double_quote_string( $tokens, $index, $pos, $quote );
         }
         elsif ( $quote eq '`' ) {
             return parse_fail( $tokens, $index );
@@ -668,6 +692,42 @@ sub parse_term {
             }
             $ast = { type => 'DO_BLOCK', stmt => $stmt, block => $block, next => $block->{next} };
             return $ast;
+        }
+        if ( $stmt eq 'q' ) {
+
+            # q!...!
+            $pos++;
+            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            my $delim = $tokens->[$pos][1];
+            if ( length($delim) > 1 ) {
+
+                # tokenization fail; delimiter is ambiguous
+            }
+            else {
+                if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
+                $pos++;
+
+                # 'abc'
+                return parse_single_quote_string( $tokens, $index, $pos, $delim );
+            }
+        }
+        if ( $stmt eq 'qq' ) {
+
+            # qq!...!
+            $pos++;
+            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            my $delim = $tokens->[$pos][1];
+            if ( length($delim) > 1 ) {
+
+                # tokenization fail; delimiter is ambiguous
+            }
+            else {
+                if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
+                $pos++;
+
+                # "abc"
+                return parse_double_quote_string( $tokens, $index, $pos, $delim );
+            }
         }
 
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
@@ -821,4 +881,11 @@ $a->[123];
 $a->{123};
 $a[456]{aaa};
 $a[456];
+$$a;
+$$a[1];
+$$a->[1];
+q! abd !;
+q< abd >;
+{ q => 123 };
+qq< abd [$v]  >;
 
