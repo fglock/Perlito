@@ -29,7 +29,7 @@ use constant {
     SQUARE_CLOSE  => 25,
     CURLY_OPEN    => 26,
     CURLY_CLOSE   => 27,
-    SEMICOLON => 28,
+    SEMICOLON     => 28,
 };
 
 my %TokenName = (
@@ -55,7 +55,7 @@ my %TokenName = (
     SQUARE_CLOSE()  => 'SQUARE_CLOSE',
     CURLY_OPEN()    => 'CURLY_OPEN',
     CURLY_CLOSE()   => 'CURLY_CLOSE',
-    SEMICOLON() => 'SEMICOLON',
+    SEMICOLON()     => 'SEMICOLON',
 );
 
 my %OPERATORS = (
@@ -393,6 +393,7 @@ sub parse_optional_whitespace {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
     while ( $pos < $#$tokens ) {
+        last if !$tokens->[$pos];    # XXX autovivification
         if ( $tokens->[$pos][0] == WHITESPACE() ) {
             $pos++;
         }
@@ -591,6 +592,32 @@ sub parse_delim_expression {
     return parse_fail( $tokens, $index );
 }
 
+sub parse_statement_block {
+    my ( $tokens, $index ) = @_;
+    my $pos = $index;
+    if ( $tokens->[$pos][0] == CURLY_OPEN() ) {
+        $pos++;
+        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        my @expr;
+        while (1) {
+            my $expr = parse_statement( $tokens, $pos );
+            if ( $expr->{FAIL} ) {
+
+                # return parse_fail( $tokens, $index );
+                last;
+            }
+            push @expr, $expr;
+            $pos = $expr->{next};
+        }
+        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        if ( $tokens->[$pos][0] == CURLY_CLOSE() ) {
+            $pos++;
+            return { type => 'STATEMENT_BLOCK', value => \@expr, next => $pos };
+        }
+    }
+    return parse_fail( $tokens, $index );
+}
+
 sub parse_term {
     my ( $tokens, $index ) = @_;
     my $type = $tokens->[$index][0];
@@ -602,10 +629,11 @@ sub parse_term {
         $ast = parse_variable( $tokens, $index );
     }
     elsif ( $type == IDENTIFIER() ) {
-	my $pos = $index;
+        my $pos  = $index;
         my $stmt = $tokens->[$pos][1];
         if ( $stmt eq 'print' ) {
-	    # XXX special case just for testing!
+
+            # XXX special case just for testing!
             $pos++;
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $expr = parse_precedence_expression( $tokens, $pos, 0 );
@@ -613,7 +641,7 @@ sub parse_term {
                 return parse_fail( $tokens, $index );
             }
             return { type => 'APPLY', stmt => $stmt, args => $expr, next => $expr->{next} };
-	}
+        }
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
@@ -637,14 +665,14 @@ sub parse_term {
 sub parse_statement {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
-    print "tokens ", $#$tokens, "\n";
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
     if ( $pos >= $#$tokens ) {
         return parse_fail( $tokens, $index );
     }
+    my $ast;
     if ( $tokens->[$pos][0] == IDENTIFIER() ) {
-	my $stmt = $tokens->[$pos][1];
-        if ( $stmt eq 'if' || $stmt eq 'unless' ) {
+        my $stmt = $tokens->[$pos][1];
+        if ( $stmt eq 'if' || $stmt eq 'unless' || $stmt eq 'while' || $stmt eq 'until' ) {
             $pos++;
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $expr = parse_delim_expression( $tokens, $pos, PAREN_OPEN(), PAREN_CLOSE() );
@@ -653,21 +681,40 @@ sub parse_statement {
             }
             $pos = $expr->{next};
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-            my $block = parse_delim_expression( $tokens, $pos, CURLY_OPEN(), CURLY_CLOSE() );
+            my $block = parse_statement_block( $tokens, $pos );
             if ( $block->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-            $pos = $block->{next};
-            return { type => 'STMT_IF', stmt => $stmt, condition => $expr, block => $block, next => $pos + 1 };
+            $ast = { type => 'STATEMENT', stmt => $stmt, condition => $expr, block => $block, next => $block->{next} };
+            $pos = $ast->{next};
         }
     }
-    return parse_precedence_expression( $tokens, $pos, 0 );
+    elsif ( $tokens->[$pos][0] == CURLY_OPEN() ) {
+        $ast = parse_statement_block( $tokens, $pos );
+        if ( $ast->{FAIL} ) {
+            return parse_fail( $tokens, $index );
+        }
+        $pos = $ast->{next};
+    }
+    if ( !$ast ) {
+        $ast = parse_precedence_expression( $tokens, $pos, 0 );
+        if ( $ast->{FAIL} ) {
+            return parse_fail( $tokens, $index );
+        }
+        $pos = $ast->{next};
+    }
+    $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+    if ( $tokens->[$pos][0] == SEMICOLON() ) {
+        $pos++;    # optional semicolon
+    }
+    $ast->{next} = $pos;
+    return $ast;
 }
 
 sub main {
     binmode( STDOUT, ":utf8" );
-    my $perl_code = join('', <DATA>);
-    my $tokens = tokenize($perl_code);
+    my $perl_code = join( '', <DATA> );
+    my $tokens    = tokenize($perl_code);
     ## for my $token (@$tokens) {
     ##     my ( $type, $value, $attr ) = @$token;
     ##     $value = "newline" if $value eq "\n";
@@ -710,7 +757,8 @@ qw( abc def \n &.= € );
 !2   # a comment
  && not 4 + 1 );
 'abc 123';
-if (0) { 123 }
+if (0) { 123; 456 }
 
 'abc 123 \\ \x \' \n ';
 "abc 123 \\ \x \' \n $x ";
+
