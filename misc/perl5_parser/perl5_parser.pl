@@ -234,8 +234,11 @@ my %PRECEDENCE = (
     '++' => 19,
     '--' => 19,
 
-    '->' => 20,
+    '->' => 21,
 
+    '(' => 21,    # function call
+    '{' => 21,    # hash element
+    '[' => 21,    # array elemnt
 );
 
 my %LIST = (
@@ -314,6 +317,7 @@ sub parse_precedence_expression {
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         my $op_value = $tokens->[$pos][1];
         my $type     = $tokens->[$pos][0];
+        my $op_pos   = $pos;
 
         last unless exists $PRECEDENCE{$op_value};
         my $precedence = $PRECEDENCE{$op_value};
@@ -321,6 +325,15 @@ sub parse_precedence_expression {
 
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+
+        if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {
+            my $right_expr = parse_term( $tokens, $op_pos );
+            if ( $right_expr->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+            $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
+            next;
+        }
 
         # Handle ternary operator
         if ( $type == QUESTION() ) {
@@ -574,9 +587,13 @@ sub parse_string {
 
 sub parse_delim_expression {
     my ( $tokens, $index, $start, $stop ) = @_;
-    my $pos = $index;
+    my $pos       = $index;
+    my $token_str = $TokenName{$start};
     if ( $tokens->[$pos][0] == $start ) {
         $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
+        if ( $tokens->[$pos][0] == $stop ) {
+            return { type => 'PAREN', value => [ $token_str, ], next => $pos + 1 };    # empty
+        }
         my $expr = parse_precedence_expression( $tokens, $pos, 0 );
         if ( $expr->{FAIL} ) {
             return parse_fail( $tokens, $index );
@@ -584,7 +601,7 @@ sub parse_delim_expression {
         $pos = $expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         if ( $tokens->[$pos][0] == $stop ) {
-            return { type => 'PAREN', value => [ $start, $expr ], next => $pos + 1 };
+            return { type => 'PAREN', value => [ $token_str, $expr ], next => $pos + 1 };
         }
     }
     return parse_fail( $tokens, $index );
@@ -681,7 +698,11 @@ sub parse_statement {
         return parse_fail( $tokens, $index );
     }
     my $ast;
-    if ( $tokens->[$pos][0] == IDENTIFIER() ) {
+    if ( $tokens->[$pos][0] == SEMICOLON() ) {
+        $pos++;    # semicolon
+        return { type => 'STATEMENT', stmt => 'empty_statement', next => $pos };
+    }
+    elsif ( $tokens->[$pos][0] == IDENTIFIER() ) {
         my $stmt = $tokens->[$pos][1];
         if ( $stmt eq 'if' || $stmt eq 'unless' || $stmt eq 'while' || $stmt eq 'until' ) {
             $pos++;
@@ -715,7 +736,7 @@ sub parse_statement {
         $pos = $ast->{next};
     }
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-    if ( $tokens->[$pos][0] == SEMICOLON() ) {
+    if ( $tokens->[$pos][0] && $tokens->[$pos][0] == SEMICOLON() ) {
         $pos++;    # optional semicolon
     }
     $ast->{next} = $pos;
@@ -734,6 +755,8 @@ sub main {
     ## }
     my $index = 0;
     while ( $index < @$tokens ) {
+        $index = parse_optional_whitespace( $tokens, $index )->{next};
+        last if $index >= @$tokens;
         my $ast = parse_statement( $tokens, $index, 0 );
         if ( !$ast->{FAIL} ) {
             print Data::Dumper::Dumper($ast);
@@ -741,6 +764,7 @@ sub main {
         }
         else {
             my ( $type, $value, $attr ) = @{ $tokens->[$index] };
+            last if !defined $value;
             $value = "newline" if $value eq "\n";
             $attr  = $TokenName{ $attr // "" } // "";
             print "$TokenName{$type}: \t'$value' \t $attr\n";
@@ -783,3 +807,18 @@ $a->[5]++;
 --$a->[5];
 
 $a = 5 ? [ 6 , 7 ] : func;
+
+{}
+{;; ; $a; }
+{,}
+$a = { a => 2 };
+$a = {};
+$a = {,,,};
+$a->(123)[456]{aaa};
+$a->(123)[456];
+$a->(123);
+$a->[123];
+$a->{123};
+$a[456]{aaa};
+$a[456];
+
