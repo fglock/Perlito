@@ -716,6 +716,15 @@ sub parse_term {
     elsif ( $type == IDENTIFIER() ) {
         my $pos  = $index;
         my $stmt = $tokens->[$pos][1];
+        if ( $stmt eq 'use' ) {
+            $pos++;    # XXX special case just for testing!
+            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            my $expr = parse_precedence_expression( $tokens, $pos, 0 );
+            if ( $expr->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+            return { type => 'APPLY', stmt => $stmt, args => $expr, next => $expr->{next} };
+        }
         if ( $stmt eq 'print' ) {
             $pos++;    # XXX special case just for testing!
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
@@ -875,7 +884,21 @@ sub parse_statement {
         if ( $ast->{FAIL} ) {
             return parse_fail( $tokens, $index );
         }
+	# mandatory semicolon or end-of-block or end-of-file
         $pos = $ast->{next};
+        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        if (
+            $tokens->[$pos][0]    # not end of file
+            && $tokens->[$pos][0] != SEMICOLON()
+            && $tokens->[$pos][0] != CURLY_CLOSE()
+          )
+        {
+            my $tok = $TokenName{ $tokens->[$pos][0] };
+            $tok = ucfirst( lc($tok) );
+            die $tok . ' found where operator expected (Missing operator before "' . $tokens->[$pos][1] . '"?)';
+
+            # Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
+        }
     }
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
     if ( $tokens->[$pos][0] && $tokens->[$pos][0] == SEMICOLON() ) {
@@ -981,3 +1004,7 @@ qq< abd [$v$a]  >;
 m< abd [$v$a]  >;
 
 qw( abc def \n &.= € );  
+
+# test a syntax error
+# 2 + 3 5 + 8
+
