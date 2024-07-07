@@ -123,7 +123,7 @@ sub tokenize {
             elsif ( $char =~ /[a-zA-Z_]/ ) {
                 $state = IDENTIFIER();
             }
-            elsif ( $char =~ /\d/ ) {
+            elsif ( $char =~ /[0-9]/ ) {
                 $state = NUMBER();
             }
             elsif ( exists $OPERATORS{$char} ) {
@@ -137,7 +137,7 @@ sub tokenize {
         }
         elsif ( $state == WHITESPACE() ) {
             if ( $char !~ /\s/ || $char eq "\n" ) {
-                push @tokens, [ WHITESPACE(), $buffer, 0 ];
+                push @tokens, [ WHITESPACE(), $buffer ];
                 $buffer = '';
                 $state  = START();
                 redo FSM;
@@ -158,7 +158,7 @@ sub tokenize {
             }
         }
         elsif ( $state == NUMBER() ) {
-            if ( $char !~ /\d/ ) {
+            if ( $char !~ /[0-9]/ ) {
                 push @tokens, [ NUMBER(), $buffer ];
                 $buffer = '';
                 $state  = START();
@@ -263,8 +263,9 @@ my %PREFIX = (
 my %POSTFIX = (
     '--' => 1,
     '++' => 1,
-    ## ','   => 1,
 );
+
+# default associativity is LEFT
 my %ASSOC_RIGHT = (
     '**'  => 1,
     '='   => 1,
@@ -333,6 +334,7 @@ sub parse_precedence_expression {
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
 
+        # Handle postfix () [] {}
         if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {
             my $right_expr = parse_term( $tokens, $op_pos );
             if ( $right_expr->{FAIL} ) {
@@ -452,15 +454,10 @@ sub parse_variable {
 sub parse_number {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
-    if ( $tokens->[$pos][0] == MINUS() ) {
-        $pos++;    # -
-    }
     if ( $tokens->[$pos][0] == DOT() ) {
         $pos++;    # .
         if ( $tokens->[$pos][0] == NUMBER() ) {
-
-            # .123
-            $pos++;
+            $pos++;    # .123
         }
         else {
             return parse_fail( $tokens, $index );
@@ -469,13 +466,9 @@ sub parse_number {
     elsif ( $tokens->[$pos][0] == NUMBER() ) {
         $pos++;    # 123
         if ( $tokens->[$pos][0] == DOT() ) {
-
-            # 123.
-            $pos++;
+            $pos++;    # 123.
             if ( $tokens->[$pos][0] == NUMBER() ) {
-
-                # 123.456
-                $pos++;
+                $pos++;    # 123.456
             }
         }
     }
@@ -483,38 +476,24 @@ sub parse_number {
         return parse_fail( $tokens, $index );
     }
 
-    if ( $tokens->[$pos][0] == IDENTIFIER() && $tokens->[$pos][1] =~ /^e(\d*)$/i ) {
+    if ( $tokens->[$pos][0] == IDENTIFIER() && $tokens->[$pos][1] =~ /^e([0-9]*)$/i ) {
         if ($1) {
-
-            # E10
-            $pos++;
+            $pos++;    # E10
         }
         else {
-
-            # 123E-10
-            $pos++;
-
+            $pos++;    # 123E-10
             if ( $tokens->[$pos][0] == MINUS() ) {
-
-                # -
-                $pos++;
+                $pos++;    # -
             }
             if ( $tokens->[$pos][0] == NUMBER() ) {
-
-                # 123
-                $pos++;
+                $pos++;    # 123
             }
             else {
                 return parse_fail( $tokens, $index );
             }
         }
-
-        # return { NUMBER => 1, index => $index, value => [ map { $tokens->[$_] } $index .. $pos -1 ] };
-        return { type => 'NUMBER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
     }
-    else {
-        return { type => 'NUMBER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
-    }
+    return { type => 'NUMBER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
 }
 
 my %escape_sequence = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
@@ -803,16 +782,22 @@ sub parse_statement {
     return $ast;
 }
 
+sub token_as_string {
+    my ( $type, $value, $attr ) = @_;
+    return "" if !defined $value;
+    $value = "newline" if $value eq "\n";
+    $attr  = $TokenName{ $attr // "" } // "";
+    return "$TokenName{$type}: \t'$value' \t $attr\n";
+}
+
 sub main {
     binmode( STDOUT, ":utf8" );
     my $perl_code = join( '', <DATA> );
     my $tokens    = tokenize($perl_code);
-    ## for my $token (@$tokens) {
-    ##     my ( $type, $value, $attr ) = @$token;
-    ##     $value = "newline" if $value eq "\n";
-    ##     $attr = $AttrName{$attr // ""} // "";
-    ##     print "$TokenName{$type}: \t'$value' \t $attr\n";
-    ## }
+
+    # for my $token (@$tokens) {
+    #     print token_as_string(@$token);
+    # }
     my $index = 0;
     while ( $index < @$tokens ) {
         $index = parse_optional_whitespace( $tokens, $index )->{next};
@@ -823,11 +808,7 @@ sub main {
             $index = $ast->{next};
         }
         else {
-            my ( $type, $value, $attr ) = @{ $tokens->[$index] };
-            last if !defined $value;
-            $value = "newline" if $value eq "\n";
-            $attr  = $TokenName{ $attr // "" } // "";
-            print "$TokenName{$type}: \t'$value' \t $attr\n";
+            print token_as_string( @{ $tokens->[$index] } );
             $index++;
         }
     }
@@ -844,7 +825,6 @@ if ($#var <=> 10.3E-2) {	# a comment
 }
 qw( abc def \n &.= € );  
 2*3+5*6 or 0;
-1E10 + -1E-10;
 { , , a => 3 + 1, , c => 4 , , };
 ,,,;
 (
@@ -888,4 +868,5 @@ q! abd !;
 q< abd >;
 { q => 123 };
 qq< abd [$v]  >;
-
+(-123, -123.56,
+1E10 + -1E-10 );
