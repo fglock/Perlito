@@ -30,6 +30,7 @@ use constant {
     CURLY_OPEN    => 26,
     CURLY_CLOSE   => 27,
     SEMICOLON     => 28,
+    ARROW         => 29,
 };
 
 my %TokenName = (
@@ -56,6 +57,7 @@ my %TokenName = (
     CURLY_OPEN()    => 'CURLY_OPEN',
     CURLY_CLOSE()   => 'CURLY_CLOSE',
     SEMICOLON()     => 'SEMICOLON',
+    ARROW()         => 'ARROW',
 );
 
 my %OPERATORS = (
@@ -80,12 +82,13 @@ my %OPERATORS = (
     '{'  => CURLY_OPEN(),
     '}'  => CURLY_CLOSE(),
     ';'  => SEMICOLON(),
+    '->' => ARROW(),
     map { $_ => OPERATOR() }
       qw(
       == != <= >= < > <=> =
       + * ** / % ++ -- && || // ! ^ ~ ~~ & |
       >> <<
-      -> =>
+      =>
       **= += -= *= /= x= |= &= .= <<= >>= %= ||= &&= ^= //=
       |.= &.= ^.=
       )
@@ -225,8 +228,14 @@ my %PRECEDENCE = (
     '%' => 16,
     'x' => 16,    # String repetition
 
-    '**' => 17,
-    '!'  => 18,    # Unary negation
+    '!'  => 17,   # Unary negation
+    '**' => 18,
+
+    '++' => 19,
+    '--' => 19,
+
+    '->' => 20,
+
 );
 
 my %LIST = (
@@ -304,20 +313,17 @@ sub parse_precedence_expression {
         $pos = $left_expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         my $op_value = $tokens->[$pos][1];
+        my $type     = $tokens->[$pos][0];
 
-        ## # Handle array indexing
-        ## if ($op_value eq '[') {
-        ##     $self->advance();
-        ##     my $index_expr = $self->parse_expression();  # Parse the index expression
-        ##     $self->advance() if $self->current_token()->[1] eq ']';  # Consume the closing bracket
-        ##     $left_expr = SyntaxTreeNode->new('ARRAY_INDEX', $left_expr, $index_expr);
-        ##     next;
-        ## }
+        last unless exists $PRECEDENCE{$op_value};
+        my $precedence = $PRECEDENCE{$op_value};
+        last if $precedence < $min_precedence;
+
+        $pos++;
+        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
 
         # Handle ternary operator
-        if ( $tokens->[$pos][0] == QUESTION() ) {
-            $pos++;
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        if ( $type == QUESTION() ) {
             my $true_expr = parse_precedence_expression( $tokens, $pos, 0 );    # Parse the true branch
             if ( $true_expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
@@ -338,17 +344,9 @@ sub parse_precedence_expression {
 
         # Handle postfix operators
         if ( $POSTFIX{$op_value} ) {
-            $pos++;
             $left_expr = { type => 'POSTFIX_OP', value => [ $op_value, $left_expr ], next => $pos };
             next;
         }
-
-        last unless exists $PRECEDENCE{$op_value};
-        my $precedence = $PRECEDENCE{$op_value};
-        last if $precedence < $min_precedence;
-
-        $pos++;
-        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
 
         my $next_min_precedence = $ASSOC_RIGHT{$op_value} ? $precedence : $precedence + 1;
         my $right_expr          = parse_precedence_expression( $tokens, $pos, $next_min_precedence );
@@ -643,7 +641,8 @@ sub parse_term {
             return { type => 'APPLY', stmt => $stmt, args => $expr, next => $expr->{next} };
         }
         if ( $stmt eq 'do' ) {
-	    # do BLOCK
+
+            # do BLOCK
             $pos++;
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $block = parse_statement_block( $tokens, $pos );
@@ -653,7 +652,7 @@ sub parse_term {
             $ast = { type => 'DO_BLOCK', stmt => $stmt, block => $block, next => $block->{next} };
             return $ast;
         }
- 
+
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
@@ -762,7 +761,6 @@ if ($#var <=> 10.3E-2) {	# a comment
 qw( abc def \n &.= € );  
 2*3+5*6 or 0;
 1E10 + -1E-10;
-5 ? [ 6 , 7 ] : func;
 { , , a => 3 + 1, , c => 4 , , };
 ,,,;
 (
@@ -780,3 +778,8 @@ do {
 	'abc 123 \\ \x \' \n ';
 	"abc 123 \\ \x \' \n $x ";
 };
+$a->[2] = $a->[3] + 4;
+$a->[5]++;
+--$a->[5];
+
+$a = 5 ? [ 6 , 7 ] : func;
