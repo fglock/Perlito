@@ -642,6 +642,18 @@ sub parse_term {
             }
             return { type => 'APPLY', stmt => $stmt, args => $expr, next => $expr->{next} };
         }
+        if ( $stmt eq 'do' ) {
+	    # do BLOCK
+            $pos++;
+            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            my $block = parse_statement_block( $tokens, $pos );
+            if ( $block->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+            $ast = { type => 'DO_BLOCK', stmt => $stmt, block => $block, next => $block->{next} };
+            return $ast;
+        }
+ 
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
@@ -759,6 +771,12 @@ qw( abc def \n &.= € );
 'abc 123';
 if (0) { 123; 456 }
 
-'abc 123 \\ \x \' \n ';
-"abc 123 \\ \x \' \n $x ";
+{
+	'abc 123 \\ \x \' \n ';
+	"abc 123 \\ \x \' \n $x ";
+}
 
+do {
+	'abc 123 \\ \x \' \n ';
+	"abc 123 \\ \x \' \n $x ";
+};
