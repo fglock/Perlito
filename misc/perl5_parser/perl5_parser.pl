@@ -29,6 +29,7 @@ use constant {
     SQUARE_CLOSE  => 25,
     CURLY_OPEN    => 26,
     CURLY_CLOSE   => 27,
+    SEMICOLON => 28,
 };
 
 my %TokenName = (
@@ -54,6 +55,7 @@ my %TokenName = (
     SQUARE_CLOSE()  => 'SQUARE_CLOSE',
     CURLY_OPEN()    => 'CURLY_OPEN',
     CURLY_CLOSE()   => 'CURLY_CLOSE',
+    SEMICOLON() => 'SEMICOLON',
 );
 
 my %OPERATORS = (
@@ -77,10 +79,11 @@ my %OPERATORS = (
     ']'  => SQUARE_CLOSE(),
     '{'  => CURLY_OPEN(),
     '}'  => CURLY_CLOSE(),
+    ';'  => SEMICOLON(),
     map { $_ => OPERATOR() }
       qw(
       == != <= >= < > <=> =
-      + * ** / % ++ -- && || // ! ^ ~ ~~ & | ;
+      + * ** / % ++ -- && || // ! ^ ~ ~~ & |
       >> <<
       -> =>
       **= += -= *= /= x= |= &= .= <<= >>= %= ||= &&= ^= //=
@@ -495,6 +498,8 @@ sub parse_number {
     }
 }
 
+my %escape_sequence = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
+
 sub parse_string {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
@@ -509,14 +514,59 @@ sub parse_string {
                 if ( $tokens->[$pos][0] == STRING_DELIM() && $quote eq $tokens->[$pos][1] ) {
                     return { type => 'STRING', index => $index, value => $value, next => $pos + 1 };
                 }
+                if ( $tokens->[$pos][0] == ESCAPE() ) {
+                    if ( $tokens->[ $pos + 1 ][1] eq $quote || $tokens->[ $pos + 1 ][0] == ESCAPE() ) {
+                        $pos++;
+                    }
+                }
                 $value .= $tokens->[$pos][1];
                 $pos++;
             }
         }
-        if ( $quote eq '"' ) {
-            return parse_fail( $tokens, $index );
+        elsif ( $quote eq '"' ) {
+
+            # "abc"
+            my @ops;
+            my $value = '';
+            while ( $pos < @$tokens ) {
+                my $type = $tokens->[$pos][0];
+                if ( $type == STRING_DELIM() && $quote eq $tokens->[$pos][1] ) {
+                    if ( length($value) > 0 || @ops < 1 ) {
+                        push @ops, { type => 'STRING', index => $index, value => $value, next => $pos + 1 };
+                    }
+                    if ( @ops == 1 ) {
+                        return $ops[0];
+                    }
+                    return { type => 'JOIN', index => $index, value => [ '', @ops ], next => $pos + 1 };
+                }
+                if ( $type == ESCAPE() ) {
+                    if ( $tokens->[ $pos + 1 ][1] eq $quote || $tokens->[ $pos + 1 ][0] == ESCAPE() ) {
+                        $pos++;
+                    }
+                    my $c2 = $tokens->[ $pos + 1 ][1];
+                    if ( exists $escape_sequence{$c2} ) {
+                        $value .= chr( $escape_sequence{$c2} );
+                        $pos++;
+                        $pos++;
+                        next;
+                    }
+                }
+                if ( $type == SIGIL() ) {
+                    my $expr = parse_variable( $tokens, $pos );
+                    if ( $expr->{FAIL} ) {
+                        return parse_fail( $tokens, $index );
+                    }
+                    push @ops, { type => 'STRING', index => $index, value => $value, next => $pos };
+                    push @ops, $expr;
+                    $value = '';
+                    $pos   = $expr->{next};
+                    next;
+                }
+                $value .= $tokens->[$pos][1];
+                $pos++;
+            }
         }
-        if ( $quote eq '`' ) {
+        elsif ( $quote eq '`' ) {
             return parse_fail( $tokens, $index );
         }
     }
@@ -552,6 +602,18 @@ sub parse_term {
         $ast = parse_variable( $tokens, $index );
     }
     elsif ( $type == IDENTIFIER() ) {
+	my $pos = $index;
+        my $stmt = $tokens->[$pos][1];
+        if ( $stmt eq 'print' ) {
+	    # XXX special case just for testing!
+            $pos++;
+            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            my $expr = parse_precedence_expression( $tokens, $pos, 0 );
+            if ( $expr->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+            return { type => 'APPLY', stmt => $stmt, args => $expr, next => $expr->{next} };
+	}
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
@@ -650,3 +712,5 @@ qw( abc def \n &.= € );
 'abc 123';
 if (0) { 123 }
 
+'abc 123 \\ \x \' \n ';
+"abc 123 \\ \x \' \n $x ";
