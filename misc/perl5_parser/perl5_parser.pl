@@ -31,6 +31,7 @@ use constant {
     CURLY_CLOSE   => 27,
     SEMICOLON     => 28,
     ARROW         => 29,
+    EQUALS        => 30,
 };
 
 my %TokenName = (
@@ -58,6 +59,7 @@ my %TokenName = (
     CURLY_CLOSE()   => 'CURLY_CLOSE',
     SEMICOLON()     => 'SEMICOLON',
     ARROW()         => 'ARROW',
+    EQUALS()        => 'EQUALS',
 );
 
 my %OPERATORS = (
@@ -83,9 +85,10 @@ my %OPERATORS = (
     '}'  => CURLY_CLOSE(),
     ';'  => SEMICOLON(),
     '->' => ARROW(),
+    '='  => EQUALS(),
     map { $_ => OPERATOR() }
       qw(
-      == != <= >= < > <=> =
+      == != <= >= < > <=>
       + * ** / % ++ -- && || // ! ^ ~ ~~ & |
       >> <<
       =>
@@ -419,6 +422,21 @@ sub parse_optional_whitespace {
         }
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
+            if ( $tokens->[$pos][0] == EQUALS() ) {
+                $pos++;
+                if ( $tokens->[$pos][0] == IDENTIFIER() ) {
+
+                    # documentation (pod):
+                    # =for ... until end of paragraph
+                    # =any_command ... until =cut or =end
+                    # TODO
+                    $pos++;
+                    while ( $tokens->[$pos][0] != NEWLINE() ) {
+                        $pos++;
+                    }
+                    redo;
+                }
+            }
             redo;
         }
         if ( $tokens->[$pos][0] == START_COMMENT() ) {
@@ -553,12 +571,12 @@ sub parse_double_quote_string {
                 next;
             }
         }
-        if ( $type == SIGIL() ) {
+        if ( $type == SIGIL() && $tokens->[$pos][1] ne '%' ) {
             my $expr = parse_variable( $tokens, $pos );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-            push @ops, { type => 'STRING', index => $index, value => $value, next => $pos };
+            push @ops, { type => 'STRING', index => $index, value => $value, next => $pos } if length($value);
             push @ops, $expr;
             $value = '';
             $pos   = $expr->{next};
@@ -867,6 +885,9 @@ $$a->[1];
 q! abd !;
 q< abd >;
 { q => 123 };
-qq< abd [$v]  >;
+qq< abd [$v$a]  >;
 (-123, -123.56,
+
+=for testing pod
+
 1E10 + -1E-10 );
