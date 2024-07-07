@@ -1,0 +1,6 @@
+experimental Perl5 parser
+
+- handwritten grammar; faster than Perlito5 compiled grammar
+- work in progress
+
+
