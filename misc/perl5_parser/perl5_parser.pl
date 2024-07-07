@@ -32,6 +32,7 @@ use constant {
     SEMICOLON     => 28,
     ARROW         => 29,
     EQUALS        => 30,
+    SLASH         => 31,
 };
 
 my %TokenName = (
@@ -60,6 +61,7 @@ my %TokenName = (
     SEMICOLON()     => 'SEMICOLON',
     ARROW()         => 'ARROW',
     EQUALS()        => 'EQUALS',
+    SLASH()         => 'SLASH',
 );
 
 my %OPERATORS = (
@@ -86,10 +88,11 @@ my %OPERATORS = (
     ';'  => SEMICOLON(),
     '->' => ARROW(),
     '='  => EQUALS(),
+    '/'  => SLASH(),
     map { $_ => OPERATOR() }
       qw(
       == != <= >= < > <=>
-      + * ** / % ++ -- && || // ! ^ ~ ~~ & |
+      + * ** % ++ -- && || // ! ^ ~ ~~ & |
       >> <<
       =>
       **= += -= *= /= x= |= &= .= <<= >>= %= ||= &&= ^= //=
@@ -422,6 +425,7 @@ sub parse_optional_whitespace {
         }
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
+            last if !$tokens->[$pos];    # XXX autovivification
             if ( $tokens->[$pos][0] == EQUALS() ) {
                 $pos++;
                 if ( $tokens->[$pos][0] == IDENTIFIER() ) {
@@ -546,6 +550,51 @@ sub parse_double_quote_string {
     my ( $tokens, $index, $pos, $quote ) = @_;
 
     # "abc"
+    my @ops;
+    my $value = '';
+    while ( $pos < @$tokens ) {
+        my $type = $tokens->[$pos][0];
+        if ( $quote eq $tokens->[$pos][1] ) {
+            if ( length($value) > 0 || @ops < 1 ) {
+                push @ops, { type => 'STRING', index => $index, value => $value, next => $pos + 1 };
+            }
+            if ( @ops == 1 ) {
+                return $ops[0];
+            }
+            return { type => 'JOIN', index => $index, value => [ '', @ops ], next => $pos + 1 };
+        }
+        if ( $type == ESCAPE() ) {
+            if ( $tokens->[ $pos + 1 ][1] eq $quote || $tokens->[ $pos + 1 ][0] == ESCAPE() ) {
+                $pos++;
+            }
+            my $c2 = $tokens->[ $pos + 1 ][1];
+            if ( exists $escape_sequence{$c2} ) {
+                $value .= chr( $escape_sequence{$c2} );
+                $pos++;
+                $pos++;
+                next;
+            }
+        }
+        if ( $type == SIGIL() && $tokens->[$pos][1] ne '%' ) {
+            my $expr = parse_variable( $tokens, $pos );
+            if ( $expr->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+            push @ops, { type => 'STRING', index => $index, value => $value, next => $pos } if length($value);
+            push @ops, $expr;
+            $value = '';
+            $pos   = $expr->{next};
+            next;
+        }
+        $value .= $tokens->[$pos][1];
+        $pos++;
+    }
+}
+
+sub parse_regex_string {
+    my ( $tokens, $index, $pos, $quote ) = @_;
+
+    # /abc/
     my @ops;
     my $value = '';
     while ( $pos < @$tokens ) {
@@ -726,7 +775,31 @@ sub parse_term {
                 return parse_double_quote_string( $tokens, $index, $pos, $delim );
             }
         }
+        if ( $stmt eq 'm' ) {
 
+            # /.../
+            $pos++;
+            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            my $delim = $tokens->[$pos][1];
+            if ( length($delim) > 1 ) {
+
+                # tokenization fail; delimiter is ambiguous
+            }
+            else {
+                if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # m< ... >
+                $pos++;
+
+                # m/abc/
+                $ast = parse_regex_string( $tokens, $index, $pos, $delim );
+                if ( $ast->{FAIL} ) {
+                    return parse_fail( $tokens, $index );
+                }
+
+                # TODO parse regex modifiers
+                return { type => 'REGEX', index => $index, args => $ast, next => $ast->{next} };
+
+            }
+        }
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
@@ -740,6 +813,17 @@ sub parse_term {
     }
     elsif ( $type == CURLY_OPEN() ) {
         $ast = parse_delim_expression( $tokens, $index, CURLY_OPEN(), CURLY_CLOSE() );
+    }
+    elsif ( $type == SLASH() ) {
+
+        # /.../
+        $ast = parse_regex_string( $tokens, $index, $index + 1, $tokens->[$index][1] );
+        if ( $ast->{FAIL} ) {
+            return parse_fail( $tokens, $index );
+        }
+
+        # TODO parse regex modifiers
+        return { type => 'REGEX', index => $index, args => $ast, next => $ast->{next} };
     }
     else {
         return parse_fail( $tokens, $index );
@@ -891,3 +975,8 @@ qq< abd [$v$a]  >;
 =for testing pod
 
 1E10 + -1E-10 );
+
+	/ \n /;
+	1 / 3;
+m< abd [$v$a]  >;
+
