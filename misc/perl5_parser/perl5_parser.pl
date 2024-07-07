@@ -717,9 +717,7 @@ sub parse_term {
         my $pos  = $index;
         my $stmt = $tokens->[$pos][1];
         if ( $stmt eq 'print' ) {
-
-            # XXX special case just for testing!
-            $pos++;
+            $pos++;    # XXX special case just for testing!
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $expr = parse_precedence_expression( $tokens, $pos, 0 );
             if ( $expr->{FAIL} ) {
@@ -728,9 +726,7 @@ sub parse_term {
             return { type => 'APPLY', stmt => $stmt, args => $expr, next => $expr->{next} };
         }
         if ( $stmt eq 'do' ) {
-
-            # do BLOCK
-            $pos++;
+            $pos++;    # do BLOCK
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $block = parse_statement_block( $tokens, $pos );
             if ( $block->{FAIL} ) {
@@ -740,9 +736,7 @@ sub parse_term {
             return $ast;
         }
         if ( $stmt eq 'q' ) {
-
-            # q!...!
-            $pos++;
+            $pos++;    # q!...!
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $delim = $tokens->[$pos][1];
             if ( length($delim) > 1 ) {
@@ -751,16 +745,12 @@ sub parse_term {
             }
             else {
                 if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
-                $pos++;
-
-                # 'abc'
+                $pos++;                                                        # 'abc'
                 return parse_single_quote_string( $tokens, $index, $pos, $delim );
             }
         }
         if ( $stmt eq 'qq' ) {
-
-            # qq!...!
-            $pos++;
+            $pos++;                                                            # qq!...!
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $delim = $tokens->[$pos][1];
             if ( length($delim) > 1 ) {
@@ -769,16 +759,12 @@ sub parse_term {
             }
             else {
                 if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
-                $pos++;
-
-                # "abc"
+                $pos++;                                                        # "abc"
                 return parse_double_quote_string( $tokens, $index, $pos, $delim );
             }
         }
         if ( $stmt eq 'm' ) {
-
-            # /.../
-            $pos++;
+            $pos++;                                                            # /.../
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $delim = $tokens->[$pos][1];
             if ( length($delim) > 1 ) {
@@ -787,9 +773,7 @@ sub parse_term {
             }
             else {
                 if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # m< ... >
-                $pos++;
-
-                # m/abc/
+                $pos++;                                                        # m/abc/
                 $ast = parse_regex_string( $tokens, $index, $pos, $delim );
                 if ( $ast->{FAIL} ) {
                     return parse_fail( $tokens, $index );
@@ -797,7 +781,24 @@ sub parse_term {
 
                 # TODO parse regex modifiers
                 return { type => 'REGEX', index => $index, args => $ast, next => $ast->{next} };
+            }
+        }
+        if ( $stmt eq 'qw' ) {
+            $pos++;    # qw/.../
+            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            my $delim = $tokens->[$pos][1];
+            if ( length($delim) > 1 ) {
 
+                # tokenization fail; delimiter is ambiguous
+            }
+            else {
+                if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # qw< ... >
+                $pos++;
+                $ast = parse_single_quote_string( $tokens, $index, $pos, $delim );
+                if ( $ast->{FAIL} ) {
+                    return parse_fail( $tokens, $index );
+                }
+                return { type => 'SPLIT', index => $index, args => [ ' ', $ast ], next => $ast->{next} };
             }
         }
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
@@ -925,7 +926,6 @@ my $var = 42;
 if ($#var <=> 10.3E-2) {	# a comment
     print "The variable is greater than 10\n";
 }
-qw( abc def \n &.= € );  
 2*3+5*6 or 0;
 { , , a => 3 + 1, , c => 4 , , };
 ,,,;
@@ -980,3 +980,4 @@ qq< abd [$v$a]  >;
 	1 / 3;
 m< abd [$v$a]  >;
 
+qw( abc def \n &.= € );  
