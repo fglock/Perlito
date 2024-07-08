@@ -522,20 +522,29 @@ sub parse_optional_whitespace {
     return { type => 'WHITESPACE', index => $index, value => ' ', next => $pos };
 }
 
-sub parse_variable {
+sub parse_variable_interpolation {
     my ( $tokens, $index ) = @_;
+
+    # "$a"  "${a}"  "$x[10]"  "$x->[10]"  "@{[ 1 + 1]}"  "$#a"
     my $pos = $index;
     if ( $tokens->[$pos][0] == SIGIL() ) {
         my $sigil = $tokens->[$pos][1];
         $pos++;    # $
+        my $expr;
         if ( $tokens->[$pos][0] == IDENTIFIER() ) {
-            return {
-                type  => 'VARIABLE',
-                index => $index,
-                value => [ $sigil, $tokens->[$pos][1], ],
-                next  => $pos + 1
-            };
+
+            # TODO $1 $2 $$
+            $expr = { type => 'BAREWORD', value => $tokens->[$pos][1], next => $pos + 1 };
+
+            # TODO if sigil is not $#, check for [] {} ->
         }
+        elsif ( $tokens->[$pos][0] == CURLY_OPEN() ) {
+            $expr = parse_delim_expression( $tokens, $pos, CURLY_OPEN(), CURLY_CLOSE() );
+            if ( $expr->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+        }
+        return { type => 'PREFIX_OP', value => [ $sigil, $expr ], next => $expr->{next} };
     }
     return parse_fail( $tokens, $index );
 }
@@ -648,7 +657,7 @@ sub parse_double_quote_string {
             }
         }
         if ( $type == SIGIL() && $tokens->[$pos][1] ne '%' ) {
-            my $expr = parse_variable( $tokens, $pos );
+            my $expr = parse_variable_interpolation( $tokens, $pos );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
@@ -693,7 +702,7 @@ sub parse_regex_string {
             }
         }
         if ( $type == SIGIL() && $tokens->[$pos][1] ne '%' ) {
-            my $expr = parse_variable( $tokens, $pos );
+            my $expr = parse_variable_interpolation( $tokens, $pos );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
@@ -781,9 +790,6 @@ sub parse_term {
     my $ast;
     if ( $type == NUMBER() || $type == DOT() ) {
         $ast = parse_number( $tokens, $index );
-    }
-    elsif ( $type == SIGIL() ) {
-        $ast = parse_variable( $tokens, $index );
     }
     elsif ( $type == IDENTIFIER() ) {
         my $pos  = $index;
@@ -1079,6 +1085,6 @@ qw( abc def \n &.= € );
 # 2 + 3 5 + 8
 
 if ($#var <=> 10.3E-2) {	# a comment
-    print "The variable is greater than 10", "\n" or die("Error");
+    print "The variable ${a} is greater than 10", "\n" or die("Error");
 }
 \$a
