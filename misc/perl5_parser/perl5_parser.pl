@@ -302,6 +302,37 @@ my %ASSOC_RIGHT = (
     '=>'  => 1,
 );
 
+sub error_message {
+    my ( $tokens, $index, $message ) = @_;
+    # add location context to error messages
+    # also add a newline
+    #
+    #   Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
+    #   syntax error at -e line 1, near "--for "
+    #
+    my $line = 1;
+    my $first_token = 1;
+    for ( 0 .. $index ) {   # retrieve line number
+        if ($tokens->[$_][0] == NEWLINE) {
+            $line++;
+            $first_token = $_;
+        }
+    }
+    my @near;   # retrieve string context
+    for ( $index - 2 .. $index + 2 ) {
+        if ($index >= 0 && $index < $#$tokens) {
+            push @near, $tokens->[$_][1];
+        }
+    }
+
+    ## my $col  = 1;    # retrieve column number
+    ## for ( $first_token .. $index ) {
+    ##     $col += length($tokens->[$_][1]);
+    ## }
+    return $message . ' at line ' . $line . ', near "' . join('', @near) . '"' . "\n";
+
+}
+
 sub parse_precedence_expression {
     my ( $tokens, $index, $min_precedence ) = @_;
 
@@ -923,11 +954,10 @@ sub parse_statement {
             && $tokens->[$pos][0] != CURLY_CLOSE()
           )
         {
+            # Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
             my $tok = $TokenName{ $tokens->[$pos][0] };
             $tok = ucfirst( lc($tok) );
-            die $tok . ' found where operator expected (Missing operator before "' . $tokens->[$pos][1] . '"?)';
-
-            # Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
+            die error_message($tokens, $pos, $tok . ' found where operator expected (Missing operator before "' . $tokens->[$pos][1] . '"?)');
         }
     }
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
