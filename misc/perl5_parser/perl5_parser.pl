@@ -989,7 +989,7 @@ sub main {
     my $index = 0;
     while ( $tokens->[$index][0] != END_TOKEN() ) {
         $index = parse_optional_whitespace( $tokens, $index )->{next};
-        last if $index >= @$tokens;
+        last if $tokens->[$index][0] == END_TOKEN();
         my $ast = parse_statement( $tokens, $index, 0 );
         if ( !$ast->{FAIL} ) {
             print Data::Dumper::Dumper($ast);
