@@ -198,8 +198,14 @@ sub tokenize {
         }
     }
     if ( $buffer ne '' && $state != START() ) {
-        push @tokens, [ $state, $buffer ];
+        if ( $state == OPERATOR() ) {
+            push @tokens, [ $OPERATORS{$buffer}, $buffer ];
+        }
+        else {
+            push @tokens, [ $state, $buffer ];
+        }
     }
+    push @tokens, [ SEMICOLON(), ';' ];    # a valid statement must finish in ;
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, [ END_TOKEN(), '' ];
@@ -211,7 +217,7 @@ my %PRECEDENCE               = (
     'or'  => 1,
     'xor' => 1,
     'and' => 2,
-    'not' => 3,    # Unary negation
+    'not' => 3,                            # Unary negation
 
     # $List_operator_precedence = 4
 
@@ -552,6 +558,11 @@ sub parse_number {
             $pos++;    # 123.
             if ( $tokens->[$pos][0] == NUMBER() ) {
                 $pos++;    # 123.456
+            }
+        }
+        else {
+            if ( $tokens->[$pos][0] != IDENTIFIER() ) {
+                return { type => 'INTEGER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
             }
         }
     }
