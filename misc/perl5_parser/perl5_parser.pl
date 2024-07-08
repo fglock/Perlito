@@ -10,7 +10,7 @@ use Data::Dumper;
 ##     use parent qw(Tie::Array);
 ##     use Carp;
 ##     our @ISA = ('Tie::StdArray');
-## 
+##
 ##     sub FETCH {
 ##         my ( $array, $key ) = @_;
 ##         Carp::confess "key '$key' does not exist" unless exists $array->[$key];
@@ -260,9 +260,10 @@ my %PRECEDENCE               = (
     '{' => 21,    # hash element
     '[' => 21,    # array elemnt
 
-    '$' => 22,
-    '@' => 22,
-    '%' => 22,
+    '$'  => 22,
+    '$#' => 22,
+    '@'  => 22,
+    '%'  => 22,
 );
 
 my %LIST = (
@@ -278,6 +279,7 @@ my %PREFIX = (
     '--'  => 1,
     '++'  => 1,
     '$'   => 1,
+    '$#'  => 1,
     '@'   => 1,
     '%'   => 1,
 );
@@ -304,23 +306,24 @@ my %ASSOC_RIGHT = (
 
 sub error_message {
     my ( $tokens, $index, $message ) = @_;
+
     # add location context to error messages
     # also add a newline
     #
     #   Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
     #   syntax error at -e line 1, near "--for "
     #
-    my $line = 1;
+    my $line        = 1;
     my $first_token = 1;
-    for ( 0 .. $index ) {   # retrieve line number
-        if ($tokens->[$_][0] == NEWLINE) {
+    for ( 0 .. $index ) {    # retrieve line number
+        if ( $tokens->[$_][0] == NEWLINE ) {
             $line++;
             $first_token = $_;
         }
     }
-    my @near;   # retrieve string context
+    my @near;                # retrieve string context
     for ( $index - 2 .. $index + 2 ) {
-        if ($index >= 0 && $index < $#$tokens) {
+        if ( $index >= 0 && $index < $#$tokens ) {
             push @near, $tokens->[$_][1];
         }
     }
@@ -329,7 +332,7 @@ sub error_message {
     ## for ( $first_token .. $index ) {
     ##     $col += length($tokens->[$_][1]);
     ## }
-    return $message . ' at line ' . $line . ', near "' . join('', @near) . '"' . "\n";
+    return $message . ' at line ' . $line . ', near "' . join( '', @near ) . '"' . "\n";
 
 }
 
@@ -374,7 +377,7 @@ sub parse_precedence_expression {
         if ( $left_expr->{FAIL} ) {
             return parse_fail( $tokens, $index );
         }
-        $pos       = $left_expr->{next};
+        $pos = $left_expr->{next};
         $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
         if ( $pos >= $#$tokens ) {
             return $left_expr;
@@ -957,7 +960,7 @@ sub parse_statement {
             # Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
             my $tok = $TokenName{ $tokens->[$pos][0] };
             $tok = ucfirst( lc($tok) );
-            die error_message($tokens, $pos, $tok . ' found where operator expected (Missing operator before "' . $tokens->[$pos][1] . '"?)');
+            die error_message( $tokens, $pos, $tok . ' found where operator expected (Missing operator before "' . $tokens->[$pos][1] . '"?)' );
         }
     }
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
