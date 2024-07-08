@@ -4,6 +4,20 @@ use 5.034;
 use utf8;
 use Data::Dumper;
 
+## # uncomment to debug autovivification
+## package TieArrayNoAutovivification {
+##     use Tie::Array;
+##     use parent qw(Tie::Array);
+##     use Carp;
+##     our @ISA = ('Tie::StdArray');
+## 
+##     sub FETCH {
+##         my ( $array, $key ) = @_;
+##         Carp::confess "key '$key' does not exist" unless exists $array->[$key];
+##         return $array->[$key];
+##     }
+## }
+
 use constant {
     START      => 0,
     WHITESPACE => 1,
@@ -112,6 +126,9 @@ sub tokenize {
     my $state = START();
     my @tokens;
     my $buffer;
+
+    #  tie @tokens, 'TieArrayNoAutovivification';   # uncomment to debug autovivification
+
   FSM:
     for my $char ( split //, $code ) {
         if ( $state == START() ) {
@@ -140,7 +157,7 @@ sub tokenize {
         elsif ( $state == WHITESPACE() ) {
             if ( $char !~ /\s/ || $char eq "\n" ) {
                 push @tokens, [ WHITESPACE(), $buffer ];
-                $state  = START();
+                $state = START();
                 redo FSM;
             }
             else {
@@ -150,7 +167,7 @@ sub tokenize {
         elsif ( $state == IDENTIFIER() ) {
             if ( $char !~ /[a-zA-Z0-9_]/ ) {
                 push @tokens, [ IDENTIFIER(), $buffer ];
-                $state  = START();
+                $state = START();
                 redo FSM;
             }
             else {
@@ -160,7 +177,7 @@ sub tokenize {
         elsif ( $state == NUMBER() ) {
             if ( $char !~ /[0-9]/ ) {
                 push @tokens, [ NUMBER(), $buffer ];
-                $state  = START();
+                $state = START();
                 redo FSM;
             }
             else {
@@ -173,7 +190,7 @@ sub tokenize {
             }
             else {
                 push @tokens, [ $OPERATORS{$buffer}, $buffer ];
-                $state  = START();
+                $state = START();
                 redo FSM;
             }
         }
@@ -185,7 +202,7 @@ sub tokenize {
 }
 
 my $List_operator_precedence = 5;
-my %PRECEDENCE = (
+my %PRECEDENCE               = (
     'or'  => 1,
     'xor' => 1,
     'and' => 2,
@@ -206,7 +223,7 @@ my %PRECEDENCE = (
     '%='  => 6,
     '**=' => 6,
 
-    '?'  => 7,    # Ternary operator
+    '?' => 7,    # Ternary operator
 
     '||' => 11,
     '&&' => 12,
@@ -230,6 +247,8 @@ my %PRECEDENCE = (
     'x' => 16,    # String repetition
 
     '!'  => 17,   # Unary negation
+    '\\' => 17,   # create reference
+
     '**' => 18,
 
     '++' => 19,
@@ -252,6 +271,7 @@ my %LIST = (
 );
 my %PREFIX = (
     '!'   => 1,
+    '\\'  => 1,
     'not' => 1,
     '-'   => 1,
     '+'   => 1,
@@ -313,17 +333,28 @@ sub parse_precedence_expression {
         else {
             $left_expr = { type => 'PREFIX_OP', value => [ $op_value, $expr ], next => $expr->{next} };
         }
+        $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
+        if ( $pos >= $#$tokens ) {
+            return $left_expr;
+        }
     }
     else {
         $left_expr = parse_term( $tokens, $index );
+        $pos       = $left_expr->{next};
+
+        $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
+        if ( $pos >= $#$tokens ) {
+            return $left_expr;
+        }
     }
     if ( $left_expr->{FAIL} ) {
         return parse_fail( $tokens, $index );
     }
 
-    while ( $pos < @$tokens ) {
+    while ( $pos <= $#$tokens ) {
         $pos = $left_expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        return parse_fail( $tokens, $index ) if $pos > $#$tokens;
         my $op_value = $tokens->[$pos][1];
         my $type     = $tokens->[$pos][0];
         my $op_pos   = $pos;
@@ -401,7 +432,6 @@ sub parse_precedence_expression {
             $left_expr = { type => 'BINARY_OP', value => [ $op_value, $left_expr, $right_expr ], next => $right_expr->{next} };
         }
     }
-
     return $left_expr;
 }
 
@@ -413,16 +443,17 @@ sub parse_fail {
 sub parse_optional_whitespace {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
-    while ( $pos < $#$tokens ) {
-        last if !$tokens->[$pos];    # XXX autovivification
+    while ( $pos <= $#$tokens ) {
         if ( $tokens->[$pos][0] == WHITESPACE() ) {
             $pos++;
+            last if $pos > $#$tokens;
         }
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
-            last if !$tokens->[$pos];    # XXX autovivification
+            last if $pos > $#$tokens;
             if ( $tokens->[$pos][0] == EQUALS() ) {
                 $pos++;
+                last if $pos > $#$tokens;
                 if ( $tokens->[$pos][0] == IDENTIFIER() ) {
 
                     # documentation (pod):
@@ -430,8 +461,10 @@ sub parse_optional_whitespace {
                     # =any_command ... until =cut or =end
                     # TODO
                     $pos++;
+                    last if $pos > $#$tokens;
                     while ( $tokens->[$pos][0] != NEWLINE() ) {
                         $pos++;
+                        last if $pos > $#$tokens;
                     }
                     redo;
                 }
@@ -440,8 +473,10 @@ sub parse_optional_whitespace {
         }
         if ( $tokens->[$pos][0] == START_COMMENT() ) {
             $pos++;
+            last if $pos > $#$tokens;
             while ( $tokens->[$pos][0] != NEWLINE() ) {
                 $pos++;
+                last if $pos > $#$tokens;
             }
             redo;
         }
@@ -879,11 +914,12 @@ sub parse_statement {
         if ( $ast->{FAIL} ) {
             return parse_fail( $tokens, $index );
         }
-	# mandatory semicolon or end-of-block or end-of-file
+
+        # mandatory semicolon or end-of-block or end-of-file
         $pos = $ast->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         if (
-            $tokens->[$pos][0]    # not end of file
+            $pos <= $#$tokens    # not end of file
             && $tokens->[$pos][0] != SEMICOLON()
             && $tokens->[$pos][0] != CURLY_CLOSE()
           )
@@ -896,7 +932,7 @@ sub parse_statement {
         }
     }
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-    if ( $tokens->[$pos][0] && $tokens->[$pos][0] == SEMICOLON() ) {
+    if ( $pos <= $#$tokens && $tokens->[$pos][0] == SEMICOLON() ) {
         $pos++;    # optional semicolon
     }
     $ast->{next} = $pos;
@@ -916,11 +952,12 @@ sub main {
     my $perl_code = join( '', <DATA> );
     my $tokens    = tokenize($perl_code);
 
-    # for my $token (@$tokens) {
-    #     print token_as_string(@$token);
-    # }
+    ## # uncomment to see the token list
+    ## for my $token (@$tokens) {
+    ##     print token_as_string(@$token);
+    ## }
     my $index = 0;
-    while ( $index < @$tokens ) {
+    while ( $index <= $#$tokens ) {
         $index = parse_optional_whitespace( $tokens, $index )->{next};
         last if $index >= @$tokens;
         my $ast = parse_statement( $tokens, $index, 0 );
@@ -1003,4 +1040,4 @@ qw( abc def \n &.= € );
 if ($#var <=> 10.3E-2) {	# a comment
     print "The variable is greater than 10", "\n" or die("Error");
 }
-
+\$a
