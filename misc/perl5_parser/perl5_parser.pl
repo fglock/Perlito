@@ -192,26 +192,29 @@ sub tokenize {
     return \@tokens;
 }
 
+my $List_operator_precedence = 5;
 my %PRECEDENCE = (
     'or'  => 1,
     'xor' => 1,
     'and' => 2,
     'not' => 3,    # Unary negation
 
-    ','  => 4,
-    '=>' => 4,
+    # $List_operator_precedence = 4
 
-    '='   => 5,
-    '+='  => 5,
-    '-='  => 5,
-    '*='  => 5,
-    '/='  => 5,
-    '.='  => 5,
-    'x='  => 5,
-    '%='  => 5,
-    '**=' => 5,
+    ','  => 5,
+    '=>' => 5,
 
-    '?' => 6,    # Ternary operator
+    '='   => 6,
+    '+='  => 6,
+    '-='  => 6,
+    '*='  => 6,
+    '/='  => 6,
+    '.='  => 6,
+    'x='  => 6,
+    '%='  => 6,
+    '**=' => 6,
+
+    '?'  => 7,    # Ternary operator
 
     '||' => 11,
     '&&' => 12,
@@ -719,7 +722,7 @@ sub parse_term {
         if ( $stmt eq 'use' ) {
             $pos++;    # XXX special case just for testing!
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-            my $expr = parse_precedence_expression( $tokens, $pos, 0 );
+            my $expr = parse_precedence_expression( $tokens, $pos, $List_operator_precedence );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
@@ -728,7 +731,7 @@ sub parse_term {
         if ( $stmt eq 'print' ) {
             $pos++;    # XXX special case just for testing!
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-            my $expr = parse_precedence_expression( $tokens, $pos, 0 );
+            my $expr = parse_precedence_expression( $tokens, $pos, $List_operator_precedence );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
@@ -946,9 +949,6 @@ __DATA__
 use strict;
 use warnings;
 my $var = 42;
-if ($#var <=> 10.3E-2) {	# a comment
-    print "The variable is greater than 10\n";
-}
 2*3+5*6 or 0;
 { , , a => 3 + 1, , c => 4 , , };
 ,,,;
@@ -1007,4 +1007,8 @@ qw( abc def \n &.= € );
 
 # test a syntax error
 # 2 + 3 5 + 8
+
+if ($#var <=> 10.3E-2) {	# a comment
+    print "The variable is greater than 10", "\n" or die("Error");
+}
 
