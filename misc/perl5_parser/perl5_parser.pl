@@ -109,15 +109,11 @@ my %OPERATORS = (
 #
 sub tokenize {
     my ($code) = @_;
-
     my $state = START();
     my @tokens;
-    my $buffer     = '';
-    my $quote_char = '';
-
+    my $buffer;
   FSM:
     for my $char ( split //, $code ) {
-
         if ( $state == START() ) {
             if ( $char =~ /\s/ ) {
                 if ( $char eq "\n" ) {
@@ -139,12 +135,11 @@ sub tokenize {
                 push @tokens, [ STRING(), $char ];
                 next FSM;
             }
-            $buffer .= $char;
+            $buffer = $char;
         }
         elsif ( $state == WHITESPACE() ) {
             if ( $char !~ /\s/ || $char eq "\n" ) {
                 push @tokens, [ WHITESPACE(), $buffer ];
-                $buffer = '';
                 $state  = START();
                 redo FSM;
             }
@@ -155,7 +150,6 @@ sub tokenize {
         elsif ( $state == IDENTIFIER() ) {
             if ( $char !~ /[a-zA-Z0-9_]/ ) {
                 push @tokens, [ IDENTIFIER(), $buffer ];
-                $buffer = '';
                 $state  = START();
                 redo FSM;
             }
@@ -166,7 +160,6 @@ sub tokenize {
         elsif ( $state == NUMBER() ) {
             if ( $char !~ /[0-9]/ ) {
                 push @tokens, [ NUMBER(), $buffer ];
-                $buffer = '';
                 $state  = START();
                 redo FSM;
             }
@@ -180,13 +173,12 @@ sub tokenize {
             }
             else {
                 push @tokens, [ $OPERATORS{$buffer}, $buffer ];
-                $buffer = '';
                 $state  = START();
                 redo FSM;
             }
         }
     }
-    if ( $buffer ne '' ) {
+    if ( $buffer ne '' && $state != START() ) {
         push @tokens, [ $state, $buffer ];
     }
     return \@tokens;
