@@ -20,7 +20,8 @@ use Data::Dumper;
 
 use constant {
     START      => 0,
-    WHITESPACE => 1,
+    END_TOKEN  => 1,
+    WHITESPACE => 2,
     KEYWORD    => 3,
     IDENTIFIER => 4,
     NUMBER     => 5,
@@ -50,6 +51,7 @@ use constant {
 };
 
 my %TokenName = (
+    END_TOKEN()     => 'END_TOKEN',
     WHITESPACE()    => 'WHITESPACE',
     KEYWORD()       => 'KEYWORD',
     IDENTIFIER()    => 'IDENTIFIER',
@@ -198,10 +200,13 @@ sub tokenize {
     if ( $buffer ne '' && $state != START() ) {
         push @tokens, [ $state, $buffer ];
     }
+    push @tokens, [ END_TOKEN(), '' ];
+    push @tokens, [ END_TOKEN(), '' ];
+    push @tokens, [ END_TOKEN(), '' ];
     return \@tokens;
 }
 
-my $List_operator_precedence = 5;
+my $List_operator_precedence = 4;
 my %PRECEDENCE               = (
     'or'  => 1,
     'xor' => 1,
@@ -368,7 +373,7 @@ sub parse_precedence_expression {
             $left_expr = { type => 'PREFIX_OP', value => [ $op_value, $expr ], next => $expr->{next} };
         }
         $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
-        if ( $pos >= $#$tokens ) {
+        if ( $tokens->[$pos][0] == END_TOKEN() ) {
             return $left_expr;
         }
     }
@@ -379,15 +384,15 @@ sub parse_precedence_expression {
         }
         $pos = $left_expr->{next};
         $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
-        if ( $pos >= $#$tokens ) {
+        if ( $tokens->[$pos][0] == END_TOKEN() ) {
             return $left_expr;
         }
     }
 
-    while ( $pos <= $#$tokens ) {
+    while ( $tokens->[$pos][0] != END_TOKEN() ) {
         $pos = $left_expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-        return parse_fail( $tokens, $index ) if $pos > $#$tokens;
+        return parse_fail( $tokens, $index ) if $tokens->[$pos][0] == END_TOKEN();
         my $op_value = $tokens->[$pos][1];
         my $type     = $tokens->[$pos][0];
         my $op_pos   = $pos;
@@ -476,17 +481,14 @@ sub parse_fail {
 sub parse_optional_whitespace {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
-    while ( $pos <= $#$tokens ) {
+    while ( $tokens->[$pos][0] != END_TOKEN() ) {
         if ( $tokens->[$pos][0] == WHITESPACE() ) {
             $pos++;
-            last if $pos > $#$tokens;
         }
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
-            last if $pos > $#$tokens;
             if ( $tokens->[$pos][0] == EQUALS() ) {
                 $pos++;
-                last if $pos > $#$tokens;
                 if ( $tokens->[$pos][0] == IDENTIFIER() ) {
 
                     # documentation (pod):
@@ -494,10 +496,8 @@ sub parse_optional_whitespace {
                     # =any_command ... until =cut or =end
                     # TODO
                     $pos++;
-                    last if $pos > $#$tokens;
-                    while ( $tokens->[$pos][0] != NEWLINE() ) {
+                    while ( $tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN() ) {
                         $pos++;
-                        last if $pos > $#$tokens;
                     }
                     redo;
                 }
@@ -506,10 +506,8 @@ sub parse_optional_whitespace {
         }
         if ( $tokens->[$pos][0] == START_COMMENT() ) {
             $pos++;
-            last if $pos > $#$tokens;
-            while ( $tokens->[$pos][0] != NEWLINE() ) {
+            while ( $tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN() ) {
                 $pos++;
-                last if $pos > $#$tokens;
             }
             redo;
         }
@@ -595,7 +593,7 @@ sub parse_single_quote_string {
 
     # 'abc'
     my $value;
-    while ( $pos < @$tokens ) {
+    while ( $tokens->[$pos][0] != END_TOKEN() ) {
         if ( $quote eq $tokens->[$pos][1] ) {
             return { type => 'STRING', index => $index, value => $value, next => $pos + 1 };
         }
@@ -615,7 +613,7 @@ sub parse_double_quote_string {
     # "abc"
     my @ops;
     my $value = '';
-    while ( $pos < @$tokens ) {
+    while ( $tokens->[$pos][0] != END_TOKEN() ) {
         my $type = $tokens->[$pos][0];
         if ( $quote eq $tokens->[$pos][1] ) {
             if ( length($value) > 0 || @ops < 1 ) {
@@ -660,7 +658,7 @@ sub parse_regex_string {
     # /abc/
     my @ops;
     my $value = '';
-    while ( $pos < @$tokens ) {
+    while ( $tokens->[$pos][0] != END_TOKEN() ) {
         my $type = $tokens->[$pos][0];
         if ( $quote eq $tokens->[$pos][1] ) {
             if ( length($value) > 0 || @ops < 1 ) {
@@ -747,7 +745,7 @@ sub parse_statement_block {
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         my @expr;
-        while (1) {
+        while ( $tokens->[$pos][0] != END_TOKEN() ) {
             my $expr = parse_statement( $tokens, $pos );
             if ( $expr->{FAIL} ) {
 
@@ -908,7 +906,7 @@ sub parse_statement {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-    if ( $pos >= $#$tokens ) {
+    if ( $tokens->[$pos][0] == END_TOKEN() ) {
         return parse_fail( $tokens, $index );
     }
     my $ast;
@@ -952,7 +950,7 @@ sub parse_statement {
         $pos = $ast->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         if (
-            $pos <= $#$tokens    # not end of file
+            $tokens->[$pos][0] != END_TOKEN()    # not end of file
             && $tokens->[$pos][0] != SEMICOLON()
             && $tokens->[$pos][0] != CURLY_CLOSE()
           )
@@ -964,7 +962,7 @@ sub parse_statement {
         }
     }
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-    if ( $pos <= $#$tokens && $tokens->[$pos][0] == SEMICOLON() ) {
+    if ( $tokens->[$pos][0] == SEMICOLON() ) {
         $pos++;    # optional semicolon
     }
     $ast->{next} = $pos;
@@ -989,7 +987,7 @@ sub main {
     ##     print token_as_string(@$token);
     ## }
     my $index = 0;
-    while ( $index <= $#$tokens ) {
+    while ( $tokens->[$index][0] != END_TOKEN() ) {
         $index = parse_optional_whitespace( $tokens, $index )->{next};
         last if $index >= @$tokens;
         my $ast = parse_statement( $tokens, $index, 0 );
