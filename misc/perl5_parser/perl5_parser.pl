@@ -340,15 +340,14 @@ sub parse_precedence_expression {
     }
     else {
         $left_expr = parse_term( $tokens, $index );
+        if ( $left_expr->{FAIL} ) {
+            return parse_fail( $tokens, $index );
+        }
         $pos       = $left_expr->{next};
-
         $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
         if ( $pos >= $#$tokens ) {
             return $left_expr;
         }
-    }
-    if ( $left_expr->{FAIL} ) {
-        return parse_fail( $tokens, $index );
     }
 
     while ( $pos <= $#$tokens ) {
