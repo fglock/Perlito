@@ -358,7 +358,6 @@ sub error_message {
     ##     $col += length($tokens->[$_][1]);
     ## }
     return $message . ' at line ' . $line . ', near "' . join( '', @near ) . '"' . "\n";
-
 }
 
 sub parse_precedence_expression {
@@ -515,17 +514,13 @@ sub parse_optional_whitespace {
             if ( $tokens->[$pos][0] == EQUALS() ) {    # =pod
                 if ( $tokens->[ $pos + 1 ][0] == IDENTIFIER() ) {
                     $pos++;
-                    if ( $tokens->[$pos][1] eq 'encoding' ) {
-
-                        # =encoding ... until end of line
+                    if ( $tokens->[$pos][1] eq 'encoding' ) {    # =encoding ... until end of line
                         $pos++;
                         while ( $tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN() ) {
                             $pos++;
                         }
                     }
-                    elsif ( $tokens->[$pos][1] eq 'for' ) {
-
-                        # =for ... until end of paragraph
+                    elsif ( $tokens->[$pos][1] eq 'for' ) {      # =for ... until end of paragraph
                         $pos++;
                         while ($tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN()
                             || $tokens->[ $pos + 1 ][0] != NEWLINE() )
@@ -534,8 +529,7 @@ sub parse_optional_whitespace {
                         }
                         $pos++;
                     }
-                    else {
-                        # =any_command ... until =cut or =end
+                    else {                                       # =any_command ... until =cut or =end
                         $pos++;
                         while ($tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN()
                             || $tokens->[ $pos + 1 ][1] ne '='   && $tokens->[ $pos + 1 ][0] != END_TOKEN()
@@ -662,10 +656,8 @@ sub parse_string_delimiter_fixup {
     return ( $delim, $index + 1 );
 }
 
-sub parse_single_quote_string {
+sub parse_single_quote_string {    # 'abc'
     my ( $tokens, $index, $pos ) = @_;
-
-    # 'abc'
     my $quote;
     ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
     my $value;
@@ -683,10 +675,8 @@ sub parse_single_quote_string {
     }
 }
 
-sub parse_double_quote_string {
+sub parse_double_quote_string {    # "abc"
     my ( $tokens, $index, $pos ) = @_;
-
-    # "abc"
     my $quote;
     ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
     my @ops;
@@ -730,10 +720,8 @@ sub parse_double_quote_string {
     }
 }
 
-sub parse_regex_string {
+sub parse_regex_string {    # /abc/
     my ( $tokens, $index, $pos ) = @_;
-
-    # /abc/
     my $quote;
     ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
     my @ops;
@@ -909,9 +897,7 @@ sub parse_term {
     elsif ( $type == CURLY_OPEN() ) {
         $ast = parse_delim_expression( $tokens, $index, CURLY_OPEN(), CURLY_CLOSE() );
     }
-    elsif ( $type == SLASH() ) {
-
-        # /.../
+    elsif ( $type == SLASH() ) {    # /.../
         $ast = parse_regex_string( $tokens, $index, $index );
         if ( $ast->{FAIL} ) {
             return parse_fail( $tokens, $index );
