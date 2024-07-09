@@ -329,6 +329,14 @@ my %ASSOC_RIGHT = (
     '=>'  => 1,
 );
 
+sub error_message_string_terminator {
+    my ( $tokens, $index, $quote ) = @_;
+    if ($quote eq '"') {
+        return "Can't find string terminator '$quote' anywhere before EOF\n";
+    }
+    return "Can't find string terminator \"$quote\" anywhere before EOF\n";
+}
+
 sub error_message {
     my ( $tokens, $index, $message ) = @_;
 
@@ -673,6 +681,7 @@ sub parse_single_quote_string {    # 'abc'
         $value .= $tokens->[$pos][1];
         $pos++;
     }
+    die error_message_string_terminator( $tokens, $index, $quote );
 }
 
 sub parse_double_quote_string {    # "abc"
@@ -718,6 +727,7 @@ sub parse_double_quote_string {    # "abc"
         $value .= $tokens->[$pos][1];
         $pos++;
     }
+    die error_message_string_terminator( $tokens, $index, $quote );
 }
 
 sub parse_regex_string {    # /abc/
@@ -763,6 +773,7 @@ sub parse_regex_string {    # /abc/
         $value .= $tokens->[$pos][1];
         $pos++;
     }
+    die error_message( $tokens, $index, "Search pattern not terminated" );
 }
 
 sub parse_delim_expression {
@@ -993,6 +1004,7 @@ sub token_as_string {
 
 sub main {
     $Data::Dumper::Sortkeys = 1;
+    $Data::Dumper::Indent   = 1;
     binmode( STDOUT, ":utf8" );
     my $perl_code = join( '', <DATA> );
     my $tokens    = tokenize($perl_code);
