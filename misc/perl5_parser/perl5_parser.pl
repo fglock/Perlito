@@ -122,6 +122,7 @@ my %OPERATORS = (
     map { $_ => OPERATOR() }
       qw(
       == != <= >= < > <=>
+      =~ !~
       + * ** % ++ -- && || // ! ^ ~ ~~ & |
       >> <<
       **= += -= *= /= x= |= &= .= <<= >>= %= ||= &&= ^= //=
@@ -268,19 +269,21 @@ my %PRECEDENCE               = (
     '%' => 16,
     'x' => 16,    # String repetition
 
-    '!'  => 17,   # Unary negation
-    '\\' => 17,   # create reference
+    '=~' => 17,
+    '!~' => 17,
 
-    '**' => 18,
+    '!'  => 18,    # Unary negation
+    '\\' => 18,    # create reference
 
-    '++' => 19,
-    '--' => 19,
+    '**' => 19,
+
+    '++' => 20,
+    '--' => 20,
 
     '->' => 21,
-
-    '(' => 21,    # function call
-    '{' => 21,    # hash element
-    '[' => 21,    # array elemnt
+    '('  => 21,    # function call
+    '{'  => 21,    # hash element
+    '['  => 21,    # array elemnt
 
     '$'  => 22,
     '$#' => 22,
@@ -825,12 +828,12 @@ sub parse_statement_block {
 sub parse_term {
     my ( $tokens, $index ) = @_;
     my $type = $tokens->[$index][0];
+    my $pos  = $index;
     my $ast;
     if ( $type == NUMBER() || $type == DOT() ) {
         $ast = parse_number( $tokens, $index );
     }
     elsif ( $type == IDENTIFIER() ) {
-        my $pos  = $index;
         my $stmt = $tokens->[$pos][1];
         $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
         if ( $tokens->[$pos][0] == FAT_ARROW() ) {    # bareword
@@ -868,11 +871,15 @@ sub parse_term {
             if ( $ast->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-
-            # TODO parse regex modifiers
-            return { type => 'REGEX', index => $index, value => { args => $ast }, next => $ast->{next} };
+            $pos = $ast->{next};
+            my $modifier = "";
+            if ( $tokens->[$pos][0] == IDENTIFIER() ) {    #  regex modifiers
+                $modifier = $tokens->[$pos][1];
+                $pos++;
+            }
+            return { type => 'REGEX', index => $index, value => { args => $ast, modifier => $modifier }, next => $pos, };
         }
-        elsif ( $stmt eq 'qw' ) {                     # qw/.../
+        elsif ( $stmt eq 'qw' ) {                          # qw/.../
             $ast = parse_single_quote_string( $tokens, $index, $pos );
             if ( $ast->{FAIL} ) {
                 return parse_fail( $tokens, $index );
@@ -909,9 +916,13 @@ sub parse_term {
         if ( $ast->{FAIL} ) {
             return parse_fail( $tokens, $index );
         }
-
-        # TODO parse regex modifiers
-        return { type => 'REGEX', index => $index, value => { args => $ast }, next => $ast->{next} };
+        $pos = $ast->{next};
+        my $modifier = "";
+        if ( $tokens->[$pos][0] == IDENTIFIER() ) {    #  regex modifiers
+            $modifier = $tokens->[$pos][1];
+            $pos++;
+        }
+        return { type => 'REGEX', index => $index, value => { args => $ast, modifier => $modifier }, next => $pos, };
     }
     else {
         return parse_fail( $tokens, $index );
@@ -1098,7 +1109,8 @@ docs here
 \$a
 =2
 ;
-print => 123
+print => 123;
+$a =~ /123/i;
 __END__
 123
 
