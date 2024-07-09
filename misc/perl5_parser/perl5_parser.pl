@@ -846,6 +846,7 @@ sub parse_term {
         my $stmt = $tokens->[$pos][1];
         $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
         if ( $tokens->[$pos][0] == FAT_ARROW() ) {    # bareword
+            return { type => 'STRING', value => $tokens->[$index][1], next => $index + 1 };
         }
         elsif ( $stmt eq 'use' ) {                    # XXX special case just for testing!
             my $expr = parse_precedence_expression( $tokens, $pos, $List_operator_precedence );
@@ -893,7 +894,15 @@ sub parse_term {
             if ( $ast->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-            return { type => 'QW', index => $index, value => [ split( ' ', $ast->{value} ) ], next => $ast->{next} };
+            return {
+                type  => 'QW',
+                index => $index,
+                value => [
+                    map { { type => 'STRING', index => $index, value => $_, next => $pos + 1 } }
+                      split( ' ', $ast->{value} )
+                ],
+                next => $ast->{next}
+            };
         }
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
@@ -1046,7 +1055,6 @@ use strict;
 use warnings;
 my $var = 42;
 2*3+5*6 or 0;
-{ , , a => 3 + 1, , c => 4 , , };
 ,,,;
 (
 !2   # a comment
@@ -1087,7 +1095,6 @@ $$a[1];
 $$a->[1];
 q! abd !;
 q< abd >;
-{ q => 123 };
 qq< abd [$v$a]  >;
 (-123, -123.56,
 
@@ -1117,6 +1124,8 @@ docs here
 \$a
 =2
 ;
+{ , , a => 3 + 1, , c => 4 , , };
+{ q => 123 };
 print => 123;
 $a =~ /123/i;
 __END__
