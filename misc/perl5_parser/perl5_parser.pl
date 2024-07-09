@@ -338,6 +338,10 @@ my %ASSOC_RIGHT = (
     ','   => 1,
     '=>'  => 1,
 );
+my %NON_ASSOC_AUTO = (
+    '++' => 1,
+    '--' => 1,
+);
 
 sub error_message_string_terminator {
     my ( $tokens, $index, $quote ) = @_;
@@ -407,7 +411,15 @@ sub parse_precedence_expression {
             $left_expr = { type => 'LIST_OP', value => [ $op_value, @left ], next => $expr->{next} };
         }
         else {
-            $left_expr = { type => 'PREFIX_OP', value => [ $op_value, $expr ], next => $expr->{next} };
+
+            if (   $NON_ASSOC_AUTO{$op_value}
+                && ( $expr->{type} eq 'POSTFIX_OP' || $expr->{type} eq 'PREFIX_OP' )
+                && $NON_ASSOC_AUTO{ $expr->{value}{op} } )    # check for nonassoc syntax error
+            {
+                die error_message( $tokens, $index, "syntax error" );
+            }
+
+            $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $expr }, next => $expr->{next} };
         }
         $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
         if ( $tokens->[$pos][0] == END_TOKEN() ) {
@@ -437,6 +449,8 @@ sub parse_precedence_expression {
         last unless exists $PRECEDENCE{$op_value};
         my $precedence = $PRECEDENCE{$op_value};
         last if $precedence < $min_precedence;
+
+        # last if $precedence < $min_precedence || ($NON_ASSOC_AUTO{$op_value} && $precedence == $min_precedence);
 
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
@@ -475,7 +489,15 @@ sub parse_precedence_expression {
 
         # Handle postfix operators
         if ( $POSTFIX{$op_value} ) {
-            $left_expr = { type => 'POSTFIX_OP', value => [ $op_value, $left_expr ], next => $pos };
+
+            if (   $NON_ASSOC_AUTO{$op_value}
+                && ( $left_expr->{type} eq 'POSTFIX_OP' || $left_expr->{type} eq 'PREFIX_OP' )
+                && $NON_ASSOC_AUTO{ $left_expr->{value}{op} } )    # check for nonassoc syntax error
+            {
+                die error_message( $tokens, $index, "syntax error" );
+            }
+
+            $left_expr = { type => 'POSTFIX_OP', value => { op => $op_value, arg => $left_expr }, next => $pos };
             next;
         }
 
@@ -598,7 +620,7 @@ sub parse_variable_interpolation {
                 return parse_fail( $tokens, $index );
             }
         }
-        return { type => 'PREFIX_OP', value => [ $sigil, $expr ], next => $expr->{next} };
+        return { type => 'PREFIX_OP', value => { op => $sigil, arg => $expr }, next => $expr->{next} };
     }
     return parse_fail( $tokens, $index );
 }
