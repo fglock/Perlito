@@ -24,6 +24,14 @@ use Data::Dumper;
 #      'value' => '3'            # AST contents can be STRING, ARRAY or HASH
 #    }
 #
+# in case of parsing error, there are 2 possibilities:
+#
+# - die() is called with the error message;
+#
+# - or an AST is returned that looks like:
+#
+#    { FAIL => 1, index => 520 }
+#
 
 ## # uncomment to debug autovivification
 ## package TieArrayNoAutovivification {
@@ -449,8 +457,6 @@ sub parse_precedence_expression {
         last unless exists $PRECEDENCE{$op_value};
         my $precedence = $PRECEDENCE{$op_value};
         last if $precedence < $min_precedence;
-
-        # last if $precedence < $min_precedence || ($NON_ASSOC_AUTO{$op_value} && $precedence == $min_precedence);
 
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
