@@ -497,8 +497,8 @@ sub parse_optional_whitespace {
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
             if ( $tokens->[$pos][0] == EQUALS() ) {    # =pod
-                $pos++;
-                if ( $tokens->[$pos][0] == IDENTIFIER() ) {
+                if ( $tokens->[$pos+1][0] == IDENTIFIER() ) {
+                    $pos++;
                     if ( $tokens->[$pos][1] eq 'encoding' ) {
 
                         # =encoding ... until end of line
@@ -529,7 +529,6 @@ sub parse_optional_whitespace {
                         }
                         $pos += 3;
                     }
-                    redo WS;
                 }
             }
             redo WS;
@@ -540,6 +539,9 @@ sub parse_optional_whitespace {
                 $pos++;
             }
             redo WS;
+        }
+        if ( $tokens->[$pos][0] == IDENTIFIER() && ( $tokens->[$pos][1] eq "__END__" || $tokens->[$pos][1] eq "__DATA__" ) ) {
+            $pos = $#$tokens;
         }
         last WS;
     }
@@ -1119,3 +1121,6 @@ docs here
 1+1
 =cut
 \$a
+__END__
+123
+
