@@ -4,6 +4,17 @@ use 5.034;
 use utf8;
 use Data::Dumper;
 
+#
+# AST format
+#
+#    {
+#      'index' => 520,           # first token id (in the @$tokens array)
+#      'next'  => 521,           # next token id
+#      'type'  => 'INTEGER',     # AST object type (INTEGER, STRING, ...)
+#      'value' => '3'            # AST contents can be STRING, ARRAY or HASH
+#    }
+#
+
 ## # uncomment to debug autovivification
 ## package TieArrayNoAutovivification {
 ##     use Tie::Array;
@@ -122,7 +133,6 @@ my %OPERATORS = (
 #
 # known problems:
 #   10E10     tokenizes to 10,E10
-#   q=>=      tokenizes to q,=>,=	(but Perl also has problems with this)
 #   q!=!=="=" tokenizes to q,!=,!=, ...
 #
 sub tokenize {
@@ -637,10 +647,24 @@ my %quote_pair = (
     '<' => '>',
 );
 
+sub parse_string_delimiter_fixup {
+    my ( $tokens, $index ) = @_;
+    my $delim = $tokens->[$index][1];
+    if ( length($delim) > 1 ) {    #  delimiter looks like: !=
+        $delim               = substr( $delim, 0, 1 );
+        $tokens->[$index][1] = substr( $delim, 1 );
+        $index--;
+    }
+    if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
+    return ( $delim, $index + 1 );
+}
+
 sub parse_single_quote_string {
-    my ( $tokens, $index, $pos, $quote ) = @_;
+    my ( $tokens, $index, $pos ) = @_;
 
     # 'abc'
+    my $quote;
+    ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
     my $value;
     while ( $tokens->[$pos][0] != END_TOKEN() ) {
         if ( $quote eq $tokens->[$pos][1] ) {
@@ -657,9 +681,11 @@ sub parse_single_quote_string {
 }
 
 sub parse_double_quote_string {
-    my ( $tokens, $index, $pos, $quote ) = @_;
+    my ( $tokens, $index, $pos ) = @_;
 
     # "abc"
+    my $quote;
+    ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
     my @ops;
     my $value = '';
     while ( $tokens->[$pos][0] != END_TOKEN() ) {
@@ -702,9 +728,11 @@ sub parse_double_quote_string {
 }
 
 sub parse_regex_string {
-    my ( $tokens, $index, $pos, $quote ) = @_;
+    my ( $tokens, $index, $pos ) = @_;
 
     # /abc/
+    my $quote;
+    ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
     my @ops;
     my $value = '';
     while ( $tokens->[$pos][0] != END_TOKEN() ) {
@@ -744,25 +772,6 @@ sub parse_regex_string {
         $value .= $tokens->[$pos][1];
         $pos++;
     }
-}
-
-sub parse_string {
-    my ( $tokens, $index ) = @_;
-    my $pos = $index;
-    if ( $tokens->[$pos][0] == STRING_DELIM() ) {
-        my $quote = $tokens->[$pos][1];
-        $pos++;    # "
-        if ( $quote eq "'" ) {
-            return parse_single_quote_string( $tokens, $index, $pos, $quote );
-        }
-        elsif ( $quote eq '"' ) {
-            return parse_double_quote_string( $tokens, $index, $pos, $quote );
-        }
-        elsif ( $quote eq '`' ) {
-            return parse_fail( $tokens, $index );
-        }
-    }
-    return parse_fail( $tokens, $index );
 }
 
 sub parse_delim_expression {
@@ -849,67 +858,40 @@ sub parse_term {
             return $ast;
         }
         elsif ( $stmt eq 'q' ) {                      # q!...!
-            my $delim = $tokens->[$pos][1];
-            if ( length($delim) > 1 ) {
-
-                # tokenization fail; delimiter is ambiguous
-            }
-            else {
-                if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
-                $pos++;                                                        # 'abc'
-                return parse_single_quote_string( $tokens, $index, $pos, $delim );
-            }
+            return parse_single_quote_string( $tokens, $index, $pos );
         }
-        elsif ( $stmt eq 'qq' ) {                                              # qq!...!
-            my $delim = $tokens->[$pos][1];
-            if ( length($delim) > 1 ) {
-
-                # tokenization fail; delimiter is ambiguous
-            }
-            else {
-                if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
-                $pos++;                                                        # "abc"
-                return parse_double_quote_string( $tokens, $index, $pos, $delim );
-            }
+        elsif ( $stmt eq 'qq' ) {                     # qq!...!
+            return parse_double_quote_string( $tokens, $index, $pos );
         }
-        elsif ( $stmt eq 'm' ) {                                               # /.../
-            my $delim = $tokens->[$pos][1];
-            if ( length($delim) > 1 ) {
-
-                # tokenization fail; delimiter is ambiguous
+        elsif ( $stmt eq 'm' ) {                      # /.../
+            $ast = parse_regex_string( $tokens, $index, $pos );
+            if ( $ast->{FAIL} ) {
+                return parse_fail( $tokens, $index );
             }
-            else {
-                if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # m< ... >
-                $pos++;                                                        # m/abc/
-                $ast = parse_regex_string( $tokens, $index, $pos, $delim );
-                if ( $ast->{FAIL} ) {
-                    return parse_fail( $tokens, $index );
-                }
 
-                # TODO parse regex modifiers
-                return { type => 'REGEX', index => $index, value => { args => $ast }, next => $ast->{next} };
-            }
+            # TODO parse regex modifiers
+            return { type => 'REGEX', index => $index, value => { args => $ast }, next => $ast->{next} };
         }
-        elsif ( $stmt eq 'qw' ) {    # qw/.../
-            my $delim = $tokens->[$pos][1];
-            if ( length($delim) > 1 ) {
-
-                # tokenization fail; delimiter is ambiguous
+        elsif ( $stmt eq 'qw' ) {                     # qw/.../
+            $ast = parse_single_quote_string( $tokens, $index, $pos );
+            if ( $ast->{FAIL} ) {
+                return parse_fail( $tokens, $index );
             }
-            else {
-                if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # qw< ... >
-                $pos++;
-                $ast = parse_single_quote_string( $tokens, $index, $pos, $delim );
-                if ( $ast->{FAIL} ) {
-                    return parse_fail( $tokens, $index );
-                }
-                return { type => 'SPLIT', index => $index, value => [ ' ', $ast ], next => $ast->{next} };
-            }
+            return { type => 'SPLIT', index => $index, value => [ ' ', $ast ], next => $ast->{next} };
         }
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
-        $ast = parse_string( $tokens, $index );
+        my $quote = $tokens->[$index][1];
+        if ( $quote eq "'" ) {
+            return parse_single_quote_string( $tokens, $index, $index );
+        }
+        elsif ( $quote eq '"' ) {
+            return parse_double_quote_string( $tokens, $index, $index );
+        }
+        elsif ( $quote eq '`' ) {    # TODO not implemented
+        }
+        return parse_fail( $tokens, $index );
     }
     elsif ( $type == PAREN_OPEN() ) {
         $ast = parse_delim_expression( $tokens, $index, PAREN_OPEN(), PAREN_CLOSE() );
@@ -923,7 +905,7 @@ sub parse_term {
     elsif ( $type == SLASH() ) {
 
         # /.../
-        $ast = parse_regex_string( $tokens, $index, $index + 1, $tokens->[$index][1] );
+        $ast = parse_regex_string( $tokens, $index, $index );
         if ( $ast->{FAIL} ) {
             return parse_fail( $tokens, $index );
         }
@@ -1013,6 +995,7 @@ sub token_as_string {
 }
 
 sub main {
+    $Data::Dumper::Sortkeys = 1;
     binmode( STDOUT, ":utf8" );
     my $perl_code = join( '', <DATA> );
     my $tokens    = tokenize($perl_code);
