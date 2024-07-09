@@ -205,7 +205,6 @@ sub tokenize {
             push @tokens, [ $state, $buffer ];
         }
     }
-    push @tokens, [ SEMICOLON(), ';' ];    # a valid statement must finish in ;
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, [ END_TOKEN(), '' ];
@@ -395,8 +394,8 @@ sub parse_precedence_expression {
         }
     }
 
+    $pos = $left_expr->{next};
     while ( $tokens->[$pos][0] != END_TOKEN() ) {
-        $pos = $left_expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         return parse_fail( $tokens, $index ) if $tokens->[$pos][0] == END_TOKEN();
         my $op_value = $tokens->[$pos][1];
@@ -417,6 +416,7 @@ sub parse_precedence_expression {
                 return parse_fail( $tokens, $index );
             }
             $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
+            $pos = $left_expr->{next};
             next;
         }
 
@@ -437,6 +437,7 @@ sub parse_precedence_expression {
             }
             my $false_expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'?'} );    # Parse the false branch
             $left_expr = { type => 'TERNARY_OP', value => [ '?', $left_expr, $true_expr, $false_expr ], next => $false_expr->{next} };
+            $pos = $left_expr->{next};
             next;
         }
 
@@ -475,6 +476,7 @@ sub parse_precedence_expression {
         else {
             $left_expr = { type => 'BINARY_OP', value => [ $op_value, $left_expr, $right_expr ], next => $right_expr->{next} };
         }
+        $pos = $left_expr->{next};
     }
     return $left_expr;
 }
