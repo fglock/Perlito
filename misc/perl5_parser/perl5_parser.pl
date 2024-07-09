@@ -78,6 +78,7 @@ use constant {
     EQUALS        => 30,
     SLASH         => 31,
     FAT_ARROW     => 32,
+    DOUBLE_COLON  => 33,
 };
 
 my %TokenName = (
@@ -109,6 +110,7 @@ my %TokenName = (
     EQUALS()        => 'EQUALS',
     SLASH()         => 'SLASH',
     FAT_ARROW()     => 'FAT_ARROW',
+    DOUBLE_COLON()  => 'DOUBLE_COLON',
 );
 
 my %OPERATORS = (
@@ -137,6 +139,7 @@ my %OPERATORS = (
     '='  => EQUALS(),
     '/'  => SLASH(),
     '=>' => FAT_ARROW(),
+    '::' => DOUBLE_COLON(),
     map { $_ => OPERATOR() }
       qw(
       == != <= >= < > <=>
@@ -604,6 +607,22 @@ sub parse_optional_whitespace {
     return { type => 'WHITESPACE', index => $index, value => ' ', next => $pos };
 }
 
+sub parse_colon_bareword {
+    my ( $tokens, $index ) = @_;
+    my $pos = $index;
+    my @tok;
+    while ( $tokens->[$pos][0] != END_TOKEN()
+        && ( $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == NUMBER() ) )
+    {
+        push @tok, $tokens->[$pos][1];
+        $pos++;
+    }
+    if ( !@tok ) {
+        return parse_fail( $tokens, $index );
+    }
+    return { type => 'COLON_BAREWORD', index => $index, value => \@tok, next => $pos };
+}
+
 sub parse_variable_interpolation {
     my ( $tokens, $index ) = @_;
 
@@ -871,26 +890,31 @@ sub parse_term {
         $ast = parse_number( $tokens, $index );
     }
     elsif ( $type == IDENTIFIER() ) {
+
+        if ( $tokens->[ $pos + 1 ][0] == DOUBLE_COLON() ) {
+            return parse_colon_bareword( $tokens, $index );    # TODO parse special cases like CORE::print
+        }
+
         my $stmt = $tokens->[$pos][1];
         $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
-        if ( $tokens->[$pos][0] == FAT_ARROW() ) {    # bareword
+        if ( $tokens->[$pos][0] == FAT_ARROW() ) {             # bareword
             return { type => 'STRING', value => $tokens->[$index][1], next => $index + 1 };
         }
-        elsif ( $stmt eq 'use' ) {                    # XXX special case just for testing!
+        elsif ( $stmt eq 'use' ) {                             # XXX special case just for testing!
             my $expr = parse_precedence_expression( $tokens, $pos, $List_operator_precedence );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
             return { type => 'APPLY', value => { stmt => $stmt, args => $expr }, next => $expr->{next} };
         }
-        elsif ( $stmt eq 'print' ) {                  # XXX special case just for testing!
+        elsif ( $stmt eq 'print' ) {                           # XXX special case just for testing!
             my $expr = parse_precedence_expression( $tokens, $pos, $List_operator_precedence );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
             return { type => 'APPLY', value => { stmt => $stmt, args => $expr }, next => $expr->{next} };
         }
-        elsif ( $stmt eq 'do' ) {                     # do BLOCK
+        elsif ( $stmt eq 'do' ) {                              # do BLOCK
             my $block = parse_statement_block( $tokens, $pos );
             if ( $block->{FAIL} ) {
                 return parse_fail( $tokens, $index );
@@ -898,13 +922,13 @@ sub parse_term {
             $ast = { type => 'DO_BLOCK', value => { stmt => $stmt, block => $block }, next => $block->{next} };
             return $ast;
         }
-        elsif ( $stmt eq 'q' ) {                      # q!...!
+        elsif ( $stmt eq 'q' ) {                               # q!...!
             return parse_single_quote_string( $tokens, $index, $pos );
         }
-        elsif ( $stmt eq 'qq' ) {                     # qq!...!
+        elsif ( $stmt eq 'qq' ) {                              # qq!...!
             return parse_double_quote_string( $tokens, $index, $pos );
         }
-        elsif ( $stmt eq 'm' ) {                      # /.../
+        elsif ( $stmt eq 'm' ) {                               # /.../
             $ast = parse_regex_string( $tokens, $index, $pos );
             if ( $ast->{FAIL} ) {
                 return parse_fail( $tokens, $index );
@@ -967,6 +991,10 @@ sub parse_term {
             $pos++;
         }
         return { type => 'REGEX', index => $index, value => { args => $ast, modifier => $modifier }, next => $pos, };
+    }
+    elsif ( $type = DOUBLE_COLON() ) {
+        $ast = parse_colon_bareword( $tokens, $index );
+        $pos = $ast->{next};
     }
     else {
         return parse_fail( $tokens, $index );
@@ -1155,7 +1183,7 @@ docs here
 { , , a => 3 + 1, , c => 4 , , };
 { q => 123 };
 print => 123;
-$a =~ /123/i;
+$::a =~ /123/i;
 __END__
 123
 
