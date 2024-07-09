@@ -477,6 +477,7 @@ sub parse_precedence_expression {
             $left_expr = { type => 'BINARY_OP', value => [ $op_value, $left_expr, $right_expr ], next => $right_expr->{next} };
         }
         $pos = $left_expr->{next};
+        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
     }
     return $left_expr;
 }
@@ -1121,6 +1122,7 @@ docs here
 1+1
 =cut
 \$a
+=2
 __END__
 123
 
