@@ -216,7 +216,7 @@ my %PRECEDENCE               = (
     'or'  => 1,
     'xor' => 1,
     'and' => 2,
-    'not' => 3,                            # Unary negation
+    'not' => 3,    # Unary negation
 
     # $List_operator_precedence = 4
 
@@ -416,7 +416,7 @@ sub parse_precedence_expression {
                 return parse_fail( $tokens, $index );
             }
             $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
-            $pos = $left_expr->{next};
+            $pos       = $left_expr->{next};
             next;
         }
 
@@ -437,7 +437,7 @@ sub parse_precedence_expression {
             }
             my $false_expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'?'} );    # Parse the false branch
             $left_expr = { type => 'TERNARY_OP', value => [ '?', $left_expr, $true_expr, $false_expr ], next => $false_expr->{next} };
-            $pos = $left_expr->{next};
+            $pos       = $left_expr->{next};
             next;
         }
 
@@ -489,37 +489,59 @@ sub parse_fail {
 sub parse_optional_whitespace {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
+  WS:
     while ( $tokens->[$pos][0] != END_TOKEN() ) {
         if ( $tokens->[$pos][0] == WHITESPACE() ) {
             $pos++;
         }
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
-            if ( $tokens->[$pos][0] == EQUALS() ) {
+            if ( $tokens->[$pos][0] == EQUALS() ) {    # =pod
                 $pos++;
                 if ( $tokens->[$pos][0] == IDENTIFIER() ) {
+                    if ( $tokens->[$pos][1] eq 'encoding' ) {
 
-                    # documentation (pod):
-                    # =for ... until end of paragraph
-                    # =any_command ... until =cut or =end
-                    # TODO
-                    $pos++;
-                    while ( $tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN() ) {
+                        # =encoding ... until end of line
+                        $pos++;
+                        while ( $tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN() ) {
+                            $pos++;
+                        }
+                    }
+                    elsif ( $tokens->[$pos][1] eq 'for' ) {
+
+                        # =for ... until end of paragraph
+                        $pos++;
+                        while ($tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN()
+                            || $tokens->[ $pos + 1 ][0] != NEWLINE() )
+                        {
+                            $pos++;
+                        }
                         $pos++;
                     }
-                    redo;
+                    else {
+                        # =any_command ... until =cut or =end
+                        $pos++;
+                        while ($tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN()
+                            || $tokens->[ $pos + 1 ][1] ne '='   && $tokens->[ $pos + 1 ][0] != END_TOKEN()
+                            || $tokens->[ $pos + 2 ][1] ne 'cut' && $tokens->[ $pos + 2 ][1] ne 'end' )
+                        {
+                            $pos++;
+                        }
+                        $pos += 3;
+                    }
+                    redo WS;
                 }
             }
-            redo;
+            redo WS;
         }
         if ( $tokens->[$pos][0] == START_COMMENT() ) {
             $pos++;
             while ( $tokens->[$pos][0] != NEWLINE() && $tokens->[$pos][0] != END_TOKEN() ) {
                 $pos++;
             }
-            redo;
+            redo WS;
         }
-        last;
+        last WS;
     }
     return { type => 'WHITESPACE', index => $index, value => ' ', next => $pos };
 }
@@ -803,7 +825,7 @@ sub parse_term {
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-            return { type => 'APPLY', stmt => $stmt, args => $expr, next => $expr->{next} };
+            return { type => 'APPLY', value => { stmt => $stmt, args => $expr }, next => $expr->{next} };
         }
         if ( $stmt eq 'print' ) {
             $pos++;    # XXX special case just for testing!
@@ -812,7 +834,7 @@ sub parse_term {
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-            return { type => 'APPLY', stmt => $stmt, args => $expr, next => $expr->{next} };
+            return { type => 'APPLY', value => { stmt => $stmt, args => $expr }, next => $expr->{next} };
         }
         if ( $stmt eq 'do' ) {
             $pos++;    # do BLOCK
@@ -821,7 +843,7 @@ sub parse_term {
             if ( $block->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-            $ast = { type => 'DO_BLOCK', stmt => $stmt, block => $block, next => $block->{next} };
+            $ast = { type => 'DO_BLOCK', value => { stmt => $stmt, block => $block }, next => $block->{next} };
             return $ast;
         }
         if ( $stmt eq 'q' ) {
@@ -869,7 +891,7 @@ sub parse_term {
                 }
 
                 # TODO parse regex modifiers
-                return { type => 'REGEX', index => $index, args => $ast, next => $ast->{next} };
+                return { type => 'REGEX', index => $index, value => { args => $ast }, next => $ast->{next} };
             }
         }
         if ( $stmt eq 'qw' ) {
@@ -887,7 +909,7 @@ sub parse_term {
                 if ( $ast->{FAIL} ) {
                     return parse_fail( $tokens, $index );
                 }
-                return { type => 'SPLIT', index => $index, args => [ ' ', $ast ], next => $ast->{next} };
+                return { type => 'SPLIT', index => $index, value => [ ' ', $ast ], next => $ast->{next} };
             }
         }
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
@@ -913,7 +935,7 @@ sub parse_term {
         }
 
         # TODO parse regex modifiers
-        return { type => 'REGEX', index => $index, args => $ast, next => $ast->{next} };
+        return { type => 'REGEX', index => $index, value => { args => $ast }, next => $ast->{next} };
     }
     else {
         return parse_fail( $tokens, $index );
@@ -931,7 +953,7 @@ sub parse_statement {
     my $ast;
     if ( $tokens->[$pos][0] == SEMICOLON() ) {
         $pos++;    # semicolon
-        return { type => 'STATEMENT', stmt => 'empty_statement', next => $pos };
+        return { type => 'STATEMENT', value => { stmt => 'empty_statement' }, next => $pos };
     }
     elsif ( $tokens->[$pos][0] == IDENTIFIER() ) {
         my $stmt = $tokens->[$pos][1];
@@ -948,7 +970,7 @@ sub parse_statement {
             if ( $block->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-            $ast = { type => 'STATEMENT', stmt => $stmt, condition => $expr, block => $block, next => $block->{next} };
+            $ast = { type => 'STATEMENT', value => { stmt => $stmt, condition => $expr, block => $block }, next => $block->{next} };
             $pos = $ast->{next};
         }
     }
@@ -1083,10 +1105,17 @@ m< abd [$v$a]  >;
 
 qw( abc def \n &.= € );  
 
+=encoding 123
+
 # test a syntax error
 # 2 + 3 5 + 8
 
 if ($#var <=> 10.3E-2) {	# a comment
     print "The variable ${a} is greater than 10", "\n" or die("Error");
 }
+
+=pod 123
+docs here
+1+1
+=cut
 \$a
