@@ -632,10 +632,13 @@ sub parse_variable_interpolation {
         my $sigil = $tokens->[$pos][1];
         $pos++;    # $
         my $expr;
-        if ( $tokens->[$pos][0] == IDENTIFIER() ) {
+        if ( $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == NUMBER() || $tokens->[$pos][0] == DOUBLE_COLON() ) {
 
-            # TODO $1 $2 $$
-            $expr = { type => 'BAREWORD', value => $tokens->[$pos][1], next => $pos + 1 };
+            # TODO special vars $$
+            $expr = parse_colon_bareword( $tokens, $pos );
+            if ( $expr->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
 
             # TODO if sigil is not $#, check for [] {} ->
         }
