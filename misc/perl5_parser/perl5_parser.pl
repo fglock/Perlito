@@ -5,7 +5,17 @@ use utf8;
 use Data::Dumper;
 
 #
-# AST format
+# tokenizer format is an array of arrays:
+#
+#    [
+#      [ NUMBER,     '123' ],   # NUMBER, WHITESPACE are numeric constants
+#      [ WHITESPACE, ' '   ],
+#      [ OPERATOR,   '+'   ],
+#      ...
+#      [ END_TOKEN,  '' ],
+#    ]
+#
+# AST format is a hash:
 #
 #    {
 #      'index' => 520,           # first token id (in the @$tokens array)
@@ -331,7 +341,7 @@ my %ASSOC_RIGHT = (
 
 sub error_message_string_terminator {
     my ( $tokens, $index, $quote ) = @_;
-    if ($quote eq '"') {
+    if ( $quote eq '"' ) {
         return "Can't find string terminator '$quote' anywhere before EOF\n";
     }
     return "Can't find string terminator \"$quote\" anywhere before EOF\n";
@@ -340,8 +350,8 @@ sub error_message_string_terminator {
 sub error_message {
     my ( $tokens, $index, $message ) = @_;
 
-    # add location context to error messages
-    # also add a newline
+    # - adds location context to error messages
+    # - also adds a newline
     #
     #   Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
     #   syntax error at -e line 1, near "--for "
@@ -883,7 +893,7 @@ sub parse_term {
             if ( $ast->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-            return { type => 'SPLIT', index => $index, value => [ ' ', $ast ], next => $ast->{next} };
+            return { type => 'QW', index => $index, value => [ split( ' ', $ast->{value} ) ], next => $ast->{next} };
         }
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
