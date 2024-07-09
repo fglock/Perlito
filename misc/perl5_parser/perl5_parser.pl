@@ -48,6 +48,7 @@ use constant {
     ARROW         => 29,
     EQUALS        => 30,
     SLASH         => 31,
+    FAT_ARROW     => 32,
 };
 
 my %TokenName = (
@@ -78,6 +79,7 @@ my %TokenName = (
     ARROW()         => 'ARROW',
     EQUALS()        => 'EQUALS',
     SLASH()         => 'SLASH',
+    FAT_ARROW()     => 'FAT_ARROW',
 );
 
 my %OPERATORS = (
@@ -105,12 +107,12 @@ my %OPERATORS = (
     '->' => ARROW(),
     '='  => EQUALS(),
     '/'  => SLASH(),
+    '=>' => FAT_ARROW(),
     map { $_ => OPERATOR() }
       qw(
       == != <= >= < > <=>
       + * ** % ++ -- && || // ! ^ ~ ~~ & |
       >> <<
-      =>
       **= += -= *= /= x= |= &= .= <<= >>= %= ||= &&= ^= //=
       |.= &.= ^.=
       )
@@ -498,7 +500,7 @@ sub parse_optional_whitespace {
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
             if ( $tokens->[$pos][0] == EQUALS() ) {    # =pod
-                if ( $tokens->[$pos+1][0] == IDENTIFIER() ) {
+                if ( $tokens->[ $pos + 1 ][0] == IDENTIFIER() ) {
                     $pos++;
                     if ( $tokens->[$pos][1] eq 'encoding' ) {
 
@@ -821,27 +823,24 @@ sub parse_term {
     elsif ( $type == IDENTIFIER() ) {
         my $pos  = $index;
         my $stmt = $tokens->[$pos][1];
-        if ( $stmt eq 'use' ) {
-            $pos++;    # XXX special case just for testing!
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
+        if ( $tokens->[$pos][0] == FAT_ARROW() ) {    # bareword
+        }
+        elsif ( $stmt eq 'use' ) {                    # XXX special case just for testing!
             my $expr = parse_precedence_expression( $tokens, $pos, $List_operator_precedence );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
             return { type => 'APPLY', value => { stmt => $stmt, args => $expr }, next => $expr->{next} };
         }
-        if ( $stmt eq 'print' ) {
-            $pos++;    # XXX special case just for testing!
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        elsif ( $stmt eq 'print' ) {                  # XXX special case just for testing!
             my $expr = parse_precedence_expression( $tokens, $pos, $List_operator_precedence );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
             return { type => 'APPLY', value => { stmt => $stmt, args => $expr }, next => $expr->{next} };
         }
-        if ( $stmt eq 'do' ) {
-            $pos++;    # do BLOCK
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        elsif ( $stmt eq 'do' ) {                     # do BLOCK
             my $block = parse_statement_block( $tokens, $pos );
             if ( $block->{FAIL} ) {
                 return parse_fail( $tokens, $index );
@@ -849,9 +848,7 @@ sub parse_term {
             $ast = { type => 'DO_BLOCK', value => { stmt => $stmt, block => $block }, next => $block->{next} };
             return $ast;
         }
-        if ( $stmt eq 'q' ) {
-            $pos++;    # q!...!
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        elsif ( $stmt eq 'q' ) {                      # q!...!
             my $delim = $tokens->[$pos][1];
             if ( length($delim) > 1 ) {
 
@@ -863,9 +860,7 @@ sub parse_term {
                 return parse_single_quote_string( $tokens, $index, $pos, $delim );
             }
         }
-        if ( $stmt eq 'qq' ) {
-            $pos++;                                                            # qq!...!
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        elsif ( $stmt eq 'qq' ) {                                              # qq!...!
             my $delim = $tokens->[$pos][1];
             if ( length($delim) > 1 ) {
 
@@ -877,9 +872,7 @@ sub parse_term {
                 return parse_double_quote_string( $tokens, $index, $pos, $delim );
             }
         }
-        if ( $stmt eq 'm' ) {
-            $pos++;                                                            # /.../
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        elsif ( $stmt eq 'm' ) {                                               # /.../
             my $delim = $tokens->[$pos][1];
             if ( length($delim) > 1 ) {
 
@@ -897,9 +890,7 @@ sub parse_term {
                 return { type => 'REGEX', index => $index, value => { args => $ast }, next => $ast->{next} };
             }
         }
-        if ( $stmt eq 'qw' ) {
-            $pos++;    # qw/.../
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        elsif ( $stmt eq 'qw' ) {    # qw/.../
             my $delim = $tokens->[$pos][1];
             if ( length($delim) > 1 ) {
 
@@ -1123,6 +1114,8 @@ docs here
 =cut
 \$a
 =2
+;
+print => 123
 __END__
 123
 
