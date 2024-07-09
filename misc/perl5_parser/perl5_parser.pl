@@ -629,8 +629,8 @@ sub parse_variable_interpolation {
     # "$a"  "${a}"  "$x[10]"  "$x->[10]"  "@{[ 1 + 1]}"  "$#a"
     my $pos = $index;
     if ( $tokens->[$pos][0] == SIGIL() ) {
-        my $sigil = $tokens->[$pos][1];
-        $pos++;    # $
+        my $sigil = $tokens->[$pos][1];    # $
+        $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
         my $expr;
         if ( $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == NUMBER() || $tokens->[$pos][0] == DOUBLE_COLON() ) {
 
