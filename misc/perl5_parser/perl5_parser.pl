@@ -82,7 +82,7 @@ use constant {
     LESS_THAN     => 34,
 };
 
-my %TokenName = (
+my %TOKEN_NAME = (
     END_TOKEN()     => 'END_TOKEN',
     WHITESPACE()    => 'WHITESPACE',
     KEYWORD()       => 'KEYWORD',
@@ -248,14 +248,14 @@ sub tokenize {
     return \@tokens;
 }
 
-my $List_operator_precedence = 4;
+my $LIST_OPERATOR_PRECEDENCE = 4;
 my %PRECEDENCE               = (
     'or'  => 1,
     'xor' => 1,
     'and' => 2,
     'not' => 3,    # Unary negation
 
-    # $List_operator_precedence = 4
+    # $LIST_OPERATOR_PRECEDENCE = 4
 
     ','  => 5,
     '=>' => 5,
@@ -626,7 +626,7 @@ sub parse_colon_bareword {
     return { type => 'COLON_BAREWORD', index => $index, value => \@tok, next => $pos };
 }
 
-sub parse_variable_interpolation {
+sub parse_variable_interpolation_in_string {
     my ( $tokens, $index ) = @_;
 
     # "$a"  "${a}"  "$x[10]"  "$x->[10]"  "@{[ 1 + 1]}"  "$#a"
@@ -706,9 +706,9 @@ sub parse_number {
     return { type => 'NUMBER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
 }
 
-my %escape_sequence = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
+my %ESCAPE_SEQUENCE = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
 
-my %quote_pair = (
+my %QUOTE_PAIR = (
     '{' => '}',
     '(' => ')',
     '[' => ']',
@@ -723,7 +723,7 @@ sub parse_string_delimiter_fixup {
         $tokens->[$index][1] = substr( $delim, 1 );
         $index--;
     }
-    if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
+    if ( $QUOTE_PAIR{$delim} ) { $delim = $QUOTE_PAIR{$delim} }    # q< ... >
     return ( $delim, $index + 1 );
 }
 
@@ -769,15 +769,15 @@ sub parse_double_quote_string {    # "abc"
                 $pos++;
             }
             my $c2 = $tokens->[ $pos + 1 ][1];
-            if ( exists $escape_sequence{$c2} ) {
-                $value .= chr( $escape_sequence{$c2} );
+            if ( exists $ESCAPE_SEQUENCE{$c2} ) {
+                $value .= chr( $ESCAPE_SEQUENCE{$c2} );
                 $pos++;
                 $pos++;
                 next;
             }
         }
         if ( $type == SIGIL() && $tokens->[$pos][1] ne '%' ) {
-            my $expr = parse_variable_interpolation( $tokens, $pos );
+            my $expr = parse_variable_interpolation_in_string( $tokens, $pos );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
@@ -815,15 +815,15 @@ sub parse_regex_string {    # /abc/
                 $pos++;
             }
             my $c2 = $tokens->[ $pos + 1 ][1];
-            if ( exists $escape_sequence{$c2} ) {
-                $value .= chr( $escape_sequence{$c2} );
+            if ( exists $ESCAPE_SEQUENCE{$c2} ) {
+                $value .= chr( $ESCAPE_SEQUENCE{$c2} );
                 $pos++;
                 $pos++;
                 next;
             }
         }
-        if ( $type == SIGIL() && $tokens->[$pos][1] ne '%' ) {
-            my $expr = parse_variable_interpolation( $tokens, $pos );
+        if ( $type == SIGIL() && ( $tokens->[$pos][1] eq '@' || $tokens->[$pos][1] eq '$' || $tokens->[$pos][1] eq '$#' ) ) {
+            my $expr = parse_variable_interpolation_in_string( $tokens, $pos );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
@@ -845,7 +845,7 @@ sub parse_delim_expression {
     my $start_delim = $delim;
     my $precedence = 0;
     $precedence = $PRECEDENCE{$start_delim} + 1 if $start_delim eq '<';
-    if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
+    if ( $QUOTE_PAIR{$delim} ) { $delim = $QUOTE_PAIR{$delim} }    # q< ... >
     if ( $tokens->[$pos][1] eq $start_delim ) {
         $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
         if ( $tokens->[$pos][1] eq $delim ) {
@@ -910,14 +910,14 @@ sub parse_term {
             return { type => 'STRING', value => $tokens->[$index][1], next => $index + 1 };
         }
         elsif ( $stmt eq 'use' ) {                             # XXX special case just for testing!
-            my $expr = parse_precedence_expression( $tokens, $pos, $List_operator_precedence );
+            my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
             return { type => 'APPLY', value => { stmt => $stmt, args => $expr }, next => $expr->{next} };
         }
         elsif ( $stmt eq 'print' ) {                           # XXX special case just for testing!
-            my $expr = parse_precedence_expression( $tokens, $pos, $List_operator_precedence );
+            my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
@@ -1068,7 +1068,7 @@ sub parse_statement {
           )
         {
             # Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
-            my $tok = $TokenName{ $tokens->[$pos][0] };
+            my $tok = $TOKEN_NAME{ $tokens->[$pos][0] };
             $tok = ucfirst( lc($tok) );
             die error_message( $tokens, $pos, $tok . ' found where operator expected (Missing operator before "' . $tokens->[$pos][1] . '"?)' );
         }
@@ -1085,8 +1085,8 @@ sub token_as_string {
     my ( $type, $value, $attr ) = @_;
     return "" if !defined $value;
     $value = "newline" if $value eq "\n";
-    $attr  = $TokenName{ $attr // "" } // "";
-    return "$TokenName{$type}: \t'$value' \t $attr\n";
+    $attr  = $TOKEN_NAME{ $attr // "" } // "";
+    return "$TOKEN_NAME{$type}: \t'$value' \t $attr\n";
 }
 
 sub main {
