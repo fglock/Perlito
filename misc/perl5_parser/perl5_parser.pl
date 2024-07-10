@@ -1085,6 +1085,10 @@ sub main {
     $Data::Dumper::Indent   = 1;
     binmode( STDOUT, ":utf8" );
     my $perl_code = join( '', <DATA> );
+
+    my $args = shift @ARGV;
+    $perl_code = shift @ARGV if $args eq '-e';
+
     my $tokens    = tokenize($perl_code);
 
     ## # uncomment to see the token list
