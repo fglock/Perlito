@@ -79,6 +79,7 @@ use constant {
     SLASH         => 31,
     FAT_ARROW     => 32,
     DOUBLE_COLON  => 33,
+    LESS_THAN     => 34,
 };
 
 my %TokenName = (
@@ -111,6 +112,7 @@ my %TokenName = (
     SLASH()         => 'SLASH',
     FAT_ARROW()     => 'FAT_ARROW',
     DOUBLE_COLON()  => 'DOUBLE_COLON',
+    LESS_THAN()     => 'LESS_THAN',
 );
 
 my %OPERATORS = (
@@ -140,9 +142,10 @@ my %OPERATORS = (
     '/'  => SLASH(),
     '=>' => FAT_ARROW(),
     '::' => DOUBLE_COLON(),
+    '<'  => LESS_THAN(),
     map { $_ => OPERATOR() }
       qw(
-      == != <= >= < > <=>
+      == != <= >= > <=>
       =~ !~
       + * ** % ++ -- && || // ! ^ ~ ~~ & |
       >> <<
@@ -643,7 +646,7 @@ sub parse_variable_interpolation {
             # TODO if sigil is not $#, check for [] {} ->
         }
         elsif ( $tokens->[$pos][0] == CURLY_OPEN() ) {
-            $expr = parse_delim_expression( $tokens, $pos, CURLY_OPEN(), CURLY_CLOSE() );
+            $expr = parse_delim_expression( $tokens, $pos, '{' );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
@@ -837,13 +840,14 @@ sub parse_regex_string {    # /abc/
 }
 
 sub parse_delim_expression {
-    my ( $tokens, $index, $start, $stop ) = @_;
+    my ( $tokens, $index, $delim ) = @_;
     my $pos       = $index;
-    my $token_str = $TokenName{$start};
-    if ( $tokens->[$pos][0] == $start ) {
+    my $start_delim = $delim;
+    if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
+    if ( $tokens->[$pos][1] eq $start_delim ) {
         $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
-        if ( $tokens->[$pos][0] == $stop ) {
-            return { type => 'PAREN', value => [ $token_str, ], next => $pos + 1 };    # empty
+        if ( $tokens->[$pos][1] eq $delim ) {
+            return { type => 'PAREN', value => [ $start_delim, ], next => $pos + 1 };    # empty
         }
         my $expr = parse_precedence_expression( $tokens, $pos, 0 );
         if ( $expr->{FAIL} ) {
@@ -851,8 +855,8 @@ sub parse_delim_expression {
         }
         $pos = $expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-        if ( $tokens->[$pos][0] == $stop ) {
-            return { type => 'PAREN', value => [ $token_str, $expr ], next => $pos + 1 };
+        if ( $tokens->[$pos][1] eq $delim ) {
+            return { type => 'PAREN', value => [ $start_delim, $expr ], next => $pos + 1 };
         }
     }
     return parse_fail( $tokens, $index );
@@ -974,13 +978,16 @@ sub parse_term {
         return parse_fail( $tokens, $index );
     }
     elsif ( $type == PAREN_OPEN() ) {
-        $ast = parse_delim_expression( $tokens, $index, PAREN_OPEN(), PAREN_CLOSE() );
+        $ast = parse_delim_expression( $tokens, $index, '(' );
     }
     elsif ( $type == SQUARE_OPEN() ) {
-        $ast = parse_delim_expression( $tokens, $index, SQUARE_OPEN(), SQUARE_CLOSE() );
+        $ast = parse_delim_expression( $tokens, $index, '[' );
     }
     elsif ( $type == CURLY_OPEN() ) {
-        $ast = parse_delim_expression( $tokens, $index, CURLY_OPEN(), CURLY_CLOSE() );
+        $ast = parse_delim_expression( $tokens, $index, '{' );
+    }
+    elsif ( $type == LESS_THAN() ) {
+        $ast = parse_delim_expression( $tokens, $index, '<' );
     }
     elsif ( $type == SLASH() ) {    # /.../
         $ast = parse_regex_string( $tokens, $index, $index );
@@ -1022,7 +1029,7 @@ sub parse_statement {
         if ( $stmt eq 'if' || $stmt eq 'unless' || $stmt eq 'while' || $stmt eq 'until' ) {
             $pos++;
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-            my $expr = parse_delim_expression( $tokens, $pos, PAREN_OPEN(), PAREN_CLOSE() );
+            my $expr = parse_delim_expression( $tokens, $pos, '(' );
             if ( $expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
@@ -1087,7 +1094,7 @@ sub main {
     my $perl_code = join( '', <DATA> );
 
     my $args = shift @ARGV;
-    $perl_code = shift @ARGV if $args eq '-e';
+    $perl_code = shift @ARGV if $args && $args eq '-e';
 
     my $tokens    = tokenize($perl_code);
 
