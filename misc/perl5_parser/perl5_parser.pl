@@ -307,7 +307,7 @@ my %PRECEDENCE               = (
     '->' => 21,
     '('  => 21,    # function call
     '{'  => 21,    # hash element
-    '['  => 21,    # array elemnt
+    '['  => 21,    # array element
 
     '$'  => 22,
     '$#' => 22,
@@ -843,13 +843,15 @@ sub parse_delim_expression {
     my ( $tokens, $index, $delim ) = @_;
     my $pos       = $index;
     my $start_delim = $delim;
+    my $precedence = 0;
+    $precedence = $PRECEDENCE{$start_delim} + 1 if $start_delim eq '<';
     if ( $quote_pair{$delim} ) { $delim = $quote_pair{$delim} }    # q< ... >
     if ( $tokens->[$pos][1] eq $start_delim ) {
         $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
         if ( $tokens->[$pos][1] eq $delim ) {
             return { type => 'PAREN', value => [ $start_delim, ], next => $pos + 1 };    # empty
         }
-        my $expr = parse_precedence_expression( $tokens, $pos, 0 );
+        my $expr = parse_precedence_expression( $tokens, $pos, $precedence );
         if ( $expr->{FAIL} ) {
             return parse_fail( $tokens, $index );
         }
