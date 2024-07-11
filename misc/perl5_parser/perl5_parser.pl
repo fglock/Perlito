@@ -1064,6 +1064,7 @@ sub parse_term {
             $indented = 1;
         }
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        # XXX TODO  \IDENTIFIER  is the same as 'IDENTIFIER'
         if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # bareword
             die error_message( $tokens, $pos, 'Use of bare << to mean <<"" is forbidden' );
         }
