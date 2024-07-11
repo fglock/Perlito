@@ -36,6 +36,10 @@ use Data::Dumper;
 #   but eventually I'd rather get rid of all backtracking
 #
 
+# TODO     print <<EOF;
+# TODO     print <<~EOF;
+
+
 ## # uncomment to debug autovivification
 ## package TieArrayNoAutovivification {
 ##     use Tie::Array;
@@ -139,7 +143,7 @@ my %SUB_LANGUAGE_HOOK = (
 
 # define placeholders for Sub-Languages that we don't have a stub yet
 %SUB_LANGUAGE_HOOK = (
-    ( map { $_ => $SUB_LANGUAGE_HOOK{q_string} } qw{ qq_string qx_string qr_string } ),
+    ( map { $_ => $SUB_LANGUAGE_HOOK{q_string} } qw{ qq_string qx_string qr_string glob_string } ),
     tr => $SUB_LANGUAGE_HOOK{s_string},
     %SUB_LANGUAGE_HOOK,
 );
@@ -1038,7 +1042,7 @@ sub parse_term {
         $ast = parse_delimited_expression( $tokens, $index, '{' );
     }
     elsif ( $type == LESS_THAN() ) {
-        $ast = parse_delimited_expression( $tokens, $index, '<' );
+        return $SUB_LANGUAGE_HOOK{glob_string}->( $tokens, $index );    # <...>
     }
     elsif ( $type == SLASH() ) {    # /.../
         return $SUB_LANGUAGE_HOOK{m_string}->( $tokens, $index );
