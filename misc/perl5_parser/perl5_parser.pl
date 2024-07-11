@@ -361,7 +361,7 @@ my %NON_ASSOC_AUTO = (
 );
 
 sub error_message_quote {
-    my ( $to_quote ) = @_;
+    my ($to_quote) = @_;
     if ( $to_quote !~ /"/ ) {
         return "\"$to_quote\"";
     }
@@ -399,7 +399,7 @@ sub error_message {
     ## for ( $first_token .. $index ) {
     ##     $col += length($tokens->[$_][1]);
     ## }
-    return $message . ' at line ' . $line . ', near ' . error_message_quote(join( '', @near )) . "\n";
+    return $message . ' at line ' . $line . ', near ' . error_message_quote( join( '', @near ) ) . "\n";
 }
 
 # parse_precedence_expression()
@@ -743,18 +743,28 @@ my %QUOTE_PAIR = (
     '<' => '>',
 );
 
-sub parse_extract_delimited_string {
-    my ( $tokens, $index ) = @_;
+# parse_extract_raw_string()
+#
+# extracts a string without any escaping
+#
+# Note: this requires re-tokenizing this region of the code
+# because of these known problems with the tokenizer:
+#
+#   q!=!=="=" tokenizes to ('q','!=','!=', ...)
+#   q<>       tokenizes to ('<>')
+
+sub parse_extract_raw_string {
+    my ( $tokens, $index, $redo ) = @_;
+
+    # use $redo flag to extract 2 strings:  s///
 
     # quoted pairs can be embedded recursively:   q{ {x} }
 
+    # escape processing needs to happen AFTER the string is extracted
+    #
     # variable interpolation needs to happen AFTER the string is extracted
     #   $ perl -e ' print "[[ @{[\"a\"]} ]] \n"; '
     #   [[ a ]]
-
-    # known problems with the tokenizer:
-    #   q!=!=="=" tokenizes to ('q','!=','!=', ...)
-    #   q<>       tokenizes to ('<>')
 
     my $tok_pos     = $index;
     my $start_delim = '';
@@ -764,10 +774,11 @@ sub parse_extract_delimited_string {
     my $is_pair     = 0;
     my $buffer      = '';
     my $remain      = '';
+    my @buffers;
 
     while ( $state != END_TOKEN() ) {
         if ( $tokens->[$tok_pos][0] == END_TOKEN() ) {
-            die error_message( $tokens, $index, "Can't find string terminator " . error_message_quote($end_delim) . " anywhere before EOF");
+            die error_message( $tokens, $index, "Can't find string terminator " . error_message_quote($end_delim) . " anywhere before EOF" );
         }
       FSM:
         for my $char ( split //, $tokens->[$tok_pos][1] ) {
@@ -786,10 +797,19 @@ sub parse_extract_delimited_string {
                 }
                 elsif ( $char eq $end_delim ) {
                     if ( $paren_level == 0 ) {
-                        $state = END_TOKEN();    # no more strings to fetch
+                        if ( $redo && !$is_pair ) {
+                            push @buffers, $buffer;
+                            $buffer = '';
+                            $redo   = 0;
+                            $state  = START();    # start again; one more string to fetch
+                            redo FSM;
+                        }
+                        else {
+                            $state = END_TOKEN();    # no more strings to fetch
+                        }
                         next FSM;
                     }
-                    $paren_level--;              # >
+                    $paren_level--;                  # >
                 }
                 elsif ( $char eq '\\' ) {
                     $state = ESCAPE();
@@ -797,7 +817,7 @@ sub parse_extract_delimited_string {
                 $buffer .= $char;
             }
             elsif ( $state == ESCAPE() ) {
-                $buffer .= $char;                #  handle \start_delim \end_delim
+                $buffer .= $char;    #  handle \start_delim \end_delim
                 $state = STRING();
             }
             elsif ( $state == END_TOKEN() ) {
@@ -806,25 +826,26 @@ sub parse_extract_delimited_string {
         }    # $char
         $tok_pos++;
     }
+    push @buffers, $buffer;
     if ($remain) {
 
         # XXX what to do with $remain? put it back in $tokens
         $tokens->[ $tok_pos - 1 ][1] = $remain;    # put the remaining string back in the tokens list
     }
     return {
-        type  => 'STRING',
+        type  => 'RAW_STRING',
         index => $index,
         next  => $tok_pos,
-        value => { buffer => $buffer, start_delim => $start_delim, end_delim => $end_delim },
+        value => { buffers => \@buffers, start_delim => $start_delim, end_delim => $end_delim },
     };
 }
 
 sub parse_single_quote_string {    # 'abc'
     my ( $tokens, $index, $pos ) = @_;
-    my $ast = parse_extract_delimited_string( $tokens, $pos );
-    my $str   = $ast->{value}{buffer};
+    my $ast   = parse_extract_raw_string( $tokens, $pos, 0 );
+    my $str   = $ast->{value}{buffers}[0];
     my $delim = $ast->{value}{end_delim};
-    $str =~ s{\\\Q$delim}{$delim}g;             # unescape
+    $str =~ s{\\\Q$delim}{$delim}g;               # unescape
     $str =~ s{\\\\}{$delim}g if $delim ne '\\';
     $ast->{value} = $str;
     return $ast;
@@ -832,10 +853,10 @@ sub parse_single_quote_string {    # 'abc'
 
 sub parse_double_quote_string {    # "abc"
     my ( $tokens, $index, $pos ) = @_;
-    my $ast = parse_extract_delimited_string( $tokens, $pos );
-    my $str   = $ast->{value}{buffer};
+    my $ast   = parse_extract_raw_string( $tokens, $pos, 0 );
+    my $str   = $ast->{value}{buffers}[0];
     my $delim = $ast->{value}{end_delim};
-    $str =~ s{\\\Q$delim}{$delim}g;             # unescape
+    $str =~ s{\\\Q$delim}{$delim}g;               # unescape
     $str =~ s{\\\\}{$delim}g if $delim ne '\\';
     $ast->{value} = $str;
     return $ast;
@@ -893,10 +914,10 @@ sub parse_double_quote_string {    # "abc"
 
 sub parse_regex_string {    # /abc/
     my ( $tokens, $index, $pos ) = @_;
-    my $ast = parse_extract_delimited_string( $tokens, $pos );
-    my $str   = $ast->{value}{buffer};
+    my $ast   = parse_extract_raw_string( $tokens, $pos, 0 );
+    my $str   = $ast->{value}{buffers}[0];
     my $delim = $ast->{value}{end_delim};
-    $str =~ s{\\\Q$delim}{$delim}g;             # unescape
+    $str =~ s{\\\Q$delim}{$delim}g;               # unescape
     $str =~ s{\\\\}{$delim}g if $delim ne '\\';
     $ast->{value} = $str;
     return $ast;
@@ -1045,7 +1066,7 @@ sub parse_term {
         elsif ( $stmt eq 'qq' ) {                              # qq!...!
             return parse_double_quote_string( $tokens, $index, $pos );
         }
-        elsif ( $stmt eq 'm' ) {                               # /.../
+        elsif ( $stmt eq 'm' ) {                               # m/.../
             $ast = parse_regex_string( $tokens, $index, $pos );
             if ( $ast->{FAIL} ) {
                 return parse_fail( $tokens, $index );
@@ -1058,7 +1079,30 @@ sub parse_term {
             }
             return { type => 'REGEX', index => $index, value => { args => $ast, modifier => $modifier }, next => $pos, };
         }
-        elsif ( $stmt eq 'qw' ) {                          # qw/.../
+        elsif ( $stmt eq 's' ) {                           # s/.../.../
+            my $ast1 = parse_extract_raw_string( $tokens, $pos, 1 );    # use $redo flag to extract 2 strings
+            if ( $ast1->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+            $pos = $ast1->{next};
+            my $delim = $ast1->{value}{start_delim};                    #  / or {
+            if ( $QUOTE_PAIR{$delim} ) {
+                $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+                my $ast2 = parse_extract_raw_string( $tokens, $pos, 0 );
+                push @{ $ast1->{value}{buffers} }, @{ $ast2->{value}{buffers} };
+                $ast1->{next} = $ast2->{next};
+                $pos = $ast1->{next};
+            }
+            $ast = $ast1;
+
+            my $modifier = "";
+            if ( $tokens->[$pos][0] == IDENTIFIER() ) {                 #  regex modifiers
+                $modifier = $tokens->[$pos][1];
+                $pos++;
+            }
+            return { type => 'REGEX', index => $index, value => { args => $ast, modifier => $modifier }, next => $pos, };
+        }
+        elsif ( $stmt eq 'qw' ) {                                       # qw/.../
             $ast = parse_single_quote_string( $tokens, $index, $pos );
             if ( $ast->{FAIL} ) {
                 return parse_fail( $tokens, $index );
