@@ -429,6 +429,8 @@ sub parse_precedence_expression {
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
         if ( $expr->{FAIL} ) {
+
+            # backtrack
             if ( $LIST{$op_value} ) {
 
                 # Handle a lone comma and fat comma without any value
@@ -537,6 +539,8 @@ sub parse_precedence_expression {
         my $next_min_precedence = $ASSOC_RIGHT{$op_value} ? $precedence : $precedence + 1;
         my $right_expr          = parse_precedence_expression( $tokens, $pos, $next_min_precedence );
         if ( $right_expr->{FAIL} ) {
+
+            # backtrack
             if ( $LIST{$op_value} ) {
 
                 # Handle terminal comma and fat comma
@@ -862,9 +866,9 @@ sub parse_regex_string {    # /abc/
 
 sub parse_delim_expression {
     my ( $tokens, $index, $delim ) = @_;
-    my $pos       = $index;
+    my $pos         = $index;
     my $start_delim = $delim;
-    my $precedence = 0;
+    my $precedence  = 0;
     $precedence = $PRECEDENCE{$start_delim} + 1 if $start_delim eq '<';
     if ( $QUOTE_PAIR{$delim} ) { $delim = $QUOTE_PAIR{$delim} }    # q< ... >
     if ( $tokens->[$pos][1] eq $start_delim ) {
@@ -1119,7 +1123,7 @@ sub main {
     my $args = shift @ARGV;
     $perl_code = shift @ARGV if $args && $args eq '-e';
 
-    my $tokens    = tokenize($perl_code);
+    my $tokens = tokenize($perl_code);
 
     ## # uncomment to see the token list
     ## for my $token (@$tokens) {
