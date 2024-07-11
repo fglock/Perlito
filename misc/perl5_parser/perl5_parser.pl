@@ -36,10 +36,6 @@ use Data::Dumper;
 #   but eventually I'd rather get rid of all backtracking
 #
 
-# TODO     print <<EOF;
-# TODO     print <<~EOF;
-
-
 ## # uncomment to debug autovivification
 ## package TieArrayNoAutovivification {
 ##     use Tie::Array;
@@ -61,6 +57,8 @@ my %QUOTE_PAIR = (
     '<' => '>',
 );
 
+my @HERE_DOC;
+
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
 #
@@ -74,7 +72,7 @@ my %SUB_LANGUAGE_HOOK = (
         my $delim = $ast->{value}{end_delim};
         $str =~ s{\\\Q$delim}{$delim}g;               # unescape
         $str =~ s{\\\\}{$delim}g if $delim ne '\\';
-        $ast->{value} = $str;
+        $ast->{value}{single_quoted} = $str;
         return $ast;
     },
     m_string => sub {
@@ -181,6 +179,8 @@ use constant {
     FAT_ARROW     => 32,
     DOUBLE_COLON  => 33,
     LESS_THAN     => 34,
+    LESS_LESS     => 35,
+    TILDE         => 36,
 };
 
 my %TOKEN_NAME = (
@@ -214,6 +214,8 @@ my %TOKEN_NAME = (
     FAT_ARROW()     => 'FAT_ARROW',
     DOUBLE_COLON()  => 'DOUBLE_COLON',
     LESS_THAN()     => 'LESS_THAN',
+    LESS_LESS()     => 'LESS_LESS',
+    TILDE()         => 'TILDE',
 );
 
 my %OPERATORS = (
@@ -244,12 +246,14 @@ my %OPERATORS = (
     '=>' => FAT_ARROW(),
     '::' => DOUBLE_COLON(),
     '<'  => LESS_THAN(),
+    '<<' => LESS_LESS(),
+    '~'  => TILDE(),
     map { $_ => OPERATOR() }
       qw(
       == != <= >= > <=>
       =~ !~
-      + * ** % ++ -- && || // ! ^ ~ ~~ & |
-      >> <<
+      + * ** % ++ -- && || // ! ^ ~~ & |
+      >>
       **= += -= *= /= x= |= &= .= <<= >>= %= ||= &&= ^= //=
       |.= &.= ^.=
       )
@@ -689,6 +693,11 @@ sub parse_optional_whitespace {
         }
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
+            if (@HERE_DOC) {
+
+                # TODO     print <<"EOF";
+                # TODO     print <<~"EOF";
+            }
             if ( $tokens->[$pos][0] == EQUALS() ) {    # =pod
                 if ( $tokens->[ $pos + 1 ][0] == IDENTIFIER() ) {
                     $pos++;
@@ -954,8 +963,8 @@ sub parse_statement_block {
 
 sub parse_term {
     my ( $tokens, $index ) = @_;
-    my $type = $tokens->[$index][0];
     my $pos  = $index;
+    my $type = $tokens->[$pos][0];
     my $ast;
     if ( $type == NUMBER() || $type == DOT() ) {
         $ast = parse_number( $tokens, $index );
@@ -1011,7 +1020,7 @@ sub parse_term {
         elsif ( $stmt eq 'qx' ) {                              # qx/.../
             return $SUB_LANGUAGE_HOOK{qx_string}->( $tokens, $pos );
         }
-        elsif ( $stmt eq 'tr' ) {                               # tr/.../.../
+        elsif ( $stmt eq 'tr' ) {                              # tr/.../.../
             return $SUB_LANGUAGE_HOOK{tr_string}->( $tokens, $pos );
         }
         elsif ( $stmt eq 'y' ) {                               # y/.../.../
@@ -1044,8 +1053,32 @@ sub parse_term {
     elsif ( $type == LESS_THAN() ) {
         return $SUB_LANGUAGE_HOOK{glob_string}->( $tokens, $index );    # <...>
     }
-    elsif ( $type == SLASH() ) {    # /.../
+    elsif ( $type == SLASH() ) {                                        # /.../
         return $SUB_LANGUAGE_HOOK{m_string}->( $tokens, $index );
+    }
+    elsif ( $type == LESS_LESS() ) {                                    # here doc:  <<   <<~
+        $pos++;
+        my $indented = 0;
+        if ( $tokens->[$pos][0] == TILDE() ) {
+            $pos++;
+            $indented = 1;
+        }
+        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # bareword
+            die error_message( $tokens, $pos, 'Use of bare << to mean <<"" is forbidden' );
+        }
+        elsif ( $tokens->[$pos][0] == STRING_DELIM() ) {
+            $ast = parse_extract_raw_string( $tokens, $pos, 0 );
+            if ( $ast->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+            my $heredoc_ast = { type => 'HERE_DOC', index => $index, value => { %{ $ast->{value} }, indented => $indented }, next => $ast->{next} };
+            push @HERE_DOC, $heredoc_ast;
+            return $heredoc_ast;
+        }
+        else {
+            return parse_fail( $tokens, $index );
+        }
     }
     elsif ( $type = DOUBLE_COLON() ) {
         $ast = parse_colon_bareword( $tokens, $index );
