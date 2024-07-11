@@ -778,6 +778,11 @@ sub parse_double_quote_string {    # "abc"
     ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
     my @ops;
     my $value = '';
+
+    # XXX variable interpolation needs to happen AFTER the string is extracted
+    #   $ perl -e ' print "[[ @{[\"a\"]} ]] \n"; '
+    #   [[ a ]]
+
     while ( $tokens->[$pos][0] != END_TOKEN() ) {
         my $type = $tokens->[$pos][0];
         if ( $quote eq $tokens->[$pos][1] ) {
