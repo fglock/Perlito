@@ -32,6 +32,9 @@ use Data::Dumper;
 #
 #    { FAIL => 1, index => 520 }
 #
+#   why returning FAIL instead of die(): it allows for backtracking and for error handling in a different place.
+#   but eventually I'd rather get rid of all backtracking
+#
 
 ## # uncomment to debug autovivification
 ## package TieArrayNoAutovivification {
@@ -396,6 +399,24 @@ sub error_message {
     return $message . ' at line ' . $line . ', near "' . join( '', @near ) . '"' . "\n";
 }
 
+# parse_precedence_expression()
+#
+# this is a standard precedence parser, but special cases were added
+#
+# these have the usual meaning:
+#
+#   PREFIX          like:  (++a)
+#   POSTFIX         like:  (a++)
+#   INFIX_LEFT      like:  (a || b)  execute a first
+#   INFIX_RIGHT     like:  (a = b)   execute b first
+#
+# these are the extra types:
+#
+#   POSTFIX_TERM    like:  (a[1])
+#   LIST_OP         the operator can be anywhere: prefix, infix, postfix, and repeated:  (,,a => b, c =>)
+#   NON_ASSOC       operators of the same type cannot be repeated; these are forbidden:  (-- --a); (++a--)
+#   TERNARY         like:  (a ? b : c)
+#
 sub parse_precedence_expression {
     my ( $tokens, $index, $min_precedence ) = @_;
 

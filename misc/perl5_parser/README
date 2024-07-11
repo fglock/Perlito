@@ -1,6 +1,13 @@
 experimental Perl5 parser
 
 - handwritten grammar; faster than Perlito5 compiled grammar
+
 - work in progress
+
+- maybe eventually we will merge the good parts into Perlito5 main compiler
+
+- experimenting with grammar generalizations and optimizations, and error reporting
+
+- optimizations: reduce the number of function calls, reduce the number of string operations, reduce the number of backtrackings
 
 
