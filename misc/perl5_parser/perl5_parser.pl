@@ -360,12 +360,15 @@ my %NON_ASSOC_AUTO = (
     '--' => 1,
 );
 
-sub error_message_string_terminator {
-    my ( $tokens, $index, $quote ) = @_;
-    if ( $quote eq '"' ) {
-        return "Can't find string terminator '$quote' anywhere before EOF\n";
+sub error_message_quote {
+    my ( $to_quote ) = @_;
+    if ( $to_quote !~ /"/ ) {
+        return "\"$to_quote\"";
     }
-    return "Can't find string terminator \"$quote\" anywhere before EOF\n";
+    if ( $to_quote !~ /'/ ) {
+        return "'$to_quote'";
+    }
+    return "<$to_quote>";
 }
 
 sub error_message {
@@ -396,7 +399,7 @@ sub error_message {
     ## for ( $first_token .. $index ) {
     ##     $col += length($tokens->[$_][1]);
     ## }
-    return $message . ' at line ' . $line . ', near "' . join( '', @near ) . '"' . "\n";
+    return $message . ' at line ' . $line . ', near ' . error_message_quote(join( '', @near )) . "\n";
 }
 
 # parse_precedence_expression()
@@ -740,40 +743,105 @@ my %QUOTE_PAIR = (
     '<' => '>',
 );
 
-sub parse_string_delimiter_fixup {
+sub parse_extract_delimited_string {
     my ( $tokens, $index ) = @_;
-    my $delim = $tokens->[$index][1];
-    if ( length($delim) > 1 ) {    #  delimiter looks like: !=
-        $delim               = substr( $delim, 0, 1 );
-        $tokens->[$index][1] = substr( $delim, 1 );         # XXX changing tokens can break backtracking
-        $index--;
+
+    # quoted pairs can be embedded recursively:   q{ {x} }
+
+    # variable interpolation needs to happen AFTER the string is extracted
+    #   $ perl -e ' print "[[ @{[\"a\"]} ]] \n"; '
+    #   [[ a ]]
+
+    # known problems with the tokenizer:
+    #   q!=!=="=" tokenizes to ('q','!=','!=', ...)
+    #   q<>       tokenizes to ('<>')
+
+    my $tok_pos     = $index;
+    my $start_delim = '';
+    my $end_delim   = '';
+    my $state       = START();
+    my $paren_level = 0;
+    my $is_pair     = 0;
+    my $buffer      = '';
+    my $remain      = '';
+
+    while ( $state != END_TOKEN() ) {
+        if ( $tokens->[$tok_pos][0] == END_TOKEN() ) {
+            die error_message( $tokens, $index, "Can't find string terminator " . error_message_quote($end_delim) . " anywhere before EOF");
+        }
+      FSM:
+        for my $char ( split //, $tokens->[$tok_pos][1] ) {
+            if ( $state == START() ) {
+                $start_delim = $char;
+                $end_delim   = $start_delim;
+                if ( $QUOTE_PAIR{$start_delim} ) {    # q< ... >
+                    $is_pair   = 1;
+                    $end_delim = $QUOTE_PAIR{$start_delim};
+                }
+                $state = STRING();
+            }
+            elsif ( $state == STRING() ) {
+                if ( $is_pair && $char eq $start_delim ) {
+                    $paren_level++;    # <
+                }
+                elsif ( $char eq $end_delim ) {
+                    if ( $paren_level == 0 ) {
+                        $state = END_TOKEN();    # no more strings to fetch
+                        next FSM;
+                    }
+                    $paren_level--;              # >
+                }
+                elsif ( $char eq '\\' ) {
+                    $state = ESCAPE();
+                }
+                $buffer .= $char;
+            }
+            elsif ( $state == ESCAPE() ) {
+                $buffer .= $char;                #  handle \start_delim \end_delim
+                $state = STRING();
+            }
+            elsif ( $state == END_TOKEN() ) {
+                $remain .= $char;
+            }
+        }    # $char
+        $tok_pos++;
     }
-    if ( $QUOTE_PAIR{$delim} ) { $delim = $QUOTE_PAIR{$delim} }    # q< ... >
-    return ( $delim, $index + 1 );
+    if ($remain) {
+
+        # XXX what to do with $remain? put it back in $tokens
+        $tokens->[ $tok_pos - 1 ][1] = $remain;    # put the remaining string back in the tokens list
+    }
+    return {
+        type  => 'STRING',
+        index => $index,
+        next  => $tok_pos,
+        value => { buffer => $buffer, start_delim => $start_delim, end_delim => $end_delim },
+    };
 }
 
 sub parse_single_quote_string {    # 'abc'
     my ( $tokens, $index, $pos ) = @_;
-    my $quote;
-    ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
-    my $value;
-    while ( $tokens->[$pos][0] != END_TOKEN() ) {
-        if ( $quote eq $tokens->[$pos][1] ) {
-            return { type => 'STRING', index => $index, value => $value, next => $pos + 1 };
-        }
-        if ( $tokens->[$pos][0] == ESCAPE() ) {
-            if ( $tokens->[ $pos + 1 ][1] eq $quote || $tokens->[ $pos + 1 ][0] == ESCAPE() ) {
-                $pos++;
-            }
-        }
-        $value .= $tokens->[$pos][1];
-        $pos++;
-    }
-    die error_message_string_terminator( $tokens, $index, $quote );
+    my $ast = parse_extract_delimited_string( $tokens, $pos );
+    my $str   = $ast->{value}{buffer};
+    my $delim = $ast->{value}{end_delim};
+    $str =~ s{\\\Q$delim}{$delim}g;             # unescape
+    $str =~ s{\\\\}{$delim}g if $delim ne '\\';
+    $ast->{value} = $str;
+    return $ast;
 }
 
 sub parse_double_quote_string {    # "abc"
     my ( $tokens, $index, $pos ) = @_;
+    my $ast = parse_extract_delimited_string( $tokens, $pos );
+    my $str   = $ast->{value}{buffer};
+    my $delim = $ast->{value}{end_delim};
+    $str =~ s{\\\Q$delim}{$delim}g;             # unescape
+    $str =~ s{\\\\}{$delim}g if $delim ne '\\';
+    $ast->{value} = $str;
+    return $ast;
+
+    # TODO XXX
+
     my $quote;
     ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
     my @ops;
@@ -820,11 +888,21 @@ sub parse_double_quote_string {    # "abc"
         $value .= $tokens->[$pos][1];
         $pos++;
     }
-    die error_message_string_terminator( $tokens, $index, $quote );
+    die error_message( $tokens, $index, $quote );
 }
 
 sub parse_regex_string {    # /abc/
     my ( $tokens, $index, $pos ) = @_;
+    my $ast = parse_extract_delimited_string( $tokens, $pos );
+    my $str   = $ast->{value}{buffer};
+    my $delim = $ast->{value}{end_delim};
+    $str =~ s{\\\Q$delim}{$delim}g;             # unescape
+    $str =~ s{\\\\}{$delim}g if $delim ne '\\';
+    $ast->{value} = $str;
+    return $ast;
+
+    # TODO XXX
+
     my $quote;
     ( $quote, $pos ) = parse_string_delimiter_fixup( $tokens, $pos );
     my @ops;
