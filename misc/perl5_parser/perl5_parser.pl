@@ -745,7 +745,7 @@ sub parse_string_delimiter_fixup {
     my $delim = $tokens->[$index][1];
     if ( length($delim) > 1 ) {    #  delimiter looks like: !=
         $delim               = substr( $delim, 0, 1 );
-        $tokens->[$index][1] = substr( $delim, 1 );
+        $tokens->[$index][1] = substr( $delim, 1 );         # XXX changing tokens can break backtracking
         $index--;
     }
     if ( $QUOTE_PAIR{$delim} ) { $delim = $QUOTE_PAIR{$delim} }    # q< ... >
