@@ -42,20 +42,6 @@ use Data::Dumper;
 #   but eventually I'd rather get rid of all backtracking
 #
 
-## # uncomment to debug autovivification
-## package TieArrayNoAutovivification {
-##     use Tie::Array;
-##     use parent qw(Tie::Array);
-##     use Carp;
-##     our @ISA = ('Tie::StdArray');
-##
-##     sub FETCH {
-##         my ( $array, $key ) = @_;
-##         Carp::confess "key '$key' does not exist" unless exists $array->[$key];
-##         return $array->[$key];
-##     }
-## }
-
 my %QUOTE_PAIR = (
     '{' => '}',
     '(' => ')',
@@ -93,11 +79,18 @@ my %PRECEDENCE               = (
     '=='  => 13,
     '!='  => 13,
     '<=>' => 13,
+    'eq'  => 13,
+    'ne'  => 13,
+    'cmp' => 13,
 
     '<'  => 14,
     '>'  => 14,
     '<=' => 14,
     '>=' => 14,
+    'lt' => 14,
+    'gt' => 14,
+    'le' => 14,
+    'ge' => 14,
 
     '+' => 15,
     '-' => 15,
@@ -349,9 +342,6 @@ sub tokenize {
     my $state = START();
     my @tokens;
     my $buffer;
-
-    #  tie @tokens, 'TieArrayNoAutovivification';   # uncomment to debug autovivification
-
   FSM:
     for my $char ( split //, $code ) {
         if ( $state == START() ) {
