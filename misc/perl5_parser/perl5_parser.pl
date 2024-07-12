@@ -511,7 +511,8 @@ sub error_message {
     }
     my @near;                # retrieve string context
     for ( $index - 2 .. $index + 2 ) {
-        if ( $index >= 0 && $index < $#$tokens ) {
+        if ( $_ >= 0 ) {
+            last if ref( $tokens->[$_] ) ne 'ARRAY';
             push @near, $tokens->[$_][1];
         }
     }
@@ -875,6 +876,17 @@ sub parse_number {
 
 my %ESCAPE_SEQUENCE = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
 
+my %STATEMENT_MODIFIER = (
+    'if'      => 1,
+    'unless'  => 1,
+    'while'   => 1,
+    'until'   => 1,
+    'for'     => 1,
+    'foreach' => 1,
+    'when'    => 1,
+);
+my %STATEMENT_COND_BLOCK = %STATEMENT_MODIFIER;
+
 sub parse_raw_strings {
     my ( $tokens, $index, %args ) = @_;
     my $pos          = $index;
@@ -1007,29 +1019,39 @@ sub parse_raw_string_with_delimiter {
     };
 }
 
+sub parse_if_expression {
+    my ( $tokens, $index ) = @_;
+    my $pos = $index;
+    my $expr;
+    $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
+    if ( $tokens->[$pos][1] ne ';' && $tokens->[$pos][1] ne ')' ) {
+        $expr = parse_precedence_expression( $tokens, $pos, 0 );
+        error( $tokens, $index ) if $expr->{FAIL};
+        $pos = $expr->{next};
+        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        error( $tokens, $index ) if $tokens->[$pos][1] ne ';' && $tokens->[$pos][1] ne ')';
+    }
+    return { value => { delimiter => $tokens->[$pos][1], args => $expr }, next => $pos + 1 };
+}
+
 sub parse_delimited_expression {
     my ( $tokens, $index, $delim ) = @_;
     my $pos         = $index;
+    my $expr;
     my $start_delim = $delim;
     my $precedence  = 0;
     $precedence = $PRECEDENCE{$start_delim} + 1 if $start_delim eq '<';
     if ( $QUOTE_PAIR{$delim} ) { $delim = $QUOTE_PAIR{$delim} }    # q< ... >
-    if ( $tokens->[$pos][1] eq $start_delim ) {
-        $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
-        if ( $tokens->[$pos][1] eq $delim ) {
-            return { type => 'PAREN', value => { delimiter => $start_delim, args => undef }, next => $pos + 1 };    # empty
-        }
-        my $expr = parse_precedence_expression( $tokens, $pos, $precedence );
-        if ( $expr->{FAIL} ) {
-            return parse_fail( $tokens, $index );
-        }
+    error( $tokens, $index ) if $tokens->[$pos][1] ne $start_delim;
+    $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
+    if ( $tokens->[$pos][1] ne $delim ) {
+        $expr = parse_precedence_expression( $tokens, $pos, $precedence );
+        error( $tokens, $index ) if $expr->{FAIL};
         $pos = $expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-        if ( $tokens->[$pos][1] eq $delim ) {
-            return { type => 'PAREN', value => { delimiter => $start_delim, args => $expr }, next => $pos + 1 };
-        }
+        error( $tokens, $index ) if $tokens->[$pos][1] ne $delim;
     }
-    return parse_fail( $tokens, $index );
+    return { type => 'PAREN', value => { delimiter => $start_delim, args => $expr }, next => $pos + 1 };
 }
 
 sub parse_statement_block {
@@ -1041,11 +1063,7 @@ sub parse_statement_block {
         my @expr;
         while ( $tokens->[$pos][0] != END_TOKEN() ) {
             my $expr = parse_statement( $tokens, $pos );
-            if ( $expr->{FAIL} ) {
-
-                # return parse_fail( $tokens, $index );
-                last;
-            }
+            last if  $expr->{FAIL} ;
             push @expr, $expr;
             $pos = $expr->{next};
         }
@@ -1167,19 +1185,31 @@ sub parse_statement {
     }
     elsif ( $tokens->[$pos][0] == IDENTIFIER() ) {
         my $stmt = $tokens->[$pos][1];
-        if ( $stmt eq 'if' || $stmt eq 'unless' || $stmt eq 'while' || $stmt eq 'until' ) {
+        if ( $STATEMENT_COND_BLOCK{$stmt} ) {
+            my $expr;
             $pos++;
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-            my $expr = parse_delimited_expression( $tokens, $pos, '(' );
-            if ( $expr->{FAIL} ) {
-                return parse_fail( $tokens, $index );
+            if ( $stmt eq 'for' || $stmt eq 'foreach' ) {
+                $expr = parse_if_expression( $tokens, $pos, '(' );
+                if ( $expr->{value}{delimiter} eq ';') {
+                    my @expr = ( $expr );
+                    $pos = $expr->{next} - 1;
+                    $expr = parse_if_expression( $tokens, $pos, ';' );
+                    push @expr, $expr;
+                    $pos = $expr->{next} - 1;
+                    $expr = parse_if_expression( $tokens, $pos, ')' );
+                    push @expr, $expr;
+                    $expr = { type => 'THREE_ARG_FOR', value => \@expr, next => $expr->{next} };
+                }
             }
+            else {
+                $expr = parse_delimited_expression( $tokens, $pos, '(' );
+            }
+            error( $tokens, $index ) if $expr->{FAIL};
             $pos = $expr->{next};
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $block = parse_statement_block( $tokens, $pos );
-            if ( $block->{FAIL} ) {
-                return parse_fail( $tokens, $index );
-            }
+            error( $tokens, $index ) if $expr->{FAIL};
             $ast = { type => 'STATEMENT', value => { stmt => $stmt, condition => $expr, block => $block }, next => $block->{next} };
             $pos = $ast->{next};
         }
@@ -1201,14 +1231,7 @@ sub parse_statement {
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # statement modifier
             my $stmt = $tokens->[$pos][1];
-            if (   $stmt eq 'if'
-                || $stmt eq 'unless'
-                || $stmt eq 'while'
-                || $stmt eq 'until'
-                || $stmt eq 'for'
-                || $stmt eq 'foreach'
-                || $stmt eq 'when' )
-            {
+            if ( $STATEMENT_MODIFIER{$stmt} ) {
                 $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
                 my $cond_ast = parse_precedence_expression( $tokens, $pos, 0 );
                 if ( $cond_ast->{FAIL} ) {
@@ -1381,6 +1404,8 @@ EOT
 
 $a->$b;
 $a->b(123) if $b;
+
+foreach ( 1;2;3 ) { $a }
 
 __END__
 123
