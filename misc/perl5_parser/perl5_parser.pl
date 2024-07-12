@@ -57,13 +57,80 @@ my %QUOTE_PAIR = (
     '<' => '>',
 );
 
+my $LIST_OPERATOR_PRECEDENCE = 4;
+my %PRECEDENCE               = (
+    'or'  => 1,
+    'xor' => 1,
+    'and' => 2,
+    'not' => 3,    # Unary negation
+
+    # $LIST_OPERATOR_PRECEDENCE = 4
+
+    ','  => 5,
+    '=>' => 5,
+
+    '='   => 6,
+    '+='  => 6,
+    '-='  => 6,
+    '*='  => 6,
+    '/='  => 6,
+    '.='  => 6,
+    'x='  => 6,
+    '%='  => 6,
+    '**=' => 6,
+
+    '?' => 7,    # Ternary operator
+
+    '||' => 11,
+    '&&' => 12,
+
+    '=='  => 13,
+    '!='  => 13,
+    '<=>' => 13,
+
+    '<'  => 14,
+    '>'  => 14,
+    '<=' => 14,
+    '>=' => 14,
+
+    '+' => 15,
+    '-' => 15,
+    '.' => 15,    # String concatenation
+
+    '*' => 16,
+    '/' => 16,
+    '%' => 16,
+    'x' => 16,    # String repetition
+
+    '=~' => 17,
+    '!~' => 17,
+
+    '!'  => 18,    # Unary negation
+    '\\' => 18,    # create reference
+
+    '**' => 19,
+
+    '++' => 20,
+    '--' => 20,
+
+    '->' => 21,
+    '('  => 21,    # function call
+    '{'  => 21,    # hash element
+    '['  => 21,    # array element
+
+    '$'  => 22,
+    '$#' => 22,
+    '@'  => 22,
+    '%'  => 22,
+);
+
 my @HERE_DOC;
 
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
 #
 my %SUB_LANGUAGE_HOOK = (
-    q_string => sub {    # 'abc'
+    q => sub {    # 'abc'
         my ( $tokens, $pos, $name ) = @_;
         my $ast   = parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         my $str   = $ast->{value}{buffers}[0];
@@ -73,30 +140,57 @@ my %SUB_LANGUAGE_HOOK = (
         $ast->{value}{single_quoted} = $str;
         return $ast;
     },
-    m_string => sub {                                 # m/abc/ig
+    m => sub {                                 # m/abc/ig
         my ( $tokens, $index, $name ) = @_;
         my $pos = $index;
         my $ast = parse_raw_strings( $tokens, $pos, string_count => 2, name => $name );
         return $ast;
     },
-    s_string => sub {                                 # s/abc/def/ig
+    s => sub {                                 # s/abc/def/ig
         my ( $tokens, $index, $name ) = @_;
         my $pos = $index;
         my $ast = parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
         return $ast;
     },
-    qw_string => sub {                                # qw/abc def/
+    qw => sub {                                # qw/abc def/
         my ( $tokens, $index, $name ) = @_;
         my $pos = $index;
         my $ast = parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         return $ast;
     },
+    'print' => sub {                                  # print FILE "this"; print "this"; print
+        my ( $tokens, $index, $name ) = @_;
+        my $pos  = $index;
+        my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
+        if ( $expr->{FAIL} ) {
+            return parse_fail( $tokens, $index );
+        }
+        return { type => 'PRINT', value => { name => $name, args => $expr }, next => $expr->{next} };
+    },
+    'do' => sub {                                     # do {block}
+        my ( $tokens, $index, $name ) = @_;
+        my $pos   = $index;
+        my $block = parse_statement_block( $tokens, $pos );
+        if ( $block->{FAIL} ) {
+            return parse_fail( $tokens, $index );
+        }
+        return { type => 'DO_BLOCK', value => { name => $name, block => $block }, next => $block->{next} };
+    },
+    'use' => sub {                                    # use module;
+        my ( $tokens, $index, $name ) = @_;
+        my $pos  = $index;
+        my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
+        if ( $expr->{FAIL} ) {
+            return parse_fail( $tokens, $index );
+        }
+        return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
+    },
 );
 
 # define placeholders for Sub-Languages that we don't have a stub yet
 %SUB_LANGUAGE_HOOK = (
-    ( map { $_ => $SUB_LANGUAGE_HOOK{q_string} } qw{ qq_string qx_string qr_string glob_string } ),
-    tr => $SUB_LANGUAGE_HOOK{s_string},
+    ( map { $_ => $SUB_LANGUAGE_HOOK{q} } qw{ qq qx qr glob_string } ),    # 1-argument
+    ( map { $_ => $SUB_LANGUAGE_HOOK{s} } qw{ tr y } ),                    # 3-argument
     %SUB_LANGUAGE_HOOK,
 );
 
@@ -306,73 +400,6 @@ sub tokenize {
     push @tokens, [ END_TOKEN(), '' ];
     return \@tokens;
 }
-
-my $LIST_OPERATOR_PRECEDENCE = 4;
-my %PRECEDENCE               = (
-    'or'  => 1,
-    'xor' => 1,
-    'and' => 2,
-    'not' => 3,    # Unary negation
-
-    # $LIST_OPERATOR_PRECEDENCE = 4
-
-    ','  => 5,
-    '=>' => 5,
-
-    '='   => 6,
-    '+='  => 6,
-    '-='  => 6,
-    '*='  => 6,
-    '/='  => 6,
-    '.='  => 6,
-    'x='  => 6,
-    '%='  => 6,
-    '**=' => 6,
-
-    '?' => 7,    # Ternary operator
-
-    '||' => 11,
-    '&&' => 12,
-
-    '=='  => 13,
-    '!='  => 13,
-    '<=>' => 13,
-
-    '<'  => 14,
-    '>'  => 14,
-    '<=' => 14,
-    '>=' => 14,
-
-    '+' => 15,
-    '-' => 15,
-    '.' => 15,    # String concatenation
-
-    '*' => 16,
-    '/' => 16,
-    '%' => 16,
-    'x' => 16,    # String repetition
-
-    '=~' => 17,
-    '!~' => 17,
-
-    '!'  => 18,    # Unary negation
-    '\\' => 18,    # create reference
-
-    '**' => 19,
-
-    '++' => 20,
-    '--' => 20,
-
-    '->' => 21,
-    '('  => 21,    # function call
-    '{'  => 21,    # hash element
-    '['  => 21,    # array element
-
-    '$'  => 22,
-    '$#' => 22,
-    '@'  => 22,
-    '%'  => 22,
-);
 
 my %LIST = (
     ','  => 1,
@@ -969,64 +996,21 @@ sub parse_term {
         if ( $tokens->[$pos][0] == FAT_ARROW() ) {             # bareword
             return { type => 'STRING', value => $tokens->[$index][1], next => $index + 1 };
         }
-        elsif ( $stmt eq 'use' ) {                             # XXX special case just for testing!
-            my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
-            if ( $expr->{FAIL} ) {
-                return parse_fail( $tokens, $index );
-            }
-            return { type => 'APPLY', value => { stmt => $stmt, args => $expr }, next => $expr->{next} };
-        }
-        elsif ( $stmt eq 'print' ) {                           # XXX special case just for testing!
-            my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
-            if ( $expr->{FAIL} ) {
-                return parse_fail( $tokens, $index );
-            }
-            return { type => 'APPLY', value => { stmt => $stmt, args => $expr }, next => $expr->{next} };
-        }
-        elsif ( $stmt eq 'do' ) {                              # do BLOCK
-            my $block = parse_statement_block( $tokens, $pos );
-            if ( $block->{FAIL} ) {
-                return parse_fail( $tokens, $index );
-            }
-            $ast = { type => 'DO_BLOCK', value => { stmt => $stmt, block => $block }, next => $block->{next} };
-            return $ast;
-        }
-        elsif ( $stmt eq 'q' ) {                               # q!...!
-            return $SUB_LANGUAGE_HOOK{q_string}->( $tokens, $pos, 'q' );
-        }
-        elsif ( $stmt eq 'qq' ) {                              # qq!...!
-            return $SUB_LANGUAGE_HOOK{qq_string}->( $tokens, $pos, 'qq' );
-        }
-        elsif ( $stmt eq 'm' ) {                               # m/.../
-            return $SUB_LANGUAGE_HOOK{m_string}->( $tokens, $pos, 'm' );
-        }
-        elsif ( $stmt eq 's' ) {                               # s/.../.../
-            return $SUB_LANGUAGE_HOOK{s_string}->( $tokens, $pos, 's' );
-        }
-        elsif ( $stmt eq 'qw' ) {                              # qw/.../
-            return $SUB_LANGUAGE_HOOK{qw_string}->( $tokens, $pos, 'qw' );
-        }
-        elsif ( $stmt eq 'qx' ) {                              # qx/.../
-            return $SUB_LANGUAGE_HOOK{qx_string}->( $tokens, $pos, 'qx' );
-        }
-        elsif ( $stmt eq 'tr' ) {                              # tr/.../.../
-            return $SUB_LANGUAGE_HOOK{tr_string}->( $tokens, $pos, 'tr' );
-        }
-        elsif ( $stmt eq 'y' ) {                               # y/.../.../
-            return $SUB_LANGUAGE_HOOK{tr_string}->( $tokens, $pos, 'y' );    # same impl as tr///
+        if ( exists $SUB_LANGUAGE_HOOK{$stmt} ) {              # built-in functions requiring special parsing
+            return $SUB_LANGUAGE_HOOK{$stmt}->( $tokens, $pos, $stmt );
         }
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
         my $quote = $tokens->[$index][1];
         if ( $quote eq "'" ) {
-            return $SUB_LANGUAGE_HOOK{q_string}->( $tokens, $index, 'q' );
+            return $SUB_LANGUAGE_HOOK{q}->( $tokens, $index, 'q' );
         }
         elsif ( $quote eq '"' ) {
-            return $SUB_LANGUAGE_HOOK{qq_string}->( $tokens, $index, 'qq' );
+            return $SUB_LANGUAGE_HOOK{qq}->( $tokens, $index, 'qq' );
         }
         elsif ( $quote eq '`' ) {
-            return $SUB_LANGUAGE_HOOK{qx_string}->( $tokens, $index, 'qx' );
+            return $SUB_LANGUAGE_HOOK{qx}->( $tokens, $index, 'qx' );
         }
         return parse_fail( $tokens, $index );
     }
@@ -1043,7 +1027,7 @@ sub parse_term {
         return $SUB_LANGUAGE_HOOK{glob_string}->( $tokens, $index, 'glob_string' );    # <...>
     }
     elsif ( $type == SLASH() ) {                                                       # /.../
-        return $SUB_LANGUAGE_HOOK{m_string}->( $tokens, $index, 'm' );
+        return $SUB_LANGUAGE_HOOK{m}->( $tokens, $index, 'm' );
     }
     elsif ( $type == LESS_LESS() ) {                                                   # here doc:  <<   <<~
         $pos++;
