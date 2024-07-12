@@ -542,8 +542,7 @@ sub parse_precedence_expression {
     my $op_value = $tokens->[$pos][1];
     my $left_expr;
     if ( $PREFIX{$op_value} || $LIST{$op_value} ) {
-        $pos++;
-        $pos = parse_optional_whitespace( $tokens, $pos );
+        $pos = parse_optional_whitespace( $tokens, $pos + 1 );
         my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
         if ( $expr->{FAIL} ) {
 
@@ -636,8 +635,7 @@ sub parse_precedence_expression {
             return parse_fail() if $true_expr->{FAIL};
             $pos = parse_optional_whitespace( $tokens, $true_expr->{next} );
             if ( $tokens->[$pos][0] == COLON() ) {
-                $pos++;                                                         # Consume the ':'
-                $pos = parse_optional_whitespace( $tokens, $pos );
+                $pos = parse_optional_whitespace( $tokens, $pos + 1 );
             }
             else {
                 return parse_fail();
@@ -696,9 +694,7 @@ sub parse_optional_whitespace {
     my $pos = $index;
   WS:
     while ( $tokens->[$pos][0] != END_TOKEN() ) {
-        if ( $tokens->[$pos][0] == WHITESPACE() ) {
-            $pos++;
-        }
+        $pos++ if $tokens->[$pos][0] == WHITESPACE();
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
             while ( my $here_doc = shift @{ $tokens->[-1]{here_doc} } ) {    # fetch "here doc" from the environment
@@ -877,8 +873,7 @@ sub parse_raw_strings {
     my $modifier = "";
     if ( $tokens->[$pos][0] == IDENTIFIER() ) {
         $modifier = $tokens->[$pos][1];
-        $pos++;
-        $ast->{next} = $pos;
+        $ast->{next} = $pos + 1;
     }
     push @{ $ast->{value}{buffers} }, $modifier;
     return $ast;
@@ -1014,8 +1009,7 @@ sub parse_statement_block {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
     error( $tokens, $index ) if $tokens->[$pos][0] != CURLY_OPEN();
-    $pos++;
-    $pos = parse_optional_whitespace( $tokens, $pos );
+    $pos = parse_optional_whitespace( $tokens, $pos + 1 );
     my @expr;
     while (1) {
         error( $tokens, $index ) if $tokens->[$pos][0] == END_TOKEN();
