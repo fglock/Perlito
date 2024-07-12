@@ -151,7 +151,7 @@ my $FUNCTION_CALL_NO_ARGUMENTS = sub {    # no arguments
     if ( $tokens->[$pos][0] == PAREN_OPEN() ) {
         my $args_expr = parse_term( $tokens, $pos );
         if ( $args_expr->{FAIL} || $args_expr->{value}{args} ) {
-            die error_message( $tokens, $index, "syntax error" );
+            error( $tokens, $index );
         }
     }
     return { type => 'APPLY', value => { name => $name }, next => $index };
@@ -487,6 +487,11 @@ sub error_message_quote {
     return "<$to_quote>";
 }
 
+sub error {
+    my ( $tokens, $index ) = @_;
+    die error_message( $tokens, $index, "syntax error" );
+}
+
 sub error_message {
     my ( $tokens, $index, $message ) = @_;
 
@@ -572,7 +577,7 @@ sub parse_precedence_expression {
                 && ( $expr->{type} eq 'POSTFIX_OP' || $expr->{type} eq 'PREFIX_OP' )
                 && $NON_ASSOC_AUTO{ $expr->{value}{op} } )    # check for nonassoc syntax error
             {
-                die error_message( $tokens, $index, "syntax error" );
+                error( $tokens, $index );
             }
 
             $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $expr }, next => $expr->{next} };
@@ -669,7 +674,7 @@ sub parse_precedence_expression {
                 && ( $left_expr->{type} eq 'POSTFIX_OP' || $left_expr->{type} eq 'PREFIX_OP' )
                 && $NON_ASSOC_AUTO{ $left_expr->{value}{op} } )                                 # check for nonassoc syntax error
             {
-                die error_message( $tokens, $index, "syntax error" );
+                error( $tokens, $index );
             }
             $left_expr = { type => 'POSTFIX_OP', value => { op => $op_value, arg => $left_expr }, next => $pos };
             next;
@@ -1192,16 +1197,40 @@ sub parse_statement {
             return parse_fail( $tokens, $index );
         }
 
-        # mandatory semicolon or end-of-block or end-of-file
         $pos = $ast->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-        if (
+        if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # statement modifier
+            my $stmt = $tokens->[$pos][1];
+            if (   $stmt eq 'if'
+                || $stmt eq 'unless'
+                || $stmt eq 'while'
+                || $stmt eq 'until'
+                || $stmt eq 'for'
+                || $stmt eq 'foreach'
+                || $stmt eq 'when' )
+            {
+                $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
+                my $cond_ast = parse_precedence_expression( $tokens, $pos, 0 );
+                if ( $cond_ast->{FAIL} ) {
+                    error( $tokens, $index );
+                }
+                $ast = {
+                    type  => 'STATEMENT_MODIFIER',
+                    index => $ast->{index},
+                    value => { modifier => $stmt, args => $ast, cond => $cond_ast },
+                    next  => $cond_ast->{next}
+                };
+                $pos = $ast->{next};
+                $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            }
+        }
+
+        if (    # mandatory semicolon or end-of-block or end-of-file
             $tokens->[$pos][0] != END_TOKEN()    # not end of file
             && $tokens->[$pos][0] != SEMICOLON()
             && $tokens->[$pos][0] != CURLY_CLOSE()
           )
-        {
-            # Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
+        {                                        # Bareword found where operator expected (Missing operator before "a"?) at -e line 1, near "2 a"
             my $tok = $TOKEN_NAME{ $tokens->[$pos][0] };
             $tok = ucfirst( lc($tok) );
             die error_message( $tokens, $pos, $tok . ' found where operator expected (Missing operator before "' . $tokens->[$pos][1] . '"?)' );
@@ -1209,7 +1238,7 @@ sub parse_statement {
     }
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
     if ( $tokens->[$pos][0] == SEMICOLON() ) {
-        $pos++;    # optional semicolon
+        $pos++;                                  # optional semicolon
     }
     $ast->{next} = $pos;
     return $ast;
@@ -1351,7 +1380,7 @@ $a = <<\EOT;
 EOT
 
 $a->$b;
-$a->b(123);
+$a->b(123) if $b;
 
 __END__
 123
