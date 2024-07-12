@@ -453,6 +453,7 @@ my %NON_ASSOC_AUTO = (
 
 sub error_message_quote {
     my ($to_quote) = @_;
+    $to_quote =~ s/\n/\\n/g;
     if ( $to_quote !~ /"/ ) {
         return "\"$to_quote\"";
     }
@@ -1172,7 +1173,7 @@ sub main {
     my $perl_code = join( '', <DATA> );
 
     my $args = shift @ARGV;
-    $perl_code = shift @ARGV if $args && $args eq '-e';
+    $perl_code = shift(@ARGV) . "\n" if $args && $args eq '-e';
 
     my $tokens = tokenize($perl_code);
     $tokens->[-1]{filename} = '-e';    # initialize environment hash
