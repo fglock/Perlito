@@ -145,6 +145,17 @@ my $THREE_ARG_STUB = sub {    # s/abc/def/ig
     $ast //= parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
     return $ast;
 };
+my $FUNCTION_CALL_NO_ARGUMENTS = sub {    # no arguments
+    my ( $tokens, $index, $name ) = @_;
+    my $pos = parse_optional_whitespace( $tokens, $index )->{next};
+    if ( $tokens->[$pos][0] == PAREN_OPEN() ) {
+        my $args_expr = parse_term( $tokens, $pos );
+        if ( $args_expr->{FAIL} || $args_expr->{value}{args} ) {
+            die error_message( $tokens, $index, "syntax error" );
+        }
+    }
+    return { type => 'APPLY', value => { name => $name }, next => $index };
+};
 my %SUB_LANGUAGE_HOOK = (
 
     # define placeholder parsers for Sub-Languages that we don't have yet
@@ -180,7 +191,9 @@ my %SUB_LANGUAGE_HOOK = (
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         return $ast;
     },
-    'print' => sub {                                               # print FILE "this"; print "this"; print
+    'wantarray' => $FUNCTION_CALL_NO_ARGUMENTS,
+    'time'      => $FUNCTION_CALL_NO_ARGUMENTS,
+    'print'     => sub {                                           # print FILE "this"; print "this"; print
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
@@ -999,7 +1012,7 @@ sub parse_delimited_expression {
     if ( $tokens->[$pos][1] eq $start_delim ) {
         $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
         if ( $tokens->[$pos][1] eq $delim ) {
-            return { type => 'PAREN', value => [ $start_delim, ], next => $pos + 1 };    # empty
+            return { type => 'PAREN', value => { delimiter => $start_delim, args => undef }, next => $pos + 1 };    # empty
         }
         my $expr = parse_precedence_expression( $tokens, $pos, $precedence );
         if ( $expr->{FAIL} ) {
@@ -1008,7 +1021,7 @@ sub parse_delimited_expression {
         $pos = $expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         if ( $tokens->[$pos][1] eq $delim ) {
-            return { type => 'PAREN', value => [ $start_delim, $expr ], next => $pos + 1 };
+            return { type => 'PAREN', value => { delimiter => $start_delim, args => $expr }, next => $pos + 1 };
         }
     }
     return parse_fail( $tokens, $index );
