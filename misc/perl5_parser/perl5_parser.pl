@@ -545,14 +545,11 @@ sub parse_precedence_expression {
         $pos = parse_optional_whitespace( $tokens, $pos + 1 );
         my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
         if ( $expr->{FAIL} ) {
+            return parse_fail() if !$LIST{$op_value};
 
             # backtrack
-            if ( $LIST{$op_value} ) {
-
-                # Handle a lone comma and fat comma without any value
-                return { type => 'LIST_OP', value => [$op_value], next => $pos };
-            }
-            return parse_fail();
+            # Handle a lone comma and fat comma without any value
+            return { type => 'LIST_OP', value => [$op_value], next => $pos };
         }
         if ( $LIST{$op_value} ) {
 
@@ -564,28 +561,22 @@ sub parse_precedence_expression {
             $left_expr = { type => 'LIST_OP', value => [ $op_value, @left ], next => $expr->{next} };
         }
         else {
-
             if (   $NON_ASSOC_AUTO{$op_value}
                 && ( $expr->{type} eq 'POSTFIX_OP' || $expr->{type} eq 'PREFIX_OP' )
                 && $NON_ASSOC_AUTO{ $expr->{value}{op} } )    # check for nonassoc syntax error
             {
                 error( $tokens, $index );
             }
-
             $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $expr }, next => $expr->{next} };
         }
         $pos = parse_optional_whitespace( $tokens, $left_expr->{next} );
-        if ( $tokens->[$pos][0] == END_TOKEN() ) {
-            return $left_expr;
-        }
+        return $left_expr if $tokens->[$pos][0] == END_TOKEN();
     }
     else {
         $left_expr = parse_term( $tokens, $index );
         return parse_fail() if $left_expr->{FAIL};
         $pos = parse_optional_whitespace( $tokens, $left_expr->{next} );
-        if ( $tokens->[$pos][0] == END_TOKEN() ) {
-            return $left_expr;
-        }
+        return $left_expr if $tokens->[$pos][0] == END_TOKEN();
     }
 
     $pos = $left_expr->{next};
@@ -631,15 +622,11 @@ sub parse_precedence_expression {
             next;
         }    # /arrow
         if ( $type == QUESTION() ) {    # Handle ternary operator
-            my $true_expr = parse_precedence_expression( $tokens, $pos, 0 );    # Parse the true branch
+            my $true_expr = parse_precedence_expression( $tokens, $pos, 0 );                    # Parse the true branch
             return parse_fail() if $true_expr->{FAIL};
             $pos = parse_optional_whitespace( $tokens, $true_expr->{next} );
-            if ( $tokens->[$pos][0] == COLON() ) {
-                $pos = parse_optional_whitespace( $tokens, $pos + 1 );
-            }
-            else {
-                return parse_fail();
-            }
+            return parse_fail() if $tokens->[$pos][0] != COLON();
+            $pos = parse_optional_whitespace( $tokens, $pos + 1 );
             my $false_expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'?'} );    # Parse the false branch
             $left_expr = { type => 'TERNARY_OP', value => [ '?', $left_expr, $true_expr, $false_expr ], next => $false_expr->{next} };
             $pos       = $left_expr->{next};
@@ -659,16 +646,12 @@ sub parse_precedence_expression {
         my $next_min_precedence = $ASSOC_RIGHT{$op_value} ? $precedence : $precedence + 1;
         my $right_expr          = parse_precedence_expression( $tokens, $pos, $next_min_precedence );
         if ( $right_expr->{FAIL} ) {    # backtrack
-            if ( $LIST{$op_value} ) {    # Handle terminal comma and fat comma
-                my @left = ($left_expr);
-                if ( $left_expr->{type} eq 'LIST_OP' ) {
-                    @left = @{ $left_expr->{value} };
-                }
-                return { type => 'LIST_OP', value => [ @left, $op_value ], next => $pos };
+            return parse_fail() if !$LIST{$op_value};    # Handle terminal comma and fat comma
+            my @left = ($left_expr);
+            if ( $left_expr->{type} eq 'LIST_OP' ) {
+                @left = @{ $left_expr->{value} };
             }
-            else {
-                return parse_fail();
-            }
+            return { type => 'LIST_OP', value => [ @left, $op_value ], next => $pos };
         }
         if ( $LIST{$op_value} ) {    # Handle list separators (comma and fat comma)
             my @right = ($right_expr);
