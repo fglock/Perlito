@@ -12,7 +12,13 @@ use Data::Dumper;
 #      [ WHITESPACE, ' '   ],
 #      [ OPERATOR,   '+'   ],
 #      ...
+#      [ END_TOKEN,  '' ],      # 3x end token
 #      [ END_TOKEN,  '' ],
+#      [ END_TOKEN,  '' ],
+#      {                        # environment hash
+#            filename => '-e',  # filename where the code comes from
+#            here_doc => [],    # current "here documents" being processed
+#      },
 #    ]
 #
 # AST format is a hash:
@@ -124,8 +130,6 @@ my %PRECEDENCE               = (
     '%'  => 22,
 );
 
-my @HERE_DOC;
-
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
 #
@@ -140,19 +144,19 @@ my %SUB_LANGUAGE_HOOK = (
         $ast->{value}{single_quoted} = $str;
         return $ast;
     },
-    m => sub {                                 # m/abc/ig
+    m => sub {                                        # m/abc/ig
         my ( $tokens, $index, $name ) = @_;
         my $pos = $index;
         my $ast = parse_raw_strings( $tokens, $pos, string_count => 2, name => $name );
         return $ast;
     },
-    s => sub {                                 # s/abc/def/ig
+    s => sub {                                        # s/abc/def/ig
         my ( $tokens, $index, $name ) = @_;
         my $pos = $index;
         my $ast = parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
         return $ast;
     },
-    qw => sub {                                # qw/abc def/
+    qw => sub {                                       # qw/abc def/
         my ( $tokens, $index, $name ) = @_;
         my $pos = $index;
         my $ast = parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
@@ -398,6 +402,10 @@ sub tokenize {
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, [ END_TOKEN(), '' ];
+    push @tokens, {    # environment hash
+        filename => '',    # filename where the code comes from
+        here_doc => [],    # current here documents being processed
+    };
     return \@tokens;
 }
 
@@ -482,7 +490,7 @@ sub error_message {
     ## for ( $first_token .. $index ) {
     ##     $col += length($tokens->[$_][1]);
     ## }
-    return $message . ' at line ' . $line . ', near ' . error_message_quote( join( '', @near ) ) . "\n";
+    return $message . ' at ' . $tokens->[-1]{filename} . ' line ' . $line . ', near ' . error_message_quote( join( '', @near ) ) . "\n";
 }
 
 # parse_precedence_expression()
@@ -674,11 +682,28 @@ sub parse_optional_whitespace {
         }
         if ( $tokens->[$pos][0] == NEWLINE() ) {
             $pos++;
-            if (@HERE_DOC) {
-
-                # TODO     print <<"EOF";
-                # TODO     print <<~"EOF";
-            }
+            while ( my $here_doc = shift @{ $tokens->[-1]{here_doc} } ) {    # fetch "here doc" from the environment
+                my $end_delim = $here_doc->{value}{buffers}[0];              # print <<"EOF";  print <<~"EOF";
+                my $indented  = $here_doc->{value}{indented};
+                $here_doc->{value}{buffers}[0] = "";                         # initialize the string value
+                my $indent_string;
+              SEARCH_TERMINATOR: while (1) {
+                    my $buffer = '';
+                    while ( $tokens->[$pos][0] != NEWLINE() ) {
+                        if ( $tokens->[$pos][0] == END_TOKEN() ) {
+                            die error_message( $tokens, $index,
+                                "Can't find string terminator " . error_message_quote($end_delim) . " anywhere before EOF" );
+                        }
+                        $buffer .= $tokens->[$pos][1];
+                        $pos++;
+                    }
+                    $pos++;
+                    last SEARCH_TERMINATOR                 if $buffer eq $end_delim;
+                    ($indent_string) = $buffer =~ /^(\s+)/ if $indented && !defined($indent_string);
+                    $buffer =~ s/^$indent_string// if $indented;
+                    $here_doc->{value}{buffers}[0] .= $buffer . "\n";    # save the string value
+                }
+            }    # /here doc
             if ( $tokens->[$pos][0] == EQUALS() ) {    # =pod
                 if ( $tokens->[ $pos + 1 ][0] == IDENTIFIER() ) {
                     $pos++;
@@ -708,7 +733,7 @@ sub parse_optional_whitespace {
                         $pos += 3;
                     }
                 }
-            }
+            }    # /pod
             redo WS;
         }
         if ( $tokens->[$pos][0] == START_COMMENT() ) {
@@ -719,7 +744,7 @@ sub parse_optional_whitespace {
             redo WS;
         }
         if ( $tokens->[$pos][0] == IDENTIFIER() && ( $tokens->[$pos][1] eq "__END__" || $tokens->[$pos][1] eq "__DATA__" ) ) {
-            $pos = $#$tokens;
+            $pos = $#$tokens - 1;
         }
         last WS;
     }
@@ -1048,7 +1073,7 @@ sub parse_term {
                 return parse_fail( $tokens, $index );
             }
             my $heredoc_ast = { type => 'HERE_DOC', index => $index, value => { %{ $ast->{value} }, indented => $indented }, next => $ast->{next} };
-            push @HERE_DOC, $heredoc_ast;
+            push @{ $tokens->[-1]{here_doc} }, $heredoc_ast;
             return $heredoc_ast;
         }
         else {
@@ -1150,6 +1175,7 @@ sub main {
     $perl_code = shift @ARGV if $args && $args eq '-e';
 
     my $tokens = tokenize($perl_code);
+    $tokens->[-1]{filename} = '-e';    # initialize environment hash
 
     ## # uncomment to see the token list
     ## for my $token (@$tokens) {
@@ -1161,8 +1187,8 @@ sub main {
         last if $tokens->[$index][0] == END_TOKEN();
         my $ast = parse_statement( $tokens, $index, 0 );
         if ( !$ast->{FAIL} ) {
+            $index = parse_optional_whitespace( $tokens, $ast->{next} )->{next};
             print Data::Dumper::Dumper($ast);
-            $index = $ast->{next};
         }
         else {
             print token_as_string( @{ $tokens->[$index] } );
@@ -1251,6 +1277,17 @@ docs here
 { q => 123 };
 print => 123;
 $::a =~ /123/i;
+
+print <<"EOT", <<~'AAA', "abc";
+  xxx
+EOT
+    ooo
+      oOo
+AAA
+
+$a = <<'EOT';
+EOT
+
 __END__
 123
 
