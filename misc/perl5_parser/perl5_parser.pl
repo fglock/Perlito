@@ -63,11 +63,9 @@ my @HERE_DOC;
 # Sub-Languages are code regions that don't follow the regular parsing rules
 #
 my %SUB_LANGUAGE_HOOK = (
-    q_string => sub {
-
-        # 'abc'
-        my ( $tokens, $pos ) = @_;
-        my $ast   = parse_extract_raw_string( $tokens, $pos, 0 );
+    q_string => sub {    # 'abc'
+        my ( $tokens, $pos, $name ) = @_;
+        my $ast   = parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         my $str   = $ast->{value}{buffers}[0];
         my $delim = $ast->{value}{end_delim};
         $str =~ s{\\\Q$delim}{$delim}g;               # unescape
@@ -75,67 +73,23 @@ my %SUB_LANGUAGE_HOOK = (
         $ast->{value}{single_quoted} = $str;
         return $ast;
     },
-    m_string => sub {
-
-        # m/abc/
-        my ( $tokens, $index ) = @_;
+    m_string => sub {                                 # m/abc/ig
+        my ( $tokens, $index, $name ) = @_;
         my $pos = $index;
-        my $ast = parse_extract_raw_string( $tokens, $pos, 0 );    # unset $redo flag to extract 1 string
-        if ( $ast->{FAIL} ) {
-            return parse_fail( $tokens, $pos );
-        }
-        $pos = $ast->{next};
-
-        my $modifier = "";
-        if ( $tokens->[$pos][0] == IDENTIFIER() ) {                #  regex modifiers
-            $modifier = $tokens->[$pos][1];
-            $pos++;
-        }
-        return { type => 'MATCH', index => $index, value => { args => $ast, modifier => $modifier }, next => $pos, };
+        my $ast = parse_raw_strings( $tokens, $pos, string_count => 2, name => $name );
+        return $ast;
     },
-    s_string => sub {
-
-        # s/abc/
-        my ( $tokens, $index ) = @_;
-        my $pos  = $index;
-        my $ast1 = parse_extract_raw_string( $tokens, $pos, 1 );    # use $redo flag to extract 2 strings
-        if ( $ast1->{FAIL} ) {
-            return parse_fail( $tokens, $pos );
-        }
-        $pos = $ast1->{next};
-        my $delim = $ast1->{value}{start_delim};                    #  / or {
-        if ( $QUOTE_PAIR{$delim} ) {
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-            my $ast2 = parse_extract_raw_string( $tokens, $pos, 0 );
-            push @{ $ast1->{value}{buffers} }, @{ $ast2->{value}{buffers} };
-            $ast1->{next} = $ast2->{next};
-            $pos = $ast1->{next};
-        }
-        my $ast = $ast1;
-
-        my $modifier = "";
-        if ( $tokens->[$pos][0] == IDENTIFIER() ) {                 #  regex modifiers
-            $modifier = $tokens->[$pos][1];
-            $pos++;
-        }
-        return { type => 'REPLACE', index => $index, value => { args => $ast, modifier => $modifier }, next => $pos, };
-    },
-    qw_string => sub {
-        my ( $tokens, $index ) = @_;
+    s_string => sub {                                 # s/abc/def/ig
+        my ( $tokens, $index, $name ) = @_;
         my $pos = $index;
-        my $ast = parse_extract_raw_string( $tokens, $pos, 1 );     # use $redo flag to extract 2 strings
-        if ( $ast->{FAIL} ) {
-            return parse_fail( $tokens, $pos );
-        }
-        return {
-            type  => 'QW',
-            index => $index,
-            value => [
-                map { { type => 'STRING', index => $index, value => $_, next => $pos + 1 } }
-                  split( ' ', $ast->{value} )
-            ],
-            next => $ast->{next}
-        };
+        my $ast = parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
+        return $ast;
+    },
+    qw_string => sub {                                # qw/abc def/
+        my ( $tokens, $index, $name ) = @_;
+        my $pos = $index;
+        my $ast = parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
+        return $ast;
     },
 );
 
@@ -813,9 +767,46 @@ sub parse_number {
 
 my %ESCAPE_SEQUENCE = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
 
-# parse_extract_raw_string()
+sub parse_raw_strings {
+    my ( $tokens, $index, %args ) = @_;
+    my $pos          = $index;
+    my $string_count = $args{string_count} || die "need string_count";
+    my $name         = $args{name}         || die "need name";
+
+    # fetch the first string, and maybe the second:  s/FIRST/SECOND/g  s{FIRST}/bbb/ig
+    my $redo = ( $string_count == 3 );
+    my $ast  = parse_raw_string_with_delimiter( $tokens, $pos, $redo );    # use $redo flag to extract 2 strings
+    $ast->{value}{name} = $name;
+    return $ast if $string_count == 1;
+    $pos = $ast->{next};
+
+    if ( $string_count == 3 ) {                                            # fetch the second of 3 strings: s{aaa}{SECOND}ig
+        my $delim = $ast->{value}{start_delim};                            #  / or {
+        if ( $QUOTE_PAIR{$delim} ) {
+            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            my $ast2 = parse_raw_string_with_delimiter( $tokens, $pos, 0 );
+            push @{ $ast->{value}{buffers} }, @{ $ast2->{value}{buffers} };
+            $ast->{next} = $ast2->{next};
+            $pos = $ast->{next};
+        }
+    }
+
+    # fetch the last string:    s/aaa/bbb/LAST
+    my $modifier = "";
+    if ( $tokens->[$pos][0] == IDENTIFIER() ) {
+        $modifier = $tokens->[$pos][1];
+        $pos++;
+        $ast->{next} = $pos;
+    }
+    push @{ $ast->{value}{buffers} }, $modifier;
+    return $ast;
+}
+
+# parse_raw_string_with_delimiter()
 #
 # extracts a string without any escaping
+#
+# use the $redo flag to extract 2 strings:  s///
 #
 # Note: this requires re-tokenizing this region of the code
 # because of these known problems with the tokenizer:
@@ -823,13 +814,11 @@ my %ESCAPE_SEQUENCE = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
 #   q!=!=="=" tokenizes to ('q','!=','!=', ...)
 #   q<>       tokenizes to ('<>')
 
-sub parse_extract_raw_string {
+sub parse_raw_string_with_delimiter {
     my ( $tokens, $index, $redo ) = @_;
 
-    # use $redo flag to extract 2 strings:  s///
-
     # quoted pairs can be embedded recursively:   q{ {x} }
-
+    #
     # escape processing needs to happen AFTER the string is extracted
     #
     # variable interpolation needs to happen AFTER the string is extracted
@@ -1003,41 +992,41 @@ sub parse_term {
             return $ast;
         }
         elsif ( $stmt eq 'q' ) {                               # q!...!
-            return $SUB_LANGUAGE_HOOK{q_string}->( $tokens, $pos );
+            return $SUB_LANGUAGE_HOOK{q_string}->( $tokens, $pos, 'q' );
         }
         elsif ( $stmt eq 'qq' ) {                              # qq!...!
-            return $SUB_LANGUAGE_HOOK{qq_string}->( $tokens, $pos );
+            return $SUB_LANGUAGE_HOOK{qq_string}->( $tokens, $pos, 'qq' );
         }
         elsif ( $stmt eq 'm' ) {                               # m/.../
-            return $SUB_LANGUAGE_HOOK{m_string}->( $tokens, $pos );
+            return $SUB_LANGUAGE_HOOK{m_string}->( $tokens, $pos, 'm' );
         }
         elsif ( $stmt eq 's' ) {                               # s/.../.../
-            return $SUB_LANGUAGE_HOOK{s_string}->( $tokens, $pos );
+            return $SUB_LANGUAGE_HOOK{s_string}->( $tokens, $pos, 's' );
         }
         elsif ( $stmt eq 'qw' ) {                              # qw/.../
-            return $SUB_LANGUAGE_HOOK{qw_string}->( $tokens, $pos );
+            return $SUB_LANGUAGE_HOOK{qw_string}->( $tokens, $pos, 'qw' );
         }
         elsif ( $stmt eq 'qx' ) {                              # qx/.../
-            return $SUB_LANGUAGE_HOOK{qx_string}->( $tokens, $pos );
+            return $SUB_LANGUAGE_HOOK{qx_string}->( $tokens, $pos, 'qx' );
         }
         elsif ( $stmt eq 'tr' ) {                              # tr/.../.../
-            return $SUB_LANGUAGE_HOOK{tr_string}->( $tokens, $pos );
+            return $SUB_LANGUAGE_HOOK{tr_string}->( $tokens, $pos, 'tr' );
         }
         elsif ( $stmt eq 'y' ) {                               # y/.../.../
-            return $SUB_LANGUAGE_HOOK{tr_string}->( $tokens, $pos );    # same as tr///
+            return $SUB_LANGUAGE_HOOK{tr_string}->( $tokens, $pos, 'y' );    # same impl as tr///
         }
         $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
         my $quote = $tokens->[$index][1];
         if ( $quote eq "'" ) {
-            return $SUB_LANGUAGE_HOOK{q_string}->( $tokens, $index );
+            return $SUB_LANGUAGE_HOOK{q_string}->( $tokens, $index, 'q' );
         }
         elsif ( $quote eq '"' ) {
-            return $SUB_LANGUAGE_HOOK{qq_string}->( $tokens, $index );
+            return $SUB_LANGUAGE_HOOK{qq_string}->( $tokens, $index, 'qq' );
         }
         elsif ( $quote eq '`' ) {
-            return $SUB_LANGUAGE_HOOK{qx_string}->( $tokens, $index );
+            return $SUB_LANGUAGE_HOOK{qx_string}->( $tokens, $index, 'qx' );
         }
         return parse_fail( $tokens, $index );
     }
@@ -1051,12 +1040,12 @@ sub parse_term {
         $ast = parse_delimited_expression( $tokens, $index, '{' );
     }
     elsif ( $type == LESS_THAN() ) {
-        return $SUB_LANGUAGE_HOOK{glob_string}->( $tokens, $index );    # <...>
+        return $SUB_LANGUAGE_HOOK{glob_string}->( $tokens, $index, 'glob_string' );    # <...>
     }
-    elsif ( $type == SLASH() ) {                                        # /.../
-        return $SUB_LANGUAGE_HOOK{m_string}->( $tokens, $index );
+    elsif ( $type == SLASH() ) {                                                       # /.../
+        return $SUB_LANGUAGE_HOOK{m_string}->( $tokens, $index, 'm' );
     }
-    elsif ( $type == LESS_LESS() ) {                                    # here doc:  <<   <<~
+    elsif ( $type == LESS_LESS() ) {                                                   # here doc:  <<   <<~
         $pos++;
         my $indented = 0;
         if ( $tokens->[$pos][0] == TILDE() ) {
@@ -1064,12 +1053,13 @@ sub parse_term {
             $indented = 1;
         }
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+
         # XXX TODO  \IDENTIFIER  is the same as 'IDENTIFIER'
         if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # bareword
             die error_message( $tokens, $pos, 'Use of bare << to mean <<"" is forbidden' );
         }
         elsif ( $tokens->[$pos][0] == STRING_DELIM() ) {
-            $ast = parse_extract_raw_string( $tokens, $pos, 0 );
+            $ast = parse_raw_string_with_delimiter( $tokens, $pos, 0 );
             if ( $ast->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
