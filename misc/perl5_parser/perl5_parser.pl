@@ -804,12 +804,8 @@ sub parse_number {
     my $pos = $index;
     if ( $tokens->[$pos][0] == DOT() ) {
         $pos++;    # .
-        if ( $tokens->[$pos][0] == NUMBER() ) {
-            $pos++;    # .123
-        }
-        else {
-            return parse_fail();
-        }
+        return parse_fail() if $tokens->[$pos][0] != NUMBER();
+        $pos++;    # .123
     }
     elsif ( $tokens->[$pos][0] == NUMBER() ) {
         $pos++;    # 123
@@ -819,31 +815,22 @@ sub parse_number {
                 $pos++;    # 123.456
             }
         }
-        else {
-            if ( $tokens->[$pos][0] != IDENTIFIER() ) {
-                return { type => 'INTEGER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
-            }
+        elsif ( $tokens->[$pos][0] != IDENTIFIER() ) {  # no exponent
+            return { type => 'INTEGER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
         }
     }
     else {
         return parse_fail();
     }
-
-    if ( $tokens->[$pos][0] == IDENTIFIER() && $tokens->[$pos][1] =~ /^e([0-9]*)$/i ) {
+    if ( $tokens->[$pos][0] == IDENTIFIER() && $tokens->[$pos][1] =~ /^e([0-9]*)$/i ) {    # exponent
         if ($1) {
-            $pos++;    # E10
+            $pos++;                                                                        # E10
         }
         else {
-            $pos++;    # 123E-10
-            if ( $tokens->[$pos][0] == MINUS() ) {
-                $pos++;    # -
-            }
-            if ( $tokens->[$pos][0] == NUMBER() ) {
-                $pos++;    # 123
-            }
-            else {
-                return parse_fail();
-            }
+            $pos++;                                                                        # 123E-10
+            $pos++              if $tokens->[$pos][0] == MINUS();                          # -
+            return parse_fail() if $tokens->[$pos][0] != NUMBER();
+            $pos++;                                                                        # 123
         }
     }
     return { type => 'NUMBER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
