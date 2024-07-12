@@ -606,9 +606,7 @@ sub parse_precedence_expression {
 
         if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle postfix () [] {}
             my $right_expr = parse_term( $tokens, $op_pos );
-            if ( $right_expr->{FAIL} ) {
-                return parse_fail( $tokens, $index );
-            }
+            return parse_fail( $tokens, $index ) if $right_expr->{FAIL};
             $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
             $pos       = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
             next;
@@ -616,9 +614,7 @@ sub parse_precedence_expression {
         if ( $type == ARROW() ) {                                                            # Handle ->method  ->method()  ->() ->[] ->{}
             $type = $tokens->[$pos][0];
             my $right_expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'->'} + 1 );
-            if ( $right_expr->{FAIL} ) {
-                return parse_fail( $tokens, $index );
-            }
+            return parse_fail( $tokens, $index ) if $right_expr->{FAIL};
             if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle ->() ->[] ->{}
                 $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
             }
@@ -626,9 +622,7 @@ sub parse_precedence_expression {
                 $pos = parse_optional_whitespace( $tokens, $right_expr->{next} )->{next};
                 if ( $tokens->[$pos][0] == PAREN_OPEN() ) {                                      # method call with arguments
                     my $args_expr = parse_term( $tokens, $pos );
-                    if ( $args_expr->{FAIL} ) {
-                        return parse_fail( $tokens, $index );
-                    }
+                    return parse_fail( $tokens, $index ) if $args_expr->{FAIL};
                     $left_expr = { type => 'METHOD_CALL', value => [ $left_expr, $right_expr, $args_expr ], next => $args_expr->{next} };
                 }
                 else {
@@ -640,9 +634,7 @@ sub parse_precedence_expression {
         }    # /arrow
         if ( $type == QUESTION() ) {    # Handle ternary operator
             my $true_expr = parse_precedence_expression( $tokens, $pos, 0 );    # Parse the true branch
-            if ( $true_expr->{FAIL} ) {
-                return parse_fail( $tokens, $index );
-            }
+            return parse_fail( $tokens, $index ) if $true_expr->{FAIL};
             $pos = parse_optional_whitespace( $tokens, $true_expr->{next} )->{next};
             if ( $tokens->[$pos][0] == COLON() ) {
                 $pos++;                                                         # Consume the ':'
@@ -1062,7 +1054,7 @@ sub parse_term {
     my $type = $tokens->[$pos][0];
     my $ast;
     if ( $type == NUMBER() || $type == DOT() ) {
-        $ast = parse_number( $tokens, $index );
+        return parse_number( $tokens, $index );
     }
     elsif ( $type == IDENTIFIER() ) {
 
@@ -1078,7 +1070,7 @@ sub parse_term {
         if ( exists $SUB_LANGUAGE_HOOK{$stmt} ) {              # built-in functions requiring special parsing
             return $SUB_LANGUAGE_HOOK{$stmt}->( $tokens, $pos, $stmt );
         }
-        $ast = { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
+        return { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
         my $quote = $tokens->[$index][1];
@@ -1091,16 +1083,15 @@ sub parse_term {
         elsif ( $quote eq '`' ) {
             return $SUB_LANGUAGE_HOOK{qx}->( $tokens, $index, 'qx' );
         }
-        return parse_fail( $tokens, $index );
     }
     elsif ( $type == PAREN_OPEN() ) {
-        $ast = parse_delimited_expression( $tokens, $index, '(' );
+        return parse_delimited_expression( $tokens, $index, '(' );
     }
     elsif ( $type == SQUARE_OPEN() ) {
-        $ast = parse_delimited_expression( $tokens, $index, '[' );
+        return parse_delimited_expression( $tokens, $index, '[' );
     }
     elsif ( $type == CURLY_OPEN() ) {
-        $ast = parse_delimited_expression( $tokens, $index, '{' );
+        return parse_delimited_expression( $tokens, $index, '{' );
     }
     elsif ( $type == LESS_THAN() ) {
         return $SUB_LANGUAGE_HOOK{glob_string}->( $tokens, $index, 'glob_string' );    # <...>
@@ -1141,22 +1132,16 @@ sub parse_term {
         return $ast;
     }
     elsif ( $type = DOUBLE_COLON() ) {
-        $ast = parse_colon_bareword( $tokens, $index );
-        $pos = $ast->{next};
+        return parse_colon_bareword( $tokens, $index );
     }
-    else {
-        return parse_fail( $tokens, $index );
-    }
-    return $ast;
+    return parse_fail( $tokens, $index );
 }
 
 sub parse_statement {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
-    if ( $tokens->[$pos][0] == END_TOKEN() ) {
-        return parse_fail( $tokens, $index );
-    }
+    return parse_fail( $tokens, $index ) if $tokens->[$pos][0] == END_TOKEN();
 
     # TODO label:
 
