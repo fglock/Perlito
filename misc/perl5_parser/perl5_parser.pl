@@ -150,9 +150,7 @@ my $FUNCTION_CALL_NO_ARGUMENTS = sub {    # no arguments
     my $pos = parse_optional_whitespace( $tokens, $index )->{next};
     if ( $tokens->[$pos][0] == PAREN_OPEN() ) {
         my $args_expr = parse_term( $tokens, $pos );
-        if ( $args_expr->{FAIL} || $args_expr->{value}{args} ) {
-            error( $tokens, $index );
-        }
+        error( $tokens, $index ) if $args_expr->{FAIL} || $args_expr->{value}{args};
     }
     return { type => 'APPLY', value => { name => $name }, next => $index };
 };
@@ -160,9 +158,7 @@ my $FUNCTION_CALL_BLOCK_ARGUMENT = sub {    # argument is a block
     my ( $tokens, $index, $name ) = @_;
     my $pos   = $index;
     my $block = parse_statement_block( $tokens, $pos );
-    if ( $block->{FAIL} ) {
-        return parse_fail( $tokens, $index );
-    }
+    return parse_fail( $tokens, $index ) if $block->{FAIL};
     return { type => 'APPLY_BLOCK', value => { name => $name, block => $block }, next => $block->{next} };
 };
 
@@ -207,9 +203,7 @@ my %SUB_LANGUAGE_HOOK = (
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
-        if ( $expr->{FAIL} ) {
-            return parse_fail( $tokens, $index );
-        }
+        return parse_fail( $tokens, $index ) if $expr->{FAIL};
         return { type => 'PRINT', value => { name => $name, args => $expr }, next => $expr->{next} };
     },
     'do'   => $FUNCTION_CALL_BLOCK_ARGUMENT,
@@ -219,18 +213,14 @@ my %SUB_LANGUAGE_HOOK = (
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
-        if ( $expr->{FAIL} ) {
-            return parse_fail( $tokens, $index );
-        }
+        return parse_fail( $tokens, $index ) if $expr->{FAIL};
         return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
     },
     'no' => sub {                                                  # use module;
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
-        if ( $expr->{FAIL} ) {
-            return parse_fail( $tokens, $index );
-        }
+        return parse_fail( $tokens, $index ) if $expr->{FAIL};
         return { type => 'NO', value => { name => $name, args => $expr }, next => $expr->{next} };
     },
 );
@@ -603,10 +593,7 @@ sub parse_precedence_expression {
     }
     else {
         $left_expr = parse_term( $tokens, $index );
-        if ( $left_expr->{FAIL} ) {
-            return parse_fail( $tokens, $index );
-        }
-        $pos = $left_expr->{next};
+        return parse_fail( $tokens, $index ) if $left_expr->{FAIL};
         $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
         if ( $tokens->[$pos][0] == END_TOKEN() ) {
             return $left_expr;
@@ -617,16 +604,15 @@ sub parse_precedence_expression {
     while ( $tokens->[$pos][0] != END_TOKEN() ) {
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         return parse_fail( $tokens, $index ) if $tokens->[$pos][0] == END_TOKEN();
-        my $op_value = $tokens->[$pos][1];
-        my $type     = $tokens->[$pos][0];
-        my $op_pos   = $pos;
+        $op_value = $tokens->[$pos][1];
+        my $type   = $tokens->[$pos][0];
+        my $op_pos = $pos;
 
         last unless exists $PRECEDENCE{$op_value};
         my $precedence = $PRECEDENCE{$op_value};
         last if $precedence < $min_precedence;
 
-        $pos++;
-        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
 
         if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle postfix () [] {}
             my $right_expr = parse_term( $tokens, $op_pos );
@@ -634,8 +620,7 @@ sub parse_precedence_expression {
                 return parse_fail( $tokens, $index );
             }
             $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
-            $pos       = $left_expr->{next};
-            $pos       = parse_optional_whitespace( $tokens, $pos )->{next};
+            $pos       = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
             next;
         }
         if ( $type == ARROW() ) {                                                            # Handle ->method  ->method()  ->() ->[] ->{}
@@ -660,8 +645,7 @@ sub parse_precedence_expression {
                     $left_expr = { type => 'METHOD_CALL', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
                 }
             }
-            $pos = $left_expr->{next};
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
             next;
         }    # /arrow
         if ( $type == QUESTION() ) {    # Handle ternary operator
@@ -669,10 +653,9 @@ sub parse_precedence_expression {
             if ( $true_expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
-            $pos = $true_expr->{next};
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            $pos = parse_optional_whitespace( $tokens, $true_expr->{next} )->{next};
             if ( $tokens->[$pos][0] == COLON() ) {
-                $pos++;    # Consume the ':'
+                $pos++;                                                         # Consume the ':'
                 $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             }
             else {
@@ -718,8 +701,7 @@ sub parse_precedence_expression {
         else {
             $left_expr = { type => 'BINARY_OP', value => [ $op_value, $left_expr, $right_expr ], next => $right_expr->{next} };
         }
-        $pos = $left_expr->{next};
-        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        $pos = parse_optional_whitespace( $tokens, $left_expr->{next} )->{next};
     }
     return $left_expr;
 }
@@ -1040,8 +1022,7 @@ sub parse_if_expression {
     if ( $tokens->[$pos][1] ne ';' && $tokens->[$pos][1] ne ')' ) {
         $expr = parse_precedence_expression( $tokens, $pos, 0 );
         error( $tokens, $index ) if $expr->{FAIL};
-        $pos = $expr->{next};
-        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        $pos = parse_optional_whitespace( $tokens, $expr->{next} )->{next};
         error( $tokens, $index ) if $tokens->[$pos][1] ne ';' && $tokens->[$pos][1] ne ')';
     }
     return { type => 'IF_CONDITION', value => { delimiter => $tokens->[$pos][1], args => $expr }, next => $pos + 1 };
@@ -1061,8 +1042,7 @@ sub parse_delimited_expression {
     if ( $tokens->[$pos][1] ne $delim ) {
         $expr = parse_precedence_expression( $tokens, $pos, $precedence );
         error( $tokens, $index ) if $expr->{FAIL};
-        $pos = $expr->{next};
-        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        $pos = parse_optional_whitespace( $tokens, $expr->{next} )->{next};
         error( $tokens, $index ) if $tokens->[$pos][1] ne $delim;
     }
     return { type => 'PAREN', value => { delimiter => $start_delim, args => $expr }, next => $pos + 1 };
@@ -1198,22 +1178,19 @@ sub parse_statement {
         my $stmt = $tokens->[$pos][1];
         if ( $STATEMENT_COND_BLOCK{$stmt} ) {
             my $expr;
-            $pos  = parse_optional_whitespace( $tokens, $pos + 1)->{next};
+            $pos  = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
             $expr = parse_if_expression( $tokens, $pos );
             if ( $expr->{value}{delimiter} eq ';' ) {
-                error( $tokens, $index ) if  $stmt ne 'for' && $stmt ne 'foreach';
+                error( $tokens, $index ) if $stmt ne 'for' && $stmt ne 'foreach';
                 my @expr = ($expr);
-                $pos  = $expr->{next} - 1;
-                $expr = parse_if_expression( $tokens, $pos );
+                $expr = parse_if_expression( $tokens, $expr->{next} - 1 );
                 push @expr, $expr;
-                $pos  = $expr->{next} - 1;
-                $expr = parse_if_expression( $tokens, $pos );
+                $expr = parse_if_expression( $tokens, $expr->{next} - 1 );
                 push @expr, $expr;
                 $expr = { type => 'THREE_ARG_FOR', value => \@expr, next => $expr->{next} };
             }
             error( $tokens, $index ) if $expr->{FAIL};
-            $pos = $expr->{next};
-            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            $pos = parse_optional_whitespace( $tokens, $expr->{next} )->{next};
             my $block = parse_statement_block( $tokens, $pos );
             error( $tokens, $index ) if $expr->{FAIL};
 
@@ -1239,8 +1216,7 @@ sub parse_statement {
         $ast = parse_precedence_expression( $tokens, $pos, 0 );
         error( $tokens, $index ) if $ast->{FAIL};
 
-        $pos = $ast->{next};
-        $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+        $pos = parse_optional_whitespace( $tokens, $ast->{next} )->{next};
         if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # statement modifier
             my $stmt = $tokens->[$pos][1];
             if ( $STATEMENT_MODIFIER{$stmt} ) {
@@ -1253,8 +1229,7 @@ sub parse_statement {
                     value => { modifier => $stmt, args => $ast, cond => $cond_ast },
                     next  => $cond_ast->{next}
                 };
-                $pos = $ast->{next};
-                $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+                $pos = parse_optional_whitespace( $tokens, $ast->{next} )->{next};
             }
         }
 
