@@ -1037,7 +1037,7 @@ sub parse_statement_block {
     $pos++;
     $pos = parse_optional_whitespace( $tokens, $pos )->{next};
     my @expr;
-    while ( $tokens->[$pos][0] != END_TOKEN() ) {
+    while ( 1 ) {
         error( $tokens, $index ) if $tokens->[$pos][0] == END_TOKEN();
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
         return { type => 'STATEMENT_BLOCK', value => \@expr, next => $pos + 1 } if $tokens->[$pos][0] == CURLY_CLOSE();
@@ -1167,7 +1167,7 @@ sub parse_statement {
             error( $tokens, $index ) if $expr->{FAIL};
             $pos = parse_optional_whitespace( $tokens, $expr->{next} )->{next};
             my $block = parse_statement_block( $tokens, $pos );
-            error( $tokens, $index ) if $expr->{FAIL};
+            error( $tokens, $index ) if $block->{FAIL};
 
             # TODO if/unless .. else/elsif
             # TODO continue
