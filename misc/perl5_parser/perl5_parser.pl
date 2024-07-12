@@ -150,6 +150,7 @@ my $FUNCTION_CALL_NO_ARGUMENTS = sub {    # no arguments
 my $FUNCTION_CALL_BLOCK_ARGUMENT = sub {    # argument is a block
     my ( $tokens, $index, $name ) = @_;
     my $pos   = $index;
+    # XXX TODO do ( { print 123 } )
     my $block = parse_statement_block( $tokens, $pos );
     return { type => 'APPLY_BLOCK', value => { name => $name, block => $block }, next => $block->{next} };
 };
