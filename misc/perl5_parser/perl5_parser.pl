@@ -133,36 +133,54 @@ my %PRECEDENCE               = (
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
 #
+my $ONE_ARG_STUB = sub {    # qw/abc def/
+    my ( $tokens, $index, $name, $ast ) = @_;
+    my $pos = $index;
+    $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
+    return $ast;
+};
+my $THREE_ARG_STUB = sub {    # s/abc/def/ig
+    my ( $tokens, $index, $name, $ast ) = @_;
+    my $pos = $index;
+    $ast //= parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
+    return $ast;
+};
 my %SUB_LANGUAGE_HOOK = (
-    q => sub {    # 'abc'
-        my ( $tokens, $pos, $name ) = @_;
-        my $ast   = parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
+
+    # define placeholder parsers for Sub-Languages that we don't have yet
+    ( map { $_ => $ONE_ARG_STUB } qw{ qq qx qr glob_string } ),    # 1-argument
+    ( map { $_ => $THREE_ARG_STUB } qw{ tr y } ),                  # 3-argument
+
+    q => sub {                                                     # 'abc'
+        my ( $tokens, $pos, $name, $ast ) = @_;
+        $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         my $str   = $ast->{value}{buffers}[0];
         my $delim = $ast->{value}{end_delim};
-        $str =~ s{\\\Q$delim}{$delim}g;               # unescape
+        $str =~ s{\\\Q$delim}{$delim}g;                            # unescape
         $str =~ s{\\\\}{$delim}g if $delim ne '\\';
-        $ast->{value}{single_quoted} = $str;
+        $ast->{value} = $str;
+        $ast->{type}  = 'STRING';
         return $ast;
     },
-    m => sub {                                        # m/abc/ig
-        my ( $tokens, $index, $name ) = @_;
+    m => sub {                                                     # m/abc/ig
+        my ( $tokens, $index, $name, $ast ) = @_;
         my $pos = $index;
-        my $ast = parse_raw_strings( $tokens, $pos, string_count => 2, name => $name );
+        $ast //= parse_raw_strings( $tokens, $pos, string_count => 2, name => $name );
         return $ast;
     },
-    s => sub {                                        # s/abc/def/ig
-        my ( $tokens, $index, $name ) = @_;
+    s => sub {                                                     # s/abc/def/ig
+        my ( $tokens, $index, $name, $ast ) = @_;
         my $pos = $index;
-        my $ast = parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
+        $ast //= parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
         return $ast;
     },
-    qw => sub {                                       # qw/abc def/
-        my ( $tokens, $index, $name ) = @_;
+    qw => sub {                                                    # qw/abc def/
+        my ( $tokens, $index, $name, $ast ) = @_;
         my $pos = $index;
-        my $ast = parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
+        $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         return $ast;
     },
-    'print' => sub {                                  # print FILE "this"; print "this"; print
+    'print' => sub {                                               # print FILE "this"; print "this"; print
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
@@ -171,7 +189,7 @@ my %SUB_LANGUAGE_HOOK = (
         }
         return { type => 'PRINT', value => { name => $name, args => $expr }, next => $expr->{next} };
     },
-    'do' => sub {                                     # do {block}
+    'do' => sub {                                                  # do {block}
         my ( $tokens, $index, $name ) = @_;
         my $pos   = $index;
         my $block = parse_statement_block( $tokens, $pos );
@@ -180,7 +198,7 @@ my %SUB_LANGUAGE_HOOK = (
         }
         return { type => 'DO_BLOCK', value => { name => $name, block => $block }, next => $block->{next} };
     },
-    'use' => sub {                                    # use module;
+    'use' => sub {                                                 # use module;
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
@@ -189,13 +207,6 @@ my %SUB_LANGUAGE_HOOK = (
         }
         return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
     },
-);
-
-# define placeholders for Sub-Languages that we don't have a stub yet
-%SUB_LANGUAGE_HOOK = (
-    ( map { $_ => $SUB_LANGUAGE_HOOK{q} } qw{ qq qx qr glob_string } ),    # 1-argument
-    ( map { $_ => $SUB_LANGUAGE_HOOK{s} } qw{ tr y } ),                    # 3-argument
-    %SUB_LANGUAGE_HOOK,
 );
 
 use constant {
@@ -686,6 +697,7 @@ sub parse_optional_whitespace {
             while ( my $here_doc = shift @{ $tokens->[-1]{here_doc} } ) {    # fetch "here doc" from the environment
                 my $end_delim = $here_doc->{value}{buffers}[0];              # print <<"EOF";  print <<~"EOF";
                 my $indented  = $here_doc->{value}{indented};
+                my $quote     = $here_doc->{value}{start_delim};
                 $here_doc->{value}{buffers}[0] = "";                         # initialize the string value
                 my $indent_string;
               SEARCH_TERMINATOR: while (1) {
@@ -704,6 +716,18 @@ sub parse_optional_whitespace {
                     $buffer =~ s/^$indent_string// if $indented;
                     $here_doc->{value}{buffers}[0] .= $buffer . "\n";    # save the string value
                 }
+                my $processed_ast;
+                if ( $quote eq "'" ) {                                   # process the quotes
+                    $processed_ast = $SUB_LANGUAGE_HOOK{q}->( $tokens, $index, 'q', $here_doc );
+                }
+                elsif ( $quote eq '"' ) {
+                    $processed_ast = $SUB_LANGUAGE_HOOK{qq}->( $tokens, $index, 'qq', $here_doc );
+                }
+                elsif ( $quote eq '`' ) {
+                    $processed_ast = $SUB_LANGUAGE_HOOK{qx}->( $tokens, $index, 'qx', $here_doc );
+                }
+                $here_doc->{type}  = $processed_ast->{type}  if $processed_ast;
+                $here_doc->{value} = $processed_ast->{value} if $processed_ast;
             }    # /here doc
             if ( $tokens->[$pos][0] == EQUALS() ) {    # =pod
                 if ( $tokens->[ $pos + 1 ][0] == IDENTIFIER() ) {
@@ -1064,22 +1088,29 @@ sub parse_term {
         }
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
 
-        # XXX TODO  \IDENTIFIER  is the same as 'IDENTIFIER'
         if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # bareword
             die error_message( $tokens, $pos, 'Use of bare << to mean <<"" is forbidden' );
         }
+        if ( $tokens->[$pos][0] == ESCAPE() ) {        # \IDENTIFIER  is the same as 'IDENTIFIER'
+            if ( $tokens->[ $pos + 1 ][0] == IDENTIFIER() ) {    # bareword
+                $pos++;
+                $ast = {
+                    type  => 'RAW_STRING',
+                    index => $index,
+                    next  => $pos + 1,
+                    value => { buffers => [ $tokens->[$pos][1] ], start_delim => "'", end_delim => "'" },
+                };
+            }
+        }
         elsif ( $tokens->[$pos][0] == STRING_DELIM() ) {
             $ast = parse_raw_string_with_delimiter( $tokens, $pos, 0 );
-            if ( $ast->{FAIL} ) {
-                return parse_fail( $tokens, $index );
-            }
-            my $heredoc_ast = { type => 'HERE_DOC', index => $index, value => { %{ $ast->{value} }, indented => $indented }, next => $ast->{next} };
-            push @{ $tokens->[-1]{here_doc} }, $heredoc_ast;
-            return $heredoc_ast;
         }
-        else {
+        if ( !$ast || $ast->{FAIL} ) {
             return parse_fail( $tokens, $index );
         }
+        $ast->{value}{indented} = $indented;
+        push @{ $tokens->[-1]{here_doc} }, $ast;
+        return $ast;
     }
     elsif ( $type = DOUBLE_COLON() ) {
         $ast = parse_colon_bareword( $tokens, $index );
@@ -1287,6 +1318,10 @@ EOT
 AAA
 
 $a = <<'EOT';
+EOT
+
+$a = <<\EOT;
+ single quoted
 EOT
 
 __END__
