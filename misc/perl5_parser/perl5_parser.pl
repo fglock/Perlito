@@ -596,19 +596,43 @@ sub parse_precedence_expression {
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )->{next};
 
-        # Handle postfix () [] {}
-        if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {
+        if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle postfix () [] {}
             my $right_expr = parse_term( $tokens, $op_pos );
             if ( $right_expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
             }
             $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
             $pos       = $left_expr->{next};
+            $pos       = parse_optional_whitespace( $tokens, $pos )->{next};
             next;
         }
-
-        # Handle ternary operator
-        if ( $type == QUESTION() ) {
+        if ( $type == ARROW() ) {                                                            # Handle ->method  ->method()  ->() ->[] ->{}
+            $type = $tokens->[$pos][0];
+            my $right_expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'->'} + 1 );
+            if ( $right_expr->{FAIL} ) {
+                return parse_fail( $tokens, $index );
+            }
+            if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle ->() ->[] ->{}
+                $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
+            }
+            else {
+                $pos = parse_optional_whitespace( $tokens, $right_expr->{next} )->{next};
+                if ( $tokens->[$pos][0] == PAREN_OPEN() ) {                                      # method call with arguments
+                    my $args_expr = parse_term( $tokens, $pos );
+                    if ( $args_expr->{FAIL} ) {
+                        return parse_fail( $tokens, $index );
+                    }
+                    $left_expr = { type => 'METHOD_CALL', value => [ $left_expr, $right_expr, $args_expr ], next => $args_expr->{next} };
+                }
+                else {
+                    $left_expr = { type => 'METHOD_CALL', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
+                }
+            }
+            $pos = $left_expr->{next};
+            $pos = parse_optional_whitespace( $tokens, $pos )->{next};
+            next;
+        }    # /arrow
+        if ( $type == QUESTION() ) {    # Handle ternary operator
             my $true_expr = parse_precedence_expression( $tokens, $pos, 0 );    # Parse the true branch
             if ( $true_expr->{FAIL} ) {
                 return parse_fail( $tokens, $index );
@@ -627,29 +651,21 @@ sub parse_precedence_expression {
             $pos       = $left_expr->{next};
             next;
         }
-
-        # Handle postfix operators
-        if ( $POSTFIX{$op_value} ) {
-
+        if ( $POSTFIX{$op_value} ) {                                                            # Handle postfix operators
             if (   $NON_ASSOC_AUTO{$op_value}
                 && ( $left_expr->{type} eq 'POSTFIX_OP' || $left_expr->{type} eq 'PREFIX_OP' )
-                && $NON_ASSOC_AUTO{ $left_expr->{value}{op} } )    # check for nonassoc syntax error
+                && $NON_ASSOC_AUTO{ $left_expr->{value}{op} } )                                 # check for nonassoc syntax error
             {
                 die error_message( $tokens, $index, "syntax error" );
             }
-
             $left_expr = { type => 'POSTFIX_OP', value => { op => $op_value, arg => $left_expr }, next => $pos };
             next;
         }
 
         my $next_min_precedence = $ASSOC_RIGHT{$op_value} ? $precedence : $precedence + 1;
         my $right_expr          = parse_precedence_expression( $tokens, $pos, $next_min_precedence );
-        if ( $right_expr->{FAIL} ) {
-
-            # backtrack
-            if ( $LIST{$op_value} ) {
-
-                # Handle terminal comma and fat comma
+        if ( $right_expr->{FAIL} ) {    # backtrack
+            if ( $LIST{$op_value} ) {    # Handle terminal comma and fat comma
                 my @left = ($left_expr);
                 if ( $left_expr->{type} eq 'LIST_OP' ) {
                     @left = @{ $left_expr->{value} };
@@ -660,10 +676,7 @@ sub parse_precedence_expression {
                 return parse_fail( $tokens, $index );
             }
         }
-
-        if ( $LIST{$op_value} ) {
-
-            # Handle list separators (comma and fat comma)
+        if ( $LIST{$op_value} ) {    # Handle list separators (comma and fat comma)
             my @right = ($right_expr);
             if ( $right_expr->{type} eq 'LIST_OP' ) {
                 @right = @{ $right_expr->{value} };
@@ -1323,6 +1336,9 @@ EOT
 $a = <<\EOT;
  single quoted
 EOT
+
+$a->$b;
+$a->b(123);
 
 __END__
 123
