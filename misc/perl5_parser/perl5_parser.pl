@@ -156,6 +156,16 @@ my $FUNCTION_CALL_NO_ARGUMENTS = sub {    # no arguments
     }
     return { type => 'APPLY', value => { name => $name }, next => $index };
 };
+my $FUNCTION_CALL_BLOCK_ARGUMENT = sub {    # argument is a block
+    my ( $tokens, $index, $name ) = @_;
+    my $pos   = $index;
+    my $block = parse_statement_block( $tokens, $pos );
+    if ( $block->{FAIL} ) {
+        return parse_fail( $tokens, $index );
+    }
+    return { type => 'APPLY_BLOCK', value => { name => $name, block => $block }, next => $block->{next} };
+};
+
 my %SUB_LANGUAGE_HOOK = (
 
     # define placeholder parsers for Sub-Languages that we don't have yet
@@ -202,16 +212,10 @@ my %SUB_LANGUAGE_HOOK = (
         }
         return { type => 'PRINT', value => { name => $name, args => $expr }, next => $expr->{next} };
     },
-    'do' => sub {                                                  # do {block}
-        my ( $tokens, $index, $name ) = @_;
-        my $pos   = $index;
-        my $block = parse_statement_block( $tokens, $pos );
-        if ( $block->{FAIL} ) {
-            return parse_fail( $tokens, $index );
-        }
-        return { type => 'DO_BLOCK', value => { name => $name, block => $block }, next => $block->{next} };
-    },
-    'use' => sub {                                                 # use module;
+    'do'   => $FUNCTION_CALL_BLOCK_ARGUMENT,
+    'eval' => $FUNCTION_CALL_BLOCK_ARGUMENT,
+    'sub'  => $FUNCTION_CALL_BLOCK_ARGUMENT,
+    'use'  => sub {                                                # use module;
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
@@ -219,6 +223,15 @@ my %SUB_LANGUAGE_HOOK = (
             return parse_fail( $tokens, $index );
         }
         return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
+    },
+    'no' => sub {                                                  # use module;
+        my ( $tokens, $index, $name ) = @_;
+        my $pos  = $index;
+        my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
+        if ( $expr->{FAIL} ) {
+            return parse_fail( $tokens, $index );
+        }
+        return { type => 'NO', value => { name => $name, args => $expr }, next => $expr->{next} };
     },
 );
 
@@ -1036,7 +1049,7 @@ sub parse_if_expression {
 
 sub parse_delimited_expression {
     my ( $tokens, $index, $delim ) = @_;
-    my $pos         = $index;
+    my $pos = $index;
     my $expr;
     my $start_delim = $delim;
     my $precedence  = 0;
@@ -1044,6 +1057,7 @@ sub parse_delimited_expression {
     if ( $QUOTE_PAIR{$delim} ) { $delim = $QUOTE_PAIR{$delim} }    # q< ... >
     error( $tokens, $index ) if $tokens->[$pos][1] ne $start_delim;
     $pos = parse_optional_whitespace( $tokens, $pos + 1 )->{next};
+
     if ( $tokens->[$pos][1] ne $delim ) {
         $expr = parse_precedence_expression( $tokens, $pos, $precedence );
         error( $tokens, $index ) if $expr->{FAIL};
@@ -1063,7 +1077,7 @@ sub parse_statement_block {
         my @expr;
         while ( $tokens->[$pos][0] != END_TOKEN() ) {
             my $expr = parse_statement( $tokens, $pos );
-            last if  $expr->{FAIL} ;
+            last if $expr->{FAIL};
             push @expr, $expr;
             $pos = $expr->{next};
         }
@@ -1178,6 +1192,9 @@ sub parse_statement {
     if ( $tokens->[$pos][0] == END_TOKEN() ) {
         return parse_fail( $tokens, $index );
     }
+
+    # TODO label:
+
     my $ast;
     if ( $tokens->[$pos][0] == SEMICOLON() ) {
         $pos++;    # semicolon
@@ -1191,12 +1208,12 @@ sub parse_statement {
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             if ( $stmt eq 'for' || $stmt eq 'foreach' ) {
                 $expr = parse_if_expression( $tokens, $pos, '(' );
-                if ( $expr->{value}{delimiter} eq ';') {
-                    my @expr = ( $expr );
-                    $pos = $expr->{next} - 1;
+                if ( $expr->{value}{delimiter} eq ';' ) {
+                    my @expr = ($expr);
+                    $pos  = $expr->{next} - 1;
                     $expr = parse_if_expression( $tokens, $pos, ';' );
                     push @expr, $expr;
-                    $pos = $expr->{next} - 1;
+                    $pos  = $expr->{next} - 1;
                     $expr = parse_if_expression( $tokens, $pos, ')' );
                     push @expr, $expr;
                     $expr = { type => 'THREE_ARG_FOR', value => \@expr, next => $expr->{next} };
@@ -1210,15 +1227,25 @@ sub parse_statement {
             $pos = parse_optional_whitespace( $tokens, $pos )->{next};
             my $block = parse_statement_block( $tokens, $pos );
             error( $tokens, $index ) if $expr->{FAIL};
+
+            # TODO if/unless .. else/elsif
+            # TODO continue
+
             $ast = { type => 'STATEMENT', value => { stmt => $stmt, condition => $expr, block => $block }, next => $block->{next} };
             $pos = $ast->{next};
         }
     }
     elsif ( $tokens->[$pos][0] == CURLY_OPEN() ) {
+
+        # BEGIN, END, INIT, CHECK, UNITCHECK
+
         $ast = parse_statement_block( $tokens, $pos );
         if ( $ast->{FAIL} ) {
             return parse_fail( $tokens, $index );
         }
+
+        # TODO continue
+
         $pos = $ast->{next};
     }
     if ( !$ast ) {
