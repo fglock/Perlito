@@ -48,11 +48,11 @@ use Data::Dumper;
 #   features
 #       postderef feature
 #       try-catch
-#   
+#
 #   keep track of declarations
 #       sub
 #       my, our, local, state
-#   
+#
 #   BEGIN
 #
 #   continue, else, elsif
@@ -158,10 +158,10 @@ my %PRECEDENCE               = (
 # Sub-Languages are code regions that don't follow the regular parsing rules
 #
 
-# parse_grammar( $tokens, $index, 
+# parse_grammar( $tokens, $index,
 #   { type => 'EXPR', opt => [ \&parse_optional_whitespace, \&PAREN_CLOSE ] },
 # );
-# parse_grammar( $tokens, $index, 
+# parse_grammar( $tokens, $index,
 #   { seq => [ \&parse_optional_whitespace, \&PAREN_CLOSE ] },
 # );
 #
@@ -170,7 +170,7 @@ sub parse_grammar {
     my @res;
     if ( $rule->{seq} ) {
         my $type = $rule->{type} // "";
-        my $pos = $index;
+        my $pos  = $index;
       SEQ:
         for my $rule ( @{ $rule->{seq} } ) {
             my $ast =
@@ -183,7 +183,7 @@ sub parse_grammar {
                     $pos++;
                 }
                 else {
-                    $pos = $ast;         # parse_optional_whitespace: always succeed
+                    $pos = $ast;     # parse_optional_whitespace: always succeed
                 }
                 next SEQ;
             }
@@ -194,7 +194,7 @@ sub parse_grammar {
         if ( @res == 1 && !$type ) {
             return { %{ $res[0] }, next => $pos };
         }
-        return { type => $type , index => $index, value => \@res, next => $pos };
+        return { type => $type, index => $index, value => \@res, next => $pos };
     }
     elsif ( $rule->{opt} ) {
         my $type = $rule->{type};
@@ -210,9 +210,9 @@ sub parse_grammar {
                     next OPT if $tokens->[$index][0] != $ast;
                     return $pos + 1;
                 }
-                return $ast;    # parse_optional_whitespace: always succeed
+                return $ast;         # parse_optional_whitespace: always succeed
             }
-            next OPT if $ast->{FAIL};
+            next OPT                                                                       if $ast->{FAIL};
             return { type => $type, index => $index, value => $ast, next => $ast->{next} } if $type;
             return $ast;
         }
@@ -248,12 +248,7 @@ sub meta_optional_parenthesis {
     return {
         opt => [
             {
-                seq => [
-                    \&PAREN_OPEN,                \&parse_optional_whitespace,
-                    $rule,
-                    \&parse_optional_whitespace,
-                    { opt => [ \&PAREN_CLOSE, \&error ] },
-                ]
+                seq => [ \&PAREN_OPEN, \&parse_optional_whitespace, $rule, \&parse_optional_whitespace, { opt => [ \&PAREN_CLOSE, \&error ] }, ]
             },
             $rule,
         ],
@@ -313,42 +308,38 @@ my %SUB_LANGUAGE_HOOK = (
         return parse_grammar(
             $tokens, $index,
             meta_optional_parenthesis(
-                { 
+                {
                     type => "${name}_OP",
-                    seq => [],
+                    seq  => [],
                 },
             ),
         );
-      },
-    'time'      => sub {
-        my ( $tokens, $index, $name ) = @_;
-        return parse_grammar(
-            $tokens, $index,
-            meta_optional_parenthesis(
-                { 
-                    type => "${name}_OP",
-                    seq => [],
-                },
-            ),
-        );
-      },
-    'map'       => sub {
+    },
+    'time' => sub {
         my ( $tokens, $index, $name ) = @_;
         return parse_grammar(
             $tokens, $index,
             meta_optional_parenthesis(
                 {
                     type => "${name}_OP",
-                    opt => [
-                        { seq => [ $rule_block, \&parse_arg_list, ] },
-                        \&parse_arg_list,
-                        { seq => [] },
-                    ],
+                    seq  => [],
+                },
+            ),
+        );
+    },
+    'map' => sub {
+        my ( $tokens, $index, $name ) = @_;
+        return parse_grammar(
+            $tokens, $index,
+            meta_optional_parenthesis(
+                {
+                    type => "${name}_OP",
+                    opt  => [ { seq => [ $rule_block, \&parse_arg_list, ] }, \&parse_arg_list, { seq => [] }, ],
                 }
             ),
         );
-      },
-    'print'     => sub {
+    },
+    'print' => sub {
         my ( $tokens, $index, $name ) = @_;
         return parse_grammar(
             $tokens, $index,
@@ -357,11 +348,7 @@ my %SUB_LANGUAGE_HOOK = (
                 opt  => [
                     meta_optional_parenthesis(
                         {
-                            opt => [
-                                $rule_block,
-                                \&parse_arg_list,
-                                { seq => [] },
-                            ],
+                            opt => [ $rule_block, \&parse_arg_list, { seq => [] }, ],
                         }
                     ),
                 ],
@@ -377,7 +364,7 @@ my %SUB_LANGUAGE_HOOK = (
                 seq  => [ \&parse_statement_block, ],
             },
         );
-      },
+    },
     'eval' => sub {
         my ( $tokens, $index, $name ) = @_;
         return parse_grammar(
@@ -387,18 +374,14 @@ my %SUB_LANGUAGE_HOOK = (
                 opt  => [
                     meta_optional_parenthesis(
                         {
-                            opt => [
-                                $rule_block,
-                                \&parse_arg_list,
-                                { seq => [] },
-                            ],
+                            opt => [ $rule_block, \&parse_arg_list, { seq => [] }, ],
                         }
                     ),
                 ],
             },
         );
-      },
-    'sub'  => sub {
+    },
+    'sub' => sub {
         my ( $tokens, $index, $name ) = @_;
         return parse_grammar(
             $tokens, $index,
@@ -408,14 +391,14 @@ my %SUB_LANGUAGE_HOOK = (
             },
         );
     },
-    'use'  => sub {                                                # use module;
+    'use' => sub {    # use module;
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
         return parse_fail() if $expr->{FAIL};
         return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
     },
-    'no' => sub {                                                  # use module;
+    'no' => sub {     # use module;
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
@@ -425,13 +408,13 @@ my %SUB_LANGUAGE_HOOK = (
 );
 
 use constant {
-    END_TOKEN     => -1,
-    WHITESPACE    => -2,
-    KEYWORD       => -3,
-    IDENTIFIER    => -4,
-    NUMBER        => -5,
-    OPERATOR      => -9,
-    STRING        => -11,
+    END_TOKEN  => -1,
+    WHITESPACE => -2,
+    KEYWORD    => -3,
+    IDENTIFIER => -4,
+    NUMBER     => -5,
+    OPERATOR   => -9,
+    STRING     => -11,
 
     STRING_DELIM  => -12,
     NEWLINE       => -13,
@@ -1001,7 +984,7 @@ sub parse_number {
                 $pos++;    # 123.456
             }
         }
-        elsif ( $tokens->[$pos][0] != IDENTIFIER() ) {  # no exponent
+        elsif ( $tokens->[$pos][0] != IDENTIFIER() ) {    # no exponent
             return { type => 'INTEGER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
         }
     }
