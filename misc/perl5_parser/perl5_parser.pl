@@ -41,6 +41,37 @@ use Data::Dumper;
 #   why returning FAIL instead of die(): it allows for backtracking and for error handling in a different place.
 #   but eventually I'd rather get rid of all backtracking
 #
+# TODO
+#
+#   namespaces
+#
+#   features
+#       postderef feature
+#       try-catch
+#   
+#   keep track of declarations
+#       sub
+#       my, our, local, state
+#   
+#   BEGIN
+#
+#   continue, else, elsif
+#
+#   label:
+#
+#   attributes
+#
+#   subroutine
+#       signatures
+#       prototype
+#
+#   UTF8 parsing
+#       delimiter pairs
+#
+#   warnings
+#
+#   tests
+#
 
 my %QUOTE_PAIR = (
     '{' => '}',
@@ -125,6 +156,18 @@ my %PRECEDENCE               = (
 
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
+#
+# types of syntax rules:
+#
+#   //                              raw string
+#   //m                             1 raw string and modifier
+#   ///m                            2 raw strings and modifier
+#   -  |  ()                        no arguments, optional parenthesis
+#   { BLOCK }                       plain block, no parenthesis
+#   { BLOCK }  |  ( { BLOCK } )     plain block, optional parenthesis
+#   -  |  ()  |  EXPR  |  ( EXPR )  zero or 1 argument, optional parenthesis
+#   LIST(precedence)                list, with precedence, optional parenthesis
+#   LIST(slurpy)                    list, all arguments, optional parenthesis
 #
 my $ONE_ARG_STUB = sub {    # qw/abc def/
     my ( $tokens, $index, $name, $ast ) = @_;
