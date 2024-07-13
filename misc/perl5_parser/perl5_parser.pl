@@ -45,6 +45,10 @@ use Data::Dumper;
 #
 #   namespaces
 #
+#   typeglobs
+#       *HANDLE
+#       *HANDLE{IO}
+#
 #   features
 #       postderef feature
 #       try-catch
@@ -248,7 +252,10 @@ sub meta_optional_parenthesis {
     return {
         opt => [
             {
-                seq => [ \&PAREN_OPEN, \&parse_optional_whitespace, $rule, \&parse_optional_whitespace, { opt => [ \&PAREN_CLOSE, \&error ] }, ]
+                seq => [
+                    \&PAREN_OPEN, \&parse_optional_whitespace, $rule,    # ( RULE )
+                    \&parse_optional_whitespace, { opt => [ \&PAREN_CLOSE, \&error ] },
+                ]
             },
             $rule,
         ],
@@ -268,77 +275,82 @@ my $THREE_ARG_STUB = sub {    # s/abc/def/ig
     return $ast;
 };
 
+sub meta_parse_using {
+    my ( $op_list, $grammar ) = @_;
+    return map { $_ => $grammar } @$op_list;
+}
+
 my %SUB_LANGUAGE_HOOK = (
 
     # define placeholder parsers for Sub-Languages that we don't have yet
-    ( map { $_ => $ONE_ARG_STUB } qw{ qq qx qr glob_string } ),    # 1-argument
-    ( map { $_ => $THREE_ARG_STUB } qw{ tr y } ),                  # 3-argument
+    meta_parse_using( [qw{ qq qx qr glob_string }], $ONE_ARG_STUB ),      # 1-argument raw string
+    meta_parse_using( [qw{ tr y }],                 $THREE_ARG_STUB ),    # 3-argument raw string
 
-    q => sub {                                                     # 'abc'
+    q => sub {                                                            # 'abc'
         my ( $tokens, $pos, $name, $ast ) = @_;
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         my $str   = $ast->{value}{buffers}[0];
         my $delim = $ast->{value}{end_delim};
-        $str =~ s{\\\Q$delim}{$delim}g;                            # unescape
+        $str =~ s{\\\Q$delim}{$delim}g;                                   # unescape
         $str =~ s{\\\\}{$delim}g if $delim ne '\\';
         $ast->{value} = $str;
         $ast->{type}  = 'STRING';
         return $ast;
     },
-    m => sub {                                                     # m/abc/ig
+    m => sub {                                                            # m/abc/ig
         my ( $tokens, $index, $name, $ast ) = @_;
         my $pos = $index;
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 2, name => $name );
         return $ast;
     },
-    s => sub {                                                     # s/abc/def/ig
+    s => sub {                                                            # s/abc/def/ig
         my ( $tokens, $index, $name, $ast ) = @_;
         my $pos = $index;
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
         return $ast;
     },
-    qw => sub {                                                    # qw/abc def/
+    qw => sub {                                                           # qw/abc def/
         my ( $tokens, $index, $name, $ast ) = @_;
         my $pos = $index;
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         return $ast;
     },
-    'wantarray' => sub {
-        my ( $tokens, $index, $name ) = @_;
-        return parse_grammar(
-            $tokens, $index,
-            meta_optional_parenthesis(
-                {
-                    type => "${name}_OP",
-                    seq  => [],
-                },
-            ),
-        );
-    },
-    'time' => sub {
-        my ( $tokens, $index, $name ) = @_;
-        return parse_grammar(
-            $tokens, $index,
-            meta_optional_parenthesis(
-                {
-                    type => "${name}_OP",
-                    seq  => [],
-                },
-            ),
-        );
-    },
-    'map' => sub {
-        my ( $tokens, $index, $name ) = @_;
-        return parse_grammar(
-            $tokens, $index,
-            meta_optional_parenthesis(
-                {
-                    type => "${name}_OP",
-                    opt  => [ { seq => [ $rule_block, \&parse_arg_list, ] }, \&parse_arg_list, { seq => [] }, ],
-                }
-            ),
-        );
-    },
+    meta_parse_using(
+        [qw{ time wantarray }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return parse_grammar(
+                $tokens, $index,
+                meta_optional_parenthesis(
+                    {
+                        type => "${name}_OP",
+                        seq  => [],
+                    },
+                ),
+            );
+        }
+    ),
+    meta_parse_using(
+        [qw{ map grep sort }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return parse_grammar(
+                $tokens, $index,
+                meta_optional_parenthesis(
+                    {
+                        type => "${name}_OP",
+                        opt  => [
+                            {    # BLOCK LIST
+                                seq => [ $rule_block, \&parse_optional_whitespace, \&parse_arg_list, ]
+                            },
+                            \&parse_arg_list,
+                            { seq => [] },
+                        ],
+                    }
+                ),
+            );
+        }
+    ),
     'print' => sub {
         my ( $tokens, $index, $name ) = @_;
         return parse_grammar(
@@ -374,7 +386,10 @@ my %SUB_LANGUAGE_HOOK = (
                 opt  => [
                     meta_optional_parenthesis(
                         {
-                            opt => [ $rule_block, \&parse_arg_list, { seq => [] }, ],
+                            opt => [
+                                $rule_block,    # eval BLOCK
+                                \&parse_arg_list, { seq => [] },
+                            ],
                         }
                     ),
                 ],
