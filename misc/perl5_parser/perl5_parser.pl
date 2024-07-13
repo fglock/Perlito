@@ -61,13 +61,12 @@ use Data::Dumper;
 #
 #   continue, else, elsif
 #
-#   label:
-#
 #   attributes
 #
 #   subroutine
 #       signatures
 #       prototype
+#       most builtin functions are missing
 #
 #   UTF8 parsing
 #       delimiter pairs
@@ -1353,14 +1352,18 @@ sub parse_statement {
     $pos = parse_optional_whitespace( $tokens, $pos );
     return parse_fail() if $tokens->[$pos][0] == END_TOKEN();
 
-    # TODO label:
-
     my $ast;
     if ( $tokens->[$pos][0] == SEMICOLON() ) {
         return { type => 'STATEMENT', value => { stmt => 'empty_statement' }, next => $pos + 1 };
     }
     elsif ( $tokens->[$pos][0] == IDENTIFIER() ) {
         my $stmt = $tokens->[$pos][1];
+
+        my $pos1 = parse_optional_whitespace( $tokens, $pos + 1 );
+        if ( $tokens->[$pos1][0] == COLON() ) {     # LABEL:
+            return { type => 'LABEL', index => $index, value => $stmt, next => $pos1 + 1 };
+        }
+
         if ( $STATEMENT_COND_BLOCK{$stmt} ) {
             $pos = parse_optional_whitespace( $tokens, $pos + 1 );
             my $expr = parse_if_expression( $tokens, $pos );
@@ -1572,7 +1575,7 @@ EOT
 $a->$b;
 $a->b(123) if $b;
 
-foreach ( 1;2;3 ) { $a }
+LABEL: OTHER_LABEL: foreach ( 1;2;3 ) { $a }
 
 __END__
 123
