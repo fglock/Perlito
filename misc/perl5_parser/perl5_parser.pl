@@ -74,6 +74,8 @@ use Data::Dumper;
 #
 #   warnings
 #
+#   indirect syntax
+#
 #   tests
 #
 
@@ -262,19 +264,6 @@ sub meta_optional_parenthesis {
     };
 }
 
-my $ONE_ARG_STUB = sub {    # qw/abc def/
-    my ( $tokens, $index, $name, $ast ) = @_;
-    my $pos = $index;
-    $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
-    return $ast;
-};
-my $THREE_ARG_STUB = sub {    # s/abc/def/ig
-    my ( $tokens, $index, $name, $ast ) = @_;
-    my $pos = $index;
-    $ast //= parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
-    return $ast;
-};
-
 sub meta_parse_using {
     my ( $op_list, $grammar ) = @_;
     return map { $_ => $grammar } @$op_list;
@@ -283,33 +272,49 @@ sub meta_parse_using {
 my %SUB_LANGUAGE_HOOK = (
 
     # define placeholder parsers for Sub-Languages that we don't have yet
-    meta_parse_using( [qw{ qq qx qr glob_string }], $ONE_ARG_STUB ),      # 1-argument raw string
-    meta_parse_using( [qw{ tr y }],                 $THREE_ARG_STUB ),    # 3-argument raw string
+    meta_parse_using(
+        [qw{ qq qx qr glob_string }],
+        sub {    # qw//  1-argument raw string
+            my ( $tokens, $index, $name, $ast ) = @_;
+            my $pos = $index;
+            $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
+            return $ast;
+        }
+    ),
+    meta_parse_using(
+        [qw{ tr y }],
+        sub {    # s/abc/def/ig  3-argument raw string
+            my ( $tokens, $index, $name, $ast ) = @_;
+            my $pos = $index;
+            $ast //= parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
+            return $ast;
+        }
+    ),
 
-    q => sub {                                                            # 'abc'
+    q => sub {    # 'abc'
         my ( $tokens, $pos, $name, $ast ) = @_;
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         my $str   = $ast->{value}{buffers}[0];
         my $delim = $ast->{value}{end_delim};
-        $str =~ s{\\\Q$delim}{$delim}g;                                   # unescape
+        $str =~ s{\\\Q$delim}{$delim}g;               # unescape
         $str =~ s{\\\\}{$delim}g if $delim ne '\\';
         $ast->{value} = $str;
         $ast->{type}  = 'STRING';
         return $ast;
     },
-    m => sub {                                                            # m/abc/ig
+    m => sub {                                        # m/abc/ig
         my ( $tokens, $index, $name, $ast ) = @_;
         my $pos = $index;
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 2, name => $name );
         return $ast;
     },
-    s => sub {                                                            # s/abc/def/ig
+    s => sub {                                        # s/abc/def/ig
         my ( $tokens, $index, $name, $ast ) = @_;
         my $pos = $index;
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
         return $ast;
     },
-    qw => sub {                                                           # qw/abc def/
+    qw => sub {                                       # qw/abc def/
         my ( $tokens, $index, $name, $ast ) = @_;
         my $pos = $index;
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
@@ -351,22 +356,31 @@ my %SUB_LANGUAGE_HOOK = (
             );
         }
     ),
-    'print' => sub {
-        my ( $tokens, $index, $name ) = @_;
-        return parse_grammar(
-            $tokens, $index,
-            {
-                type => "${name}_OP",
-                opt  => [
-                    meta_optional_parenthesis(
-                        {
-                            opt => [ $rule_block, \&parse_arg_list, { seq => [] }, ],
-                        }
-                    ),
-                ],
-            },
-        );
-    },
+    meta_parse_using(
+        [qw{ print printf say }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return parse_grammar(
+                $tokens, $index,
+                {
+                    type => "${name}_OP",
+                    opt  => [
+                        meta_optional_parenthesis(
+                            {
+                                opt => [
+                                    {    # print FILE LIST
+                                        seq => [ \&parse_file_handle, \&parse_arg_list ]
+                                    },
+                                    \&parse_arg_list,
+                                    { seq => [] },
+                                ],
+                            }
+                        ),
+                    ],
+                },
+            );
+        },
+    ),
     'do' => sub {
         my ( $tokens, $index, $name ) = @_;
         return parse_grammar(
@@ -1208,6 +1222,32 @@ sub parse_statement_block {
         push @expr, $expr;
         $pos = $expr->{next};
     }
+}
+
+sub parse_file_handle {
+    my ( $tokens, $index ) = @_;
+    my $pos = $index;
+
+    #  print $f LIST
+    #  print {$f} LIST
+    #  print STDOUT LIST
+    #  print {STDOUT} LIST
+    my $ast;
+    if ( $tokens->[$pos][0] == IDENTIFIER() ) {
+        $ast = { type => 'BAREWORD', value => $tokens->[$pos][1], next => $pos + 1 };
+    }
+    elsif ( $tokens->[$pos][0] == SIGIL() && $tokens->[$pos][1] eq '$' ) {
+        $ast = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'$'} );
+    }
+    elsif ( $tokens->[$pos][0] == CURLY_OPEN() ) {
+        $ast = parse_delimited_expression( $tokens, $pos + 1, '{', '}' );
+    }
+    return parse_fail() if !$ast || $ast->{FAIL};
+    $pos = $ast->{next};
+    return parse_fail() if $tokens->[$pos][0] != WHITESPACE() && $tokens->[$pos][0] != NEWLINE;    # must have space
+    $pos = parse_optional_whitespace( $tokens, $pos );
+    return parse_fail() if $tokens->[$pos][0] == COMMA() || $tokens->[$pos][0] == FAT_ARROW;       # no comma after
+    return { type => 'FILE_HANDLE', value => $ast, next => $pos };
 }
 
 sub parse_term {
