@@ -169,6 +169,108 @@ my %PRECEDENCE               = (
 #   LIST(precedence)                list, with precedence, optional parenthesis
 #   LIST(slurpy)                    list, all arguments, optional parenthesis
 #
+
+# parse_grammar( $tokens, $index, 
+#   { type => 'EXPR', opt => [ \&parse_optional_whitespace, \&PAREN_CLOSE ] },
+# );
+# parse_grammar( $tokens, $index, 
+#   { seq => [ \&parse_optional_whitespace, \&PAREN_CLOSE ] },
+# );
+#
+sub parse_grammar {
+    my ( $tokens, $index, $rule ) = @_;
+    my @res;
+    if ( $rule->{seq} ) {
+        my $type = $rule->{type};
+        my $pos = $index;
+      SEQ:
+        for my $rule ( @{ $rule->{seq} } ) {
+            my $ast =
+              ref($rule) eq 'HASH'
+              ? parse_grammar( $tokens, $pos, $rule )
+              : $rule->( $tokens, $pos );
+            if ( ref($ast) ne 'HASH' ) {
+                if ( $ast < 0 ) {    # constant
+                    return parse_fail() if $tokens->[$pos][0] != $ast;
+                    $pos++;
+                }
+                else {
+                    $pos = $ast;         # parse_optional_whitespace: always succeed
+                }
+                next SEQ;
+            }
+            return $ast if $ast->{FAIL};
+            push @res, $ast;
+            $pos = $ast->{next};
+        }
+        # return $res[0] if @res == 1;
+        return { type => $type , index => $index, value => \@res, next => $pos };
+        # return { type => $type, index => $index, value => \@res, next => $pos } if $type || @res > 1;
+    }
+    elsif ( $rule->{opt} ) {
+        my $type = $rule->{type};
+      OPT:
+        for my $rule ( @{ $rule->{opt} } ) {
+            my $ast =
+              ref($rule) eq 'HASH'
+              ? parse_grammar( $tokens, $index, $rule )
+              : $rule->( $tokens, $index );
+            if ( ref($ast) ne 'HASH' ) {
+                my $pos = $index;
+                if ( $ast < 0 ) {    # constant
+                    next OPT if $tokens->[$index][0] != $ast;
+                    return $pos + 1;
+                }
+                return $ast;    # parse_optional_whitespace: always succeed
+            }
+            next OPT if $ast->{FAIL};
+            return { type => $type, index => $index, value => $ast, next => $ast->{next} } if $type;
+            return $ast;
+        }
+        return parse_fail();
+    }
+    elsif ( $rule->{before} ) {
+        my ($rule) = @{ $rule->{before} };
+        my $ast =
+          ref($rule) eq 'HASH'
+          ? parse_grammar( $tokens, $index, $rule )
+          : $rule->( $tokens, $index );
+        if ( ref($ast) ne 'HASH' ) {
+            if ( $ast < 0 ) {    # constant
+                return parse_fail() if $tokens->[$index][0] != $ast;
+            }
+            return $index;
+        }
+        return parse_fail() if $ast->{FAIL};
+        return $index;
+    }
+    die "malformed grammar";
+}
+
+sub parse_arg_list {
+    my ( $tokens, $index ) = @_;
+    return parse_precedence_expression( $tokens, $index, $LIST_OPERATOR_PRECEDENCE );
+}
+
+my $rule_block = { seq => [ { before => [ \&CURLY_OPEN ] }, \&parse_statement_block, ] };
+
+sub meta_optional_parenthesis {
+    my ($rule) = @_;
+    return {
+        opt => [
+            {
+                seq => [
+                    \&PAREN_OPEN,                \&parse_optional_whitespace,
+                    $rule,
+                    \&parse_optional_whitespace,
+                    { opt => [ \&PAREN_CLOSE, \&error ] },
+                ]
+            },
+            $rule,
+        ],
+    };
+}
+
 my $ONE_ARG_STUB = sub {    # qw/abc def/
     my ( $tokens, $index, $name, $ast ) = @_;
     my $pos = $index;
@@ -180,22 +282,6 @@ my $THREE_ARG_STUB = sub {    # s/abc/def/ig
     my $pos = $index;
     $ast //= parse_raw_strings( $tokens, $pos, string_count => 3, name => $name );
     return $ast;
-};
-my $FUNCTION_CALL_NO_ARGUMENTS = sub {    # no arguments
-    my ( $tokens, $index, $name ) = @_;
-    my $pos = parse_optional_whitespace( $tokens, $index );
-    if ( $tokens->[$pos][0] == PAREN_OPEN() ) {
-        my $args_expr = parse_term( $tokens, $pos );
-        error( $tokens, $index ) if $args_expr->{FAIL} || $args_expr->{value}{args};
-    }
-    return { type => 'APPLY', value => { name => $name }, next => $index };
-};
-my $FUNCTION_CALL_BLOCK_ARGUMENT = sub {    # argument is a block
-    my ( $tokens, $index, $name ) = @_;
-    my $pos   = $index;
-    # XXX TODO do ( { print 123 } )
-    my $block = parse_statement_block( $tokens, $pos );
-    return { type => 'APPLY_BLOCK', value => { name => $name, block => $block }, next => $block->{next} };
 };
 
 my %SUB_LANGUAGE_HOOK = (
@@ -233,18 +319,106 @@ my %SUB_LANGUAGE_HOOK = (
         $ast //= parse_raw_strings( $tokens, $pos, string_count => 1, name => $name );
         return $ast;
     },
-    'wantarray' => $FUNCTION_CALL_NO_ARGUMENTS,
-    'time'      => $FUNCTION_CALL_NO_ARGUMENTS,
-    'print'     => sub {                                           # print FILE "this"; print "this"; print
+    'wantarray' => sub {
         my ( $tokens, $index, $name ) = @_;
-        my $pos  = $index;
-        my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
-        return parse_fail() if $expr->{FAIL};
-        return { type => 'PRINT', value => { name => $name, args => $expr }, next => $expr->{next} };
+        return parse_grammar(
+            $tokens, $index,
+            meta_optional_parenthesis(
+                { 
+                    type => "${name}_OP",
+                    seq => [],
+                },
+            ),
+        );
+      },
+    'time'      => sub {
+        my ( $tokens, $index, $name ) = @_;
+        return parse_grammar(
+            $tokens, $index,
+            meta_optional_parenthesis(
+                { 
+                    type => "${name}_OP",
+                    seq => [],
+                },
+            ),
+        );
+      },
+    'map'       => sub {
+        my ( $tokens, $index, $name ) = @_;
+        return parse_grammar(
+            $tokens, $index,
+            meta_optional_parenthesis(
+                {
+                    type => "${name}_OP",
+                    opt => [
+                        { seq => [ $rule_block, \&parse_arg_list, ] },
+                        \&parse_arg_list,
+                        { seq => [] },
+                    ],
+                }
+            ),
+        );
+      },
+    'print'     => sub {
+        my ( $tokens, $index, $name ) = @_;
+        return parse_grammar(
+            $tokens, $index,
+            {
+                type => "${name}_OP",
+                opt  => [
+                    meta_optional_parenthesis(
+                        {
+                            opt => [
+                                $rule_block,
+                                \&parse_arg_list,
+                                { seq => [] },
+                            ],
+                        }
+                    ),
+                ],
+            },
+        );
     },
-    'do'   => $FUNCTION_CALL_BLOCK_ARGUMENT,
-    'eval' => $FUNCTION_CALL_BLOCK_ARGUMENT,
-    'sub'  => $FUNCTION_CALL_BLOCK_ARGUMENT,
+    'do' => sub {
+        my ( $tokens, $index, $name ) = @_;
+        return parse_grammar(
+            $tokens, $index,
+            {
+                type => "${name}_OP",
+                seq  => [ \&parse_statement_block, ],
+            },
+        );
+      },
+    'eval' => sub {
+        my ( $tokens, $index, $name ) = @_;
+        return parse_grammar(
+            $tokens, $index,
+            {
+                type => "${name}_OP",
+                opt  => [
+                    meta_optional_parenthesis(
+                        {
+                            opt => [
+                                $rule_block,
+                                \&parse_arg_list,
+                                { seq => [] },
+                            ],
+                        }
+                    ),
+                ],
+            },
+        );
+      },
+    'sub'  => sub {
+        my ( $tokens, $index, $name ) = @_;
+        return parse_grammar(
+            $tokens, $index,
+            {
+                type => "${name}_OP",
+                seq  => [ \&parse_statement_block, ],
+            },
+        );
+    },
     'use'  => sub {                                                # use module;
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
@@ -262,40 +436,40 @@ my %SUB_LANGUAGE_HOOK = (
 );
 
 use constant {
-    START      => 0,
-    END_TOKEN  => 1,
-    WHITESPACE => 2,
-    KEYWORD    => 3,
-    IDENTIFIER => 4,
-    NUMBER     => 5,
-    OPERATOR   => 9,
-    STRING     => 11,
+    END_TOKEN     => -1,
+    WHITESPACE    => -2,
+    KEYWORD       => -3,
+    IDENTIFIER    => -4,
+    NUMBER        => -5,
+    OPERATOR      => -9,
+    STRING        => -11,
 
-    STRING_DELIM  => 12,
-    NEWLINE       => 13,
-    START_COMMENT => 14,
-    ESCAPE        => 15,
-    MINUS         => 16,
-    DOT           => 17,
-    SIGIL         => 18,
-    PAREN_OPEN    => 19,
-    PAREN_CLOSE   => 20,
-    QUESTION      => 21,
-    COLON         => 22,
-    COMMA         => 23,
-    SQUARE_OPEN   => 24,
-    SQUARE_CLOSE  => 25,
-    CURLY_OPEN    => 26,
-    CURLY_CLOSE   => 27,
-    SEMICOLON     => 28,
-    ARROW         => 29,
-    EQUALS        => 30,
-    SLASH         => 31,
-    FAT_ARROW     => 32,
-    DOUBLE_COLON  => 33,
-    LESS_THAN     => 34,
-    LESS_LESS     => 35,
-    TILDE         => 36,
+    STRING_DELIM  => -12,
+    NEWLINE       => -13,
+    START_COMMENT => -14,
+    ESCAPE        => -15,
+    MINUS         => -16,
+    DOT           => -17,
+    SIGIL         => -18,
+    PAREN_OPEN    => -19,
+    PAREN_CLOSE   => -20,
+    QUESTION      => -21,
+    COLON         => -22,
+    COMMA         => -23,
+    SQUARE_OPEN   => -24,
+    SQUARE_CLOSE  => -25,
+    CURLY_OPEN    => -26,
+    CURLY_CLOSE   => -27,
+    SEMICOLON     => -28,
+    ARROW         => -29,
+    EQUALS        => -30,
+    SLASH         => -31,
+    FAT_ARROW     => -32,
+    DOUBLE_COLON  => -33,
+    LESS_THAN     => -34,
+    LESS_LESS     => -35,
+    TILDE         => -36,
+    START         => -37,
 };
 
 my %TOKEN_NAME = (
