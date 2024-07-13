@@ -174,15 +174,13 @@ my %PRECEDENCE               = (
 sub parse_grammar {
     my ( $tokens, $index, $rule ) = @_;
     my @res;
+    return $rule->( $tokens, $index ) if ref($rule) ne 'HASH';
     if ( $rule->{seq} ) {
         my $type = $rule->{type} // "";
         my $pos  = $index;
       SEQ:
         for my $rule ( @{ $rule->{seq} } ) {
-            my $ast =
-              ref($rule) eq 'HASH'
-              ? parse_grammar( $tokens, $pos, $rule )
-              : $rule->( $tokens, $pos );
+            my $ast = parse_grammar( $tokens, $pos, $rule );
             if ( ref($ast) ne 'HASH' ) {
                 if ( $ast < 0 ) {    # constant
                     return parse_fail() if $tokens->[$pos][0] != $ast;
@@ -206,10 +204,7 @@ sub parse_grammar {
         my $type = $rule->{type};
       OPT:
         for my $rule ( @{ $rule->{opt} } ) {
-            my $ast =
-              ref($rule) eq 'HASH'
-              ? parse_grammar( $tokens, $index, $rule )
-              : $rule->( $tokens, $index );
+            my $ast = parse_grammar( $tokens, $index, $rule );
             if ( ref($ast) ne 'HASH' ) {
                 my $pos = $index;
                 if ( $ast < 0 ) {    # constant
@@ -226,10 +221,7 @@ sub parse_grammar {
     }
     elsif ( $rule->{before} ) {
         my ($rule) = @{ $rule->{before} };
-        my $ast =
-          ref($rule) eq 'HASH'
-          ? parse_grammar( $tokens, $index, $rule )
-          : $rule->( $tokens, $index );
+        my $ast = parse_grammar( $tokens, $index, $rule );
         if ( ref($ast) ne 'HASH' ) {
             if ( $ast < 0 ) {    # constant
                 return parse_fail() if $tokens->[$index][0] != $ast;
@@ -238,6 +230,18 @@ sub parse_grammar {
         }
         return parse_fail() if $ast->{FAIL};
         return $index;
+    }
+    elsif ( $rule->{not_before} ) {
+        my ($rule) = @{ $rule->{not_before} };
+        my $ast = parse_grammar( $tokens, $index, $rule );
+        if ( ref($ast) ne 'HASH' ) {
+            if ( $ast < 0 ) {    # constant
+                return $index if $tokens->[$index][0] != $ast;
+            }
+            return parse_fail();
+        }
+        return $index if $ast->{FAIL};
+        return parse_fail();
     }
     die "malformed grammar";
 }
@@ -369,10 +373,20 @@ my %SUB_LANGUAGE_HOOK = (
                             {
                                 opt => [
                                     {    # print FILE LIST
-                                        seq => [ \&parse_file_handle, \&parse_arg_list ]
+                                        seq => [
+                                            \&parse_file_handle,
+                                            {    # followed by space
+                                                before => [ \&WHITESPACE, \&NEWLINE ],
+                                            },
+                                            \&parse_optional_whitespace,
+                                            {    # not followed by comma
+                                                not_before => [ \&COMMA, \&FAT_ARROW ],
+                                            },
+                                            \&parse_arg_list
+                                        ]
                                     },
-                                    \&parse_arg_list,
-                                    { seq => [] },
+                                    \&parse_arg_list,    # print LIST
+                                    { seq => [] },       # print
                                 ],
                             }
                         ),
@@ -1243,11 +1257,7 @@ sub parse_file_handle {
         $ast = parse_delimited_expression( $tokens, $pos + 1, '{', '}' );
     }
     return parse_fail() if !$ast || $ast->{FAIL};
-    $pos = $ast->{next};
-    return parse_fail() if $tokens->[$pos][0] != WHITESPACE() && $tokens->[$pos][0] != NEWLINE;    # must have space
-    $pos = parse_optional_whitespace( $tokens, $pos );
-    return parse_fail() if $tokens->[$pos][0] == COMMA() || $tokens->[$pos][0] == FAT_ARROW;       # no comma after
-    return { type => 'FILE_HANDLE', value => $ast, next => $pos };
+    return { type => 'FILE_HANDLE', value => $ast, next => $ast->{next} };
 }
 
 sub parse_term {
