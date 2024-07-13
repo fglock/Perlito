@@ -157,18 +157,6 @@ my %PRECEDENCE               = (
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
 #
-# types of syntax rules:
-#
-#   //                              raw string
-#   //m                             1 raw string and modifier
-#   ///m                            2 raw strings and modifier
-#   -  |  ()                        no arguments, optional parenthesis
-#   { BLOCK }                       plain block, no parenthesis
-#   { BLOCK }  |  ( { BLOCK } )     plain block, optional parenthesis
-#   -  |  ()  |  EXPR  |  ( EXPR )  zero or 1 argument, optional parenthesis
-#   LIST(precedence)                list, with precedence, optional parenthesis
-#   LIST(slurpy)                    list, all arguments, optional parenthesis
-#
 
 # parse_grammar( $tokens, $index, 
 #   { type => 'EXPR', opt => [ \&parse_optional_whitespace, \&PAREN_CLOSE ] },
@@ -181,7 +169,7 @@ sub parse_grammar {
     my ( $tokens, $index, $rule ) = @_;
     my @res;
     if ( $rule->{seq} ) {
-        my $type = $rule->{type};
+        my $type = $rule->{type} // "";
         my $pos = $index;
       SEQ:
         for my $rule ( @{ $rule->{seq} } ) {
@@ -203,9 +191,10 @@ sub parse_grammar {
             push @res, $ast;
             $pos = $ast->{next};
         }
-        # return $res[0] if @res == 1;
+        if ( @res == 1 && !$type ) {
+            return { %{ $res[0] }, next => $pos };
+        }
         return { type => $type , index => $index, value => \@res, next => $pos };
-        # return { type => $type, index => $index, value => \@res, next => $pos } if $type || @res > 1;
     }
     elsif ( $rule->{opt} ) {
         my $type = $rule->{type};
