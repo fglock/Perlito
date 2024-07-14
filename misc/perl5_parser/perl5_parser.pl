@@ -411,13 +411,8 @@ my %SUB_LANGUAGE_HOOK = (
                 $tokens, $index,
                 {
                     type => "${name}_OP",
-                    opt  => [
-                        {
-                            opt => [
-                                \&parse_single_arg,                                                                               # XXX my EXPR
-                                { seq => [ \&parse_optional_whitespace, { before => [ \&PAREN_OPEN ] }, \&parse_arg_list, ] },    # my (LIST)
-                            ],
-                        }
+                    seq  => [
+                        \&parse_single_arg,    # XXX my EXPR    my (LIST)
                     ],
                 },
             );
