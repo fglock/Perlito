@@ -75,6 +75,10 @@ use Data::Dumper;
 #
 #   indirect syntax
 #
+#   string interpolation
+#   escape sequences like \x{263A}
+#   octal numbers
+#
 #   tests
 #
 
@@ -390,6 +394,7 @@ my %SUB_LANGUAGE_HOOK = (
                                             },
                                             \&parse_optional_whitespace,
                                             {    # not followed by comma
+                                                # TODO - not followed by INFIX operator
                                                 not_before => [ \&COMMA, \&FAT_ARROW ],
                                             },
                                             \&parse_arg_list
