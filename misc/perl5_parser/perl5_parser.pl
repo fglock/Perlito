@@ -495,7 +495,7 @@ my %SUB_LANGUAGE_HOOK = (
         return parse_fail() if $expr->{FAIL};
         return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
     },
-    'no' => sub {     # use module;
+    'no' => sub {     # no module;
         my ( $tokens, $index, $name ) = @_;
         my $pos  = $index;
         my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
@@ -1599,10 +1599,19 @@ sub main {
     $Data::Dumper::Sortkeys = 1;
     $Data::Dumper::Indent   = 1;
     binmode( STDOUT, ":utf8" );
+    my $filename  = "<DATA>";
     my $perl_code = join( '', <DATA> );
 
     my $args = shift @ARGV;
-    $perl_code = shift(@ARGV) . "\n" if $args && $args eq '-e';
+    if ( $args eq '-e' ) {
+        $filename  = "-e";
+        $perl_code = shift(@ARGV) . "\n";
+    }
+    elsif ( $args ) {
+        $filename = $args;
+        open my $f, "<", $args or die "Can't open file '$args'";
+        $perl_code = join( "", <$f> );
+    }
 
     my $tokens = tokenize($perl_code);
     $tokens->[-1]{filename} = '-e';    # initialize environment hash
