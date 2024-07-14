@@ -360,7 +360,15 @@ my %SUB_LANGUAGE_HOOK = (
         }
     ),
     meta_parse_using(
-        [qw{ rand }],
+        [
+            'abs',        'alarm',    'chomp',         'chop',         'chr',            'chroot',
+            'cos',        'defined',  'delete',        'eval',         'exists',         'exp',
+            'getgrgid',   'getgrnam', 'gethostbyname', 'getnetbyname', 'getprotobyname', 'getprotobynumber',
+            'getpwnam',   'getpwuid', 'hex',           'int',          'lc',             'lcfirst',
+            'length',     'log',      'oct',           'ord',          'quotemeta',      'readlink',
+            'readpipe',   'ref',      'rmdir',         'sethostent',   'setnetent',      'setprotoent',
+            'setservent', 'sin',      'sqrt',          'uc',           'ucfirst',
+        ],
         sub {
             my ( $tokens, $index, $name ) = @_;
             return parse_grammar(
