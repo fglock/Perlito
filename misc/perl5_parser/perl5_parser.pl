@@ -297,7 +297,7 @@ my %SUB_LANGUAGE_HOOK = (
 
     # define placeholder parsers for Sub-Languages that we don't have yet
     meta_parse_using(
-        [qw{ qq qx qr glob_string }],
+        [qw{ qq qx qr <> }],
         sub {    # qw//  1-argument raw string
             my ( $tokens, $index, $name, $ast ) = @_;
             my $pos = $index;
@@ -412,13 +412,12 @@ my %SUB_LANGUAGE_HOOK = (
                 {
                     type => "${name}_OP",
                     opt  => [
-                        meta_optional_parenthesis(
-                            {
-                                opt => [
-                                    \&parse_single_arg,    # XXX my EXPR
-                                ],
-                            }
-                        ),
+                        {
+                            opt => [
+                                \&parse_single_arg,                                                                               # XXX my EXPR
+                                { seq => [ \&parse_optional_whitespace, { before => [ \&PAREN_OPEN ] }, \&parse_arg_list, ] },    # my (LIST)
+                            ],
+                        }
                     ],
                 },
             );
@@ -1223,7 +1222,6 @@ sub parse_raw_strings {
 # because of these known problems with the tokenizer:
 #
 #   q!=!=="=" tokenizes to ('q','!=','!=', ...)
-#   q<>       tokenizes to ('<>')
 
 sub parse_raw_string_with_delimiter {
     my ( $tokens, $index, $redo ) = @_;
@@ -1455,12 +1453,12 @@ sub parse_term {
         return parse_delimited_expression( $tokens, $index + 1, '{', '}' );
     }
     elsif ( $type == LESS_THAN() ) {
-        return $SUB_LANGUAGE_HOOK{glob_string}->( $tokens, $index, 'glob_string' );    # <...>
+        return $SUB_LANGUAGE_HOOK{'<>'}->( $tokens, $index, '<>' );    # <...>
     }
-    elsif ( $type == SLASH() ) {                                                       # /.../
+    elsif ( $type == SLASH() ) {                                       # /.../
         return $SUB_LANGUAGE_HOOK{m}->( $tokens, $index, 'm' );
     }
-    elsif ( $type == LESS_LESS() ) {                                                   # here doc:  <<   <<~
+    elsif ( $type == LESS_LESS() ) {                                   # here doc:  <<   <<~
         $pos++;
         my $indented = 0;
         if ( $tokens->[$pos][0] == TILDE() ) {
@@ -1502,6 +1500,7 @@ sub parse_statement {
     $pos = parse_optional_whitespace( $tokens, $pos );
     return parse_fail() if $tokens->[$pos][0] == END_TOKEN();
 
+    my $pos0 = $pos;
     my $ast;
     if ( $tokens->[$pos][0] == SEMICOLON() ) {
         return { type => 'STATEMENT', value => { stmt => 'empty_statement' }, next => $pos + 1 };
@@ -1515,7 +1514,7 @@ sub parse_statement {
         }
 
         if ( $STATEMENT_COND_BLOCK{$stmt} ) {
-            $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+            $pos = $pos1;
             my $expr = parse_for_expression( $tokens, $pos );
             if ( $expr->{value}{delimiter} eq ';' ) {
                 error( $tokens, $index ) if $stmt ne 'for' && $stmt ne 'foreach';
@@ -1536,6 +1535,16 @@ sub parse_statement {
             $ast = { type => 'STATEMENT', value => { stmt => $stmt, condition => $expr, block => $block }, next => $block->{next} };
             $pos = $ast->{next};
         }
+        elsif ( $stmt eq 'sub' ) {
+            $pos = $pos1;
+            if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # sub NAME
+                my $name = $tokens->[$pos][1];
+                $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+                my $block = parse_statement_block( $tokens, $pos );
+                $ast = { type => 'NAMED_SUB', value => { stmt => $stmt, name => $name, block => $block }, next => $block->{next} };
+                $pos = $ast->{next};
+            }
+        }
     }
     elsif ( $tokens->[$pos][0] == CURLY_OPEN() ) {
 
@@ -1548,6 +1557,7 @@ sub parse_statement {
         $pos = $ast->{next};
     }
     if ( !$ast ) {
+        $pos = $pos0;
         $ast = parse_precedence_expression( $tokens, $pos, 0 );
         error( $tokens, $index ) if $ast->{FAIL};
 
@@ -1607,7 +1617,7 @@ sub main {
         $filename  = "-e";
         $perl_code = shift(@ARGV) . "\n";
     }
-    elsif ( $args ) {
+    elsif ($args) {
         $filename = $args;
         open my $f, "<", $args or die "Can't open file '$args'";
         $perl_code = join( "", <$f> );
