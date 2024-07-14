@@ -375,6 +375,27 @@ my %SUB_LANGUAGE_HOOK = (
         }
     ),
     meta_parse_using(
+        [qw{ my state our local }],     # XXX local has a different precedence
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return parse_grammar(
+                $tokens, $index,
+                {
+                    type => "${name}_OP",
+                    opt  => [
+                        meta_optional_parenthesis(
+                            {
+                                opt => [
+                                    \&parse_arg_list,    # XXX my EXPR
+                                ],
+                            }
+                        ),
+                    ],
+                },
+            );
+        },
+    ),
+    meta_parse_using(
         [qw{ print printf say }],
         sub {
             my ( $tokens, $index, $name ) = @_;
@@ -389,14 +410,6 @@ my %SUB_LANGUAGE_HOOK = (
                                     {    # print FILE LIST
                                         seq => [
                                             \&parse_file_handle,
-                                            {    # followed by space
-                                                before => [ \&WHITESPACE, \&NEWLINE ],
-                                            },
-                                            \&parse_optional_whitespace,
-                                            {    # not followed by comma
-                                                # TODO - not followed by INFIX operator
-                                                not_before => [ \&COMMA, \&FAT_ARROW ],
-                                            },
                                             \&parse_arg_list
                                         ]
                                     },
@@ -500,6 +513,7 @@ use constant {
     LESS_LESS     => -35,
     TILDE         => -36,
     START         => -37,
+    PLUS          => -38,
 };
 
 my %TOKEN_NAME = (
@@ -535,6 +549,7 @@ my %TOKEN_NAME = (
     LESS_THAN()     => 'LESS_THAN',
     LESS_LESS()     => 'LESS_LESS',
     TILDE()         => 'TILDE',
+    PLUS()          => 'PLUS',
 );
 
 my %OPERATORS = (
@@ -567,11 +582,12 @@ my %OPERATORS = (
     '<'  => LESS_THAN(),
     '<<' => LESS_LESS(),
     '~'  => TILDE(),
+    '+'  => PLUS(),
     map { $_ => OPERATOR() }
       qw(
       == != <= >= > <=>
       =~ !~
-      + * ** % ++ -- && || // ! ^ ~~ & |
+      * ** % ++ -- && || // ! ^ ~~ & |
       >>
 
       **=   +=    *=    &=    &.=    <<=    &&=
@@ -700,18 +716,77 @@ my %POSTFIX = (
 # default associativity is LEFT
 my %ASSOC_RIGHT = (
     '**'  => 1,
+
     '='   => 1,
-    '+='  => 1,
-    '-='  => 1,
-    '*='  => 1,
-    '/='  => 1,
-    '.='  => 1,
-    'x='  => 1,
-    '%='  => 1,
     '**=' => 1,
+    '+='  => 1,
+    '*='  => 1,
+    '&='  => 1,
+    '&.=' => 1,
+    '<<=' => 1,
+    '&&=' => 1,
+    '-='  => 1,
+    '/='  => 1,
+    '|='  => 1,
+    '|.=' => 1,
+    '>>=' => 1,
+    '||=' => 1,
+    '.='  => 1,
+    '%='  => 1,
+    '^='  => 1,
+    '^.=' => 1,
+    '//=' => 1,
+    'x='  => 1,
+
     ','   => 1,
     '=>'  => 1,
-);
+);  # /ASSOC_RIGHT
+my %INFIX = (
+    %ASSOC_RIGHT,
+
+    'or'  => 1,
+    'xor' => 1,
+    'and' => 1,
+    'not' => 1,    # Unary negation
+
+    '?' => 1,    # Ternary operator
+
+    '||' => 1,
+    '&&' => 1,
+
+    '=='  => 1,
+    '!='  => 1,
+    '<=>' => 1,
+    'eq'  => 1,
+    'ne'  => 1,
+    'cmp' => 1,
+
+    '<'  => 1,
+    '>'  => 1,
+    '<=' => 1,
+    '>=' => 1,
+    'lt' => 1,
+    'gt' => 1,
+    'le' => 1,
+    'ge' => 1,
+
+    '+' => 1,
+    '-' => 1,
+    '.' => 1,    # String concatenation
+
+    '*' => 1,
+    '/' => 1,
+    '%' => 1,
+    'x' => 1,    # String repetition
+
+    '=~' => 1,
+    '!~' => 1,
+
+    '->' => 1,
+    '('  => 1,    # function call
+    '{'  => 1,    # hash element
+    '['  => 1,    # array element
+);  # /INFIX
 my %NON_ASSOC_AUTO = (
     '++' => 1,
     '--' => 1,
@@ -837,7 +912,7 @@ sub parse_precedence_expression {
         my $type   = $tokens->[$pos][0];
         my $op_pos = $pos;
 
-        last unless exists $PRECEDENCE{$op_value};
+        last unless exists $INFIX{$op_value} || exists $POSTFIX{$op_value};
         my $precedence = $PRECEDENCE{$op_value};
         last if $precedence < $min_precedence;
 
@@ -1209,7 +1284,7 @@ sub parse_raw_string_with_delimiter {
     };
 }
 
-sub parse_if_expression {    #  (;  ;;  ;)  ()   (123;  (123)
+sub parse_for_expression {    #  (;  ;;  ;)  ()   (123;  (123)
     my ( $tokens, $index ) = @_;
     my $pos = $index;
     my $expr;
@@ -1221,7 +1296,7 @@ sub parse_if_expression {    #  (;  ;;  ;)  ()   (123;  (123)
         $pos = parse_optional_whitespace( $tokens, $expr->{next} );
         error( $tokens, $index ) if $tokens->[$pos][1] ne ';' && $tokens->[$pos][1] ne ')';
     }
-    return { type => 'IF_CONDITION', value => { delimiter => $tokens->[$pos][1], args => $expr }, next => $pos + 1 };
+    return { type => 'FOR_CONDITION', value => { delimiter => $tokens->[$pos][1], args => $expr }, next => $pos + 1 };
 }
 
 sub parse_delimited_expression {    #  )  123)
@@ -1256,15 +1331,35 @@ sub parse_statement_block {
 }
 
 sub parse_file_handle {
+
+    # TODO implement the remaining rules
+    #
+    # is file handle:
+    #
+    #   print $f LIST ;  print {$f} LIST ;  print STDOUT LIST ;  print {STDOUT} LIST
+    #   print STDOUT;
+    #   print $f +3;        # plus is close to the second argument
+    #   print $f or die;    # `or` is not an argument to print
+    #   print STDOUT (10);
+    #   print $fh(10);      # not a function call
+    #
+    # is NOT file handle:
+    #
+    #   print chr;          # a known function name
+    #   print chr 100       # a known function name
+    #   print $f;           # can't tell if this is a filehandle at compile-time
+    #   print $f+3;         # infix plus
+    #   print $f + 3;       # infix plus
+    #   print STDOUT(10);   # function call
+    #
+
     my ( $tokens, $index ) = @_;
     my $pos = $index;
-
-    #  print $f LIST
-    #  print {$f} LIST
-    #  print STDOUT LIST
-    #  print {STDOUT} LIST
     my $ast;
     if ( $tokens->[$pos][0] == IDENTIFIER() ) {
+
+        # TODO check that the bareword is not a builtin like `chr`
+
         $ast = { type => 'BAREWORD', value => $tokens->[$pos][1], next => $pos + 1 };
     }
     elsif ( $tokens->[$pos][0] == SIGIL() && $tokens->[$pos][1] eq '$' ) {
@@ -1274,7 +1369,19 @@ sub parse_file_handle {
         $ast = parse_delimited_expression( $tokens, $pos + 1, '{', '}' );
     }
     return parse_fail() if !$ast || $ast->{FAIL};
-    return { type => 'FILE_HANDLE', value => $ast, next => $ast->{next} };
+    $pos = $ast->{next};
+    $ast = { type => 'FILE_HANDLE', value => $ast, next => $pos };
+
+    # we have a symbol; now check the syntax that follows the filehandle
+
+    # TODO check for terminators: END_TOKEN, SEMICOLON, PAREN_CLOSE, CURLY_CLOSE, SQUARE_CLOSE
+
+    return parse_fail() if $tokens->[$pos][0] != WHITESPACE() && $tokens->[$pos][0] != NEWLINE();    # must be followed by space
+    $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+    $ast->{next} = $pos;    # consume the whitespace
+    my $tok = $tokens->[$pos][1];
+    return parse_fail() if $INFIX{$tok} && $PRECEDENCE{$tok} > $LIST_OPERATOR_PRECEDENCE; # must not be followed by a higher precedence infix operator
+    return $ast;
 }
 
 sub parse_term {
@@ -1384,13 +1491,13 @@ sub parse_statement {
 
         if ( $STATEMENT_COND_BLOCK{$stmt} ) {
             $pos = parse_optional_whitespace( $tokens, $pos + 1 );
-            my $expr = parse_if_expression( $tokens, $pos );
+            my $expr = parse_for_expression( $tokens, $pos );
             if ( $expr->{value}{delimiter} eq ';' ) {
                 error( $tokens, $index ) if $stmt ne 'for' && $stmt ne 'foreach';
                 my @expr = ($expr);
-                $expr = parse_if_expression( $tokens, $expr->{next} - 1 );
+                $expr = parse_for_expression( $tokens, $expr->{next} - 1 );
                 push @expr, $expr;
-                $expr = parse_if_expression( $tokens, $expr->{next} - 1 );
+                $expr = parse_for_expression( $tokens, $expr->{next} - 1 );
                 push @expr, $expr;
                 $expr = { type => 'THREE_ARG_FOR', value => \@expr, next => $expr->{next} };
             }
