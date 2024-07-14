@@ -375,7 +375,7 @@ my %SUB_LANGUAGE_HOOK = (
         }
     ),
     meta_parse_using(
-        [qw{ my state our local }],     # XXX local has a different precedence
+        [qw{ my state our local }],    # XXX local has a different precedence
         sub {
             my ( $tokens, $index, $name ) = @_;
             return parse_grammar(
@@ -408,10 +408,7 @@ my %SUB_LANGUAGE_HOOK = (
                             {
                                 opt => [
                                     {    # print FILE LIST
-                                        seq => [
-                                            \&parse_file_handle,
-                                            \&parse_arg_list
-                                        ]
+                                        seq => [ \&parse_file_handle, \&parse_optional_whitespace, \&parse_arg_list ]
                                     },
                                     \&parse_arg_list,    # print LIST
                                     { seq => [] },       # print
@@ -715,7 +712,7 @@ my %POSTFIX = (
 
 # default associativity is LEFT
 my %ASSOC_RIGHT = (
-    '**'  => 1,
+    '**' => 1,
 
     '='   => 1,
     '**=' => 1,
@@ -738,9 +735,9 @@ my %ASSOC_RIGHT = (
     '//=' => 1,
     'x='  => 1,
 
-    ','   => 1,
-    '=>'  => 1,
-);  # /ASSOC_RIGHT
+    ','  => 1,
+    '=>' => 1,
+);    # /ASSOC_RIGHT
 my %INFIX = (
     %ASSOC_RIGHT,
 
@@ -749,7 +746,7 @@ my %INFIX = (
     'and' => 1,
     'not' => 1,    # Unary negation
 
-    '?' => 1,    # Ternary operator
+    '?' => 1,      # Ternary operator
 
     '||' => 1,
     '&&' => 1,
@@ -786,7 +783,7 @@ my %INFIX = (
     '('  => 1,    # function call
     '{'  => 1,    # hash element
     '['  => 1,    # array element
-);  # /INFIX
+);                # /INFIX
 my %NON_ASSOC_AUTO = (
     '++' => 1,
     '--' => 1,
@@ -1378,7 +1375,6 @@ sub parse_file_handle {
 
     return parse_fail() if $tokens->[$pos][0] != WHITESPACE() && $tokens->[$pos][0] != NEWLINE();    # must be followed by space
     $pos = parse_optional_whitespace( $tokens, $pos + 1 );
-    $ast->{next} = $pos;    # consume the whitespace
     my $tok = $tokens->[$pos][1];
     return parse_fail() if $INFIX{$tok} && $PRECEDENCE{$tok} > $LIST_OPERATOR_PRECEDENCE; # must not be followed by a higher precedence infix operator
     return $ast;
