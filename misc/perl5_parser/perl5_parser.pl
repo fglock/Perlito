@@ -1404,6 +1404,10 @@ sub parse_file_handle {
 
 sub parse_term {
     my ( $tokens, $index ) = @_;
+
+    # XXX $y  parses as  $ y()
+
+
     my $pos  = $index;
     my $type = $tokens->[$pos][0];
     my $ast;
