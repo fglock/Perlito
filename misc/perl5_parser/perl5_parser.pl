@@ -73,7 +73,7 @@ use Data::Dumper;
 #
 #   warnings
 #
-#   indirect syntax
+#   indirect syntax (obsolete)
 #
 #   string interpolation
 #   escape sequences like \x{263A}
@@ -265,6 +265,12 @@ sub parse_arg_list {
     return parse_precedence_expression( $tokens, $index, $LIST_OPERATOR_PRECEDENCE );
 }
 
+sub parse_single_arg {
+    my ( $tokens, $index ) = @_;
+    return parse_fail() if $tokens->[$index][0] == COMMA();
+    return parse_precedence_expression( $tokens, $index, $PRECEDENCE{','} + 1 );
+}
+
 my $rule_block = { seq => [ { before => [ \&CURLY_OPEN ] }, \&parse_statement_block, ] };
 
 sub meta_optional_parenthesis {
@@ -354,6 +360,21 @@ my %SUB_LANGUAGE_HOOK = (
         }
     ),
     meta_parse_using(
+        [qw{ rand }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return parse_grammar(
+                $tokens, $index,
+                meta_optional_parenthesis(
+                    {
+                        type => "${name}_OP",
+                        opt  => [ \&parse_single_arg, { seq => [] }, ]
+                    },
+                ),
+            );
+        }
+    ),
+    meta_parse_using(
         [qw{ map grep sort }],
         sub {
             my ( $tokens, $index, $name ) = @_;
@@ -386,7 +407,7 @@ my %SUB_LANGUAGE_HOOK = (
                         meta_optional_parenthesis(
                             {
                                 opt => [
-                                    \&parse_arg_list,    # XXX my EXPR
+                                    \&parse_single_arg,    # XXX my EXPR
                                 ],
                             }
                         ),
@@ -441,7 +462,7 @@ my %SUB_LANGUAGE_HOOK = (
                         {
                             opt => [
                                 $rule_block,    # eval BLOCK
-                                \&parse_arg_list, { seq => [] },
+                                \&parse_one_arg, { seq => [] },
                             ],
                         }
                     ),
