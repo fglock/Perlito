@@ -45,6 +45,8 @@ use Data::Dumper;
 #
 #   namespaces
 #
+#   &name
+#
 #   features
 #       postderef feature
 #       try-catch
@@ -298,6 +300,36 @@ my %CORE_OP_GRAMMAR = (
             );
         }
     ),
+    meta_parse_using(
+        [qw{ goto }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return meta_grammar(
+                $tokens, $index,
+                meta_optional_parenthesis(
+                    {
+                        type => "${name}_OP",
+                        opt  => [ \&parse_bareword, \&parse_single_arg, ]
+                    },
+                ),
+            );
+        }
+      ),
+    meta_parse_using(
+        [qw{ next redo last }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return meta_grammar(
+                $tokens, $index,
+                meta_optional_parenthesis(
+                    {
+                        type => "${name}_OP",
+                        opt  => [ \&parse_bareword, \&parse_single_arg, { seq => [] }, ]
+                    },
+                ),
+            );
+        }
+      ),
     meta_parse_using(
         [
             'abs',          'alarm',       'caller',         'chdir',            'chomp',     'chop',
@@ -952,6 +984,13 @@ sub parse_optional_whitespace {
         last WS;
     }
     return $pos;
+}
+
+sub parse_bareword {
+    my ( $tokens, $index ) = @_;
+    return { type => 'BAREWORD', index => $index, value => $tokens->[$index][1], next => $index + 1 }
+      if $tokens->[$index][0] == IDENTIFIER();
+    return parse_fail();
 }
 
 sub parse_colon_bareword {
