@@ -751,51 +751,53 @@ sub parse_precedence_expression {
     # Handle unary operators
     my $pos      = $index;
     my $op_value = $tokens->[$pos][1];
+    my $type     = $tokens->[$pos][0];
     my $left_expr;
     if ( $PREFIX{$op_value} || $LIST{$op_value} ) {
         $pos = parse_optional_whitespace( $tokens, $pos + 1 );
-        my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
-        if ( $expr->{FAIL} ) {
-            return parse_fail() if !$LIST{$op_value};
-
-            # backtrack
-            # Handle a lone comma and fat comma without any value
-            return { type => 'LIST_OP', value => [$op_value], next => $pos };
-        }
-        if ( $LIST{$op_value} ) {
-
-            # Handle prefix comma and fat comma
-            my @left = ($expr);
-            if ( $expr->{type} eq 'LIST_OP' ) {
-                @left = @{ $expr->{value} };
-            }
-            $left_expr = { type => 'LIST_OP', value => [ $op_value, @left ], next => $expr->{next} };
+        if ( $type == SIGIL() && $tokens->[$pos][0] == IDENTIFIER() ) {    # $name
+            $left_expr = { type => 'VARIABLE', value => { sigil => $op_value, name => $tokens->[$pos][1] }, next => $pos + 1 };
         }
         else {
-            if (   $NON_ASSOC_AUTO{$op_value}
-                && ( $expr->{type} eq 'POSTFIX_OP' || $expr->{type} eq 'PREFIX_OP' )
-                && $NON_ASSOC_AUTO{ $expr->{value}{op} } )    # check for nonassoc syntax error
-            {
-                error( $tokens, $index );
+            my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
+            if ( $expr->{FAIL} ) {
+                return parse_fail() if !$LIST{$op_value};
+
+                # backtrack
+                # Handle a lone comma and fat comma without any value
+                return { type => 'LIST_OP', value => [$op_value], next => $pos };
             }
-            $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $expr }, next => $expr->{next} };
+            if ( $LIST{$op_value} ) {
+
+                # Handle prefix comma and fat comma
+                my @left = ($expr);
+                if ( $expr->{type} eq 'LIST_OP' ) {
+                    @left = @{ $expr->{value} };
+                }
+                $left_expr = { type => 'LIST_OP', value => [ $op_value, @left ], next => $expr->{next} };
+            }
+            else {
+                if (   $NON_ASSOC_AUTO{$op_value}
+                    && ( $expr->{type} eq 'POSTFIX_OP' || $expr->{type} eq 'PREFIX_OP' )
+                    && $NON_ASSOC_AUTO{ $expr->{value}{op} } )    # check for nonassoc syntax error
+                {
+                    error( $tokens, $index );
+                }
+                $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $expr }, next => $expr->{next} };
+            }
         }
-        $pos = parse_optional_whitespace( $tokens, $left_expr->{next} );
-        return $left_expr if $tokens->[$pos][0] == END_TOKEN();
     }
     else {
         $left_expr = parse_term( $tokens, $index );
         return parse_fail() if $left_expr->{FAIL};
-        $pos = parse_optional_whitespace( $tokens, $left_expr->{next} );
-        return $left_expr if $tokens->[$pos][0] == END_TOKEN();
     }
+    $pos = parse_optional_whitespace( $tokens, $left_expr->{next} );
 
-    $pos = $left_expr->{next};
     while ( $tokens->[$pos][0] != END_TOKEN() ) {
         $pos = parse_optional_whitespace( $tokens, $pos );
         return parse_fail() if $tokens->[$pos][0] == END_TOKEN();
         $op_value = $tokens->[$pos][1];
-        my $type   = $tokens->[$pos][0];
+        $type     = $tokens->[$pos][0];
         my $op_pos = $pos;
 
         last unless exists $INFIX{$op_value} || exists $POSTFIX{$op_value};
@@ -1270,9 +1272,6 @@ sub parse_file_handle {
 
 sub parse_term {
     my ( $tokens, $index ) = @_;
-
-    # XXX $y  parses as  $ y()
-
     my $pos  = $index;
     my $type = $tokens->[$pos][0];
     my $ast;
