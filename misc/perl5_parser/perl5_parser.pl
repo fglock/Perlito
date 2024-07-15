@@ -312,7 +312,7 @@ my %CORE_OP_GRAMMAR = (
                 ),
             );
         }
-      ),
+    ),
     meta_parse_using(
         [qw{ next redo last }],
         sub {
@@ -327,7 +327,7 @@ my %CORE_OP_GRAMMAR = (
                 ),
             );
         }
-      ),
+    ),
     meta_parse_using(
         [
             'abs',          'alarm',       'caller',         'chdir',            'chomp',     'chop',
@@ -819,6 +819,10 @@ sub parse_precedence_expression {
         if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle postfix () [] {}
             my $right_expr = parse_term( $tokens, $op_pos );
             return parse_fail() if $right_expr->{FAIL};
+            return parse_fail()
+              if $type == PAREN_OPEN()
+              && $left_expr->{type} eq 'VARIABLE'
+              && $left_expr->{value}{sigil} ne '&';                                          # $a() is forbidden
             $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
             $pos       = parse_optional_whitespace( $tokens, $left_expr->{next} );
             next;
