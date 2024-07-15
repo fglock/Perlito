@@ -371,19 +371,15 @@ my %CORE_OP_GRAMMAR = (
             my ( $tokens, $index, $name ) = @_;
             return meta_grammar(
                 $tokens, $index,
-                {
-                    type => "${name}_OP",
-                    opt  => [
-                        meta_optional_parenthesis(
-                            {
-                                opt => [
-                                    \&parse_arg_list,    # return LIST
-                                    { seq => [] },       # return
-                                ],
-                            }
-                        ),
-                    ],
-                },
+                meta_optional_parenthesis(
+                    {
+                        type => "${name}_OP",
+                        opt  => [
+                            \&parse_arg_list,    # return LIST
+                            { seq => [] },       # return
+                        ],
+                    }
+                ),
             );
         },
     ),
@@ -393,22 +389,18 @@ my %CORE_OP_GRAMMAR = (
             my ( $tokens, $index, $name ) = @_;
             return meta_grammar(
                 $tokens, $index,
-                {
-                    type => "${name}_OP",
-                    opt  => [
-                        meta_optional_parenthesis(
-                            {
-                                opt => [
-                                    {    # print FILE LIST
-                                        seq => [ \&parse_file_handle, \&parse_optional_whitespace, \&parse_arg_list ]
-                                    },
-                                    \&parse_arg_list,    # print LIST
-                                    { seq => [] },       # print
-                                ],
-                            }
-                        ),
-                    ],
-                },
+                meta_optional_parenthesis(
+                    {
+                        type => "${name}_OP",
+                        opt  => [
+                            {    # print FILE LIST
+                                seq => [ \&parse_file_handle, \&parse_optional_whitespace, \&parse_arg_list ]
+                            },
+                            \&parse_arg_list,    # print LIST
+                            { seq => [] },       # print
+                        ],
+                    }
+                ),
             );
         },
     ),
@@ -416,29 +408,30 @@ my %CORE_OP_GRAMMAR = (
         my ( $tokens, $index, $name ) = @_;
         return meta_grammar(
             $tokens, $index,
-            {
-                type => "${name}_OP",
-                seq  => [ \&parse_statement_block, ],
-            },
+            meta_optional_parenthesis(
+                {
+                    type => "${name}_OP",
+                    opt  => [
+                        \&parse_statement_block,
+                        \&parse_single_arg,    # XXX my EXPR    my (LIST)
+                    ]
+                }
+            )
         );
     },
     'eval' => sub {
         my ( $tokens, $index, $name ) = @_;
         return meta_grammar(
             $tokens, $index,
-            {
-                type => "${name}_OP",
-                opt  => [
-                    meta_optional_parenthesis(
-                        {
-                            opt => [
-                                $rule_block,    # eval BLOCK
-                                \&parse_single_arg, { seq => [] },
-                            ],
-                        }
-                    ),
-                ],
-            },
+            meta_optional_parenthesis(
+                {
+                    type => "${name}_OP",
+                    opt  => [
+                        $rule_block,    # eval BLOCK
+                        \&parse_single_arg, { seq => [] },
+                    ],
+                },
+            ),
         );
     },
     'sub' => sub {
@@ -460,7 +453,7 @@ my %CORE_OP_GRAMMAR = (
             return parse_fail() if $expr->{FAIL};
             return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
         },
-      ),
+    ),
 );
 
 use constant {
