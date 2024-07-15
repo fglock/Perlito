@@ -45,8 +45,6 @@ use Data::Dumper;
 #
 #   namespaces
 #
-#   &name
-#
 #   features
 #       postderef feature
 #       try-catch
@@ -106,7 +104,7 @@ my %PRECEDENCE               = (
     ( map { $_ => 22 } qw($ @ %),   '$#' ),
 );
 my %LIST    = map { $_ => 1 } ',', '=>';
-my %PREFIX  = map { $_ => 1 } qw( ! \\ not - + -- ++ $ @ % * ), '$#';
+my %PREFIX  = map { $_ => 1 } qw( ! \\ not - + -- ++ $ @ % * & ), '$#';
 my %POSTFIX = map { $_ => 1 } qw( -- ++ );
 
 # default associativity is LEFT
@@ -567,6 +565,7 @@ my %OPERATORS = (
     '@'  => SIGIL(),
     '%'  => SIGIL(),
     '*'  => SIGIL(),
+    '&'  => SIGIL(),
     '('  => PAREN_OPEN(),
     ')'  => PAREN_CLOSE(),
     '?'  => QUESTION(),
@@ -587,7 +586,7 @@ my %OPERATORS = (
     '+'  => PLUS(),
     map { $_ => OPERATOR() }
       qw( == != <= >= > <=> =~ !~
-      ** % ++ -- && || // ! ^ ~~ & | >>
+      ** % ++ -- && || // ! ^ ~~ | >>
       **=   +=    *=    &=    &.=    <<=    &&=
       -=    /=    |=    |.=    >>=    ||=
       .=    %=    ^=    ^.=           //=   x=
