@@ -59,7 +59,6 @@ use Data::Dumper;
 #
 #   BEGIN
 #
-#   for my $x (...
 #   continue, else, elsif
 #
 #   attributes
@@ -431,7 +430,7 @@ my %SUB_LANGUAGE_HOOK = (
                         {
                             opt => [
                                 $rule_block,    # eval BLOCK
-                                \&parse_one_arg, { seq => [] },
+                                \&parse_single_arg, { seq => [] },
                             ],
                         }
                     ),
@@ -1378,6 +1377,16 @@ sub parse_statement {
 
         if ( $STATEMENT_COND_BLOCK{$stmt} ) {
             $pos = $pos1;
+            my $var;
+            if ( $tokens->[$pos][1] eq 'my' ) {
+                error( $tokens, $index ) if $stmt ne 'for' && $stmt ne 'foreach';
+                $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+                $var = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'$'} );
+                $pos = parse_optional_whitespace( $tokens, $var->{next} + 1 );
+            }
+
+            # XXX don't mix:  for my ...   and   for ( ; ; ) ...
+
             my $expr = parse_for_expression( $tokens, $pos );
             if ( $expr->{value}{delimiter} eq ';' ) {
                 error( $tokens, $index ) if $stmt ne 'for' && $stmt ne 'foreach';
@@ -1391,11 +1400,29 @@ sub parse_statement {
             error( $tokens, $index ) if $expr->{FAIL};
             $pos = parse_optional_whitespace( $tokens, $expr->{next} );
             my $block = parse_statement_block( $tokens, $pos );
+            $pos = $block->{next};
 
-            # TODO if/unless .. else/elsif
-            # TODO continue
+            $pos = parse_optional_whitespace( $tokens, $pos+1 );
+          CONTINUE:
+            while ( $tokens->[$pos][0] == IDENTIFIER() ) {
+                my $stmt2 = $tokens->[$pos][1];
+                $pos = parse_optional_whitespace( $tokens, $pos+1 );
+                if ( $stmt2 eq 'elsif' || $stmt2 eq 'else' ) {
+                    # TODO if/unless .. else/elsif
 
-            $ast = { type => 'STATEMENT', value => { stmt => $stmt, condition => $expr, block => $block }, next => $block->{next} };
+                    error( $tokens, $pos );
+                }
+                elsif ( $stmt2 eq 'continue' ) {
+                    # TODO continue
+
+                    error( $tokens, $pos );
+                    last CONTINUE;
+                }
+                else {
+                    last CONTINUE;
+                }
+            }
+            $ast = { type => 'STATEMENT', value => { stmt => $stmt, var => $var, condition => $expr, block => $block }, next => $block->{next} };
             $pos = $ast->{next};
         }
         elsif ( $stmt eq 'sub' ) {
@@ -1411,7 +1438,7 @@ sub parse_statement {
     }
     elsif ( $tokens->[$pos][0] == CURLY_OPEN() ) {
 
-        # BEGIN, END, INIT, CHECK, UNITCHECK
+        # TODO - BEGIN, END, INIT, CHECK, UNITCHECK
 
         $ast = parse_statement_block( $tokens, $pos );
 
