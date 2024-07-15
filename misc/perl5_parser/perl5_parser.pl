@@ -115,21 +115,22 @@ my %POSTFIX = map { $_ => 1 } qw( -- ++ );
 
 # default associativity is LEFT
 my %ASSOC_RIGHT = map { $_ => 1 } qw(** = **= += *= &= &.= <<= &&= -= /= |= |.= >>= ||= .= %= ^= ^.= //= x= =>), ',';
-my %INFIX = ( %ASSOC_RIGHT, map { $_ => 1 } qw(or xor and not ? || && == != <=> eq ne cmp < > <= >= lt gt le ge + - . * / // % x =~ !~ -> { [ ), '(' );
+my %INFIX =
+  ( %ASSOC_RIGHT, map { $_ => 1 } qw(or xor and not ? || && == != <=> eq ne cmp < > <= >= lt gt le ge + - . * / // % x =~ !~ -> { [ ), '(' );
 my %NON_ASSOC_AUTO = map { $_ => 1 } qw( -- ++ );
 
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
 #
 
-# parse_grammar( $tokens, $index,
+# meta_grammar( $tokens, $index,
 #   { type => 'EXPR', opt => [ \&parse_optional_whitespace, \&PAREN_CLOSE ] },
 # );
-# parse_grammar( $tokens, $index,
+# meta_grammar( $tokens, $index,
 #   { seq => [ \&parse_optional_whitespace, \&PAREN_CLOSE ] },
 # );
 #
-sub parse_grammar {
+sub meta_grammar {
     my ( $tokens, $index, $rule ) = @_;
     my @res;
     return $rule->( $tokens, $index ) if ref($rule) ne 'HASH';
@@ -138,7 +139,7 @@ sub parse_grammar {
         my $pos  = $index;
       SEQ:
         for my $rule ( @{ $rule->{seq} } ) {
-            my $ast = parse_grammar( $tokens, $pos, $rule );
+            my $ast = meta_grammar( $tokens, $pos, $rule );
             if ( ref($ast) ne 'HASH' ) {
                 if ( $ast < 0 ) {    # constant
                     return parse_fail() if $tokens->[$pos][0] != $ast;
@@ -162,7 +163,7 @@ sub parse_grammar {
         my $type = $rule->{type};
       OPT:
         for my $rule ( @{ $rule->{opt} } ) {
-            my $ast = parse_grammar( $tokens, $index, $rule );
+            my $ast = meta_grammar( $tokens, $index, $rule );
             if ( ref($ast) ne 'HASH' ) {
                 my $pos = $index;
                 if ( $ast < 0 ) {    # constant
@@ -179,7 +180,7 @@ sub parse_grammar {
     }
     elsif ( $rule->{before} ) {
         my ($rule) = @{ $rule->{before} };
-        my $ast = parse_grammar( $tokens, $index, $rule );
+        my $ast = meta_grammar( $tokens, $index, $rule );
         if ( ref($ast) ne 'HASH' ) {
             if ( $ast < 0 ) {    # constant
                 return parse_fail() if $tokens->[$index][0] != $ast;
@@ -191,7 +192,7 @@ sub parse_grammar {
     }
     elsif ( $rule->{not_before} ) {
         my ($rule) = @{ $rule->{not_before} };
-        my $ast = parse_grammar( $tokens, $index, $rule );
+        my $ast = meta_grammar( $tokens, $index, $rule );
         if ( ref($ast) ne 'HASH' ) {
             if ( $ast < 0 ) {    # constant
                 return $index if $tokens->[$index][0] != $ast;
@@ -237,7 +238,7 @@ sub meta_parse_using {
     return map { $_ => $grammar } @$op_list;
 }
 
-my %SUB_LANGUAGE_HOOK = (
+my %CORE_OP_GRAMMAR = (
 
     # define placeholder parsers for Sub-Languages that we don't have yet
     meta_parse_using(
@@ -292,7 +293,7 @@ my %SUB_LANGUAGE_HOOK = (
         [qw{ time wantarray }],
         sub {
             my ( $tokens, $index, $name ) = @_;
-            return parse_grammar(
+            return meta_grammar(
                 $tokens, $index,
                 meta_optional_parenthesis(
                     {
@@ -305,17 +306,19 @@ my %SUB_LANGUAGE_HOOK = (
     ),
     meta_parse_using(
         [
-            'abs',        'alarm',    'chomp',         'chop',         'chr',            'chroot',
-            'cos',        'defined',  'delete',        'eval',         'exists',         'exp',
-            'getgrgid',   'getgrnam', 'gethostbyname', 'getnetbyname', 'getprotobyname', 'getprotobynumber',
-            'getpwnam',   'getpwuid', 'hex',           'int',          'lc',             'lcfirst',
-            'length',     'log',      'oct',           'ord',          'quotemeta',      'readlink',
-            'readpipe',   'ref',      'rmdir',         'sethostent',   'setnetent',      'setprotoent',
-            'setservent', 'sin',      'sqrt',          'uc',           'ucfirst',
+            'abs',          'alarm',       'caller',         'chdir',            'chomp',     'chop',
+            'chr',          'chroot',      'cos',            'defined',          'delete',    'eval',
+            'exists',       'exit',        'exp',            'getgrgid',         'getgrnam',  'gethostbyname',
+            'getnetbyname', 'getpgrp',     'getprotobyname', 'getprotobynumber', 'getpwnam',  'getpwuid',
+            'gmtime',       'hex',         'int',            'lc',               'lcfirst',   'length',
+            'localtime',    'log',         'oct',            'ord',              'quotemeta', 'rand',
+            'readlink',     'reset',       'readpipe',       'ref',              'rmdir',     'sethostent',
+            'setnetent',    'setprotoent', 'setservent',     'sin',              'sleep',     'sqrt',
+            'srand',        'uc',          'ucfirst',        'umask',            'undef',
         ],
         sub {
             my ( $tokens, $index, $name ) = @_;
-            return parse_grammar(
+            return meta_grammar(
                 $tokens, $index,
                 meta_optional_parenthesis(
                     {
@@ -330,7 +333,7 @@ my %SUB_LANGUAGE_HOOK = (
         [qw{ map grep sort }],
         sub {
             my ( $tokens, $index, $name ) = @_;
-            return parse_grammar(
+            return meta_grammar(
                 $tokens, $index,
                 meta_optional_parenthesis(
                     {
@@ -351,7 +354,7 @@ my %SUB_LANGUAGE_HOOK = (
         [qw{ my state our local }],    # XXX local has a different precedence
         sub {
             my ( $tokens, $index, $name ) = @_;
-            return parse_grammar(
+            return meta_grammar(
                 $tokens, $index,
                 {
                     type => "${name}_OP",
@@ -366,7 +369,7 @@ my %SUB_LANGUAGE_HOOK = (
         [qw{ return }],
         sub {
             my ( $tokens, $index, $name ) = @_;
-            return parse_grammar(
+            return meta_grammar(
                 $tokens, $index,
                 {
                     type => "${name}_OP",
@@ -388,7 +391,7 @@ my %SUB_LANGUAGE_HOOK = (
         [qw{ print printf say }],
         sub {
             my ( $tokens, $index, $name ) = @_;
-            return parse_grammar(
+            return meta_grammar(
                 $tokens, $index,
                 {
                     type => "${name}_OP",
@@ -411,7 +414,7 @@ my %SUB_LANGUAGE_HOOK = (
     ),
     'do' => sub {
         my ( $tokens, $index, $name ) = @_;
-        return parse_grammar(
+        return meta_grammar(
             $tokens, $index,
             {
                 type => "${name}_OP",
@@ -421,7 +424,7 @@ my %SUB_LANGUAGE_HOOK = (
     },
     'eval' => sub {
         my ( $tokens, $index, $name ) = @_;
-        return parse_grammar(
+        return meta_grammar(
             $tokens, $index,
             {
                 type => "${name}_OP",
@@ -440,7 +443,7 @@ my %SUB_LANGUAGE_HOOK = (
     },
     'sub' => sub {
         my ( $tokens, $index, $name ) = @_;
-        return parse_grammar(
+        return meta_grammar(
             $tokens, $index,
             {
                 type => "${name}_OP",
@@ -448,20 +451,16 @@ my %SUB_LANGUAGE_HOOK = (
             },
         );
     },
-    'use' => sub {    # use module;
-        my ( $tokens, $index, $name ) = @_;
-        my $pos  = $index;
-        my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
-        return parse_fail() if $expr->{FAIL};
-        return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
-    },
-    'no' => sub {     # no module;
-        my ( $tokens, $index, $name ) = @_;
-        my $pos  = $index;
-        my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
-        return parse_fail() if $expr->{FAIL};
-        return { type => 'NO', value => { name => $name, args => $expr }, next => $expr->{next} };
-    },
+    meta_parse_using(
+        [qw{ use no }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            my $pos  = $index;
+            my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
+            return parse_fail() if $expr->{FAIL};
+            return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
+        },
+      ),
 );
 
 use constant {
@@ -916,13 +915,13 @@ sub parse_optional_whitespace {
                 }
                 my $processed_ast;
                 if ( $quote eq "'" ) {                                   # process the quotes
-                    $processed_ast = $SUB_LANGUAGE_HOOK{q}->( $tokens, $index, 'q', $here_doc );
+                    $processed_ast = $CORE_OP_GRAMMAR{q}->( $tokens, $index, 'q', $here_doc );
                 }
                 elsif ( $quote eq '"' ) {
-                    $processed_ast = $SUB_LANGUAGE_HOOK{qq}->( $tokens, $index, 'qq', $here_doc );
+                    $processed_ast = $CORE_OP_GRAMMAR{qq}->( $tokens, $index, 'qq', $here_doc );
                 }
                 elsif ( $quote eq '`' ) {
-                    $processed_ast = $SUB_LANGUAGE_HOOK{qx}->( $tokens, $index, 'qx', $here_doc );
+                    $processed_ast = $CORE_OP_GRAMMAR{qx}->( $tokens, $index, 'qx', $here_doc );
                 }
                 $here_doc->{type}  = $processed_ast->{type}  if $processed_ast;
                 $here_doc->{value} = $processed_ast->{value} if $processed_ast;
@@ -1288,21 +1287,21 @@ sub parse_term {
         if ( $tokens->[$pos][0] == FAT_ARROW() ) {             # bareword
             return { type => 'STRING', value => $tokens->[$index][1], next => $index + 1 };
         }
-        if ( exists $SUB_LANGUAGE_HOOK{$stmt} ) {              # built-in functions requiring special parsing
-            return $SUB_LANGUAGE_HOOK{$stmt}->( $tokens, $pos, $stmt );
+        if ( exists $CORE_OP_GRAMMAR{$stmt} ) {                # built-in functions requiring special parsing
+            return $CORE_OP_GRAMMAR{$stmt}->( $tokens, $pos, $stmt );
         }
         return { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
         my $quote = $tokens->[$index][1];
         if ( $quote eq "'" ) {
-            return $SUB_LANGUAGE_HOOK{q}->( $tokens, $index, 'q' );
+            return $CORE_OP_GRAMMAR{q}->( $tokens, $index, 'q' );
         }
         elsif ( $quote eq '"' ) {
-            return $SUB_LANGUAGE_HOOK{qq}->( $tokens, $index, 'qq' );
+            return $CORE_OP_GRAMMAR{qq}->( $tokens, $index, 'qq' );
         }
         elsif ( $quote eq '`' ) {
-            return $SUB_LANGUAGE_HOOK{qx}->( $tokens, $index, 'qx' );
+            return $CORE_OP_GRAMMAR{qx}->( $tokens, $index, 'qx' );
         }
     }
     elsif ( $type == PAREN_OPEN() ) {
@@ -1315,12 +1314,12 @@ sub parse_term {
         return parse_delimited_expression( $tokens, $index + 1, '{', '}' );
     }
     elsif ( $type == LESS_THAN() ) {
-        return $SUB_LANGUAGE_HOOK{'<>'}->( $tokens, $index, '<>' );    # <...>
+        return $CORE_OP_GRAMMAR{'<>'}->( $tokens, $index, '<>' );    # <...>
     }
-    elsif ( $type == SLASH() ) {                                       # /.../
-        return $SUB_LANGUAGE_HOOK{m}->( $tokens, $index, 'm' );
+    elsif ( $type == SLASH() ) {                                     # /.../
+        return $CORE_OP_GRAMMAR{m}->( $tokens, $index, 'm' );
     }
-    elsif ( $type == LESS_LESS() ) {                                   # here doc:  <<   <<~
+    elsif ( $type == LESS_LESS() ) {                                 # here doc:  <<   <<~
         $pos++;
         my $indented = 0;
         if ( $tokens->[$pos][0] == TILDE() ) {
@@ -1402,17 +1401,19 @@ sub parse_statement {
             my $block = parse_statement_block( $tokens, $pos );
             $pos = $block->{next};
 
-            $pos = parse_optional_whitespace( $tokens, $pos+1 );
+            $pos = parse_optional_whitespace( $tokens, $pos + 1 );
           CONTINUE:
             while ( $tokens->[$pos][0] == IDENTIFIER() ) {
                 my $stmt2 = $tokens->[$pos][1];
-                $pos = parse_optional_whitespace( $tokens, $pos+1 );
+                $pos = parse_optional_whitespace( $tokens, $pos + 1 );
                 if ( $stmt2 eq 'elsif' || $stmt2 eq 'else' ) {
+
                     # TODO if/unless .. else/elsif
 
                     error( $tokens, $pos );
                 }
                 elsif ( $stmt2 eq 'continue' ) {
+
                     # TODO continue
 
                     error( $tokens, $pos );
@@ -1435,7 +1436,7 @@ sub parse_statement {
                 $pos = $ast->{next};
             }
         }
-    }
+    }    # /IDENTIFIER
     elsif ( $tokens->[$pos][0] == CURLY_OPEN() ) {
 
         # TODO - BEGIN, END, INIT, CHECK, UNITCHECK
