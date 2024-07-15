@@ -59,6 +59,7 @@ use Data::Dumper;
 #
 #   BEGIN
 #
+#   for my $x (...
 #   continue, else, elsif
 #
 #   attributes
@@ -88,7 +89,6 @@ my %QUOTE_PAIR = (
     '[' => ']',
     '<' => '>',
 );
-
 my $LIST_OPERATOR_PRECEDENCE = 4;
 my %PRECEDENCE               = (
     ( map { $_ => 1 } qw(or xor) ),
@@ -110,6 +110,14 @@ my %PRECEDENCE               = (
     ( map { $_ => 21 } qw(-> { [ ), '(' ),
     ( map { $_ => 22 } qw($ @ %),   '$#' ),
 );
+my %LIST    = map { $_ => 1 } ',', '=>';
+my %PREFIX  = map { $_ => 1 } qw( ! \\ not - + -- ++ $ @ % ), '$#';
+my %POSTFIX = map { $_ => 1 } qw( -- ++ );
+
+# default associativity is LEFT
+my %ASSOC_RIGHT = map { $_ => 1 } qw(** = **= += *= &= &.= <<= &&= -= /= |= |.= >>= ||= .= %= ^= ^.= //= x= =>), ',';
+my %INFIX = ( %ASSOC_RIGHT, map { $_ => 1 } qw(or xor and not ? || && == != <=> eq ne cmp < > <= >= lt gt le ge + - . * / // % x =~ !~ -> { [ ), '(' );
+my %NON_ASSOC_AUTO = map { $_ => 1 } qw( -- ++ );
 
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
@@ -350,6 +358,28 @@ my %SUB_LANGUAGE_HOOK = (
                     type => "${name}_OP",
                     seq  => [
                         \&parse_single_arg,    # XXX my EXPR    my (LIST)
+                    ],
+                },
+            );
+        },
+    ),
+    meta_parse_using(
+        [qw{ return }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return parse_grammar(
+                $tokens, $index,
+                {
+                    type => "${name}_OP",
+                    opt  => [
+                        meta_optional_parenthesis(
+                            {
+                                opt => [
+                                    \&parse_arg_list,    # return LIST
+                                    { seq => [] },       # return
+                                ],
+                            }
+                        ),
                     ],
                 },
             );
@@ -647,107 +677,6 @@ sub tokenize {
     };
     return \@tokens;
 }
-
-my %LIST = (
-    ','  => 1,
-    '=>' => 1,
-);
-my %PREFIX = (
-    '!'   => 1,
-    '\\'  => 1,
-    'not' => 1,
-    '-'   => 1,
-    '+'   => 1,
-    '--'  => 1,
-    '++'  => 1,
-    '$'   => 1,
-    '$#'  => 1,
-    '@'   => 1,
-    '%'   => 1,
-);
-my %POSTFIX = (
-    '--' => 1,
-    '++' => 1,
-);
-
-# default associativity is LEFT
-my %ASSOC_RIGHT = (
-    '**' => 1,
-
-    '='   => 1,
-    '**=' => 1,
-    '+='  => 1,
-    '*='  => 1,
-    '&='  => 1,
-    '&.=' => 1,
-    '<<=' => 1,
-    '&&=' => 1,
-    '-='  => 1,
-    '/='  => 1,
-    '|='  => 1,
-    '|.=' => 1,
-    '>>=' => 1,
-    '||=' => 1,
-    '.='  => 1,
-    '%='  => 1,
-    '^='  => 1,
-    '^.=' => 1,
-    '//=' => 1,
-    'x='  => 1,
-
-    ','  => 1,
-    '=>' => 1,
-);    # /ASSOC_RIGHT
-my %INFIX = (
-    %ASSOC_RIGHT,
-
-    'or'  => 1,
-    'xor' => 1,
-    'and' => 1,
-    'not' => 1,    # Unary negation
-
-    '?' => 1,      # Ternary operator
-
-    '||' => 1,
-    '&&' => 1,
-
-    '=='  => 1,
-    '!='  => 1,
-    '<=>' => 1,
-    'eq'  => 1,
-    'ne'  => 1,
-    'cmp' => 1,
-
-    '<'  => 1,
-    '>'  => 1,
-    '<=' => 1,
-    '>=' => 1,
-    'lt' => 1,
-    'gt' => 1,
-    'le' => 1,
-    'ge' => 1,
-
-    '+' => 1,
-    '-' => 1,
-    '.' => 1,    # String concatenation
-
-    '*' => 1,
-    '/' => 1,
-    '%' => 1,
-    'x' => 1,    # String repetition
-
-    '=~' => 1,
-    '!~' => 1,
-
-    '->' => 1,
-    '('  => 1,    # function call
-    '{'  => 1,    # hash element
-    '['  => 1,    # array element
-);                # /INFIX
-my %NON_ASSOC_AUTO = (
-    '++' => 1,
-    '--' => 1,
-);
 
 sub error_message_quote {
     my ($to_quote) = @_;
