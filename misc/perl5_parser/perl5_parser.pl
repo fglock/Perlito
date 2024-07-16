@@ -835,8 +835,12 @@ sub parse_precedence_expression {
             return parse_fail()
               if $type == PAREN_OPEN()
               && $left_expr->{type} eq 'PREFIX_OP'
-              && $FORBIDDEN_CALL{ $left_expr->{value}{op} };                                 # $a() is forbidden
-            $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
+              && $FORBIDDEN_CALL{ $left_expr->{value}{op} };                                 # $a()  is forbidden
+            return parse_fail()
+              if $type == PAREN_OPEN()
+              && $left_expr->{type} eq 'APPLY_OR_DEREF'
+              && $left_expr->{value}{op} eq '(';                                             # expr()()  is forbidden
+            $left_expr = { type => 'APPLY_OR_DEREF', value => { op => $op_value, arg => [ $left_expr, $right_expr ] }, next => $right_expr->{next} };
             $pos       = parse_optional_whitespace( $tokens, $left_expr->{next} );
             next;
         }
@@ -845,7 +849,8 @@ sub parse_precedence_expression {
             my $right_expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'->'} + 1 );
             return parse_fail() if $right_expr->{FAIL};
             if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle ->() ->[] ->{}
-                $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
+                $left_expr =
+                  { type => 'APPLY_OR_DEREF', value => { op => $op_value, arg => [ $left_expr, $right_expr ] }, next => $right_expr->{next} };
             }
             else {
                 $pos = parse_optional_whitespace( $tokens, $right_expr->{next} );
