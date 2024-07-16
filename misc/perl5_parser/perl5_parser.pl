@@ -362,6 +362,21 @@ my %CORE_OP_GRAMMAR = (
         }
     ),
     meta_parse_using(
+        [qw{ pop shift }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return meta_grammar(
+                $tokens, $index,
+                meta_optional_parenthesis(
+                    {
+                        type => "${name}_OP",
+                        opt  => [ \&parse_single_arg_array, { seq => [] }, ],
+                    }
+                ),
+            );
+        }
+    ),
+    meta_parse_using(
         [qw{ push unshift }],
         sub {
             my ( $tokens, $index, $name ) = @_;
