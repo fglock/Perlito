@@ -453,7 +453,7 @@ my %CORE_OP_GRAMMAR = (
         },
     ),
     meta_parse_using(
-        [qw{ die }],
+        [qw{ die open }],
         sub {
             my ( $tokens, $index, $name ) = @_;
             return meta_grammar(
@@ -462,8 +462,8 @@ my %CORE_OP_GRAMMAR = (
                     {
                         type => "${name}_OP",
                         opt  => [
-                            \&parse_arg_list,    # return LIST
-                            { seq => [] },       # return
+                            \&parse_arg_list,    # die LIST
+                            { seq => [] },       # die
                         ],
                     }
                 ),
