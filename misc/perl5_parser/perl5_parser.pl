@@ -128,6 +128,12 @@ my %NON_ASSOC_AUTO = map { $_ => 1 } qw( -- ++ );
 
 my %FORBIDDEN_CALL = map { $_ => 1 } qw($ @ % * ), '$#';    # $x() is forbidden
 
+my %ESCAPE_SEQUENCE = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
+
+my %STATEMENT_MODIFIER   = map { $_ => 1 } qw/ if unless while until for foreach when /;
+my %STATEMENT_COND_BLOCK = %STATEMENT_MODIFIER;
+my %RESERVED_WORDS       = ( %STATEMENT_MODIFIER, map { $_ => 1 } qw/ else elsif continue / );
+
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
 #
@@ -1061,8 +1067,9 @@ sub parse_optional_whitespace {
     return $pos;
 }
 
-sub parse_bareword {
+sub parse_bareword {    # next LABEL
     my ( $tokens, $index ) = @_;
+    return parse_fail() if $RESERVED_WORDS{ $tokens->[$index][1] };
     return { type => 'BAREWORD', index => $index, value => $tokens->[$index][1], next => $index + 1 }
       if $tokens->[$index][0] == IDENTIFIER();
     return parse_fail();
@@ -1120,19 +1127,6 @@ sub parse_number {
     }
     return { type => 'NUMBER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
 }
-
-my %ESCAPE_SEQUENCE = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
-
-my %STATEMENT_MODIFIER = (
-    'if'      => 1,
-    'unless'  => 1,
-    'while'   => 1,
-    'until'   => 1,
-    'for'     => 1,
-    'foreach' => 1,
-    'when'    => 1,
-);
-my %STATEMENT_COND_BLOCK = %STATEMENT_MODIFIER;
 
 sub parse_raw_strings {
     my ( $tokens, $index, %args ) = @_;
@@ -1382,6 +1376,9 @@ sub parse_term {
         if ( $tokens->[$pos][0] == FAT_ARROW() ) {             # bareword
             return { type => 'STRING', value => $tokens->[$index][1], next => $index + 1 };
         }
+
+        return parse_fail() if $RESERVED_WORDS{$stmt};
+
         if ( exists $CORE_OP_GRAMMAR{$stmt} ) {                # built-in functions requiring special parsing
             return $CORE_OP_GRAMMAR{$stmt}->( $tokens, $pos, $stmt );
         }
