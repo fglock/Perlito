@@ -683,6 +683,10 @@ my %OPERATORS = (
 #   10E10     tokenizes to 10,E10
 #   q!=!=="=" tokenizes to q,!=,!=, ...
 #
+my %TOK_SPACE = map { $_ => 1 } " ", "\t";
+my %TOK_IDENTIFIER = map { $_ => 1 } "a" .. "z", "A" .. "Z", "_";
+my %TOK_IDENTIFIER_NUMBER = map { $_ => 1 } "a" .. "z", "A" .. "Z", "_", "0" .. "9";
+my %TOK_NUMBER = map { $_ => 1 } "0" .. "9";
 sub tokenize {
     my ($code) = @_;
     my $state = START();
@@ -691,56 +695,57 @@ sub tokenize {
   FSM:
     for my $char ( split //, $code ) {
         if ( $state == START() ) {
-            if ( $char =~ /\s/ ) {
-                if ( $char eq "\n" ) {
-                    push @tokens, [ NEWLINE(), $char ];
-                    next FSM;
-                }
-                $state = WHITESPACE();
+            if ( exists $TOK_SPACE{$char} ) {
+                $state  = WHITESPACE();
+                $buffer = $char;
             }
-            elsif ( $char =~ /[a-zA-Z_]/ ) {
-                $state = IDENTIFIER();
+            elsif ( exists $TOK_IDENTIFIER{$char} ) {
+                $state  = IDENTIFIER();
+                $buffer = $char;
             }
-            elsif ( $char =~ /[0-9]/ ) {
-                $state = NUMBER();
+            elsif ( $char eq "\n" ) {
+                push @tokens, [ NEWLINE(), $char ];
+            }
+            elsif ( exists $TOK_NUMBER{$char} ) {
+                $state  = NUMBER();
+                $buffer = $char;
             }
             elsif ( exists $OPERATORS{$char} ) {
-                $state = OPERATOR();
+                $state  = OPERATOR();
+                $buffer = $char;
             }
             else {
                 push @tokens, [ STRING(), $char ];
-                next FSM;
             }
-            $buffer = $char;
         }
         elsif ( $state == WHITESPACE() ) {
-            if ( $char !~ /\s/ || $char eq "\n" ) {
+            if ( exists $TOK_SPACE{$char} ) {
+                $buffer .= $char;
+            }
+            else {
                 push @tokens, [ WHITESPACE(), $buffer ];
                 $state = START();
                 redo FSM;
             }
-            else {
-                $buffer .= $char;
-            }
         }
         elsif ( $state == IDENTIFIER() ) {
-            if ( $char !~ /[a-zA-Z0-9_]/ ) {
+            if ( exists $TOK_IDENTIFIER_NUMBER{$char} ) {
+                $buffer .= $char;
+            }
+            else {
                 push @tokens, [ IDENTIFIER(), $buffer ];
                 $state = START();
                 redo FSM;
             }
-            else {
-                $buffer .= $char;
-            }
         }
         elsif ( $state == NUMBER() ) {
-            if ( $char !~ /[0-9]/ ) {
+            if ( exists $TOK_NUMBER{$char} ) {
+                $buffer .= $char;
+            }
+            else {
                 push @tokens, [ NUMBER(), $buffer ];
                 $state = START();
                 redo FSM;
-            }
-            else {
-                $buffer .= $char;
             }
         }
         elsif ( $state == OPERATOR() ) {
@@ -1632,7 +1637,7 @@ sub main {
     my $filename  = "<DATA>";
     my $perl_code = join( '', <DATA> );
 
-    my $args = shift @ARGV;
+    my $args = shift @ARGV // '';
     if ( $args eq '-e' ) {
         $filename  = "-e";
         $perl_code = shift(@ARGV) . "\n";
