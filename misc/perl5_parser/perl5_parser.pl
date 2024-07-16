@@ -101,7 +101,7 @@ my %PRECEDENCE               = (
     ( map { $_ => 6 } qw(= **= += *= &= &.= <<= &&= -= /= |= |.= >>= ||= .= %= ^= ^.= //= x=) ),
     ( map { $_ => 7 } qw(?) ),                                                                     # ternary operator
     ( map { $_ => 7 } qw(.. ...) ),
-    ( map { $_ => 11 } qw(||) ),
+    ( map { $_ => 11 } qw(|| ^^ //) ),
     ( map { $_ => 12 } qw(&&) ),
     ( map { $_ => 13 } qw(== != <=> eq ne cmp) ),
     ( map { $_ => 14 } qw(< > <= >= lt gt le ge) ),
@@ -670,7 +670,7 @@ my %OPERATORS = (
     '+'  => PLUS(),
     map { $_ => OPERATOR() }
       qw( == != <= >= > <=> =~ !~ .. ...
-      ** % ++ -- && || // ! ^ ~~ | >>
+      ** % ++ -- && || ^^ // ! ^ ~~ | >>
       **=   +=    *=    &=    &.=    <<=    &&=
       -=    /=    |=    |.=    >>=    ||=
       .=    %=    ^=    ^.=           //=   x=
@@ -683,10 +683,12 @@ my %OPERATORS = (
 #   10E10     tokenizes to 10,E10
 #   q!=!=="=" tokenizes to q,!=,!=, ...
 #
-my %TOK_SPACE = map { $_ => 1 } " ", "\t";
-my %TOK_IDENTIFIER = map { $_ => 1 } "a" .. "z", "A" .. "Z", "_";
-my %TOK_IDENTIFIER_NUMBER = map { $_ => 1 } "a" .. "z", "A" .. "Z", "_", "0" .. "9";
-my %TOK_NUMBER = map { $_ => 1 } "0" .. "9";
+my %TOK_SPACE = map { $_ => WHITESPACE() } " ", "\t";
+my %TOK_IDENTIFIER = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_";
+my %TOK_IDENTIFIER_NUMBER = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_", "0" .. "9";
+my %TOK_NUMBER = map { $_ => NUMBER() } "0" .. "9";
+my %TOK_OPERATOR = map { $_ => OPERATOR() } keys %OPERATORS;
+my %NEXT_STATE = ( %TOK_SPACE, %TOK_IDENTIFIER, %TOK_NUMBER, %TOK_OPERATOR );
 sub tokenize {
     my ($code) = @_;
     my $state = START();
@@ -694,38 +696,23 @@ sub tokenize {
     my $buffer;
   FSM:
     for my $char ( split //, $code ) {
-        if ( $state == START() ) {
-            if ( exists $TOK_SPACE{$char} ) {
-                $state  = WHITESPACE();
-                $buffer = $char;
-            }
-            elsif ( exists $TOK_IDENTIFIER{$char} ) {
-                $state  = IDENTIFIER();
-                $buffer = $char;
-            }
-            elsif ( $char eq "\n" ) {
-                push @tokens, [ NEWLINE(), $char ];
-            }
-            elsif ( exists $TOK_NUMBER{$char} ) {
-                $state  = NUMBER();
-                $buffer = $char;
-            }
-            elsif ( exists $OPERATORS{$char} ) {
-                $state  = OPERATOR();
-                $buffer = $char;
-            }
-            else {
-                push @tokens, [ STRING(), $char ];
-            }
-        }
-        elsif ( $state == WHITESPACE() ) {
+        if ( $state == WHITESPACE() ) {
             if ( exists $TOK_SPACE{$char} ) {
                 $buffer .= $char;
             }
             else {
                 push @tokens, [ WHITESPACE(), $buffer ];
-                $state = START();
-                redo FSM;
+                if ( $state = $NEXT_STATE{$char} ) {
+                    $buffer = $char;
+                }
+                elsif ( $char eq "\n" ) {
+                    $state = START();
+                    push @tokens, [ NEWLINE(), $char ];
+                }
+                else {
+                    $state = START();
+                    push @tokens, [ STRING(), $char ];
+                }
             }
         }
         elsif ( $state == IDENTIFIER() ) {
@@ -734,8 +721,17 @@ sub tokenize {
             }
             else {
                 push @tokens, [ IDENTIFIER(), $buffer ];
-                $state = START();
-                redo FSM;
+                if ( $state = $NEXT_STATE{$char} ) {
+                    $buffer = $char;
+                }
+                elsif ( $char eq "\n" ) {
+                    $state = START();
+                    push @tokens, [ NEWLINE(), $char ];
+                }
+                else {
+                    $state = START();
+                    push @tokens, [ STRING(), $char ];
+                }
             }
         }
         elsif ( $state == NUMBER() ) {
@@ -744,8 +740,17 @@ sub tokenize {
             }
             else {
                 push @tokens, [ NUMBER(), $buffer ];
-                $state = START();
-                redo FSM;
+                if ( $state = $NEXT_STATE{$char} ) {
+                    $buffer = $char;
+                }
+                elsif ( $char eq "\n" ) {
+                    $state = START();
+                    push @tokens, [ NEWLINE(), $char ];
+                }
+                else {
+                    $state = START();
+                    push @tokens, [ STRING(), $char ];
+                }
             }
         }
         elsif ( $state == OPERATOR() ) {
@@ -754,8 +759,31 @@ sub tokenize {
             }
             else {
                 push @tokens, [ $OPERATORS{$buffer}, $buffer ];
+
+                if ( $state = $NEXT_STATE{$char} ) {
+                    $buffer = $char;
+                }
+                elsif ( $char eq "\n" ) {
+                    $state = START();
+                    push @tokens, [ NEWLINE(), $char ];
+                }
+                else {
+                    $state = START();
+                    push @tokens, [ STRING(), $char ];
+                }
+            }
+        }
+        elsif ( $state == START() ) {
+            if ( $state = $NEXT_STATE{$char} ) {
+                $buffer = $char;
+            }
+            elsif ( $char eq "\n" ) {
                 $state = START();
-                redo FSM;
+                push @tokens, [ NEWLINE(), $char ];
+            }
+            else {
+                $state = START();
+                push @tokens, [ STRING(), $char ];
             }
         }
     }
