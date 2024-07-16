@@ -849,9 +849,9 @@ sub parse_precedence_expression {
     my $left_expr;
     if ( $PREFIX{$op_value} || $LIST{$op_value} ) {
         $pos = parse_optional_whitespace( $tokens, $pos + 1 );
-        if ( $type == SIGIL() && $tokens->[$pos][0] == IDENTIFIER() ) {    # $name
-            $left_expr =
-              { type => 'PREFIX_OP', value => { op => $op_value, arg => { type => 'BAREWORD', value => $tokens->[$pos][1] } }, next => $pos + 1 };
+        if ( $type == SIGIL() && ( $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == DOUBLE_COLON() ) ) {    # $name
+            my $ast = parse_colon_bareword( $tokens, $pos );
+            $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $ast }, next => $ast->{next} };
         }
         else {
             my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
