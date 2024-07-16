@@ -211,6 +211,8 @@ sub meta_grammar {
     die "malformed grammar";
 }
 
+# Argument types --------
+
 sub parse_arg_list {
     my ( $tokens, $index ) = @_;
     return parse_precedence_expression( $tokens, $index, $LIST_OPERATOR_PRECEDENCE );
@@ -221,6 +223,16 @@ sub parse_single_arg {
     return parse_fail() if $tokens->[$index][0] == COMMA();
     return parse_precedence_expression( $tokens, $index, $PRECEDENCE{','} + 1 );
 }
+
+sub parse_single_arg_array {
+    my ( $tokens, $index ) = @_;
+    my $ast = parse_single_arg( $tokens, $index );
+    return $ast         if $ast->{FAIL};
+    return parse_fail() if $ast->{type} eq 'PREFIX_OP' && $ast->{value}{op} ne '@';
+    return $ast;
+}
+
+#----------------------
 
 my $rule_block = { seq => [ { before => [ \&CURLY_OPEN ] }, \&parse_statement_block, ] };
 
@@ -341,6 +353,21 @@ my %CORE_OP_GRAMMAR = (
         }
     ),
     meta_parse_using(
+        [qw{ push unshift }],
+        sub {
+            my ( $tokens, $index, $name ) = @_;
+            return meta_grammar(
+                $tokens, $index,
+                meta_optional_parenthesis(
+                    {
+                        type => "${name}_OP",
+                        seq  => [ \&parse_single_arg_array, { opt => [ \&parse_arg_list, { seq => [] }, ] } ],
+                    }
+                ),
+            );
+        }
+    ),
+    meta_parse_using(
         [
             'abs',          'alarm',       'caller',         'chdir',            'chomp',     'chop',
             'chr',          'chroot',      'cos',            'defined',          'delete',    'eval',
@@ -402,7 +429,7 @@ my %CORE_OP_GRAMMAR = (
         },
     ),
     meta_parse_using(
-        [qw{ return }],
+        [qw{ die }],
         sub {
             my ( $tokens, $index, $name ) = @_;
             return meta_grammar(
@@ -416,6 +443,27 @@ my %CORE_OP_GRAMMAR = (
                         ],
                     }
                 ),
+            );
+        },
+    ),
+
+    meta_parse_using(
+        [qw{ return }],
+        sub {
+            # Unlike most named operators, this is also exempt from the
+            # looks-like-a-function rule, so "return ("foo")."bar"" will cause
+            # "bar" to be part of the argument to "return".
+
+            my ( $tokens, $index, $name ) = @_;
+            return meta_grammar(
+                $tokens, $index,
+                {
+                    type => "${name}_OP",
+                    opt  => [
+                        \&parse_arg_list,    # return LIST
+                        { seq => [] },       # return
+                    ],
+                }
             );
         },
     ),
