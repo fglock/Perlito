@@ -73,6 +73,16 @@ use Data::Dumper;
 #   escape sequences like \x{263A}
 #   octal numbers
 #
+#   block disambiguation
+#
+#       sub XX {print 123} {XX}();  # prints 123
+#
+#       sub XX {print 123} +{XX}(); # syntax error
+#
+#       {ZZ}();                     # no error: block followed by list
+#
+#       return {ZZ}();              # syntax error
+#
 #   tests
 #
 
@@ -112,6 +122,8 @@ my %ASSOC_RIGHT = map { $_ => 1 } qw(** = **= += *= &= &.= <<= &&= -= /= |= |.= 
 my %INFIX =
   ( %ASSOC_RIGHT, map { $_ => 1 } qw(or xor and not ? || && == != <=> eq ne cmp < > <= >= lt gt le ge + - . * / // % x =~ !~ -> { [ ), '(' );
 my %NON_ASSOC_AUTO = map { $_ => 1 } qw( -- ++ );
+
+my %FORBIDDEN_CALL = map { $_ => 1 } qw($ @ % * ), '$#';    # $x() is forbidden
 
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
@@ -766,7 +778,8 @@ sub parse_precedence_expression {
     if ( $PREFIX{$op_value} || $LIST{$op_value} ) {
         $pos = parse_optional_whitespace( $tokens, $pos + 1 );
         if ( $type == SIGIL() && $tokens->[$pos][0] == IDENTIFIER() ) {    # $name
-            $left_expr = { type => 'VARIABLE', value => { sigil => $op_value, name => $tokens->[$pos][1] }, next => $pos + 1 };
+            $left_expr =
+              { type => 'PREFIX_OP', value => { op => $op_value, arg => { type => 'BAREWORD', value => $tokens->[$pos][1] } }, next => $pos + 1 };
         }
         else {
             my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
@@ -821,8 +834,8 @@ sub parse_precedence_expression {
             return parse_fail() if $right_expr->{FAIL};
             return parse_fail()
               if $type == PAREN_OPEN()
-              && $left_expr->{type} eq 'VARIABLE'
-              && $left_expr->{value}{sigil} ne '&';                                          # $a() is forbidden
+              && $left_expr->{type} eq 'PREFIX_OP'
+              && $FORBIDDEN_CALL{ $left_expr->{value}{op} };                                 # $a() is forbidden
             $left_expr = { type => 'APPLY_OR_DEREF', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
             $pos       = parse_optional_whitespace( $tokens, $left_expr->{next} );
             next;
