@@ -1294,6 +1294,16 @@ sub parse_delimited_expression {    #  )  123)
     my $expr;
     $pos = parse_optional_whitespace( $tokens, $pos );
     if ( $tokens->[$pos][1] ne $end_delim ) {
+        if ( $start_delim eq '{' && $tokens->[$pos][0] == IDENTIFIER() ) {    # { bareword }
+            my $pos1 = parse_optional_whitespace( $tokens, $pos + 1 );
+            if ( $tokens->[$pos1][1] eq $end_delim ) {
+                return {
+                    type  => 'PAREN',
+                    value => { delimiter => $start_delim, args => { type => 'BAREWORD', value => $tokens->[$pos][1] } },
+                    next  => $pos1 + 1
+                };
+            }
+        }
         $expr = parse_precedence_expression( $tokens, $pos, 0 );
         error( $tokens, $index ) if $expr->{FAIL};
         $pos = parse_optional_whitespace( $tokens, $expr->{next} );
