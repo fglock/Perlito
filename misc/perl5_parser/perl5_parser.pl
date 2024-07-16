@@ -100,6 +100,7 @@ my %PRECEDENCE               = (
     ( map { $_ => 5 } ',', '=>' ),
     ( map { $_ => 6 } qw(= **= += *= &= &.= <<= &&= -= /= |= |.= >>= ||= .= %= ^= ^.= //= x=) ),
     ( map { $_ => 7 } qw(?) ),                                                                     # ternary operator
+    ( map { $_ => 7 } qw(.. ...) ),
     ( map { $_ => 11 } qw(||) ),
     ( map { $_ => 12 } qw(&&) ),
     ( map { $_ => 13 } qw(== != <=> eq ne cmp) ),
@@ -119,8 +120,10 @@ my %POSTFIX = map { $_ => 1 } qw( -- ++ );
 
 # default associativity is LEFT
 my %ASSOC_RIGHT = map { $_ => 1 } qw(** = **= += *= &= &.= <<= &&= -= /= |= |.= >>= ||= .= %= ^= ^.= //= x= =>), ',';
-my %INFIX =
-  ( %ASSOC_RIGHT, map { $_ => 1 } qw(or xor and not ? || && == != <=> eq ne cmp < > <= >= lt gt le ge + - . * / // % x =~ !~ -> { [ ), '(' );
+my %INFIX       = (
+    %ASSOC_RIGHT, map { $_ => 1 } qw(or xor and not ? || && == != <=> eq ne cmp < > <= >= lt gt le ge + - . * / // % x =~ !~ -> { [ ),
+    '(', '..', '...'
+);
 my %NON_ASSOC_AUTO = map { $_ => 1 } qw( -- ++ );
 
 my %FORBIDDEN_CALL = map { $_ => 1 } qw($ @ % * ), '$#';    # $x() is forbidden
@@ -645,7 +648,7 @@ my %OPERATORS = (
     '~'  => TILDE(),
     '+'  => PLUS(),
     map { $_ => OPERATOR() }
-      qw( == != <= >= > <=> =~ !~
+      qw( == != <= >= > <=> =~ !~ .. ...
       ** % ++ -- && || // ! ^ ~~ | >>
       **=   +=    *=    &=    &.=    <<=    &&=
       -=    /=    |=    |.=    >>=    ||=
@@ -872,6 +875,9 @@ sub parse_precedence_expression {
         my $op_pos = $pos;
 
         last unless exists $INFIX{$op_value} || exists $POSTFIX{$op_value};
+
+        # TODO .. and ... are "nonassoc"
+
         my $precedence = $PRECEDENCE{$op_value};
         last if $precedence < $min_precedence;
 
