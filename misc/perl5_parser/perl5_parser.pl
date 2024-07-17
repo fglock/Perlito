@@ -668,6 +668,8 @@ my %OPERATORS = (
     '<<' => LESS_LESS(),
     '~'  => TILDE(),
     '+'  => PLUS(),
+    chr(10) => NEWLINE(),   # the tokenizer uses this
+    chr(13) => NEWLINE(),   # the tokenizer uses this
     map { $_ => OPERATOR() }
       qw( == != <= >= > <=> =~ !~ .. ...
       ** % ++ -- && || ^^ // ! ^ ~~ | >>
@@ -683,7 +685,7 @@ my %OPERATORS = (
 #   10E10     tokenizes to 10,E10
 #   q!=!=="=" tokenizes to q,!=,!=, ...
 #
-my %TOK_SPACE = map { $_ => WHITESPACE() } " ", "\t";
+my %TOK_SPACE = map { $_ => WHITESPACE() } " ", "\t", "\f", chr(11);
 my %TOK_IDENTIFIER = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_";
 my %TOK_IDENTIFIER_NUMBER = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_", "0" .. "9";
 my %TOK_NUMBER = map { $_ => NUMBER() } "0" .. "9";
@@ -705,10 +707,6 @@ sub tokenize {
                 if ( $state = $NEXT_STATE{$char} ) {
                     $buffer = $char;
                 }
-                elsif ( $char eq "\n" ) {
-                    $state = START();
-                    push @tokens, [ NEWLINE(), $char ];
-                }
                 else {
                     $state = START();
                     push @tokens, [ STRING(), $char ];
@@ -724,10 +722,6 @@ sub tokenize {
                 if ( $state = $NEXT_STATE{$char} ) {
                     $buffer = $char;
                 }
-                elsif ( $char eq "\n" ) {
-                    $state = START();
-                    push @tokens, [ NEWLINE(), $char ];
-                }
                 else {
                     $state = START();
                     push @tokens, [ STRING(), $char ];
@@ -742,10 +736,6 @@ sub tokenize {
                 push @tokens, [ NUMBER(), $buffer ];
                 if ( $state = $NEXT_STATE{$char} ) {
                     $buffer = $char;
-                }
-                elsif ( $char eq "\n" ) {
-                    $state = START();
-                    push @tokens, [ NEWLINE(), $char ];
                 }
                 else {
                     $state = START();
@@ -763,10 +753,6 @@ sub tokenize {
                 if ( $state = $NEXT_STATE{$char} ) {
                     $buffer = $char;
                 }
-                elsif ( $char eq "\n" ) {
-                    $state = START();
-                    push @tokens, [ NEWLINE(), $char ];
-                }
                 else {
                     $state = START();
                     push @tokens, [ STRING(), $char ];
@@ -776,10 +762,6 @@ sub tokenize {
         elsif ( $state == START() ) {
             if ( $state = $NEXT_STATE{$char} ) {
                 $buffer = $char;
-            }
-            elsif ( $char eq "\n" ) {
-                $state = START();
-                push @tokens, [ NEWLINE(), $char ];
             }
             else {
                 $state = START();
