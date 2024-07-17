@@ -623,7 +623,7 @@ use constant {
     PLUS          => -38,
 };
 
-my %TOKEN_NAME = (
+my %TOKEN_NAME = (    # this is used to produce error messages
     END_TOKEN()     => 'END_TOKEN',
     WHITESPACE()    => 'WHITESPACE',
     KEYWORD()       => 'KEYWORD',
@@ -659,7 +659,7 @@ my %TOKEN_NAME = (
     PLUS()          => 'PLUS',
 );
 
-my %OPERATORS = (
+my %OPERATORS = (    # the tokenizer uses this to map strings to token numbers
     ','     => COMMA(),
     '#'     => START_COMMENT(),
     "'"     => STRING_DELIM(),
@@ -692,14 +692,15 @@ my %OPERATORS = (
     '<<'    => LESS_LESS(),
     '~'     => TILDE(),
     '+'     => PLUS(),
-    chr(10) => NEWLINE(),         # the tokenizer uses this
-    chr(13) => NEWLINE(),         # the tokenizer uses this
-    map { $_ => OPERATOR() } qw( == != <= >= > <=> =~ !~ .. ...
+    chr(10) => NEWLINE(),
+    chr(13) => NEWLINE(),
+    map { $_ => OPERATOR() }
+      qw( == != <= >= > <=> =~ !~ .. ...
       ** % ++ -- && || ^^ // ! ^ ~~ | >>
       **=   +=    *=    &=    &.=    <<=    &&=
       -=    /=    |=    |.=    >>=    ||=
       .=    %=    ^=    ^.=           //=   x=
-    )
+      )
 );
 
 # tokenize()
@@ -1520,6 +1521,7 @@ sub parse_statement {
                 $expr = parse_for_expression( $tokens, $expr->{next} - 1 );
                 push @expr, $expr;
                 $expr = parse_for_expression( $tokens, $expr->{next} - 1 );
+                error( $tokens, $index ) if ( $expr->{value}{delimiter} ne ')' );
                 push @expr, $expr;
                 $expr = { type => 'THREE_ARG_FOR', value => \@expr, next => $expr->{next} };
             }
