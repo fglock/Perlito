@@ -863,7 +863,9 @@ sub parse_precedence_expression {
     my $type     = $tokens->[$pos][0];
     my $left_expr;
     if ( $PREFIX{$op_value} || $LIST{$op_value} ) {
-        $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+        $pos++;
+        $pos = parse_optional_whitespace( $tokens, $pos )
+            if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
         if ( $type == SIGIL() && ( $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == DOUBLE_COLON() ) ) {    # $name
             my $ast = parse_colon_bareword( $tokens, $pos );
             $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $ast }, next => $ast->{next} };
@@ -901,11 +903,13 @@ sub parse_precedence_expression {
         $left_expr = parse_term( $tokens, $index );
         return parse_fail() if $left_expr->{FAIL};
     }
-    $pos = parse_optional_whitespace( $tokens, $left_expr->{next} );
+    $pos = $left_expr->{next};
 
-    while ( $tokens->[$pos][0] != END_TOKEN() ) {
-        $pos = parse_optional_whitespace( $tokens, $pos );
-        return parse_fail() if $tokens->[$pos][0] == END_TOKEN();
+    while (1) {
+        $pos = parse_optional_whitespace( $tokens, $pos )
+            if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
+
+        last if $tokens->[$pos][0] == END_TOKEN();
         $op_value = $tokens->[$pos][1];
         $type     = $tokens->[$pos][0];
         my $op_pos = $pos;
@@ -917,7 +921,9 @@ sub parse_precedence_expression {
         my $precedence = $PRECEDENCE{$op_value};
         last if $precedence < $min_precedence;
 
-        $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+        $pos++;
+        $pos = parse_optional_whitespace( $tokens, $pos )
+            if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
 
         if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle postfix () [] {}
             my $right_expr = parse_term( $tokens, $op_pos );
@@ -998,7 +1004,7 @@ sub parse_precedence_expression {
         else {
             $left_expr = { type => 'BINARY_OP', value => [ $op_value, $left_expr, $right_expr ], next => $right_expr->{next} };
         }
-        $pos = parse_optional_whitespace( $tokens, $left_expr->{next} );
+        $pos = $left_expr->{next};
     }
     return $left_expr;
 }
