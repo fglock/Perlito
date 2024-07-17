@@ -133,6 +133,7 @@ my %ESCAPE_SEQUENCE = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
 my %STATEMENT_MODIFIER   = map { $_ => 1 } qw/ if unless while until for foreach when /;
 my %STATEMENT_COND_BLOCK = %STATEMENT_MODIFIER;
 my %RESERVED_WORDS       = ( %STATEMENT_MODIFIER, map { $_ => 1 } qw/ else elsif continue / );
+my %LIST_TERMINATOR      = ( %STATEMENT_MODIFIER, map { $_ => 1 } qw/ or xor and not ; / );
 
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
@@ -223,8 +224,32 @@ sub meta_grammar {
 # Argument types --------
 
 sub parse_arg_list {
-    my ( $tokens, $index ) = @_;
-    return parse_precedence_expression( $tokens, $index, $LIST_OPERATOR_PRECEDENCE );
+    my ( $tokens, $index, $first ) = @_;
+    my $pos = $index;
+    my $ast;
+    my @expr;
+    push @expr, $first if $first;
+    my $seen_comma = 1;
+  LIST:
+    while (1) {
+        $pos = parse_optional_whitespace( $tokens, $pos )
+          if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
+        last LIST if $tokens->[$pos][0] == END_TOKEN();
+        if ( $tokens->[$pos][0] == COMMA() || $tokens->[$pos][0] == FAT_ARROW() ) {
+            $seen_comma = 1;
+            $pos++;
+            next LIST;
+        }
+        last LIST if $LIST_TERMINATOR{ $tokens->[$pos][1] };
+        last LIST if !$seen_comma;
+        $ast = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{','} + 1 );
+        last LIST if $ast->{FAIL};
+        $pos = $ast->{next};
+        push @expr, $ast;
+        $seen_comma = 0;
+    }
+    return { %{ $expr[0] }, next => $pos } if @expr == 1;
+    return { type => 'LIST_OP', index => $index, value => \@expr, next => $pos };
 }
 
 sub parse_single_arg {
@@ -856,13 +881,16 @@ sub error_message {
 #
 sub parse_precedence_expression {
     my ( $tokens, $index, $min_precedence ) = @_;
-
-    # Handle unary operators
     my $pos      = $index;
     my $op_value = $tokens->[$pos][1];
     my $type     = $tokens->[$pos][0];
     my $left_expr;
-    if ( $PREFIX{$op_value} || $LIST{$op_value} ) {
+
+    if ( $LIST{$op_value} ) {
+        $left_expr = parse_arg_list( $tokens, $pos );
+        return parse_fail() if $left_expr->{FAIL};
+    }
+    elsif ( $PREFIX{$op_value} ) {
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
@@ -872,75 +900,60 @@ sub parse_precedence_expression {
         }
         else {
             my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
-            if ( $expr->{FAIL} ) {
-                return parse_fail() if !$LIST{$op_value};
-
-                # backtrack
-                # Handle a lone comma and fat comma without any value
-                return { type => 'LIST_OP', value => [$op_value], next => $pos };
+            return parse_fail() if $expr->{FAIL};
+            if (   $NON_ASSOC_AUTO{$op_value}
+                && ( $expr->{type} eq 'POSTFIX_OP' || $expr->{type} eq 'PREFIX_OP' )
+                && $NON_ASSOC_AUTO{ $expr->{value}{op} } )    # check for nonassoc syntax error
+            {
+                error( $tokens, $index );
             }
-            if ( $LIST{$op_value} ) {
-
-                # Handle prefix comma and fat comma
-                my @left = ($expr);
-                if ( $expr->{type} eq 'LIST_OP' ) {
-                    @left = @{ $expr->{value} };
-                }
-                $left_expr = { type => 'LIST_OP', value => [ $op_value, @left ], next => $expr->{next} };
-            }
-            else {
-                if (   $NON_ASSOC_AUTO{$op_value}
-                    && ( $expr->{type} eq 'POSTFIX_OP' || $expr->{type} eq 'PREFIX_OP' )
-                    && $NON_ASSOC_AUTO{ $expr->{value}{op} } )    # check for nonassoc syntax error
-                {
-                    error( $tokens, $index );
-                }
-                $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $expr }, next => $expr->{next} };
-            }
+            $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $expr }, next => $expr->{next} };
         }
     }
     else {
         $left_expr = parse_term( $tokens, $index );
         return parse_fail() if $left_expr->{FAIL};
     }
-    $pos = $left_expr->{next};
 
+  EXPR:
     while (1) {
+        $pos = $left_expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
 
-        last if $tokens->[$pos][0] == END_TOKEN();
+        return $left_expr if $tokens->[$pos][0] == END_TOKEN();
         $op_value = $tokens->[$pos][1];
         $type     = $tokens->[$pos][0];
         my $op_pos = $pos;
 
-        last unless exists $INFIX{$op_value} || exists $POSTFIX{$op_value};
+        return $left_expr unless exists $INFIX{$op_value} || exists $POSTFIX{$op_value};
 
         # TODO .. and ... are "nonassoc"
 
         my $precedence = $PRECEDENCE{$op_value};
-        last if $precedence < $min_precedence;
+        return $left_expr if $precedence < $min_precedence;
 
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
 
-        if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle postfix () [] {}
+        if ( $LIST{$op_value} ) {
+            $left_expr = parse_arg_list( $tokens, $pos, $left_expr );
+        }
+        elsif ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle postfix () [] {}
             my $right_expr = parse_term( $tokens, $op_pos );
             return parse_fail() if $right_expr->{FAIL};
             return parse_fail()
               if $type == PAREN_OPEN()
               && $left_expr->{type} eq 'PREFIX_OP'
-              && $FORBIDDEN_CALL{ $left_expr->{value}{op} };                                 # $a()  is forbidden
+              && $FORBIDDEN_CALL{ $left_expr->{value}{op} };                                    # $a()  is forbidden
             return parse_fail()
               if $type == PAREN_OPEN()
               && $left_expr->{type} eq 'APPLY_OR_DEREF'
-              && $left_expr->{value}{op} eq '(';                                             # expr()()  is forbidden
+              && $left_expr->{value}{op} eq '(';                                                # expr()()  is forbidden
             $left_expr = { type => 'APPLY_OR_DEREF', value => { op => $op_value, arg => [ $left_expr, $right_expr ] }, next => $right_expr->{next} };
-            $pos       = parse_optional_whitespace( $tokens, $left_expr->{next} );
-            next;
         }
-        if ( $type == ARROW() ) {                                                            # Handle ->method  ->method()  ->() ->[] ->{}
+        elsif ( $type == ARROW() ) {                                                            # Handle ->method  ->method()  ->() ->[] ->{}
             $type = $tokens->[$pos][0];
             my $right_expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'->'} + 1 );
             return parse_fail() if $right_expr->{FAIL};
@@ -959,10 +972,8 @@ sub parse_precedence_expression {
                     $left_expr = { type => 'METHOD_CALL', value => [ $left_expr, $right_expr ], next => $right_expr->{next} };
                 }
             }
-            $pos = parse_optional_whitespace( $tokens, $left_expr->{next} );
-            next;
         }    # /arrow
-        if ( $type == QUESTION() ) {    # Handle ternary operator
+        elsif ( $type == QUESTION() ) {    # Handle ternary operator
             my $true_expr = parse_precedence_expression( $tokens, $pos, 0 );                    # Parse the true branch
             return parse_fail() if $true_expr->{FAIL};
             $pos = parse_optional_whitespace( $tokens, $true_expr->{next} );
@@ -970,10 +981,8 @@ sub parse_precedence_expression {
             $pos = parse_optional_whitespace( $tokens, $pos + 1 );
             my $false_expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'?'} );    # Parse the false branch
             $left_expr = { type => 'TERNARY_OP', value => [ '?', $left_expr, $true_expr, $false_expr ], next => $false_expr->{next} };
-            $pos       = $left_expr->{next};
-            next;
         }
-        if ( $POSTFIX{$op_value} ) {                                                            # Handle postfix operators
+        elsif ( $POSTFIX{$op_value} ) {                                                         # Handle postfix operators
             if (   $NON_ASSOC_AUTO{$op_value}
                 && ( $left_expr->{type} eq 'POSTFIX_OP' || $left_expr->{type} eq 'PREFIX_OP' )
                 && $NON_ASSOC_AUTO{ $left_expr->{value}{op} } )                                 # check for nonassoc syntax error
@@ -981,32 +990,14 @@ sub parse_precedence_expression {
                 error( $tokens, $index );
             }
             $left_expr = { type => 'POSTFIX_OP', value => { op => $op_value, arg => $left_expr }, next => $pos };
-            next;
-        }
-
-        my $next_min_precedence = $ASSOC_RIGHT{$op_value} ? $precedence : $precedence + 1;
-        my $right_expr          = parse_precedence_expression( $tokens, $pos, $next_min_precedence );
-        if ( $right_expr->{FAIL} ) {    # backtrack
-            return parse_fail() if !$LIST{$op_value};    # Handle terminal comma and fat comma
-            my @left = ($left_expr);
-            if ( $left_expr->{type} eq 'LIST_OP' ) {
-                @left = @{ $left_expr->{value} };
-            }
-            return { type => 'LIST_OP', value => [ @left, $op_value ], next => $pos };
-        }
-        if ( $LIST{$op_value} ) {    # Handle list separators (comma and fat comma)
-            my @right = ($right_expr);
-            if ( $right_expr->{type} eq 'LIST_OP' ) {
-                @right = @{ $right_expr->{value} };
-            }
-            $left_expr = { type => 'LIST_OP', value => [ $left_expr, $op_value, @right ], next => $right_expr->{next} };
         }
         else {
+            my $next_min_precedence = $ASSOC_RIGHT{$op_value} ? $precedence : $precedence + 1;
+            my $right_expr          = parse_precedence_expression( $tokens, $pos, $next_min_precedence );
+            return parse_fail() if $right_expr->{FAIL};
             $left_expr = { type => 'BINARY_OP', value => [ $op_value, $left_expr, $right_expr ], next => $right_expr->{next} };
         }
-        $pos = $left_expr->{next};
-    }
-    return $left_expr;
+    }    # /EXPR
 }
 
 sub parse_fail {
