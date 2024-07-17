@@ -100,19 +100,19 @@ my %PRECEDENCE               = (
     ( map { $_ => 5 } ',', '=>' ),
     ( map { $_ => 6 } qw(= **= += *= &= &.= <<= &&= -= /= |= |.= >>= ||= .= %= ^= ^.= //= x=) ),
     ( map { $_ => 7 } qw(?) ),                                                                     # ternary operator
-    ( map { $_ => 7 } qw(.. ...) ),
-    ( map { $_ => 11 } qw(|| ^^ //) ),
-    ( map { $_ => 12 } qw(&&) ),
-    ( map { $_ => 13 } qw(== != <=> eq ne cmp) ),
-    ( map { $_ => 14 } qw(< > <= >= lt gt le ge) ),
-    ( map { $_ => 15 } qw(+ - .) ),
-    ( map { $_ => 16 } qw(* / % x) ),
-    ( map { $_ => 17 } qw(=~ !~) ),
-    ( map { $_ => 18 } qw(! \\) ),
-    ( map { $_ => 19 } qw(**) ),
-    ( map { $_ => 20 } qw(++ --) ),
-    ( map { $_ => 21 } qw(-> { [ ), '(' ),
-    ( map { $_ => 22 } qw($ @ %),   '$#' ),
+    ( map { $_ => 8 } qw(.. ...) ),
+    ( map { $_ => 9 } qw(|| ^^ //) ),
+    ( map { $_ => 10 } qw(&&) ),
+    ( map { $_ => 11 } qw(== != <=> eq ne cmp) ),
+    ( map { $_ => 12 } qw(< > <= >= lt gt le ge) ),
+    ( map { $_ => 13 } qw(+ - .) ),
+    ( map { $_ => 14 } qw(* / % x) ),
+    ( map { $_ => 15 } qw(=~ !~) ),
+    ( map { $_ => 16 } qw(! \\) ),
+    ( map { $_ => 17 } qw(**) ),
+    ( map { $_ => 18 } qw(++ --) ),
+    ( map { $_ => 19 } qw(-> { [ ), '(' ),
+    ( map { $_ => 20 } qw($ @ %),   '$#' ),
 );
 my %LIST    = map { $_ => 1 } ',', '=>';
 my %PREFIX  = map { $_ => 1 } qw( ! \\ not - + -- ++ $ @ % * & ), '$#';
@@ -636,47 +636,46 @@ my %TOKEN_NAME = (
 );
 
 my %OPERATORS = (
-    ','  => COMMA(),
-    '#'  => START_COMMENT(),
-    "'"  => STRING_DELIM(),
-    '"'  => STRING_DELIM(),
-    '`'  => STRING_DELIM(),
-    '\\' => ESCAPE(),
-    '-'  => MINUS(),
-    '.'  => DOT(),
-    '$'  => SIGIL(),
-    '$#' => SIGIL(),
-    '@'  => SIGIL(),
-    '%'  => SIGIL(),
-    '*'  => SIGIL(),
-    '&'  => SIGIL(),
-    '('  => PAREN_OPEN(),
-    ')'  => PAREN_CLOSE(),
-    '?'  => QUESTION(),
-    ':'  => COLON(),
-    '['  => SQUARE_OPEN(),
-    ']'  => SQUARE_CLOSE(),
-    '{'  => CURLY_OPEN(),
-    '}'  => CURLY_CLOSE(),
-    ';'  => SEMICOLON(),
-    '->' => ARROW(),
-    '='  => EQUALS(),
-    '/'  => SLASH(),
-    '=>' => FAT_ARROW(),
-    '::' => DOUBLE_COLON(),
-    '<'  => LESS_THAN(),
-    '<<' => LESS_LESS(),
-    '~'  => TILDE(),
-    '+'  => PLUS(),
-    chr(10) => NEWLINE(),   # the tokenizer uses this
-    chr(13) => NEWLINE(),   # the tokenizer uses this
-    map { $_ => OPERATOR() }
-      qw( == != <= >= > <=> =~ !~ .. ...
+    ','     => COMMA(),
+    '#'     => START_COMMENT(),
+    "'"     => STRING_DELIM(),
+    '"'     => STRING_DELIM(),
+    '`'     => STRING_DELIM(),
+    '\\'    => ESCAPE(),
+    '-'     => MINUS(),
+    '.'     => DOT(),
+    '$'     => SIGIL(),
+    '$#'    => SIGIL(),
+    '@'     => SIGIL(),
+    '%'     => SIGIL(),
+    '*'     => SIGIL(),
+    '&'     => SIGIL(),
+    '('     => PAREN_OPEN(),
+    ')'     => PAREN_CLOSE(),
+    '?'     => QUESTION(),
+    ':'     => COLON(),
+    '['     => SQUARE_OPEN(),
+    ']'     => SQUARE_CLOSE(),
+    '{'     => CURLY_OPEN(),
+    '}'     => CURLY_CLOSE(),
+    ';'     => SEMICOLON(),
+    '->'    => ARROW(),
+    '='     => EQUALS(),
+    '/'     => SLASH(),
+    '=>'    => FAT_ARROW(),
+    '::'    => DOUBLE_COLON(),
+    '<'     => LESS_THAN(),
+    '<<'    => LESS_LESS(),
+    '~'     => TILDE(),
+    '+'     => PLUS(),
+    chr(10) => NEWLINE(),         # the tokenizer uses this
+    chr(13) => NEWLINE(),         # the tokenizer uses this
+    map { $_ => OPERATOR() } qw( == != <= >= > <=> =~ !~ .. ...
       ** % ++ -- && || ^^ // ! ^ ~~ | >>
       **=   +=    *=    &=    &.=    <<=    &&=
       -=    /=    |=    |.=    >>=    ||=
       .=    %=    ^=    ^.=           //=   x=
-      )
+    )
 );
 
 # tokenize()
@@ -685,12 +684,13 @@ my %OPERATORS = (
 #   10E10     tokenizes to 10,E10
 #   q!=!=="=" tokenizes to q,!=,!=, ...
 #
-my %TOK_SPACE = map { $_ => WHITESPACE() } " ", "\t", "\f", chr(11);
-my %TOK_IDENTIFIER = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_";
+my %TOK_SPACE             = map { $_ => WHITESPACE() } " ", "\t", "\f", chr(11);
+my %TOK_IDENTIFIER        = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_";
 my %TOK_IDENTIFIER_NUMBER = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_", "0" .. "9";
-my %TOK_NUMBER = map { $_ => NUMBER() } "0" .. "9";
-my %TOK_OPERATOR = map { $_ => OPERATOR() } keys %OPERATORS;
-my %NEXT_STATE = ( %TOK_SPACE, %TOK_IDENTIFIER, %TOK_NUMBER, %TOK_OPERATOR );
+my %TOK_NUMBER            = map { $_ => NUMBER() } "0" .. "9";
+my %TOK_OPERATOR          = map { $_ => OPERATOR() } keys %OPERATORS;
+my %NEXT_STATE            = ( %TOK_SPACE, %TOK_IDENTIFIER, %TOK_NUMBER, %TOK_OPERATOR );
+
 sub tokenize {
     my ($code) = @_;
     my $state = START();
@@ -865,7 +865,7 @@ sub parse_precedence_expression {
     if ( $PREFIX{$op_value} || $LIST{$op_value} ) {
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )
-            if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
+          if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
         if ( $type == SIGIL() && ( $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == DOUBLE_COLON() ) ) {    # $name
             my $ast = parse_colon_bareword( $tokens, $pos );
             $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $ast }, next => $ast->{next} };
@@ -907,7 +907,7 @@ sub parse_precedence_expression {
 
     while (1) {
         $pos = parse_optional_whitespace( $tokens, $pos )
-            if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
+          if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
 
         last if $tokens->[$pos][0] == END_TOKEN();
         $op_value = $tokens->[$pos][1];
@@ -923,7 +923,7 @@ sub parse_precedence_expression {
 
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )
-            if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
+          if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
 
         if ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle postfix () [] {}
             my $right_expr = parse_term( $tokens, $op_pos );
