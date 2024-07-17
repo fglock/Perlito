@@ -92,14 +92,13 @@ my %QUOTE_PAIR = (
     '[' => ']',
     '<' => '>',
 );
-my $LIST_OPERATOR_PRECEDENCE = 4;
-my %PRECEDENCE               = (
+my %PRECEDENCE = (
     ( map { $_ => 1 } qw(or xor) ),
     ( map { $_ => 2 } qw(and) ),
-    ( map { $_ => 3 } qw(not) ),                                                                   # $LIST_OPERATOR_PRECEDENCE = 4
+    ( map { $_ => 3 } qw(not) ),
     ( map { $_ => 5 } ',', '=>' ),
     ( map { $_ => 6 } qw(= **= += *= &= &.= <<= &&= -= /= |= |.= >>= ||= .= %= ^= ^.= //= x=) ),
-    ( map { $_ => 7 } qw(?) ),                                                                     # ternary operator
+    ( map { $_ => 7 } qw(?) ),
     ( map { $_ => 8 } qw(.. ...) ),
     ( map { $_ => 9 } qw(|| ^^ //) ),
     ( map { $_ => 10 } qw(&&) ),
@@ -579,7 +578,7 @@ my %CORE_OP_GRAMMAR = (
         sub {
             my ( $tokens, $index, $name ) = @_;
             my $pos  = $index;
-            my $expr = parse_precedence_expression( $tokens, $pos, $LIST_OPERATOR_PRECEDENCE );
+            my $expr = parse_arg_list( $tokens, $pos );
             return parse_fail() if $expr->{FAIL};
             return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
         },
@@ -1390,7 +1389,7 @@ sub parse_file_handle {
     return parse_fail() if $tokens->[$pos][0] != WHITESPACE() && $tokens->[$pos][0] != NEWLINE();    # must be followed by space
     $pos = parse_optional_whitespace( $tokens, $pos + 1 );
     my $tok = $tokens->[$pos][1];
-    return parse_fail() if $INFIX{$tok} && $PRECEDENCE{$tok} > $LIST_OPERATOR_PRECEDENCE; # must not be followed by a higher precedence infix operator
+    return parse_fail() if $INFIX{$tok} && $PRECEDENCE{$tok} >= $PRECEDENCE{','};    # must not be followed by a higher precedence infix operator
     return $ast;
 }
 
