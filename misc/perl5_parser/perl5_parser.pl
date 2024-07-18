@@ -44,6 +44,7 @@ use Data::Dumper;
 # TODO
 #
 #   namespaces
+#       __PACKAGE__
 #
 #   features
 #       postderef feature
@@ -60,6 +61,7 @@ use Data::Dumper;
 #   subroutine
 #       more signatures and prototypes
 #       more builtin functions
+#       __SUB__
 #
 #   UTF8 parsing
 #       delimiter pairs
@@ -358,8 +360,9 @@ sub tokenize {
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, {    # environment hash
-        filename => '',    # filename where the code comes from
-        here_doc => [],    # current here documents being processed
+        filename => '',             # filename where the code comes from
+        here_doc => [],             # current here documents being processed
+        package_name => 'main',     # stack with current __PACKAGE__
     };
     return \@tokens;
 }
@@ -386,6 +389,15 @@ sub env_set_subroutine {
 sub env_get_subroutine {
     my ( $tokens, $name ) = @_;
     return $tokens->[-1]{declared_sub}{$name};
+}
+
+sub env_set_package {
+    my ( $tokens, $data ) = @_;
+    $tokens->[-1]{package} = $data;
+}
+sub env_get_package {
+    my ( $tokens ) = @_;
+    return $tokens->[-1]{package};
 }
 
 #
@@ -1687,6 +1699,28 @@ sub parse_statement {
                 };
                 $pos = $ast->{next};
             }
+        }
+        elsif ( $stmt eq 'package' ) {
+            $pos = $pos1;
+            $ast = parse_colon_bareword( $tokens, $pos );
+            error( $tokens, $index ) if $ast->{FAIL};
+            $pos = $ast->{next};
+            $pos       = parse_optional_whitespace( $tokens, $pos );
+            # TODO - package version
+            my $version;
+            my $old_package = env_get_package($tokens);
+            env_set_package( $tokens, { name => $ast, version => $version } );
+            my $block;
+            if ( $tokens->[$pos][0] == CURLY_OPEN() ) {
+                $block = parse_statement_block( $tokens, $pos );
+                env_set_package( $tokens, $old_package);
+                $pos = $block->{next};
+            }
+            $ast = {
+                type  => 'PACKAGE',
+                value => { name => $ast, block => $block, version => $version },
+                next  => $pos,
+            };
         }
         elsif ( $stmt eq 'else' || $stmt eq 'elsif' || $stmt eq 'continue' ) {
             error( $tokens, $index );
