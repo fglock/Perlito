@@ -489,15 +489,20 @@ sub parse_arg_list {
     my @expr;
     push @expr, $first if $first;
     my $seen_comma = 1;
+    my $optional   = 0;
 
     if ( defined($signature) ) {
         return parse_fail() if @expr && $signature eq '';    # signature says zero args, but we've already consumed args
         if ( substr( $signature, 0, 1 ) eq '&' ) {           # &@
             parse_fail() if @expr;
-            $signature = substr( $signature, 1 );
             my $block = parse_statement_block( $tokens, $pos );
             push @expr, $block;
             $pos = $block->{next};
+            $signature = substr( $signature, 1 );
+            if ( substr( $signature, 0, 1 ) eq ';' ) {           # ;$
+                $signature = substr( $signature, 1 );
+                $optional = 1;
+            }
         }
     }
 
@@ -523,13 +528,17 @@ sub parse_arg_list {
             # TODO - improve checking for argument type  $ @ *
             return parse_fail() if $ast->{type} eq 'PREFIX_OP' && $ast->{value}{op} ne $sig;
             $signature = substr( $signature, 1 );
+            if ( substr( $signature, 0, 1 ) eq ';' ) {           # ;$
+                $signature = substr( $signature, 1 );
+                $optional = 1;
+            }
         }
 
         $pos = $ast->{next};
         push @expr, $ast;
         $seen_comma = 0;
     }
-    if ( defined($signature) && $signature ne '' ) {    # the signature was not consumed
+    if ( !$optional && defined($signature) && $signature ne '' ) {    # the signature was not consumed
         die error_message( $tokens, $pos, "Not enough arguments" . ( $sub_name ? " for $sub_name" : "" ) );
     }
 
