@@ -478,56 +478,23 @@ sub meta_grammar {
 
 my %START_WHITESPACE = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
 
-sub parse_using_signature {
-    my ( $tokens, $index, %opt ) = @_;
-    my $ast_type  = $opt{type};
-    my $signature = $opt{signature};
-
-    if ( !defined($signature) ) {    # LIST
-        return meta_grammar(
-            $tokens, $index,
-            meta_optional_parenthesis(
-                {
-                    type => $ast_type,
-                    seq  => [ \&parse_arg_list ],
-                },
-            ),
-        );
-    }
-    if ( $signature eq '' ) {        # zero arguments
-        return meta_grammar(
-            $tokens, $index,
-            meta_optional_parenthesis(
-                {
-                    type => $ast_type,
-                    seq  => [],
-                },
-            ),
-        );
-    }
-    if ( $signature eq '$' ) {       # exactly one argument
-        return meta_grammar(
-            $tokens, $index,
-            meta_optional_parenthesis(
-                {
-                    type => $ast_type,
-                    seq  => [ \&parse_single_arg ],
-                },
-            ),
-        );
-    }
-    die error_message( $tokens, $index, "Unimplemented subroutine signature " . error_message_quote($signature) );
-}
-
 sub parse_arg_list {
-    my ( $tokens, $index, $first ) = @_;
+    my ( $tokens, $index, %opt ) = @_;
+    my $signature = $opt{signature};    # $ $$ $$$ $@
+    my $first     = $opt{first};        # we've already parsed something
+    my $sub_name  = $opt{sub_name};     # used for error messages
+
     my $pos = $index;
     my $ast;
     my @expr;
     push @expr, $first if $first;
     my $seen_comma = 1;
+
+    return parse_fail() if @expr && defined($signature) && $signature eq '';    # signature says zero args, but we've already consumed args
+
   LIST:
     while (1) {
+        last LIST if defined($signature) && $signature eq '';                   # no more arguments
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $START_WHITESPACE{ $tokens->[$pos][0] };
         last LIST if $tokens->[$pos][0] == END_TOKEN();
@@ -540,10 +507,23 @@ sub parse_arg_list {
         last LIST if !$seen_comma;
         $ast = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{','} + 1 );
         last LIST if $ast->{FAIL};
+
+        if ( defined($signature) ) {
+            my $sig = substr( $signature, 0, 1 );
+
+            # TODO - improve checking for argument type  $ @ *
+            return parse_fail() if $ast->{type} eq 'PREFIX_OP' && $ast->{value}{op} ne $sig;
+            $signature = substr( $signature, 1 );
+        }
+
         $pos = $ast->{next};
         push @expr, $ast;
         $seen_comma = 0;
     }
+    if ( defined($signature) && $signature ne '' ) {    # the signature was not consumed
+        die error_message( $tokens, $pos, "Not enough arguments" . ( $sub_name ? " for $sub_name" : "" ) );
+    }
+
     return { %{ $expr[0] }, next => $pos } if @expr == 1;
     return { type => 'LIST_OP', index => $index, value => \@expr, next => $pos };
 }
@@ -641,6 +621,7 @@ my %CORE_OP_GRAMMAR = (
         [qw{ time wantarray }],
         sub {
             my ( $tokens, $index, $name ) = @_;
+            ## return parse_arg_list( $tokens, $index, type => "${name}_OP", signature => '' );
             return meta_grammar(
                 $tokens, $index,
                 meta_optional_parenthesis(
@@ -1014,7 +995,7 @@ sub parse_precedence_expression {
           if $START_WHITESPACE{ $tokens->[$pos][0] };
 
         if ( $LIST{$op_value} ) {
-            $left_expr = parse_arg_list( $tokens, $pos, $left_expr );
+            $left_expr = parse_arg_list( $tokens, $pos, first => $left_expr );
         }
         elsif ( $type == PAREN_OPEN() || $type == CURLY_OPEN() || $type == SQUARE_OPEN() ) {    # Handle postfix () [] {}
             my $right_expr = parse_term( $tokens, $op_pos );
@@ -1501,11 +1482,11 @@ sub parse_term {
         }
         if ( my $subr = env_get_subroutine( $tokens, $stmt ) ) {    # name ARGS     apply a predeclared sub
             my $signature = $subr->{signature}{value};
-            my $args      = parse_using_signature( $tokens, $pos, signature => $signature );    # name(ARGS)  name ARGS
+            my $args      = parse_arg_list( $tokens, $pos, signature => $signature, sub_name => $stmt );    # name(ARGS)  name ARGS
             return parse_fail() if $args->{FAIL};
             return { type => 'APPLY_DECLARED_SUB', value => { name => $stmt, args => $args }, next => $args->{next} };
         }
-        if ( $tokens->[$pos][0] == PAREN_OPEN() ) {                                             # name(ARGS)     apply an unknown sub
+        if ( $tokens->[$pos][0] == PAREN_OPEN() ) {                                                         # name(ARGS)     apply an unknown sub
             my $args = parse_delimited_expression( $tokens, $pos + 1, '(', ')' );
             return parse_fail() if $args->{FAIL};
             return { type => 'APPLY_UNKNOWN_SUB', value => { name => $stmt, args => $args }, next => $args->{next} };
