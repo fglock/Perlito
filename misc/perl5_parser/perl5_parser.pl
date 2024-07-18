@@ -360,9 +360,9 @@ sub tokenize {
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, {    # environment hash
-        filename => '',             # filename where the code comes from
-        here_doc => [],             # current here documents being processed
-        package_name => 'main',     # stack with current __PACKAGE__
+        filename     => '',        # filename where the code comes from
+        here_doc     => [],        # current here documents being processed
+        package_name => 'main',    # stack with current __PACKAGE__
     };
     return \@tokens;
 }
@@ -395,8 +395,9 @@ sub env_set_package {
     my ( $tokens, $data ) = @_;
     $tokens->[-1]{package} = $data;
 }
+
 sub env_get_package {
-    my ( $tokens ) = @_;
+    my ($tokens) = @_;
     return $tokens->[-1]{package};
 }
 
@@ -509,19 +510,19 @@ sub parse_arg_list {
             parse_fail() if @expr;
             my $block = parse_statement_block( $tokens, $pos );
             push @expr, $block;
-            $pos = $block->{next};
+            $pos       = $block->{next};
             $signature = substr( $signature, 1 );
-            if ( substr( $signature, 0, 1 ) eq ';' ) {           # ;$
+            if ( substr( $signature, 0, 1 ) eq ';' ) {       # ;$
                 $signature = substr( $signature, 1 );
-                $optional = 1;
+                $optional  = 1;
             }
         }
     }
 
   LIST:
     while (1) {
-        last LIST if defined($signature) && $signature eq '';                   # no more arguments
-        $pos++ if $tokens->[$pos][0] == WHITESPACE();
+        last LIST if defined($signature) && $signature eq '';    # no more arguments
+        $pos++    if $tokens->[$pos][0] == WHITESPACE();
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $START_WHITESPACE{ $tokens->[$pos][0] };
         last LIST if $tokens->[$pos][0] == END_TOKEN();
@@ -541,9 +542,9 @@ sub parse_arg_list {
             # TODO - improve checking for argument type  $ @ *
             return parse_fail() if $ast->{type} eq 'PREFIX_OP' && $ast->{value}{op} ne $sig;
             $signature = substr( $signature, 1 );
-            if ( substr( $signature, 0, 1 ) eq ';' ) {           # ;$
+            if ( substr( $signature, 0, 1 ) eq ';' ) {    # ;$
                 $signature = substr( $signature, 1 );
-                $optional = 1;
+                $optional  = 1;
             }
         }
 
@@ -1192,10 +1193,35 @@ sub parse_bareword {    # next LABEL
     return parse_fail();
 }
 
+sub fully_qualified_name {
+    my ( $namespace, $name ) = @_;
+
+    ## if ($namespace =~ /^::/) {
+    ##     $namespace = "main" . $namespace;
+    ## }
+
+    # Check if the name name is fully qualified
+    if ( $name =~ /^::/ ) {
+
+        # Normalize ::sub to main::sub
+        return "main" . $name;
+    }
+    elsif ( $name =~ /::/ ) {
+
+        # If the name contains '::', it's already fully qualified
+        return $name;
+    }
+    else {
+        # Otherwise, combine the namespace and the name
+        return $namespace . '::' . $name;
+    }
+}
+
 sub parse_colon_bareword {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
     my @tok;
+    ## push @tok, 'main' if $tokens->[$pos][0] == DOUBLE_COLON();  # ::  is  main::
     while ( $tokens->[$pos][0] != END_TOKEN()
         && ( $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == NUMBER() ) )
     {
@@ -1396,7 +1422,7 @@ sub parse_delimited_expression {    #  )  123)
     my $expr;
     $pos++ if $tokens->[$pos][0] == WHITESPACE();
     $pos = parse_optional_whitespace( $tokens, $pos )
-        if $START_WHITESPACE{ $tokens->[$pos][0] };
+      if $START_WHITESPACE{ $tokens->[$pos][0] };
     if ( $tokens->[$pos][1] ne $end_delim ) {
         if ( $start_delim eq '{' && $tokens->[$pos][0] == IDENTIFIER() ) {    # { bareword }
             my $pos1 = parse_optional_whitespace( $tokens, $pos + 1 );
@@ -1424,7 +1450,7 @@ sub parse_statement_block {
     my @expr;
     while (1) {
         error( $tokens, $index ) if $tokens->[$pos][0] == END_TOKEN();
-        $pos++ if $tokens->[$pos][0] == WHITESPACE();
+        $pos++                   if $tokens->[$pos][0] == WHITESPACE();
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $START_WHITESPACE{ $tokens->[$pos][0] };
         return { type => 'STATEMENT_BLOCK', value => \@expr, next => $pos + 1 } if $tokens->[$pos][0] == CURLY_CLOSE();
@@ -1507,14 +1533,14 @@ sub parse_term {
         $pos++;
         $pos++ if $tokens->[$pos][0] == WHITESPACE();
         $pos = parse_optional_whitespace( $tokens, $pos )
-            if $START_WHITESPACE{ $tokens->[$pos][0] };
-        if ( $tokens->[$pos][0] == FAT_ARROW() ) {             # bareword
+          if $START_WHITESPACE{ $tokens->[$pos][0] };
+        if ( $tokens->[$pos][0] == FAT_ARROW() ) {    # bareword
             return { type => 'STRING', value => $tokens->[$index][1], next => $index + 1 };
         }
 
         return parse_fail() if $RESERVED_WORDS{$stmt};
 
-        if ( exists $CORE_OP_GRAMMAR{$stmt} ) {                # apply a built-in function
+        if ( exists $CORE_OP_GRAMMAR{$stmt} ) {       # apply a built-in function
             return $CORE_OP_GRAMMAR{$stmt}->( $tokens, $pos, $stmt );
         }
         if ( my $subr = env_get_subroutine( $tokens, $stmt ) ) {    # name ARGS     apply a predeclared sub
@@ -1689,6 +1715,8 @@ sub parse_statement {
                     $signature = $CORE_OP_GRAMMAR{q}->( $tokens, $pos, 'q' );                # get the raw text
                     $pos       = parse_optional_whitespace( $tokens, $signature->{next} );
                 }
+
+                # TODO use: fully_qualified_name($namespace, $name)
                 env_set_subroutine( $tokens, $name, { signature => $signature } );           # store the declaration
 
                 my $block = parse_statement_block( $tokens, $pos );
@@ -1705,7 +1733,8 @@ sub parse_statement {
             $ast = parse_colon_bareword( $tokens, $pos );
             error( $tokens, $index ) if $ast->{FAIL};
             $pos = $ast->{next};
-            $pos       = parse_optional_whitespace( $tokens, $pos );
+            $pos = parse_optional_whitespace( $tokens, $pos );
+
             # TODO - package version
             my $version;
             my $old_package = env_get_package($tokens);
@@ -1713,7 +1742,7 @@ sub parse_statement {
             my $block;
             if ( $tokens->[$pos][0] == CURLY_OPEN() ) {
                 $block = parse_statement_block( $tokens, $pos );
-                env_set_package( $tokens, $old_package);
+                env_set_package( $tokens, $old_package );
                 $pos = $block->{next};
             }
             $ast = {
@@ -1928,6 +1957,8 @@ LABEL: OTHER_LABEL: foreach ( 1;2;3 ) { $a }
 
 say $x# comment
 [123];
+
+$::x = 13;
 
 __END__
 123
