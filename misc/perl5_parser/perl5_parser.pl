@@ -1355,6 +1355,10 @@ sub parse_file_handle {
     #   print STDOUT (10);
     #   print $fh(10);      # not a function call
     #
+    #   print {*STDERR} 123 # block syntax
+    #   print {*STDERR;} 123
+    #   print {;*STDERR;} 123
+    #
     # is NOT file handle:
     #
     #   print chr;          # a known function name
