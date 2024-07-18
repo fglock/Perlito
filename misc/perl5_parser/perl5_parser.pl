@@ -120,7 +120,7 @@ my %POSTFIX = map { $_ => 1 } qw( -- ++ );
 # default associativity is LEFT
 my %ASSOC_RIGHT = map { $_ => 1 } qw(** = **= += *= &= &.= <<= &&= -= /= |= |.= >>= ||= .= %= ^= ^.= //= x= =>), ',';
 my %INFIX       = (
-    %ASSOC_RIGHT, map { $_ => 1 } qw(or xor and not ? || && == != <=> eq ne cmp < > <= >= lt gt le ge + - . * / // % x =~ !~ -> { [ ),
+    %ASSOC_RIGHT, map { $_ => 1 } qw(or xor and ? || && == != <=> eq ne cmp < > <= >= lt gt le ge + - . * / // % x =~ !~ -> { [ ),
     '(', '..', '...'
 );
 my %NON_ASSOC_AUTO = map { $_ => 1 } qw( -- ++ );
@@ -526,6 +526,9 @@ my %CORE_OP_GRAMMAR = (
                     {
                         type => "${name}_OP",
                         opt  => [
+                            {    # print BLOCK LIST
+                                seq => [ $rule_block, \&parse_optional_whitespace, \&parse_arg_list, ]
+                            },
                             {    # print FILE LIST
                                 seq => [ \&parse_file_handle, \&parse_optional_whitespace, \&parse_arg_list ]
                             },
@@ -1348,16 +1351,20 @@ sub parse_file_handle {
     #
     # is file handle:
     #
-    #   print $f LIST ;  print {$f} LIST ;  print STDOUT LIST ;  print {STDOUT} LIST
+    #   print $f LIST
+    #   print STDOUT LIST
     #   print STDOUT;
+    #   print ::STDOUT
     #   print $f +3;        # plus is close to the second argument
     #   print $f or die;    # `or` is not an argument to print
-    #   print STDOUT (10);
+    #   print STDOUT (10);  # not a function call
     #   print $fh(10);      # not a function call
     #
-    #   print {*STDERR} 123 # block syntax
+    #   print {*STDERR} 123 # block syntax - see the 'print/printf/say' grammar
     #   print {*STDERR;} 123
     #   print {;*STDERR;} 123
+    #   print {$f} LIST
+    #   print {STDOUT} LIST
     #
     # is NOT file handle:
     #
@@ -1372,17 +1379,13 @@ sub parse_file_handle {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
     my $ast;
+    my $value = $tokens->[$pos][1];
     if ( $tokens->[$pos][0] == IDENTIFIER() ) {
-
-        # TODO check that the bareword is not a builtin like `chr`
-
+        return parse_fail() if exists $INFIX{$value} || exists $PREFIX{$value};    # check that the bareword is not a builtin like `chr`
         $ast = { type => 'BAREWORD', value => $tokens->[$pos][1], next => $pos + 1 };
     }
-    elsif ( $tokens->[$pos][0] == SIGIL() && $tokens->[$pos][1] eq '$' ) {
+    elsif ( $tokens->[$pos][0] == SIGIL() && $value eq '$' ) {
         $ast = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{'$'} );
-    }
-    elsif ( $tokens->[$pos][0] == CURLY_OPEN() ) {
-        $ast = parse_delimited_expression( $tokens, $pos + 1, '{', '}' );
     }
     return parse_fail() if !$ast || $ast->{FAIL};
     $pos = $ast->{next};
