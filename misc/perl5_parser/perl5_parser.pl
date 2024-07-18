@@ -480,7 +480,7 @@ my %START_WHITESPACE = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
 
 sub parse_arg_list {
     my ( $tokens, $index, %opt ) = @_;
-    my $signature = $opt{signature};    # $ $$ $$$ $@
+    my $signature = $opt{signature};    # $ $$ $$$ $@ &@      https://perldoc.perl.org/perlsub#Prototypes
     my $first     = $opt{first};        # we've already parsed something
     my $sub_name  = $opt{sub_name};     # used for error messages
 
@@ -490,7 +490,16 @@ sub parse_arg_list {
     push @expr, $first if $first;
     my $seen_comma = 1;
 
-    return parse_fail() if @expr && defined($signature) && $signature eq '';    # signature says zero args, but we've already consumed args
+    if ( defined($signature) ) {
+        return parse_fail() if @expr && $signature eq '';    # signature says zero args, but we've already consumed args
+        if ( substr( $signature, 0, 1 ) eq '&' ) {           # &@
+            parse_fail() if @expr;
+            $signature = substr( $signature, 1 );
+            my $block = parse_statement_block( $tokens, $pos );
+            push @expr, $block;
+            $pos = $block->{next};
+        }
+    }
 
   LIST:
     while (1) {
