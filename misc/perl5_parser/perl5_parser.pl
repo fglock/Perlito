@@ -58,9 +58,8 @@ use Data::Dumper;
 #   attributes
 #
 #   subroutine
-#       signatures
-#       prototype
-#       most builtin functions are missing
+#       more signatures and prototypes
+#       more builtin functions
 #
 #   UTF8 parsing
 #       delimiter pairs
@@ -69,11 +68,11 @@ use Data::Dumper;
 #
 #   indirect syntax (obsolete)
 #
-#   string interpolation
+#   string interpolation (sublanguages)
 #   escape sequences like \x{263A}
 #   octal numbers
 #
-#   block disambiguation
+#   test block disambiguation
 #
 #       sub XX {print 123} {XX}();  # prints 123
 #
@@ -478,6 +477,47 @@ sub meta_grammar {
 # Argument types --------
 
 my %START_WHITESPACE = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
+
+sub parse_using_signature {
+    my ( $tokens, $index, %opt ) = @_;
+    my $ast_type  = $opt{type};
+    my $signature = $opt{signature};
+
+    if ( !defined($signature) ) {    # LIST
+        return meta_grammar(
+            $tokens, $index,
+            meta_optional_parenthesis(
+                {
+                    type => $ast_type,
+                    seq  => [ \&parse_arg_list ],
+                },
+            ),
+        );
+    }
+    if ( $signature eq '' ) {        # zero arguments
+        return meta_grammar(
+            $tokens, $index,
+            meta_optional_parenthesis(
+                {
+                    type => $ast_type,
+                    seq  => [],
+                },
+            ),
+        );
+    }
+    if ( $signature eq '$' ) {       # exactly one argument
+        return meta_grammar(
+            $tokens, $index,
+            meta_optional_parenthesis(
+                {
+                    type => $ast_type,
+                    seq  => [ \&parse_single_arg ],
+                },
+            ),
+        );
+    }
+    die error_message( $tokens, $index, "Unimplemented subroutine signature " . error_message_quote($signature) );
+}
 
 sub parse_arg_list {
     my ( $tokens, $index, $first ) = @_;
@@ -1456,25 +1496,16 @@ sub parse_term {
 
         return parse_fail() if $RESERVED_WORDS{$stmt};
 
-        if ( exists $CORE_OP_GRAMMAR{$stmt} ) {                # built-in functions requiring special parsing
+        if ( exists $CORE_OP_GRAMMAR{$stmt} ) {                # apply a built-in function
             return $CORE_OP_GRAMMAR{$stmt}->( $tokens, $pos, $stmt );
         }
-
         if ( my $subr = env_get_subroutine( $tokens, $stmt ) ) {    # name ARGS     apply a predeclared sub
-
-            # TODO parse using sub signature
-            # print "sub '$stmt' is predeclared: ", Dumper($subr);
-            my $args;
-            if ( $tokens->[$pos][0] == PAREN_OPEN() ) {
-                $args = parse_delimited_expression( $tokens, $pos + 1, '(', ')' );    # name(ARGS)
-            }
-            else {
-                $args = parse_arg_list( $tokens, $pos );                              # name ARGS
-            }
+            my $signature = $subr->{signature}{value};
+            my $args      = parse_using_signature( $tokens, $pos, signature => $signature );    # name(ARGS)  name ARGS
             return parse_fail() if $args->{FAIL};
             return { type => 'APPLY_DECLARED_SUB', value => { name => $stmt, args => $args }, next => $args->{next} };
         }
-        if ( $tokens->[$pos][0] == PAREN_OPEN() ) {    # name(ARGS)     apply an unknown sub
+        if ( $tokens->[$pos][0] == PAREN_OPEN() ) {                                             # name(ARGS)     apply an unknown sub
             my $args = parse_delimited_expression( $tokens, $pos + 1, '(', ')' );
             return parse_fail() if $args->{FAIL};
             return { type => 'APPLY_UNKNOWN_SUB', value => { name => $stmt, args => $args }, next => $args->{next} };
