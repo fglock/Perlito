@@ -1460,11 +1460,25 @@ sub parse_term {
             return $CORE_OP_GRAMMAR{$stmt}->( $tokens, $pos, $stmt );
         }
 
-        if ( my $subr = env_get_subroutine( $tokens, $stmt ) ) {
+        if ( my $subr = env_get_subroutine( $tokens, $stmt ) ) {    # name ARGS     apply a predeclared sub
 
+            # TODO parse using sub signature
             # print "sub '$stmt' is predeclared: ", Dumper($subr);
+            my $args;
+            if ( $tokens->[$pos][0] == PAREN_OPEN() ) {
+                $args = parse_delimited_expression( $tokens, $pos + 1, '(', ')' );    # name(ARGS)
+            }
+            else {
+                $args = parse_arg_list( $tokens, $pos );                              # name ARGS
+            }
+            return parse_fail() if $args->{FAIL};
+            return { type => 'APPLY_DECLARED_SUB', value => { name => $stmt, args => $args }, next => $args->{next} };
         }
-
+        if ( $tokens->[$pos][0] == PAREN_OPEN() ) {    # name(ARGS)     apply an unknown sub
+            my $args = parse_delimited_expression( $tokens, $pos + 1, '(', ')' );
+            return parse_fail() if $args->{FAIL};
+            return { type => 'APPLY_UNKNOWN_SUB', value => { name => $stmt, args => $args }, next => $args->{next} };
+        }
         return { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
