@@ -133,6 +133,7 @@ my %STATEMENT_MODIFIER   = map { $_ => 1 } qw/ if unless while until for foreach
 my %STATEMENT_COND_BLOCK = %STATEMENT_MODIFIER;
 my %RESERVED_WORDS       = ( %STATEMENT_MODIFIER, map { $_ => 1 } qw/ else elsif continue / );
 my %LIST_TERMINATOR      = ( %STATEMENT_MODIFIER, map { $_ => 1 } qw/ or xor and not ; / );
+my %START_WHITESPACE     = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
 
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
@@ -232,7 +233,7 @@ sub parse_arg_list {
   LIST:
     while (1) {
         $pos = parse_optional_whitespace( $tokens, $pos )
-          if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
+          if $START_WHITESPACE{ $tokens->[$pos][0] };
         last LIST if $tokens->[$pos][0] == END_TOKEN();
         if ( $tokens->[$pos][0] == COMMA() || $tokens->[$pos][0] == FAT_ARROW() ) {
             $seen_comma = 1;
@@ -893,7 +894,7 @@ sub parse_precedence_expression {
     elsif ( $PREFIX{$op_value} ) {
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )
-          if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
+          if $START_WHITESPACE{ $tokens->[$pos][0] };
         if ( $type == SIGIL() && ( $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == DOUBLE_COLON() ) ) {    # $name
             my $ast = parse_colon_bareword( $tokens, $pos );
             $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $ast }, next => $ast->{next} };
@@ -919,7 +920,7 @@ sub parse_precedence_expression {
     while (1) {
         $pos = $left_expr->{next};
         $pos = parse_optional_whitespace( $tokens, $pos )
-          if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
+          if $START_WHITESPACE{ $tokens->[$pos][0] };
 
         return $left_expr if $tokens->[$pos][0] == END_TOKEN();
         $op_value = $tokens->[$pos][1];
@@ -935,7 +936,7 @@ sub parse_precedence_expression {
 
         $pos++;
         $pos = parse_optional_whitespace( $tokens, $pos )
-          if $tokens->[$pos][0] == WHITESPACE() || $tokens->[$pos][0] == NEWLINE();
+          if $START_WHITESPACE{ $tokens->[$pos][0] };
 
         if ( $LIST{$op_value} ) {
             $left_expr = parse_arg_list( $tokens, $pos, $left_expr );
@@ -1387,8 +1388,8 @@ sub parse_file_handle {
 
     # TODO check for terminators: END_TOKEN, SEMICOLON, PAREN_CLOSE, CURLY_CLOSE, SQUARE_CLOSE
 
-    return parse_fail() if $tokens->[$pos][0] != WHITESPACE() && $tokens->[$pos][0] != NEWLINE();    # must be followed by space
-    $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+    return parse_fail() if !$START_WHITESPACE{ $tokens->[$pos][0] };                 # must be followed by space or a comment
+    $pos = parse_optional_whitespace( $tokens, $pos );
     my $tok = $tokens->[$pos][1];
     return parse_fail() if $INFIX{$tok} && $PRECEDENCE{$tok} >= $PRECEDENCE{','};    # must not be followed by a higher precedence infix operator
     return $ast;
@@ -1778,6 +1779,9 @@ $a->$b;
 $a->b(123) if $b;
 
 LABEL: OTHER_LABEL: foreach ( 1;2;3 ) { $a }
+
+say $x# comment
+[123];
 
 __END__
 123
