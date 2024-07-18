@@ -133,7 +133,259 @@ my %STATEMENT_MODIFIER   = map { $_ => 1 } qw/ if unless while until for foreach
 my %STATEMENT_COND_BLOCK = %STATEMENT_MODIFIER;
 my %RESERVED_WORDS       = ( %STATEMENT_MODIFIER, map { $_ => 1 } qw/ else elsif continue / );
 my %LIST_TERMINATOR      = ( %STATEMENT_MODIFIER, map { $_ => 1 } qw/ or xor and not ; / );
-my %START_WHITESPACE     = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
+
+#
+# Tokenizer/Lexer
+#
+
+use constant {
+    END_TOKEN  => -1,
+    WHITESPACE => -2,
+    KEYWORD    => -3,
+    IDENTIFIER => -4,
+    NUMBER     => -5,
+    OPERATOR   => -9,
+    STRING     => -11,
+
+    STRING_DELIM  => -12,
+    NEWLINE       => -13,
+    START_COMMENT => -14,
+    ESCAPE        => -15,
+    MINUS         => -16,
+    DOT           => -17,
+    SIGIL         => -18,
+    PAREN_OPEN    => -19,
+    PAREN_CLOSE   => -20,
+    QUESTION      => -21,
+    COLON         => -22,
+    COMMA         => -23,
+    SQUARE_OPEN   => -24,
+    SQUARE_CLOSE  => -25,
+    CURLY_OPEN    => -26,
+    CURLY_CLOSE   => -27,
+    SEMICOLON     => -28,
+    ARROW         => -29,
+    EQUALS        => -30,
+    SLASH         => -31,
+    FAT_ARROW     => -32,
+    DOUBLE_COLON  => -33,
+    LESS_THAN     => -34,
+    LESS_LESS     => -35,
+    TILDE         => -36,
+    START         => -37,
+    PLUS          => -38,
+};
+
+my %TOKEN_NAME = (    # this is used to produce error messages
+    END_TOKEN()     => 'END_TOKEN',
+    WHITESPACE()    => 'WHITESPACE',
+    KEYWORD()       => 'KEYWORD',
+    IDENTIFIER()    => 'IDENTIFIER',
+    NUMBER()        => 'NUMBER',
+    OPERATOR()      => 'OPERATOR',
+    STRING()        => 'STRING',
+    STRING_DELIM()  => 'STRING_DELIM',
+    NEWLINE()       => 'NEWLINE',
+    START_COMMENT() => 'START_COMMENT',
+    ESCAPE()        => 'ESCAPE',
+    MINUS()         => 'MINUS',
+    DOT()           => 'DOT',
+    SIGIL()         => 'SIGIL',
+    PAREN_OPEN()    => 'PAREN_OPEN',
+    PAREN_CLOSE()   => 'PAREN_CLOSE',
+    QUESTION()      => 'QUESTION',
+    COLON()         => 'COLON',
+    COMMA()         => 'COMMA',
+    SQUARE_OPEN()   => 'SQUARE_OPEN',
+    SQUARE_CLOSE()  => 'SQUARE_CLOSE',
+    CURLY_OPEN()    => 'CURLY_OPEN',
+    CURLY_CLOSE()   => 'CURLY_CLOSE',
+    SEMICOLON()     => 'SEMICOLON',
+    ARROW()         => 'ARROW',
+    EQUALS()        => 'EQUALS',
+    SLASH()         => 'SLASH',
+    FAT_ARROW()     => 'FAT_ARROW',
+    DOUBLE_COLON()  => 'DOUBLE_COLON',
+    LESS_THAN()     => 'LESS_THAN',
+    LESS_LESS()     => 'LESS_LESS',
+    TILDE()         => 'TILDE',
+    PLUS()          => 'PLUS',
+);
+
+my %OPERATORS = (    # the tokenizer uses this to map strings to token numbers
+    ','     => COMMA(),
+    '#'     => START_COMMENT(),
+    "'"     => STRING_DELIM(),
+    '"'     => STRING_DELIM(),
+    '`'     => STRING_DELIM(),
+    '\\'    => ESCAPE(),
+    '-'     => MINUS(),
+    '.'     => DOT(),
+    '$'     => SIGIL(),
+    '$#'    => SIGIL(),
+    '@'     => SIGIL(),
+    '%'     => SIGIL(),
+    '*'     => SIGIL(),
+    '&'     => SIGIL(),
+    '('     => PAREN_OPEN(),
+    ')'     => PAREN_CLOSE(),
+    '?'     => QUESTION(),
+    ':'     => COLON(),
+    '['     => SQUARE_OPEN(),
+    ']'     => SQUARE_CLOSE(),
+    '{'     => CURLY_OPEN(),
+    '}'     => CURLY_CLOSE(),
+    ';'     => SEMICOLON(),
+    '->'    => ARROW(),
+    '='     => EQUALS(),
+    '/'     => SLASH(),
+    '=>'    => FAT_ARROW(),
+    '::'    => DOUBLE_COLON(),
+    '<'     => LESS_THAN(),
+    '<<'    => LESS_LESS(),
+    '~'     => TILDE(),
+    '+'     => PLUS(),
+    chr(10) => NEWLINE(),
+    chr(13) => NEWLINE(),
+    map { $_ => OPERATOR() }
+      qw( == != <= >= > <=> =~ !~ .. ...
+      ** % ++ -- && || ^^ // ! ^ ~~ | >>
+      **=   +=    *=    &=    &.=    <<=    &&=
+      -=    /=    |=    |.=    >>=    ||=
+      .=    %=    ^=    ^.=           //=   x=
+      )
+);
+
+# tokenize()
+#
+# known problems:
+#   10E10     tokenizes to 10,E10
+#   q!=!=="=" tokenizes to q,!=,!=, ...
+#
+my %TOK_SPACE             = map { $_ => WHITESPACE() } " ", "\t", "\f", chr(11);
+my %TOK_IDENTIFIER        = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_";
+my %TOK_IDENTIFIER_NUMBER = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_", "0" .. "9";
+my %TOK_NUMBER            = map { $_ => NUMBER() } "0" .. "9";
+my %TOK_OPERATOR          = map { $_ => OPERATOR() } keys %OPERATORS;
+my %NEXT_STATE            = ( %TOK_SPACE, %TOK_IDENTIFIER, %TOK_NUMBER, %TOK_OPERATOR );
+
+sub tokenize {
+    my ($code) = @_;
+    my $state = START();
+    my @tokens;
+    my $buffer;
+  FSM:
+    for my $char ( split //, $code ) {
+        if ( $state == WHITESPACE() ) {
+            if ( exists $TOK_SPACE{$char} ) {
+                $buffer .= $char;
+            }
+            else {
+                push @tokens, [ WHITESPACE(), $buffer ];
+                if ( $state = $NEXT_STATE{$char} ) {
+                    $buffer = $char;
+                }
+                else {
+                    $state = START();
+                    push @tokens, [ STRING(), $char ];
+                }
+            }
+        }
+        elsif ( $state == IDENTIFIER() ) {
+            if ( exists $TOK_IDENTIFIER_NUMBER{$char} ) {
+                $buffer .= $char;
+            }
+            else {
+                push @tokens, [ IDENTIFIER(), $buffer ];
+                if ( $state = $NEXT_STATE{$char} ) {
+                    $buffer = $char;
+                }
+                else {
+                    $state = START();
+                    push @tokens, [ STRING(), $char ];
+                }
+            }
+        }
+        elsif ( $state == NUMBER() ) {
+            if ( exists $TOK_NUMBER{$char} ) {
+                $buffer .= $char;
+            }
+            else {
+                push @tokens, [ NUMBER(), $buffer ];
+                if ( $state = $NEXT_STATE{$char} ) {
+                    $buffer = $char;
+                }
+                else {
+                    $state = START();
+                    push @tokens, [ STRING(), $char ];
+                }
+            }
+        }
+        elsif ( $state == OPERATOR() ) {
+            if ( exists $OPERATORS{"$buffer$char"} ) {
+                $buffer .= $char;
+            }
+            else {
+                push @tokens, [ $OPERATORS{$buffer}, $buffer ];
+
+                if ( $state = $NEXT_STATE{$char} ) {
+                    $buffer = $char;
+                }
+                else {
+                    $state = START();
+                    push @tokens, [ STRING(), $char ];
+                }
+            }
+        }
+        elsif ( $state == START() ) {
+            if ( $state = $NEXT_STATE{$char} ) {
+                $buffer = $char;
+            }
+            else {
+                $state = START();
+                push @tokens, [ STRING(), $char ];
+            }
+        }
+    }
+    if ( $buffer ne '' && $state != START() ) {
+        if ( $state == OPERATOR() ) {
+            push @tokens, [ $OPERATORS{$buffer}, $buffer ];
+        }
+        else {
+            push @tokens, [ $state, $buffer ];
+        }
+    }
+    push @tokens, [ END_TOKEN(), '' ];
+    push @tokens, [ END_TOKEN(), '' ];
+    push @tokens, [ END_TOKEN(), '' ];
+    push @tokens, {    # environment hash
+        filename => '',    # filename where the code comes from
+        here_doc => [],    # current here documents being processed
+    };
+    return \@tokens;
+}
+
+#
+# Runtime and scope data
+#
+
+sub env_set_current_filename {
+    my ( $tokens, $filename ) = @_;
+    $tokens->[-1]{filename} = $filename;
+}
+sub env_get_current_filename {
+    my ( $tokens ) = @_;
+    return $tokens->[-1]{filename};
+}
+
+sub env_set_subroutine {
+    my ( $tokens, $name, $data ) = @_;
+    $tokens->[-1]{declared_sub}{$name} = $data;
+}
+sub env_get_subroutine {
+    my ( $tokens, $name ) = @_;
+    return $tokens->[-1]{declared_sub}{$name};
+}
 
 #
 # Sub-Languages are code regions that don't follow the regular parsing rules
@@ -222,6 +474,8 @@ sub meta_grammar {
 }
 
 # Argument types --------
+
+my %START_WHITESPACE     = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
 
 sub parse_arg_list {
     my ( $tokens, $index, $first ) = @_;
@@ -581,240 +835,16 @@ my %CORE_OP_GRAMMAR = (
         [qw{ use no }],
         sub {
             my ( $tokens, $index, $name ) = @_;
-            my $pos  = $index;
-            my $expr = parse_arg_list( $tokens, $pos );
-            return parse_fail() if $expr->{FAIL};
-            return { type => 'USE', value => { name => $name, args => $expr }, next => $expr->{next} };
-        },
+            return meta_grammar(
+                $tokens, $index,
+                {
+                    type => "${name}_OP",
+                    seq => [ \&parse_single_arg, \&parse_optional_whitespace, \&parse_arg_list, ] # NAME LIST
+                }
+            );
+        }
     ),
 );
-
-use constant {
-    END_TOKEN  => -1,
-    WHITESPACE => -2,
-    KEYWORD    => -3,
-    IDENTIFIER => -4,
-    NUMBER     => -5,
-    OPERATOR   => -9,
-    STRING     => -11,
-
-    STRING_DELIM  => -12,
-    NEWLINE       => -13,
-    START_COMMENT => -14,
-    ESCAPE        => -15,
-    MINUS         => -16,
-    DOT           => -17,
-    SIGIL         => -18,
-    PAREN_OPEN    => -19,
-    PAREN_CLOSE   => -20,
-    QUESTION      => -21,
-    COLON         => -22,
-    COMMA         => -23,
-    SQUARE_OPEN   => -24,
-    SQUARE_CLOSE  => -25,
-    CURLY_OPEN    => -26,
-    CURLY_CLOSE   => -27,
-    SEMICOLON     => -28,
-    ARROW         => -29,
-    EQUALS        => -30,
-    SLASH         => -31,
-    FAT_ARROW     => -32,
-    DOUBLE_COLON  => -33,
-    LESS_THAN     => -34,
-    LESS_LESS     => -35,
-    TILDE         => -36,
-    START         => -37,
-    PLUS          => -38,
-};
-
-my %TOKEN_NAME = (    # this is used to produce error messages
-    END_TOKEN()     => 'END_TOKEN',
-    WHITESPACE()    => 'WHITESPACE',
-    KEYWORD()       => 'KEYWORD',
-    IDENTIFIER()    => 'IDENTIFIER',
-    NUMBER()        => 'NUMBER',
-    OPERATOR()      => 'OPERATOR',
-    STRING()        => 'STRING',
-    STRING_DELIM()  => 'STRING_DELIM',
-    NEWLINE()       => 'NEWLINE',
-    START_COMMENT() => 'START_COMMENT',
-    ESCAPE()        => 'ESCAPE',
-    MINUS()         => 'MINUS',
-    DOT()           => 'DOT',
-    SIGIL()         => 'SIGIL',
-    PAREN_OPEN()    => 'PAREN_OPEN',
-    PAREN_CLOSE()   => 'PAREN_CLOSE',
-    QUESTION()      => 'QUESTION',
-    COLON()         => 'COLON',
-    COMMA()         => 'COMMA',
-    SQUARE_OPEN()   => 'SQUARE_OPEN',
-    SQUARE_CLOSE()  => 'SQUARE_CLOSE',
-    CURLY_OPEN()    => 'CURLY_OPEN',
-    CURLY_CLOSE()   => 'CURLY_CLOSE',
-    SEMICOLON()     => 'SEMICOLON',
-    ARROW()         => 'ARROW',
-    EQUALS()        => 'EQUALS',
-    SLASH()         => 'SLASH',
-    FAT_ARROW()     => 'FAT_ARROW',
-    DOUBLE_COLON()  => 'DOUBLE_COLON',
-    LESS_THAN()     => 'LESS_THAN',
-    LESS_LESS()     => 'LESS_LESS',
-    TILDE()         => 'TILDE',
-    PLUS()          => 'PLUS',
-);
-
-my %OPERATORS = (    # the tokenizer uses this to map strings to token numbers
-    ','     => COMMA(),
-    '#'     => START_COMMENT(),
-    "'"     => STRING_DELIM(),
-    '"'     => STRING_DELIM(),
-    '`'     => STRING_DELIM(),
-    '\\'    => ESCAPE(),
-    '-'     => MINUS(),
-    '.'     => DOT(),
-    '$'     => SIGIL(),
-    '$#'    => SIGIL(),
-    '@'     => SIGIL(),
-    '%'     => SIGIL(),
-    '*'     => SIGIL(),
-    '&'     => SIGIL(),
-    '('     => PAREN_OPEN(),
-    ')'     => PAREN_CLOSE(),
-    '?'     => QUESTION(),
-    ':'     => COLON(),
-    '['     => SQUARE_OPEN(),
-    ']'     => SQUARE_CLOSE(),
-    '{'     => CURLY_OPEN(),
-    '}'     => CURLY_CLOSE(),
-    ';'     => SEMICOLON(),
-    '->'    => ARROW(),
-    '='     => EQUALS(),
-    '/'     => SLASH(),
-    '=>'    => FAT_ARROW(),
-    '::'    => DOUBLE_COLON(),
-    '<'     => LESS_THAN(),
-    '<<'    => LESS_LESS(),
-    '~'     => TILDE(),
-    '+'     => PLUS(),
-    chr(10) => NEWLINE(),
-    chr(13) => NEWLINE(),
-    map { $_ => OPERATOR() }
-      qw( == != <= >= > <=> =~ !~ .. ...
-      ** % ++ -- && || ^^ // ! ^ ~~ | >>
-      **=   +=    *=    &=    &.=    <<=    &&=
-      -=    /=    |=    |.=    >>=    ||=
-      .=    %=    ^=    ^.=           //=   x=
-      )
-);
-
-# tokenize()
-#
-# known problems:
-#   10E10     tokenizes to 10,E10
-#   q!=!=="=" tokenizes to q,!=,!=, ...
-#
-my %TOK_SPACE             = map { $_ => WHITESPACE() } " ", "\t", "\f", chr(11);
-my %TOK_IDENTIFIER        = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_";
-my %TOK_IDENTIFIER_NUMBER = map { $_ => IDENTIFIER() } "a" .. "z", "A" .. "Z", "_", "0" .. "9";
-my %TOK_NUMBER            = map { $_ => NUMBER() } "0" .. "9";
-my %TOK_OPERATOR          = map { $_ => OPERATOR() } keys %OPERATORS;
-my %NEXT_STATE            = ( %TOK_SPACE, %TOK_IDENTIFIER, %TOK_NUMBER, %TOK_OPERATOR );
-
-sub tokenize {
-    my ($code) = @_;
-    my $state = START();
-    my @tokens;
-    my $buffer;
-  FSM:
-    for my $char ( split //, $code ) {
-        if ( $state == WHITESPACE() ) {
-            if ( exists $TOK_SPACE{$char} ) {
-                $buffer .= $char;
-            }
-            else {
-                push @tokens, [ WHITESPACE(), $buffer ];
-                if ( $state = $NEXT_STATE{$char} ) {
-                    $buffer = $char;
-                }
-                else {
-                    $state = START();
-                    push @tokens, [ STRING(), $char ];
-                }
-            }
-        }
-        elsif ( $state == IDENTIFIER() ) {
-            if ( exists $TOK_IDENTIFIER_NUMBER{$char} ) {
-                $buffer .= $char;
-            }
-            else {
-                push @tokens, [ IDENTIFIER(), $buffer ];
-                if ( $state = $NEXT_STATE{$char} ) {
-                    $buffer = $char;
-                }
-                else {
-                    $state = START();
-                    push @tokens, [ STRING(), $char ];
-                }
-            }
-        }
-        elsif ( $state == NUMBER() ) {
-            if ( exists $TOK_NUMBER{$char} ) {
-                $buffer .= $char;
-            }
-            else {
-                push @tokens, [ NUMBER(), $buffer ];
-                if ( $state = $NEXT_STATE{$char} ) {
-                    $buffer = $char;
-                }
-                else {
-                    $state = START();
-                    push @tokens, [ STRING(), $char ];
-                }
-            }
-        }
-        elsif ( $state == OPERATOR() ) {
-            if ( exists $OPERATORS{"$buffer$char"} ) {
-                $buffer .= $char;
-            }
-            else {
-                push @tokens, [ $OPERATORS{$buffer}, $buffer ];
-
-                if ( $state = $NEXT_STATE{$char} ) {
-                    $buffer = $char;
-                }
-                else {
-                    $state = START();
-                    push @tokens, [ STRING(), $char ];
-                }
-            }
-        }
-        elsif ( $state == START() ) {
-            if ( $state = $NEXT_STATE{$char} ) {
-                $buffer = $char;
-            }
-            else {
-                $state = START();
-                push @tokens, [ STRING(), $char ];
-            }
-        }
-    }
-    if ( $buffer ne '' && $state != START() ) {
-        if ( $state == OPERATOR() ) {
-            push @tokens, [ $OPERATORS{$buffer}, $buffer ];
-        }
-        else {
-            push @tokens, [ $state, $buffer ];
-        }
-    }
-    push @tokens, [ END_TOKEN(), '' ];
-    push @tokens, [ END_TOKEN(), '' ];
-    push @tokens, [ END_TOKEN(), '' ];
-    push @tokens, {    # environment hash
-        filename => '',    # filename where the code comes from
-        here_doc => [],    # current here documents being processed
-    };
-    return \@tokens;
-}
 
 sub error_message_quote {
     my ($to_quote) = @_;
@@ -862,7 +892,7 @@ sub error_message {
     ## for ( $first_token .. $index ) {
     ##     $col += length($tokens->[$_][1]);
     ## }
-    return $message . ' at ' . $tokens->[-1]{filename} . ' line ' . $line . ', near ' . error_message_quote( join( '', @near ) ) . "\n";
+    return $message . ' at ' . env_get_current_filename($tokens) . ' line ' . $line . ', near ' . error_message_quote( join( '', @near ) ) . "\n";
 }
 
 # parse_precedence_expression()
@@ -1427,6 +1457,11 @@ sub parse_term {
         if ( exists $CORE_OP_GRAMMAR{$stmt} ) {                # built-in functions requiring special parsing
             return $CORE_OP_GRAMMAR{$stmt}->( $tokens, $pos, $stmt );
         }
+
+        if (my $subr = env_get_subroutine($tokens, $stmt)) {
+            # print "sub '$stmt' is predeclared: ", Dumper($subr);
+        }
+
         return { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
     }
     elsif ( $type == STRING_DELIM() ) {
@@ -1578,6 +1613,9 @@ sub parse_statement {
             if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # sub NAME
                 my $name = $tokens->[$pos][1];
                 $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+
+                env_set_subroutine($tokens, $name, {});
+
                 my $block = parse_statement_block( $tokens, $pos );
                 $ast = { type => 'NAMED_SUB', value => { stmt => $stmt, name => $name, block => $block }, next => $block->{next} };
                 $pos = $ast->{next};
@@ -1665,7 +1703,7 @@ sub main {
     }
 
     my $tokens = tokenize($perl_code);
-    $tokens->[-1]{filename} = '-e';    # initialize environment hash
+    env_set_current_filename($tokens, $filename );
 
     ## # uncomment to see the token list
     ## for my $token (@$tokens) {
