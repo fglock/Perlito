@@ -373,8 +373,9 @@ sub env_set_current_filename {
     my ( $tokens, $filename ) = @_;
     $tokens->[-1]{filename} = $filename;
 }
+
 sub env_get_current_filename {
-    my ( $tokens ) = @_;
+    my ($tokens) = @_;
     return $tokens->[-1]{filename};
 }
 
@@ -382,6 +383,7 @@ sub env_set_subroutine {
     my ( $tokens, $name, $data ) = @_;
     $tokens->[-1]{declared_sub}{$name} = $data;
 }
+
 sub env_get_subroutine {
     my ( $tokens, $name ) = @_;
     return $tokens->[-1]{declared_sub}{$name};
@@ -475,7 +477,7 @@ sub meta_grammar {
 
 # Argument types --------
 
-my %START_WHITESPACE     = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
+my %START_WHITESPACE = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
 
 sub parse_arg_list {
     my ( $tokens, $index, $first ) = @_;
@@ -839,7 +841,7 @@ my %CORE_OP_GRAMMAR = (
                 $tokens, $index,
                 {
                     type => "${name}_OP",
-                    seq => [ \&parse_single_arg, \&parse_optional_whitespace, \&parse_arg_list, ] # NAME LIST
+                    seq  => [ \&parse_single_arg, \&parse_optional_whitespace, \&parse_arg_list, ]    # NAME LIST
                 }
             );
         }
@@ -1458,7 +1460,8 @@ sub parse_term {
             return $CORE_OP_GRAMMAR{$stmt}->( $tokens, $pos, $stmt );
         }
 
-        if (my $subr = env_get_subroutine($tokens, $stmt)) {
+        if ( my $subr = env_get_subroutine( $tokens, $stmt ) ) {
+
             # print "sub '$stmt' is predeclared: ", Dumper($subr);
         }
 
@@ -1613,11 +1616,19 @@ sub parse_statement {
             if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # sub NAME
                 my $name = $tokens->[$pos][1];
                 $pos = parse_optional_whitespace( $tokens, $pos + 1 );
-
-                env_set_subroutine($tokens, $name, {});
+                my $signature;
+                if ( $tokens->[$pos][0] == PAREN_OPEN() ) {    # sub NAME ()   signature
+                    $signature = $CORE_OP_GRAMMAR{q}->( $tokens, $pos, 'q' );                # get the raw text
+                    $pos       = parse_optional_whitespace( $tokens, $signature->{next} );
+                }
+                env_set_subroutine( $tokens, $name, { signature => $signature } );           # store the declaration
 
                 my $block = parse_statement_block( $tokens, $pos );
-                $ast = { type => 'NAMED_SUB', value => { stmt => $stmt, name => $name, block => $block }, next => $block->{next} };
+                $ast = {
+                    type  => 'NAMED_SUB',
+                    value => { stmt => $stmt, name => $name, block => $block, signature => $signature },
+                    next  => $block->{next}
+                };
                 $pos = $ast->{next};
             }
         }
@@ -1703,7 +1714,7 @@ sub main {
     }
 
     my $tokens = tokenize($perl_code);
-    env_set_current_filename($tokens, $filename );
+    env_set_current_filename( $tokens, $filename );
 
     ## # uncomment to see the token list
     ## for my $token (@$tokens) {
