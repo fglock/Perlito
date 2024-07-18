@@ -509,6 +509,7 @@ sub parse_arg_list {
   LIST:
     while (1) {
         last LIST if defined($signature) && $signature eq '';                   # no more arguments
+        $pos++ if $tokens->[$pos][0] == WHITESPACE();
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $START_WHITESPACE{ $tokens->[$pos][0] };
         last LIST if $tokens->[$pos][0] == END_TOKEN();
@@ -993,6 +994,7 @@ sub parse_precedence_expression {
   EXPR:
     while (1) {
         $pos = $left_expr->{next};
+        $pos++ if $tokens->[$pos][0] == WHITESPACE();
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $START_WHITESPACE{ $tokens->[$pos][0] };
 
@@ -1009,6 +1011,7 @@ sub parse_precedence_expression {
         return $left_expr if $precedence < $min_precedence;
 
         $pos++;
+        $pos++ if $tokens->[$pos][0] == WHITESPACE();
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $START_WHITESPACE{ $tokens->[$pos][0] };
 
@@ -1379,7 +1382,9 @@ sub parse_delimited_expression {    #  )  123)
     my ( $tokens, $index, $start_delim, $end_delim ) = @_;
     my $pos = $index;
     my $expr;
-    $pos = parse_optional_whitespace( $tokens, $pos );
+    $pos++ if $tokens->[$pos][0] == WHITESPACE();
+    $pos = parse_optional_whitespace( $tokens, $pos )
+        if $START_WHITESPACE{ $tokens->[$pos][0] };
     if ( $tokens->[$pos][1] ne $end_delim ) {
         if ( $start_delim eq '{' && $tokens->[$pos][0] == IDENTIFIER() ) {    # { bareword }
             my $pos1 = parse_optional_whitespace( $tokens, $pos + 1 );
@@ -1407,7 +1412,9 @@ sub parse_statement_block {
     my @expr;
     while (1) {
         error( $tokens, $index ) if $tokens->[$pos][0] == END_TOKEN();
-        $pos = parse_optional_whitespace( $tokens, $pos );
+        $pos++ if $tokens->[$pos][0] == WHITESPACE();
+        $pos = parse_optional_whitespace( $tokens, $pos )
+          if $START_WHITESPACE{ $tokens->[$pos][0] };
         return { type => 'STATEMENT_BLOCK', value => \@expr, next => $pos + 1 } if $tokens->[$pos][0] == CURLY_CLOSE();
         my $expr = parse_statement( $tokens, $pos );
         error( $tokens, $index ) if $expr->{FAIL};
@@ -1478,17 +1485,17 @@ sub parse_term {
     my $pos  = $index;
     my $type = $tokens->[$pos][0];
     my $ast;
-    if ( $type == NUMBER() || $type == DOT() ) {
-        return parse_number( $tokens, $index );
-    }
-    elsif ( $type == IDENTIFIER() ) {
+    if ( $type == IDENTIFIER() ) {
 
         if ( $tokens->[ $pos + 1 ][0] == DOUBLE_COLON() ) {
             return parse_colon_bareword( $tokens, $index );    # TODO parse special cases like CORE::print
         }
 
         my $stmt = $tokens->[$pos][1];
-        $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+        $pos++;
+        $pos++ if $tokens->[$pos][0] == WHITESPACE();
+        $pos = parse_optional_whitespace( $tokens, $pos )
+            if $START_WHITESPACE{ $tokens->[$pos][0] };
         if ( $tokens->[$pos][0] == FAT_ARROW() ) {             # bareword
             return { type => 'STRING', value => $tokens->[$index][1], next => $index + 1 };
         }
@@ -1510,6 +1517,9 @@ sub parse_term {
             return { type => 'APPLY_UNKNOWN_SUB', value => { name => $stmt, args => $args }, next => $args->{next} };
         }
         return { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
+    }
+    elsif ( $type == NUMBER() || $type == DOT() ) {
+        return parse_number( $tokens, $index );
     }
     elsif ( $type == STRING_DELIM() ) {
         my $quote = $tokens->[$index][1];
@@ -1577,7 +1587,9 @@ sub parse_term {
 sub parse_statement {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
-    $pos = parse_optional_whitespace( $tokens, $pos );
+    $pos++ if $tokens->[$pos][0] == WHITESPACE();
+    $pos = parse_optional_whitespace( $tokens, $pos )
+      if $START_WHITESPACE{ $tokens->[$pos][0] };
     return parse_fail() if $tokens->[$pos][0] == END_TOKEN();
 
     my $pos0 = $pos;
