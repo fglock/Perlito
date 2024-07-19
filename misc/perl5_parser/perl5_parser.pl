@@ -1717,15 +1717,16 @@ sub parse_statement {
                     $signature = $CORE_OP_GRAMMAR{q}->( $tokens, $pos, 'q' );                # get the raw text
                     $pos       = parse_optional_whitespace( $tokens, $signature->{next} );
                 }
-
-                # TODO use: fully_qualified_name($namespace, $name)
                 env_set_subroutine( $tokens, $name, { signature => $signature } );           # store the declaration
-
-                my $block = parse_statement_block( $tokens, $pos );
+                my $block;
+                if ( $tokens->[$pos][0] == CURLY_OPEN() ) {
+                    $block = parse_statement_block( $tokens, $pos );
+                    $pos = $block->{next};
+                }
                 $ast = {
                     type  => 'NAMED_SUB',
                     value => { stmt => $stmt, name => $name, block => $block, signature => $signature },
-                    next  => $block->{next}
+                    next  => $pos,
                 };
                 $pos = $ast->{next};
             }
