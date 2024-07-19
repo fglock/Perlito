@@ -1012,7 +1012,7 @@ sub parse_precedence_expression {
             push @tok, $tokens->[ $pos++ ][1]
               while $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == NUMBER();
             my $name = join( '', @tok );
-            $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => { type => 'BAREWORD', value => $name } }, next => $pos };
+            $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, bareword => $name }, next => $pos };
         }
         else {
             my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
@@ -1417,7 +1417,10 @@ sub parse_delimited_expression {    #  )  123)
         }
         $expr = parse_precedence_expression( $tokens, $pos, 0 );
         error( $tokens, $index ) if $expr->{FAIL};
-        $pos = parse_optional_whitespace( $tokens, $expr->{next} );
+        $pos = $expr->{next};
+        $pos++ if $tokens->[$pos][0] == WHITESPACE();
+        $pos = parse_optional_whitespace( $tokens, $pos )
+          if $START_WHITESPACE{ $tokens->[$pos][0] };
         error( $tokens, $index ) if $tokens->[$pos][1] ne $end_delim;
     }
     return { type => 'PAREN', value => { delimiter => $start_delim, args => $expr }, next => $pos + 1 };
@@ -1427,7 +1430,12 @@ sub parse_statement_block {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
     error( $tokens, $index ) if $tokens->[$pos][0] != CURLY_OPEN();
-    $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+    $pos++;
+
+    $pos++ if $tokens->[$pos][0] == WHITESPACE();
+    $pos = parse_optional_whitespace( $tokens, $pos )
+      if $START_WHITESPACE{ $tokens->[$pos][0] };
+
     my @expr;
     while (1) {
         error( $tokens, $index ) if $tokens->[$pos][0] == END_TOKEN();
@@ -1552,9 +1560,15 @@ sub parse_term {
     elsif ( $type == STRING_DELIM() ) {
         my $quote = $tokens->[$index][1];
         if ( $quote eq "'" ) {
+            if ( $tokens->[$index + 2][1] eq "'" && $tokens->[$pos + 1][0] != ESCAPE() ) {  # shortcut for: 'x' '1'
+                return { type => 'STRING', value => $tokens->[$index + 1][1], next => $index + 3 };
+            }
             return $CORE_OP_GRAMMAR{q}->( $tokens, $index, 'q' );
         }
         elsif ( $quote eq '"' ) {
+            if ( $tokens->[$index + 2][1] eq '"' && $tokens->[$pos + 1][0] != ESCAPE() ) {  # shortcut for: "x" "1"
+                return { type => 'STRING', value => $tokens->[$index + 1][1], next => $index + 3 };
+            }
             return $CORE_OP_GRAMMAR{qq}->( $tokens, $index, 'qq' );
         }
         elsif ( $quote eq '`' ) {
