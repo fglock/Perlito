@@ -43,15 +43,11 @@ use Data::Dumper;
 #
 # TODO
 #
-#   namespaces
-#       __PACKAGE__
-#
 #   features
 #       postderef feature
 #       try-catch
 #
 #   keep track of declarations
-#       sub
 #       my, our, local, state
 #
 #   BEGIN
@@ -61,7 +57,6 @@ use Data::Dumper;
 #   subroutine
 #       more signatures and prototypes
 #       more builtin functions
-#       __SUB__
 #
 #   UTF8 parsing
 #       delimiter pairs
@@ -360,9 +355,9 @@ sub tokenize {
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, [ END_TOKEN(), '' ];
     push @tokens, {    # environment hash
-        filename     => '',        # filename where the code comes from
-        here_doc     => [],        # current here documents being processed
-        package_name => 'main',    # stack with current __PACKAGE__
+        filename => '',                                      # filename where the code comes from
+        here_doc => [],                                      # current here documents being processed
+        package  => { name => 'main', version => undef },    # current __PACKAGE__
     };
     return \@tokens;
 }
@@ -650,7 +645,7 @@ my %CORE_OP_GRAMMAR = (
         return $ast;
     },
     meta_parse_using(
-        [qw{ time wantarray }],
+        [qw{ time wantarray __PACKAGE__ __SUB__ }],
         sub {
             my ( $tokens, $index, $name ) = @_;
             ## return parse_arg_list( $tokens, $index, type => "${name}_OP", signature => '' );
@@ -1193,41 +1188,13 @@ sub parse_bareword {    # next LABEL
     return parse_fail();
 }
 
-sub fully_qualified_name {
-    my ( $namespace, $name ) = @_;
-
-    ## if ($namespace =~ /^::/) {
-    ##     $namespace = "main" . $namespace;
-    ## }
-
-    # Check if the name name is fully qualified
-    if ( $name =~ /^::/ ) {
-
-        # Normalize ::sub to main::sub
-        return "main" . $name;
-    }
-    elsif ( $name =~ /::/ ) {
-
-        # If the name contains '::', it's already fully qualified
-        return $name;
-    }
-    else {
-        # Otherwise, combine the namespace and the name
-        return $namespace . '::' . $name;
-    }
-}
-
 sub parse_colon_bareword {
     my ( $tokens, $index ) = @_;
     my $pos = $index;
     my @tok;
     ## push @tok, 'main' if $tokens->[$pos][0] == DOUBLE_COLON();  # ::  is  main::
-    while ( $tokens->[$pos][0] != END_TOKEN()
-        && ( $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == NUMBER() ) )
-    {
-        push @tok, $tokens->[$pos][1];
-        $pos++;
-    }
+    push @tok, $tokens->[ $pos++ ][1]
+      while $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == NUMBER();
     if ( !@tok ) {
         return parse_fail();
     }
@@ -1523,38 +1490,47 @@ sub parse_term {
     my $pos  = $index;
     my $type = $tokens->[$pos][0];
     my $ast;
-    if ( $type == IDENTIFIER() ) {
+    if ( $type == IDENTIFIER() || $type == DOUBLE_COLON() ) {
 
-        if ( $tokens->[ $pos + 1 ][0] == DOUBLE_COLON() ) {
-            return parse_colon_bareword( $tokens, $index );    # TODO parse special cases like CORE::print
-        }
-
-        my $stmt = $tokens->[$pos][1];
-        $pos++;
+        my @tok;
+        push @tok, $tokens->[ $pos++ ][1]
+          while $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == NUMBER();
+        my $has_colon = ( $type == DOUBLE_COLON() || @tok > 1 );
         $pos++ if $tokens->[$pos][0] == WHITESPACE();
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $START_WHITESPACE{ $tokens->[$pos][0] };
-        if ( $tokens->[$pos][0] == FAT_ARROW() ) {    # bareword
-            return { type => 'STRING', value => $tokens->[$index][1], next => $index + 1 };
+
+        if ( !$has_colon ) {
+            return { type => 'STRING', value => $tok[-1], next => $index + 1 } if $tokens->[$pos][0] == FAT_ARROW();    # bareword
+            return parse_fail()                                                if $RESERVED_WORDS{ $tok[-1] };
         }
 
-        return parse_fail() if $RESERVED_WORDS{$stmt};
-
-        if ( exists $CORE_OP_GRAMMAR{$stmt} ) {       # apply a built-in function
-            return $CORE_OP_GRAMMAR{$stmt}->( $tokens, $pos, $stmt );
+        my $is_core = ( @tok == 3 && $tok[0] eq 'CORE' );
+        if ( ( $is_core || !$has_colon ) && exists $CORE_OP_GRAMMAR{ $tok[-1] } ) {                                     # apply a built-in function
+            return $CORE_OP_GRAMMAR{ $tok[-1] }->( $tokens, $pos, $tok[-1] );
         }
-        if ( my $subr = env_get_subroutine( $tokens, $stmt ) ) {    # name ARGS     apply a predeclared sub
+        die error_message( $tokens, $pos, "CORE::$tok[-1] is not a keyword" ) if $is_core;
+
+        if ($has_colon) {
+            unshift @tok, 'main' if $tok[0] eq '::';
+        }
+        else {    # create a fully qualified name
+            unshift @tok, env_get_package($tokens)->{name} . '::';
+        }
+        my $name = join( '', @tok );
+
+        if ( my $subr = env_get_subroutine( $tokens, $name ) ) {    # name ARGS     apply a predeclared sub
             my $signature = $subr->{signature}{value};
-            my $args      = parse_arg_list( $tokens, $pos, signature => $signature, sub_name => $stmt );    # name(ARGS)  name ARGS
+            my $args      = parse_arg_list( $tokens, $pos, signature => $signature, sub_name => $name );    # name(ARGS)  name ARGS
             return parse_fail() if $args->{FAIL};
-            return { type => 'APPLY_DECLARED_SUB', value => { name => $stmt, args => $args }, next => $args->{next} };
+            return { type => 'APPLY_DECLARED_SUB', value => { name => $name, args => $args }, next => $args->{next} };
         }
         if ( $tokens->[$pos][0] == PAREN_OPEN() ) {                                                         # name(ARGS)     apply an unknown sub
             my $args = parse_delimited_expression( $tokens, $pos + 1, '(', ')' );
             return parse_fail() if $args->{FAIL};
-            return { type => 'APPLY_UNKNOWN_SUB', value => { name => $stmt, args => $args }, next => $args->{next} };
+            return { type => 'APPLY_UNKNOWN_SUB', value => { name => $name, args => $args }, next => $args->{next} };
         }
-        return { type => 'BAREWORD', value => $tokens->[$index][1], next => $index + 1 };
+        return { type => 'BAREWORD', value => join( '', @tok ), next => $pos };
     }
     elsif ( $type == NUMBER() || $type == DOT() ) {
         return parse_number( $tokens, $index );
@@ -1615,9 +1591,6 @@ sub parse_term {
         $ast->{value}{indented} = $indented;
         push @{ $tokens->[-1]{here_doc} }, $ast;
         return $ast;
-    }
-    elsif ( $type = DOUBLE_COLON() ) {
-        return parse_colon_bareword( $tokens, $index );
     }
     return parse_fail();
 }
@@ -1707,9 +1680,22 @@ sub parse_statement {
         }
         elsif ( $stmt eq 'sub' ) {
             $pos = $pos1;
-            if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # sub NAME
-                my $name = $tokens->[$pos][1];
-                $pos = parse_optional_whitespace( $tokens, $pos + 1 );
+            my $type = $tokens->[$pos][0];
+            if ( $type == IDENTIFIER() || $type == DOUBLE_COLON() ) {    # sub NAME
+
+                my @tok;
+                push @tok, $tokens->[ $pos++ ][1]
+                  while $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == NUMBER();
+                my $has_colon = ( $type == DOUBLE_COLON() || @tok > 1 );
+                if ($has_colon) {
+                    unshift @tok, 'main' if $tok[0] eq '::';
+                }
+                else {    # create a fully qualified name
+                    unshift @tok, env_get_package($tokens)->{name} . '::';
+                }
+                my $name = join( '', @tok );
+
+                $pos = parse_optional_whitespace( $tokens, $pos );
                 my $signature;
                 if ( $tokens->[$pos][0] == PAREN_OPEN() ) {    # sub NAME ()   signature
                     $signature = $CORE_OP_GRAMMAR{q}->( $tokens, $pos, 'q' );                # get the raw text
@@ -1730,15 +1716,19 @@ sub parse_statement {
         }
         elsif ( $stmt eq 'package' ) {
             $pos = $pos1;
-            $ast = parse_colon_bareword( $tokens, $pos );
-            error( $tokens, $index ) if $ast->{FAIL};
-            $pos = $ast->{next};
+
+            my @tok;
+            push @tok, $tokens->[ $pos++ ][1]
+              while $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == NUMBER();
+            my $namespace = join( '', @tok );
+
+            error( $tokens, $index ) if !$namespace;
             $pos = parse_optional_whitespace( $tokens, $pos );
 
             # TODO - package version
             my $version;
             my $old_package = env_get_package($tokens);
-            env_set_package( $tokens, { name => $ast, version => $version } );
+            env_set_package( $tokens, { name => $namespace, version => $version } );
             my $block;
             if ( $tokens->[$pos][0] == CURLY_OPEN() ) {
                 $block = parse_statement_block( $tokens, $pos );
@@ -1747,7 +1737,7 @@ sub parse_statement {
             }
             $ast = {
                 type  => 'PACKAGE',
-                value => { name => $ast, block => $block, version => $version },
+                value => { name => $namespace, block => $block, version => $version },
                 next  => $pos,
             };
         }
