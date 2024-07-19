@@ -519,7 +519,7 @@ sub parse_arg_list {
     if ( defined($signature) ) {
         return $PARSE_FAIL if @expr && $signature eq '';    # signature says zero args, but we've already consumed args
         if ( substr( $signature, 0, 1 ) eq '&' ) {           # &@
-            $PARSE_FAIL if @expr;
+            return $PARSE_FAIL if @expr;
             my $block = parse_statement_block( $tokens, $pos );
             push @expr, $block;
             $pos       = $block->{next};
@@ -1775,7 +1775,11 @@ sub parse_statement {
         $ast = parse_precedence_expression( $tokens, $pos, 0 );
         error( $tokens, $index ) if $ast->{FAIL};
 
-        $pos = parse_optional_whitespace( $tokens, $ast->{next} );
+        $pos = $ast->{next};
+        $pos++ if $tokens->[$pos][0] == WHITESPACE();
+        $pos = parse_optional_whitespace( $tokens, $pos )
+          if $START_WHITESPACE{ $tokens->[$pos][0] };
+
         if ( $tokens->[$pos][0] == IDENTIFIER() ) {    # statement modifier
             my $stmt = $tokens->[$pos][1];
             if ( $STATEMENT_MODIFIER{$stmt} ) {
