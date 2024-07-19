@@ -1232,7 +1232,7 @@ sub parse_number {
             }
         }
         elsif ( $tokens->[$pos][0] != IDENTIFIER() ) {    # no exponent
-            return { type => 'INTEGER', index => $index, value => join( '', map { $tokens->[$_][1] } $index .. $pos - 1 ), next => $pos };
+            return { type => 'INTEGER', index => $index, value => $tokens->[$pos - 1][1], next => $pos };
         }
     }
     else {
