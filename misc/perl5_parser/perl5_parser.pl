@@ -489,7 +489,7 @@ sub meta_grammar {
 
 my %START_WHITESPACE = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
 
-sub parse_arg_list_not_like_function {
+sub parse_arg_list_not_like_function {  # call (a, b), c  is parsed as:  call((a, b), c)
     return parse_arg_list( @_, ignore_paren => 1 );
 }
 
