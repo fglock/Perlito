@@ -979,8 +979,11 @@ sub parse_precedence_expression {
         $pos = parse_optional_whitespace( $tokens, $pos )
           if $START_WHITESPACE{ $tokens->[$pos][0] };
         if ( $type == SIGIL() && ( $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == DOUBLE_COLON() ) ) {    # $name
-            my $ast = parse_colon_bareword( $tokens, $pos );
-            $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => $ast }, next => $ast->{next} };
+            my @tok;
+            push @tok, $tokens->[ $pos++ ][1]
+              while $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == NUMBER();
+            my $name = join( '', @tok );
+            $left_expr = { type => 'PREFIX_OP', value => { op => $op_value, arg => { type => 'BAREWORD', value => $name } }, next => $pos };
         }
         else {
             my $expr = parse_precedence_expression( $tokens, $pos, $PRECEDENCE{$op_value} );
@@ -1186,19 +1189,6 @@ sub parse_bareword {    # next LABEL
     return { type => 'BAREWORD', index => $index, value => $tokens->[$index][1], next => $index + 1 }
       if $tokens->[$index][0] == IDENTIFIER();
     return parse_fail();
-}
-
-sub parse_colon_bareword {
-    my ( $tokens, $index ) = @_;
-    my $pos = $index;
-    my @tok;
-    ## push @tok, 'main' if $tokens->[$pos][0] == DOUBLE_COLON();  # ::  is  main::
-    push @tok, $tokens->[ $pos++ ][1]
-      while $tokens->[$pos][0] == DOUBLE_COLON() || $tokens->[$pos][0] == IDENTIFIER() || $tokens->[$pos][0] == NUMBER();
-    if ( !@tok ) {
-        return parse_fail();
-    }
-    return { type => 'COLON_BAREWORD', index => $index, value => \@tok, next => $pos };
 }
 
 sub parse_number {
