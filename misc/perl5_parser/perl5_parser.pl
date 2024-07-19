@@ -49,6 +49,9 @@ use Data::Dumper;
 #
 #   keep track of declarations
 #       my, our, local, state
+#       special variables like $$
+#
+#   save __DATA__ in AST
 #
 #   BEGIN
 #
@@ -486,18 +489,29 @@ sub meta_grammar {
 
 my %START_WHITESPACE = map { $_ => 1 } WHITESPACE(), NEWLINE(), START_COMMENT();
 
+sub parse_arg_list_not_like_function {
+    return parse_arg_list( @_, ignore_paren => 1 );
+}
+
 sub parse_arg_list {
     my ( $tokens, $index, %opt ) = @_;
-    my $signature = $opt{signature};    # $ $$ $$$ $@ &@      https://perldoc.perl.org/perlsub#Prototypes
-    my $first     = $opt{first};        # we've already parsed something
-    my $sub_name  = $opt{sub_name};     # used for error messages
+    my $signature    = $opt{signature};       # $ $$ $$$ $@ &@      https://perldoc.perl.org/perlsub#Prototypes
+    my $first        = $opt{first};           # we've already parsed something
+    my $sub_name     = $opt{sub_name};        # used for error messages
+    my $ignore_paren = $opt{ignore_paren};    # call (a, b), c  is parsed as:  call((a, b), c)
 
     my $pos = $index;
     my $ast;
     my @expr;
     push @expr, $first if $first;
     my $seen_comma = 1;
+    my $seen_paren = 0;
     my $optional   = 0;
+
+    if ( !$ignore_paren && $tokens->[$pos][0] == PAREN_OPEN() ) {
+        $seen_paren = 1;
+        $pos++;
+    }
 
     if ( defined($signature) ) {
         return parse_fail() if @expr && $signature eq '';    # signature says zero args, but we've already consumed args
@@ -549,6 +563,18 @@ sub parse_arg_list {
     }
     if ( !$optional && defined($signature) && $signature ne '' ) {    # the signature was not consumed
         die error_message( $tokens, $pos, "Not enough arguments" . ( $sub_name ? " for $sub_name" : "" ) );
+    }
+
+    if ($seen_paren) {
+        $pos++ if $tokens->[$pos][0] == WHITESPACE();
+        $pos = parse_optional_whitespace( $tokens, $pos )
+          if $START_WHITESPACE{ $tokens->[$pos][0] };
+        if ( $tokens->[$pos][0] == PAREN_CLOSE() ) {
+            $pos++;
+        }
+        else {
+            error( $tokens, $pos );
+        }
     }
 
     return { %{ $expr[0] }, next => $pos } if @expr == 1;
@@ -756,9 +782,9 @@ my %CORE_OP_GRAMMAR = (
                         type => "${name}_OP",
                         opt  => [
                             {    # BLOCK LIST
-                                seq => [ $rule_block, \&parse_optional_whitespace, \&parse_arg_list, ]
+                                seq => [ $rule_block, \&parse_optional_whitespace, \&parse_arg_list_not_like_function, ]
                             },
-                            \&parse_arg_list,
+                            \&parse_arg_list_not_like_function,
                             { seq => [] },
                         ],
                     }
@@ -813,8 +839,8 @@ my %CORE_OP_GRAMMAR = (
                 {
                     type => "${name}_OP",
                     opt  => [
-                        \&parse_arg_list,    # return LIST
-                        { seq => [] },       # return
+                        \&parse_arg_list_not_like_function,    # return LIST
+                        { seq => [] },                         # return
                     ],
                 }
             );
@@ -889,7 +915,7 @@ my %CORE_OP_GRAMMAR = (
                 $tokens, $index,
                 {
                     type => "${name}_OP",
-                    seq  => [ \&parse_single_arg, \&parse_optional_whitespace, \&parse_arg_list, ]    # NAME LIST
+                    seq  => [ \&parse_single_arg, \&parse_optional_whitespace, \&parse_arg_list_not_like_function, ]    # NAME LIST
                 }
             );
         }
