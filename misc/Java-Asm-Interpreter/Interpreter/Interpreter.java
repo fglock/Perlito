@@ -4,8 +4,7 @@ public class Interpreter {
             // Example code string to be parsed and compiled
             // String code = "sub add { return 1 + 2; } add();"; // Replace with actual code to execute
             // String code = "sub add { return + 1 2; } add();"; // Replace with actual code to execute
-            // String code = "sub add { return 1 + 2 } add();"; // Replace with actual code to execute
-            String code = "sub add { return 1 + 2; } add();"; // Replace with actual code to execute
+            String code = "sub add { return 3 * 2 + 7; return 10 }; print(add() + add())";
             
             // Create a parser instance with the code
             Parser parser = new Parser(code);

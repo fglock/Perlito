@@ -35,10 +35,38 @@ public class Parser {
         if (Character.isDigit(code.charAt(pos))) {
             return parseNumber();
         } else if (Character.isLetter(code.charAt(pos))) {
-            return parseIdentifier();
+            String identifier = parseIdentifier().toString();
+            if (identifier.equals("return")) {
+                return parseReturn();
+            } else if (identifier.equals("print")) {
+                return parsePrint();
+            } else {
+                return new IdentifierNode(identifier);
+            }
         } else {
             throw new IllegalArgumentException("Unexpected character: " + code.charAt(pos));
         }
+    }
+    
+    private Node parseReturn() {
+        skipWhitespace();
+        Node expression = parseExpression(); // Parse the return expression
+        return new ReturnNode(expression);
+    }
+
+    private Node parsePrint() {
+        skipWhitespace();
+        if (code.charAt(pos) != '(') {
+            throw new IllegalArgumentException("Expected '(' after 'print'");
+        }
+        pos++; // Skip '('
+        Node expression = parseExpression();
+        skipWhitespace();
+        if (code.charAt(pos) != ')') {
+            throw new IllegalArgumentException("Expected ')' after print expression");
+        }
+        pos++; // Skip ')'
+        return new PrintNode(expression);
     }
 
     private Node parseNumber() {
