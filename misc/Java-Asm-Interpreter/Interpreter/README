@@ -1,0 +1,10 @@
+in Ubuntu:
+
+sudo apt-get install libasm-java
+
+javac -cp .:/usr/share/java/asm-9.7.jar *.java
+
+Run:
+
+java -cp .:/usr/share/java/asm-9.7.jar Interpreter
+
