@@ -1,10 +1,9 @@
 import org.objectweb.asm.MethodVisitor;
-import static org.objectweb.asm.Opcodes.*;
 
 import java.util.List;
 
-public class StatementsNode extends Node {
-    private List<Node> statements;
+public class StatementsNode extends CodeGeneratingNode {
+    private final List<Node> statements;
 
     public StatementsNode(List<Node> statements) {
         this.statements = statements;
@@ -21,8 +20,8 @@ public class StatementsNode extends Node {
 
     @Override
     public void generateCode(MethodVisitor mv) {
-        for (Node stmt : statements) {
-            stmt.generateCode(mv);
+        for (Node statement : statements) {
+            statement.generateCode(mv);
         }
     }
 }

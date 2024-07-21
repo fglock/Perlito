@@ -2,17 +2,17 @@ import org.objectweb.asm.MethodVisitor;
 
 import java.util.List;
 
-public class BlockNode extends Node {
-    private final List<Node> statements;
+public class BlockNode extends CodeGeneratingNode {
+    private final List<CodeGeneratingNode> statements;
 
-    public BlockNode(List<Node> statements) {
+    public BlockNode(List<CodeGeneratingNode> statements) {
         this.statements = statements;
     }
 
     @Override
     public int evaluate() {
         int result = 0;
-        for (Node statement : statements) {
+        for (CodeGeneratingNode statement : statements) {
             result = statement.evaluate();
         }
         return result;
@@ -20,7 +20,7 @@ public class BlockNode extends Node {
 
     @Override
     public void generateCode(MethodVisitor mv) {
-        for (Node statement : statements) {
+        for (CodeGeneratingNode statement : statements) {
             statement.generateCode(mv);
         }
     }

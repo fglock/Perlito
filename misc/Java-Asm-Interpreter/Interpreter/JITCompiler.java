@@ -1,52 +1,52 @@
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class JITCompiler {
-    private static final Map<String, SubroutineDeclarationNode> subroutines = new HashMap<>();
-
     public static void compileAndRun(Parser parser) {
-        Node root = parser.parse();
-        if (root instanceof SubroutineDeclarationNode) {
-            SubroutineDeclarationNode subroutine = (SubroutineDeclarationNode) root;
-            subroutines.put(subroutine.getName(), subroutine);
-        } else {
-            compileAndRun(root);
-        }
-    }
+        List<Node> statements = parser.parse();
 
-    private static void compileAndRun(Node node) {
-        ClassWriter cw = new ClassWriter(0);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, "CompiledExpression", null, "java/lang/Object", null);
 
-        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "compiledMethod", "(I)I", null, null);
-        mv.visitCode();
-        node.generateCode(mv);
-        mv.visitMaxs(1, 1);
-        mv.visitEnd();
-
-        for (SubroutineDeclarationNode subroutine : subroutines.values()) {
-            subroutine.generateCode(cw);
+        // Generate static subroutine methods
+        for (Node statement : statements) {
+            if (statement instanceof MethodDefiningNode) {
+                ((MethodDefiningNode) statement).generateCode(cw);
+            }
         }
+
+        // Generate main method
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
+        mv.visitCode();
+        for (Node statement : statements) {
+            if (statement instanceof CodeGeneratingNode) {
+                ((CodeGeneratingNode) statement).generateCode(mv);
+            }
+        }
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
 
         cw.visitEnd();
 
         byte[] bytecode = cw.toByteArray();
-        CustomClassLoader loader = new CustomClassLoader();
+
+        DynamicClassLoader loader = new DynamicClassLoader();
         Class<?> compiledClass = loader.defineClass("CompiledExpression", bytecode);
+
         try {
-            java.lang.reflect.Method method = compiledClass.getMethod("compiledMethod", int.class);
-            int result = (int) method.invoke(null, 0);
-            System.out.println("Result: " + result);
+            compiledClass.getMethod("main", String[].class).invoke(null, (Object) new String[]{});
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static class CustomClassLoader extends ClassLoader {
-        public Class<?> defineClass(String name, byte[] b) {
-            return defineClass(name, b, 0, b.length);
+    static class DynamicClassLoader extends ClassLoader {
+        public Class<?> defineClass(String name, byte[] bytecode) {
+            return defineClass(name, bytecode, 0, bytecode.length);
         }
     }
 }

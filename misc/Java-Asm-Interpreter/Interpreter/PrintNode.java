@@ -1,13 +1,12 @@
 import org.objectweb.asm.MethodVisitor;
-import static org.objectweb.asm.Opcodes.*;
+import org.objectweb.asm.Opcodes;
 
-public class PrintNode extends Node {
-    private Node expression;
+public class PrintNode extends CodeGeneratingNode {
+    private final Node expression;
 
     public PrintNode(Node expression) {
         this.expression = expression;
     }
-
 
     @Override
     public int evaluate() {
@@ -17,13 +16,9 @@ public class PrintNode extends Node {
 
     @Override
     public void generateCode(MethodVisitor mv) {
-        // Generate code to evaluate the expression
+        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
         expression.generateCode(mv);
-
-        // Print the evaluated value
-        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        mv.visitInsn(SWAP);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
     }
 }
 

@@ -4,7 +4,7 @@ import org.objectweb.asm.Opcodes;
 
 import java.util.List;
 
-public class SubroutineDeclarationNode extends Node {
+public class SubroutineDeclarationNode extends MethodDefiningNode {
     private final String name;
     private final List<String> parameters;
     private final Node body;
@@ -21,20 +21,25 @@ public class SubroutineDeclarationNode extends Node {
     }
 
     @Override
-    public void generateCode(MethodVisitor mv) {
-        throw new UnsupportedOperationException("SubroutineDeclarationNode cannot generate code directly.");
-    }
-
     public void generateCode(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, name, "(I)I", null, null);
-        mv.visitCode();
-        body.generateCode(mv);
-        mv.visitMaxs(1, 1);
-        mv.visitEnd();
-    }
+        String methodDescriptor = "(";
+        for (String parameter : parameters) {
+            methodDescriptor += "I"; // Assuming all parameters are integers
+        }
+        methodDescriptor += ")I";
 
-    public String getName() {
-        return name;
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, name, methodDescriptor, null, null);
+        mv.visitCode();
+
+        // Generate code for the body
+        body.generateCode(mv);
+
+        // Return the result
+        mv.visitInsn(Opcodes.IRETURN);
+
+        // Define the max stack and local variables
+        mv.visitMaxs(1, parameters.size() + 1); // 1 for stack, parameters.size() for locals
+        mv.visitEnd();
     }
 }
 

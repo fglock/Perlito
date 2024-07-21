@@ -1,9 +1,10 @@
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class BinaryOpNode extends Node {
+public class BinaryOpNode extends CodeGeneratingNode {
     private final char operator;
-    private final Node left, right;
+    private final Node left;
+    private final Node right;
 
     public BinaryOpNode(char operator, Node left, Node right) {
         this.operator = operator;
@@ -20,7 +21,8 @@ public class BinaryOpNode extends Node {
             case '-': return leftValue - rightValue;
             case '*': return leftValue * rightValue;
             case '/': return leftValue / rightValue;
-            default: throw new IllegalArgumentException("Unknown operator: " + operator);
+            case '%': return leftValue % rightValue;
+            default: throw new RuntimeException("Unknown operator: " + operator);
         }
     }
 
@@ -33,7 +35,8 @@ public class BinaryOpNode extends Node {
             case '-': mv.visitInsn(Opcodes.ISUB); break;
             case '*': mv.visitInsn(Opcodes.IMUL); break;
             case '/': mv.visitInsn(Opcodes.IDIV); break;
-            default: throw new IllegalArgumentException("Unknown operator: " + operator);
+            case '%': mv.visitInsn(Opcodes.IREM); break;
+            default: throw new RuntimeException("Unknown operator: " + operator);
         }
     }
 }

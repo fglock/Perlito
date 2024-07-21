@@ -1,163 +1,162 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 public class Parser {
-    private String code;
-    private int pos = 0;
+    private final String code;
+    private int index;
 
     public Parser(String code) {
         this.code = code;
+        this.index = 0;
     }
 
-    public Node parse() {
-        return parseSubroutineDeclaration();
+    public List<Node> parse() {
+        List<Node> nodes = new ArrayList<>();
+        while (index < code.length()) {
+            nodes.add(parseSubroutineDeclaration());
+        }
+        return nodes;
     }
 
-    private Node parseSubroutineDeclaration() {
+    private SubroutineDeclarationNode parseSubroutineDeclaration() {
         skipWhitespace();
-        if (code.startsWith("sub", pos)) {
-            pos += 3; // Skip 'sub'
+        expect("sub");
+
+        skipWhitespace();
+        String subroutineName = parseIdentifier().getName();
+
+        skipWhitespace();
+        expect('(');
+        List<String> parameters = new ArrayList<>();
+        while (peek() != ')') {
             skipWhitespace();
-            String subroutineName = parseIdentifier();
+            parameters.add(parseIdentifier().getName());
             skipWhitespace();
-            List<String> parameters = new ArrayList<>();
-            if (code.charAt(pos) == '(') {
-                pos++; // Skip '('
-                skipWhitespace();
-                while (code.charAt(pos) != ')') {
-                    parameters.add(parseIdentifier());
-                    skipWhitespace();
-                    if (code.charAt(pos) == ',') {
-                        pos++; // Skip ','
-                        skipWhitespace();
-                    } else if (code.charAt(pos) != ')') {
-                        throw new RuntimeException("Expected ',' or ')'");
-                    }
-                }
-                pos++; // Skip ')'
+            if (peek() == ',') {
+                index++;
             }
-            skipWhitespace();
-            if (code.charAt(pos) == '{') {
-                pos++; // Skip '{'
-                Node body = parseBlock();
-                return new SubroutineDeclarationNode(subroutineName, parameters, body);
-            } else {
-                throw new RuntimeException("Expected '{'");
-            }
-        } else {
-            throw new RuntimeException("Expected 'sub'");
         }
+        expect(')');
+
+        skipWhitespace();
+        expect('{');
+
+        Node body = parseBlock();
+
+        skipWhitespace();
+        expect('}');
+
+        return new SubroutineDeclarationNode(subroutineName, parameters, body);
     }
 
-    private Node parseBlock() {
+    private StatementsNode parseBlock() {
         List<Node> statements = new ArrayList<>();
-        while (true) {
-            skipWhitespace();
-            if (pos >= code.length() || code.charAt(pos) == '}') {
-                break;
-            }
+        while (peek() != '}') {
             statements.add(parseStatement());
+            skipWhitespace();
         }
-        if (pos < code.length() && code.charAt(pos) == '}') {
-            pos++; // Skip '}'
-        } else {
-            throw new RuntimeException("Expected '}'");
-        }
-        return new BlockNode(statements);
+        return new StatementsNode(statements);
     }
 
     private Node parseStatement() {
         skipWhitespace();
-        if (code.startsWith("return", pos)) {
-            pos += 6; // Skip 'return'
+        if (peek() == 'p' && code.startsWith("print", index)) {
+            index += 5;
             skipWhitespace();
-            Node returnValue = parseExpression();
+            Node expression = parseExpression();
             skipWhitespace();
-            if (code.charAt(pos) == ';') {
-                pos++; // Skip ';'
-            }
-            return new ReturnNode(returnValue);
+            expect(';');
+            return new PrintNode(expression);
         } else {
-            Node expr = parseExpression();
-            skipWhitespace();
-            if (code.charAt(pos) == ';') {
-                pos++; // Skip ';'
-            }
-            return expr; // For simplicity, return the expression as the statement
+            return parseExpression();
         }
     }
 
     private Node parseExpression() {
         skipWhitespace();
         Node left = parsePrimary();
-
-        while (true) {
+        skipWhitespace();
+        while (peek() == '+' || peek() == '-' || peek() == '*' || peek() == '/' || peek() == '%') {
+            char op = next();
             skipWhitespace();
-            if (pos >= code.length()) break;
-
-            char op = code.charAt(pos);
-            if (op == '+' || op == '-' || op == '*' || op == '/' || op == '%') {
-                pos++; // Skip the operator
-                Node right = parsePrimary();
-                left = new BinaryOpNode(op, left, right);
-            } else if (op == '(') {
-                pos++; // Skip '('
-                Node argument = parseExpression();
-                skipWhitespace();
-                if (code.charAt(pos) == ')') {
-                    pos++; // Skip ')'
-                    return new SubroutineCallNode(((IdentifierNode) left).getName(), argument);
-                } else {
-                    throw new RuntimeException("Expected ')'");
-                }
-            } else {
-                break;
-            }
+            Node right = parsePrimary();
+            left = new BinaryOpNode(op, left, right);
+            skipWhitespace();
         }
-
         return left;
     }
 
     private Node parsePrimary() {
         skipWhitespace();
-
-        if (pos >= code.length()) {
-            throw new RuntimeException("Unexpected end of input");
-        }
-
-        char ch = code.charAt(pos);
-        if (Character.isDigit(ch)) {
-            return parseNumber();
-        } else if (Character.isLetter(ch)) {
-            return new IdentifierNode(parseIdentifier());
+        char c = peek();
+        if (Character.isDigit(c)) {
+            return new NumberNode(parseNumber());
+        } else if (Character.isLetter(c)) {
+            String name = parseIdentifier().getName();
+            skipWhitespace();
+            if (peek() == '(') {
+                index++;
+                skipWhitespace();
+                Node argument = parseExpression();
+                skipWhitespace();
+                expect(')');
+                return new SubroutineCallNode(name, argument);
+            } else {
+                return new IdentifierNode(name, -1); // For simplicity, using -1 for the localIndex
+            }
         } else {
-            throw new RuntimeException("Unexpected character: " + ch);
+            throw new RuntimeException("Unexpected character: " + c);
         }
     }
 
-    private NumberNode parseNumber() {
-        skipWhitespace();
-        StringBuilder sb = new StringBuilder();
-        while (pos < code.length() && Character.isDigit(code.charAt(pos))) {
-            sb.append(code.charAt(pos));
-            pos++;
+    private int parseNumber() {
+        int start = index;
+        while (index < code.length() && Character.isDigit(code.charAt(index))) {
+            index++;
         }
-        return new NumberNode(Integer.parseInt(sb.toString()));
+        return Integer.parseInt(code.substring(start, index));
     }
 
-    private String parseIdentifier() {
-        skipWhitespace();
-        StringBuilder sb = new StringBuilder();
-        while (pos < code.length() && Character.isLetterOrDigit(code.charAt(pos))) {
-            sb.append(code.charAt(pos));
-            pos++;
+    private IdentifierNode parseIdentifier() {
+        int start = index;
+        while (index < code.length() && Character.isLetterOrDigit(code.charAt(index))) {
+            index++;
         }
-        return sb.toString();
+        return new IdentifierNode(code.substring(start, index), -1); // For simplicity, using -1 for the localIndex
+    }
+
+    private void expect(char expected) {
+        if (peek() != expected) {
+            throw new RuntimeException("Expected '" + expected + "'");
+        }
+        index++;
+    }
+
+    private void expect(String expected) {
+        if (!code.startsWith(expected, index)) {
+            throw new RuntimeException("Expected '" + expected + "'");
+        }
+        index += expected.length();
     }
 
     private void skipWhitespace() {
-        while (pos < code.length() && Character.isWhitespace(code.charAt(pos))) {
-            pos++;
+        while (index < code.length() && Character.isWhitespace(code.charAt(index))) {
+            index++;
         }
+    }
+
+    private char peek() {
+        if (index >= code.length()) {
+            return '\0';
+        }
+        return code.charAt(index);
+    }
+
+    private char next() {
+        char c = peek();
+        index++;
+        return c;
     }
 }
 

@@ -1,7 +1,7 @@
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class SubroutineCallNode extends Node {
+public class SubroutineCallNode extends CodeGeneratingNode {
     private final String name;
     private final Node argument;
 
@@ -12,12 +12,16 @@ public class SubroutineCallNode extends Node {
 
     @Override
     public int evaluate() {
-        throw new UnsupportedOperationException("SubroutineCallNode cannot be evaluated directly.");
+        // This will not be used in this context
+        return 0;
     }
 
     @Override
     public void generateCode(MethodVisitor mv) {
+        // Generate code for the argument
         argument.generateCode(mv);
+
+        // Call the subroutine
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, "CompiledExpression", name, "(I)I", false);
     }
 }

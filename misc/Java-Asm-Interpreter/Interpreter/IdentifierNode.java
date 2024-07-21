@@ -1,10 +1,17 @@
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
-public class IdentifierNode extends Node {
+public class IdentifierNode extends CodeGeneratingNode {
     private final String name;
+    private final int localIndex;
 
-    public IdentifierNode(String name) {
+    public IdentifierNode(String name, int localIndex) {
         this.name = name;
+        this.localIndex = localIndex;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -14,11 +21,7 @@ public class IdentifierNode extends Node {
 
     @Override
     public void generateCode(MethodVisitor mv) {
-        throw new UnsupportedOperationException("IdentifierNode cannot generate code directly.");
-    }
-
-    public String getName() {
-        return name;
+        mv.visitVarInsn(Opcodes.ILOAD, localIndex);
     }
 }
 

@@ -1,10 +1,10 @@
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class ReturnNode extends Node {
-    private final Node value;
+public class ReturnNode extends CodeGeneratingNode {
+    private final CodeGeneratingNode value;
 
-    public ReturnNode(Node value) {
+    public ReturnNode(CodeGeneratingNode value) {
         this.value = value;
     }
 
