@@ -1,18 +1,24 @@
 import org.objectweb.asm.MethodVisitor;
-
-import java.util.List;
+import org.objectweb.asm.Opcodes;
 
 public class SubroutineCallNode extends Node {
-    private final String subroutineName;
-    private final List<Node> arguments;
+    private final String name;
+    private final Node argument;
 
-    public SubroutineCallNode(String subroutineName, List<Node> arguments) {
-        this.subroutineName = subroutineName;
-        this.arguments = arguments;
+    public SubroutineCallNode(String name, Node argument) {
+        this.name = name;
+        this.argument = argument;
+    }
+
+    @Override
+    public int evaluate() {
+        throw new UnsupportedOperationException("SubroutineCallNode cannot be evaluated directly.");
     }
 
     @Override
     public void generateCode(MethodVisitor mv) {
-        // Handle subroutine call
+        argument.generateCode(mv);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "CompiledExpression", name, "(I)I", false);
     }
 }
+

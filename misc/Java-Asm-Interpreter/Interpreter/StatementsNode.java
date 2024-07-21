@@ -11,6 +11,15 @@ public class StatementsNode extends Node {
     }
 
     @Override
+    public int evaluate() {
+        int result = 0;
+        for (Node statement : statements) {
+            result = statement.evaluate();
+        }
+        return result;
+    }
+
+    @Override
     public void generateCode(MethodVisitor mv) {
         for (Node stmt : statements) {
             stmt.generateCode(mv);

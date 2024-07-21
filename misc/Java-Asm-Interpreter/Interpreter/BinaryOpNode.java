@@ -1,38 +1,39 @@
 import org.objectweb.asm.MethodVisitor;
-import static org.objectweb.asm.Opcodes.*;
+import org.objectweb.asm.Opcodes;
 
 public class BinaryOpNode extends Node {
-    private Node left;
-    private Node right;
-    private String op;
+    private final char operator;
+    private final Node left, right;
 
-    public BinaryOpNode(Node left, Node right, String op) {
+    public BinaryOpNode(char operator, Node left, Node right) {
+        this.operator = operator;
         this.left = left;
         this.right = right;
-        this.op = op;
+    }
+
+    @Override
+    public int evaluate() {
+        int leftValue = left.evaluate();
+        int rightValue = right.evaluate();
+        switch (operator) {
+            case '+': return leftValue + rightValue;
+            case '-': return leftValue - rightValue;
+            case '*': return leftValue * rightValue;
+            case '/': return leftValue / rightValue;
+            default: throw new IllegalArgumentException("Unknown operator: " + operator);
+        }
     }
 
     @Override
     public void generateCode(MethodVisitor mv) {
         left.generateCode(mv);
         right.generateCode(mv);
-        switch (op) {
-            case "+":
-                mv.visitInsn(IADD);
-                break;
-            case "-":
-                mv.visitInsn(ISUB);
-                break;
-            case "*":
-                mv.visitInsn(IMUL);
-                break;
-            case "/":
-                mv.visitInsn(IDIV);
-                break;
-            case "**":
-                mv.visitMethodInsn(INVOKESTATIC, "java/lang/Math", "pow", "(DD)D", false);
-                mv.visitInsn(D2I); // convert double result back to int
-                break;
+        switch (operator) {
+            case '+': mv.visitInsn(Opcodes.IADD); break;
+            case '-': mv.visitInsn(Opcodes.ISUB); break;
+            case '*': mv.visitInsn(Opcodes.IMUL); break;
+            case '/': mv.visitInsn(Opcodes.IDIV); break;
+            default: throw new IllegalArgumentException("Unknown operator: " + operator);
         }
     }
 }

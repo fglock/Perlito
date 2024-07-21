@@ -1,18 +1,24 @@
 import org.objectweb.asm.MethodVisitor;
-import static org.objectweb.asm.Opcodes.*;
 
 public class IdentifierNode extends Node {
-    private String name;
+    private final String name;
 
     public IdentifierNode(String name) {
         this.name = name;
     }
 
     @Override
+    public int evaluate() {
+        throw new UnsupportedOperationException("IdentifierNode cannot be evaluated directly.");
+    }
+
+    @Override
     public void generateCode(MethodVisitor mv) {
-        // This will need more context to resolve the identifier to a value.
-        // For now, we will just push a placeholder value.
-        mv.visitLdcInsn(0); // Placeholder value for the identifier
+        throw new UnsupportedOperationException("IdentifierNode cannot generate code directly.");
+    }
+
+    public String getName() {
+        return name;
     }
 }
 

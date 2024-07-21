@@ -1,22 +1,13 @@
 public class Interpreter {
     public static void main(String[] args) {
-        try {
-            // Example code string to be parsed and compiled
-            // String code = "sub add { return 1 + 2; } add();"; // Replace with actual code to execute
-            // String code = "sub add { return + 1 2; } add();"; // Replace with actual code to execute
-            String code = "sub add { return 3 * 2 + 7; return 10 }; print(add() + add())";
-            
-            // Create a parser instance with the code
-            Parser parser = new Parser(code);
-            
-            // Parse the code using the parser
-            Node parsedCode = parser.parse();
-            
-            // Compile and run the parsed code
-            int result = JITCompiler.compileAndRun(parsedCode);
-            System.out.println("Result: " + result);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String code1 = "sub add (value) { return value + 2; }";
+        String code2 = "add(5)";
+
+        Parser parser1 = new Parser(code1);
+        JITCompiler.compileAndRun(parser1);
+
+        Parser parser2 = new Parser(code2);
+        JITCompiler.compileAndRun(parser2);
     }
 }
+

@@ -1,61 +1,50 @@
 import org.objectweb.asm.*;
 
-import java.lang.reflect.Method;
-
-import static org.objectweb.asm.Opcodes.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JITCompiler {
-    public static int compileAndRun(Node node) throws Exception {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-        MethodVisitor mv;
+    private static final Map<String, SubroutineDeclarationNode> subroutines = new HashMap<>();
 
-        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "CompiledExpression", null, "java/lang/Object", null);
+    public static void compileAndRun(Parser parser) {
+        Node root = parser.parse();
+        if (root instanceof SubroutineDeclarationNode) {
+            SubroutineDeclarationNode subroutine = (SubroutineDeclarationNode) root;
+            subroutines.put(subroutine.getName(), subroutine);
+        } else {
+            compileAndRun(root);
+        }
+    }
 
-        // Default constructor
-        mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+    private static void compileAndRun(Node node) {
+        ClassWriter cw = new ClassWriter(0);
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, "CompiledExpression", null, "java/lang/Object", null);
+
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "compiledMethod", "(I)I", null, null);
         mv.visitCode();
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-        mv.visitInsn(RETURN);
+        node.generateCode(mv);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
-        // main method
-        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
-        mv.visitCode();
-
-        // Call the compiled method and print the result
-        mv.visitMethodInsn(INVOKESTATIC, "CompiledExpression", "compiledMethod", "()I", false);
-        mv.visitVarInsn(ISTORE, 1);
-        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        mv.visitVarInsn(ILOAD, 1);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
-
-        mv.visitInsn(RETURN);
-        mv.visitMaxs(2, 2);
-        mv.visitEnd();
-
-        // Compiled method
-        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "compiledMethod", "()I", null, null);
-        mv.visitCode();
-
-        // Generate the bytecode for the expression
-        node.generateCode(mv);
-        mv.visitInsn(IRETURN);
-
-        mv.visitMaxs(0, 0);
-        mv.visitEnd();
+        for (SubroutineDeclarationNode subroutine : subroutines.values()) {
+            subroutine.generateCode(cw);
+        }
 
         cw.visitEnd();
 
-        // Load and execute the compiled class
         byte[] bytecode = cw.toByteArray();
-        Class<?> compiledClass = new DynamicClassLoader().defineClass("CompiledExpression", bytecode);
-        Method compiledMethod = compiledClass.getMethod("compiledMethod");
-        return (int) compiledMethod.invoke(null);
+        CustomClassLoader loader = new CustomClassLoader();
+        Class<?> compiledClass = loader.defineClass("CompiledExpression", bytecode);
+        try {
+            java.lang.reflect.Method method = compiledClass.getMethod("compiledMethod", int.class);
+            int result = (int) method.invoke(null, 0);
+            System.out.println("Result: " + result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    static class DynamicClassLoader extends ClassLoader {
+    private static class CustomClassLoader extends ClassLoader {
         public Class<?> defineClass(String name, byte[] b) {
             return defineClass(name, b, 0, b.length);
         }
