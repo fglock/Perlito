@@ -799,6 +799,22 @@ my %CORE_OP_GRAMMAR = (
         [qw{ my state our local }],    # XXX local has a different precedence
         sub {
             my ( $tokens, $index, $name ) = @_;
+
+            if ( $name eq "my" ) {    # my $x  - optimization
+                if ( $tokens->[$index][0] == SIGIL() && $tokens->[ $index + 1 ][0] == IDENTIFIER() ) {
+                    return {
+                        type  => 'my_OP',
+                        value => [
+                            {
+                                type  => 'PREFIX_OP',
+                                value => { op => $tokens->[$index][1], bareword => $tokens->[ $index + 1 ][1] },
+                            }
+                        ],
+                        next => $index + 2
+                    };
+                }
+            }
+
             return meta_grammar(
                 $tokens, $index,
                 {
