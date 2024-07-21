@@ -34,13 +34,13 @@ public class Tokenizer {
             } else if (current == '+') {
                 tokens.add(new Token(TokenType.PLUS, Character.toString(advance())));
             } else if (current == '(') {
-                tokens.add(new Token(TokenType.LEFT_PAREN, Character.toString(advance())));
+                tokens.add(new Token(TokenType.LPAREN, Character.toString(advance())));
             } else if (current == ')') {
-                tokens.add(new Token(TokenType.RIGHT_PAREN, Character.toString(advance())));
+                tokens.add(new Token(TokenType.RPAREN, Character.toString(advance())));
             } else if (current == '{') {
-                tokens.add(new Token(TokenType.LEFT_BRACE, Character.toString(advance())));
+                tokens.add(new Token(TokenType.LBRACE, Character.toString(advance())));
             } else if (current == '}') {
-                tokens.add(new Token(TokenType.RIGHT_BRACE, Character.toString(advance())));
+                tokens.add(new Token(TokenType.RBRACE, Character.toString(advance())));
             } else if (current == ',') {
                 tokens.add(new Token(TokenType.COMMA, Character.toString(advance())));
             } else if (current == ';') {

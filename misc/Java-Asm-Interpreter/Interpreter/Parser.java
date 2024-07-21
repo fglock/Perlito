@@ -24,7 +24,7 @@ public class Parser {
             return parseReturnStatement();
         } else if (match(TokenType.PRINT)) {
             return parsePrintStatement();
-        } else if (match(TokenType.SUB)) {
+        } else if (check(TokenType.SUB)) {
             return parseSubroutineDeclaration();
         } else {
             return parseExpression();
@@ -32,12 +32,14 @@ public class Parser {
     }
 
     private Node parseReturnStatement() {
+        expect(TokenType.RETURN);
         Node expression = parseExpression();
         expect(TokenType.SEMICOLON);
         return new ReturnNode(expression);
     }
 
     private Node parsePrintStatement() {
+        expect(TokenType.PRINT);
         Node expression = parseExpression();
         expect(TokenType.SEMICOLON);
         return new PrintNode(expression);
@@ -45,20 +47,18 @@ public class Parser {
 
     private Node parseSubroutineDeclaration() {
         expect(TokenType.SUB);
-        // String name = parseIdentifier().getName();
-        String name = parseIdentifier();
-        // String name = ((IdentifierNode) parseIdentifier()).getName();
-        expect(TokenType.LEFT_PAREN);
+        String name = parseIdentifier().getName();
+        expect(TokenType.LPAREN);
 
         List<String> parameters = new ArrayList<>();
-        if (!match(TokenType.RIGHT_PAREN)) {
+        if (!match(TokenType.RPAREN)) {
             do {
                 Token identifierToken = expect(TokenType.IDENTIFIER);
                 String paramName = identifierToken.value;
                 parameters.add(paramName);
                 localVariables.put(paramName, localVariableIndex++);
             } while (match(TokenType.COMMA));
-            expect(TokenType.RIGHT_PAREN);
+            expect(TokenType.RPAREN);
         }
 
         Node body = parseBlock();
@@ -67,11 +67,11 @@ public class Parser {
 
     private Node parseBlock() {
         List<Node> statements = new ArrayList<>();
-        expect(TokenType.LEFT_BRACE);
-        while (!match(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+        expect(TokenType.LBRACE);
+        while (!match(TokenType.RBRACE) && !isAtEnd()) {
             statements.add(parseStatement());
         }
-        expect(TokenType.RIGHT_BRACE);
+        expect(TokenType.RBRACE);
         return new StatementsNode(statements);
     }
 
@@ -90,13 +90,13 @@ public class Parser {
             return new NumberNode(Double.parseDouble(previous().value));
         } else if (match(TokenType.IDENTIFIER)) {
             String name = previous().value;
-            if (match(TokenType.LEFT_PAREN)) {
+            if (match(TokenType.LPAREN)) {
                 List<Node> arguments = new ArrayList<>();
-                if (!match(TokenType.RIGHT_PAREN)) {
+                if (!match(TokenType.RPAREN)) {
                     do {
                         arguments.add(parseExpression());
                     } while (match(TokenType.COMMA));
-                    expect(TokenType.RIGHT_PAREN);
+                    expect(TokenType.RPAREN);
                 }
                 return new SubroutineCallNode(name, arguments);
             }
@@ -142,8 +142,9 @@ public class Parser {
         throw new RuntimeException("Expected token: " + type);
     }
 
-    private String parseIdentifier() {
+    private IdentifierNode parseIdentifier() {
         Token identifierToken = expect(TokenType.IDENTIFIER);
-        return identifierToken.value;
+        return new IdentifierNode(identifierToken.value, localVariables.getOrDefault(identifierToken.value, -1));
     }
 }
+

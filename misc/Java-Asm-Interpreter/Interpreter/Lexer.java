@@ -36,10 +36,10 @@ public class Lexer {
             case '-': return new Token(TokenType.MINUS, "-");
             case '*': return new Token(TokenType.STAR, "*");
             case '/': return new Token(TokenType.SLASH, "/");
-            case '(': return new Token(TokenType.LEFT_PAREN, "(");
-            case ')': return new Token(TokenType.RIGHT_PAREN, ")");
-            case '{': return new Token(TokenType.LEFT_BRACE, "{");
-            case '}': return new Token(TokenType.RIGHT_BRACE, "}");
+            case '(': return new Token(TokenType.LPAREN, "(");
+            case ')': return new Token(TokenType.RPAREN, ")");
+            case '{': return new Token(TokenType.LBRACE, "{");
+            case '}': return new Token(TokenType.RBRACE, "}");
             case ';': return new Token(TokenType.SEMICOLON, ";");
             case ',': return new Token(TokenType.COMMA, ",");
             case ' ':
