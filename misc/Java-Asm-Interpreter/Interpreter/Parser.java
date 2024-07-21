@@ -2,143 +2,148 @@ import java.util.*;
 
 public class Parser {
     private final List<Token> tokens;
-    private int pos;
+    private int position;
+    private final Map<String, Integer> localVariables = new HashMap<>();
+    private int localVariableIndex = 0;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
-        this.pos = 0;
+        this.position = 0;
     }
 
     public List<Node> parse() {
         List<Node> statements = new ArrayList<>();
-        while (pos < tokens.size()) {
+        while (!isAtEnd()) {
             statements.add(parseStatement());
         }
         return statements;
     }
 
-    private Node parseSubroutineDeclaration() {
-        expect(TokenType.KEYWORD, "sub");
-        String name = parseIdentifier().value;
-        List<String> parameters = parseParameters();
-        Node body = parseBlock();
-        return new SubroutineDeclarationNode(name, parameters, body);
-    }
-
-    private List<String> parseParameters() {
-        List<String> parameters = new ArrayList<>();
-        expect(TokenType.LPAREN);
-        while (!match(TokenType.RPAREN)) {
-            parameters.add(parseIdentifier().value);
-            if (!match(TokenType.RPAREN)) {
-                expect(TokenType.OPERATOR, ",");
-            }
-        }
-        return parameters;
-    }
-
-    private Node parseBlock() {
-        expect(TokenType.LBRACE);
-        List<Node> statements = new ArrayList<>();
-        while (!match(TokenType.RBRACE)) {
-            statements.add(parseStatement());
-        }
-        return new StatementsNode(statements);
-    }
-
     private Node parseStatement() {
-        if (match(TokenType.KEYWORD, "print")) {
-            return parsePrintStatement();
-        } else if (match(TokenType.KEYWORD, "return")) {
+        if (match(TokenType.RETURN)) {
             return parseReturnStatement();
-        } else if (match(TokenType.KEYWORD, "sub")) {
+        } else if (match(TokenType.PRINT)) {
+            return parsePrintStatement();
+        } else if (match(TokenType.SUB)) {
             return parseSubroutineDeclaration();
         } else {
-            Node expr = parseExpression();
-            expect(TokenType.SEMICOLON);
-            return expr;
+            return parseExpression();
         }
-    }
-
-    private Node parsePrintStatement() {
-        expect(TokenType.KEYWORD, "print");
-        Node expression = parseExpression();
-        expect(TokenType.SEMICOLON);
-        return new PrintNode(expression);
     }
 
     private Node parseReturnStatement() {
-        expect(TokenType.KEYWORD, "return");
         Node expression = parseExpression();
         expect(TokenType.SEMICOLON);
         return new ReturnNode(expression);
     }
 
+    private Node parsePrintStatement() {
+        Node expression = parseExpression();
+        expect(TokenType.SEMICOLON);
+        return new PrintNode(expression);
+    }
+
+    private Node parseSubroutineDeclaration() {
+        expect(TokenType.SUB);
+        // String name = parseIdentifier().getName();
+        String name = parseIdentifier();
+        // String name = ((IdentifierNode) parseIdentifier()).getName();
+        expect(TokenType.LEFT_PAREN);
+
+        List<String> parameters = new ArrayList<>();
+        if (!match(TokenType.RIGHT_PAREN)) {
+            do {
+                Token identifierToken = expect(TokenType.IDENTIFIER);
+                String paramName = identifierToken.value;
+                parameters.add(paramName);
+                localVariables.put(paramName, localVariableIndex++);
+            } while (match(TokenType.COMMA));
+            expect(TokenType.RIGHT_PAREN);
+        }
+
+        Node body = parseBlock();
+        return new SubroutineDeclarationNode(name, parameters, body);
+    }
+
+    private Node parseBlock() {
+        List<Node> statements = new ArrayList<>();
+        expect(TokenType.LEFT_BRACE);
+        while (!match(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+            statements.add(parseStatement());
+        }
+        expect(TokenType.RIGHT_BRACE);
+        return new StatementsNode(statements);
+    }
+
     private Node parseExpression() {
         Node left = parsePrimary();
-        while (match(TokenType.OPERATOR)) {
-            String operator = tokens.get(pos - 1).value;
+        while (match(TokenType.PLUS)) {
+            TokenType op = previous().type;
             Node right = parsePrimary();
-            left = new BinaryOpNode(operator.charAt(0), left, right);
+            left = new BinaryOpNode(op, left, right);
         }
         return left;
     }
 
     private Node parsePrimary() {
-        Token token = next();
-        switch (token.type) {
-            case NUMBER:
-                return new NumberNode(Integer.parseInt(token.value));
-            case IDENTIFIER:
-                return new IdentifierNode(token.value);
-            case LPAREN:
-                Node expr = parseExpression();
-                expect(TokenType.RPAREN);
-                return expr;
-            default:
-                throw new RuntimeException("Unexpected character: " + token.value);
+        if (match(TokenType.NUMBER)) {
+            return new NumberNode(Double.parseDouble(previous().value));
+        } else if (match(TokenType.IDENTIFIER)) {
+            String name = previous().value;
+            if (match(TokenType.LEFT_PAREN)) {
+                List<Node> arguments = new ArrayList<>();
+                if (!match(TokenType.RIGHT_PAREN)) {
+                    do {
+                        arguments.add(parseExpression());
+                    } while (match(TokenType.COMMA));
+                    expect(TokenType.RIGHT_PAREN);
+                }
+                return new SubroutineCallNode(name, arguments);
+            }
+            int index = localVariables.getOrDefault(name, -1);
+            return new IdentifierNode(name, index);
+        } else {
+            throw new RuntimeException("Unexpected token: " + peek().type);
         }
-    }
-
-    private Token parseIdentifier() {
-        Token token = next();
-        if (token.type != TokenType.IDENTIFIER) {
-            throw new RuntimeException("Expected identifier, found " + token.value);
-        }
-        return token;
     }
 
     private boolean match(TokenType type) {
-        if (pos < tokens.size() && tokens.get(pos).type == type) {
-            pos++;
+        if (check(type)) {
+            advance();
             return true;
         }
         return false;
     }
 
-    private boolean match(TokenType type, String value) {
-        if (pos < tokens.size() && tokens.get(pos).type == type && tokens.get(pos).value.equals(value)) {
-            pos++;
-            return true;
-        }
-        return false;
+    private boolean check(TokenType type) {
+        if (isAtEnd()) return false;
+        return peek().type == type;
+    }
+
+    private Token advance() {
+        if (!isAtEnd()) position++;
+        return previous();
+    }
+
+    private boolean isAtEnd() {
+        return position >= tokens.size();
+    }
+
+    private Token peek() {
+        return tokens.get(position);
+    }
+
+    private Token previous() {
+        return tokens.get(position - 1);
     }
 
     private Token expect(TokenType type) {
-        if (pos < tokens.size() && tokens.get(pos).type == type) {
-            return tokens.get(pos++);
-        }
-        throw new RuntimeException("Expected " + type + ", found " + tokens.get(pos).value);
+        if (check(type)) return advance();
+        throw new RuntimeException("Expected token: " + type);
     }
 
-    private Token expect(TokenType type, String value) {
-        if (pos < tokens.size() && tokens.get(pos).type == type && tokens.get(pos).value.equals(value)) {
-            return tokens.get(pos++);
-        }
-        throw new RuntimeException("Expected " + type + " " + value + ", found " + tokens.get(pos).value);
-    }
-
-    private Token next() {
-        return tokens.get(pos++);
+    private String parseIdentifier() {
+        Token identifierToken = expect(TokenType.IDENTIFIER);
+        return identifierToken.value;
     }
 }

@@ -17,31 +17,24 @@ public class SubroutineDeclarationNode extends MethodDefiningNode {
 
     @Override
     public int evaluate() {
-        // Placeholder: Actual implementation would involve managing a symbol table and execution context
+        // Stub for evaluation logic
         return 0;
     }
 
     @Override
-    public void generateCode(MethodVisitor mv) {
-        throw new UnsupportedOperationException("SubroutineDeclarationNode cannot generate code with MethodVisitor");
-    }
-
-    @Override
     public void generateCode(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, name, getMethodDescriptor(), null, null);
+        String methodDescriptor = parameters.isEmpty() ? "()I" : "(" + "I".repeat(parameters.size()) + ")I";
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, name, methodDescriptor, null, null);
         mv.visitCode();
+        
+        // Assign indexes to parameters in the method
+        for (int i = 0; i < parameters.size(); i++) {
+            mv.visitVarInsn(Opcodes.ILOAD, i);
+        }
+        
         body.generateCode(mv);
-        mv.visitInsn(Opcodes.RETURN);
+        mv.visitInsn(Opcodes.IRETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
-    }
-
-    private String getMethodDescriptor() {
-        StringBuilder descriptor = new StringBuilder("(");
-        for (String param : parameters) {
-            descriptor.append("I");
-        }
-        descriptor.append(")I");
-        return descriptor.toString();
     }
 }

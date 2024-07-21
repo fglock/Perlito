@@ -10,16 +10,13 @@ public class PrintNode extends CodeGeneratingNode {
 
     @Override
     public int evaluate() {
-        int value = expression.evaluate();
-        System.out.println(value);
+        // Stub for evaluation logic
         return 0;
     }
 
     @Override
     public void generateCode(MethodVisitor mv) {
         expression.generateCode(mv);
-        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        mv.visitInsn(Opcodes.SWAP);
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/io/PrintStream", "println", "(I)V", false);
     }
 }

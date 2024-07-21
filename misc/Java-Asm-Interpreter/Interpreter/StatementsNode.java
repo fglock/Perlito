@@ -1,4 +1,5 @@
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import java.util.List;
 
@@ -11,11 +12,8 @@ public class StatementsNode extends CodeGeneratingNode {
 
     @Override
     public int evaluate() {
-        int result = 0;
-        for (Node statement : statements) {
-            result = statement.evaluate();
-        }
-        return result;
+        // Stub for evaluation logic
+        return 0;
     }
 
     @Override

@@ -1,28 +1,38 @@
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+import java.util.List;
+
 public class SubroutineCallNode extends CodeGeneratingNode {
     private final String name;
-    private final Node argument;
+    private final List<Node> arguments;
 
-    public SubroutineCallNode(String name, Node argument) {
+    public SubroutineCallNode(String name, List<Node> arguments) {
         this.name = name;
-        this.argument = argument;
+        this.arguments = arguments;
     }
 
     @Override
     public int evaluate() {
-        // This will not be used in this context
+        // Stub for evaluation logic
         return 0;
     }
 
     @Override
     public void generateCode(MethodVisitor mv) {
-        // Generate code for the argument
-        argument.generateCode(mv);
+        for (Node argument : arguments) {
+            argument.generateCode(mv);
+        }
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "CompiledExpression", name, getDescriptor(), false);
+    }
 
-        // Call the subroutine
-        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "CompiledExpression", name, "(I)I", false);
+    private String getDescriptor() {
+        StringBuilder sb = new StringBuilder();
+        sb.append('(');
+        for (Node argument : arguments) {
+            sb.append('I');
+        }
+        sb.append(")I");
+        return sb.toString();
     }
 }
-

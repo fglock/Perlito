@@ -2,19 +2,19 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class NumberNode extends CodeGeneratingNode {
-    private final int value;
+    private final double value;
 
-    public NumberNode(int value) {
+    public NumberNode(double value) {
         this.value = value;
     }
 
     @Override
     public int evaluate() {
-        return value;
+        return (int) value;
     }
 
     @Override
     public void generateCode(MethodVisitor mv) {
-        mv.visitLdcInsn(value);
+        mv.visitLdcInsn((int) value);
     }
 }

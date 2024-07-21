@@ -10,7 +10,8 @@ public class ReturnNode extends CodeGeneratingNode {
 
     @Override
     public int evaluate() {
-        return expression.evaluate();
+        // Stub for evaluation logic
+        return 0;
     }
 
     @Override
