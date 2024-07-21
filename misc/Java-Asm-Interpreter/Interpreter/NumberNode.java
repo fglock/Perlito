@@ -18,4 +18,3 @@ public class NumberNode extends CodeGeneratingNode {
         mv.visitLdcInsn(value);
     }
 }
-

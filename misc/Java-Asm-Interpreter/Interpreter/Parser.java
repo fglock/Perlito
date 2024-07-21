@@ -1,162 +1,144 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class Parser {
-    private final String code;
-    private int index;
+    private final List<Token> tokens;
+    private int pos;
 
-    public Parser(String code) {
-        this.code = code;
-        this.index = 0;
+    public Parser(List<Token> tokens) {
+        this.tokens = tokens;
+        this.pos = 0;
     }
 
     public List<Node> parse() {
-        List<Node> nodes = new ArrayList<>();
-        while (index < code.length()) {
-            nodes.add(parseSubroutineDeclaration());
+        List<Node> statements = new ArrayList<>();
+        while (pos < tokens.size()) {
+            statements.add(parseStatement());
         }
-        return nodes;
+        return statements;
     }
 
-    private SubroutineDeclarationNode parseSubroutineDeclaration() {
-        skipWhitespace();
-        expect("sub");
+    private Node parseSubroutineDeclaration() {
+        expect(TokenType.KEYWORD, "sub");
+        String name = parseIdentifier().value;
+        List<String> parameters = parseParameters();
+        Node body = parseBlock();
+        return new SubroutineDeclarationNode(name, parameters, body);
+    }
 
-        skipWhitespace();
-        String subroutineName = parseIdentifier().getName();
-
-        skipWhitespace();
-        expect('(');
+    private List<String> parseParameters() {
         List<String> parameters = new ArrayList<>();
-        while (peek() != ')') {
-            skipWhitespace();
-            parameters.add(parseIdentifier().getName());
-            skipWhitespace();
-            if (peek() == ',') {
-                index++;
+        expect(TokenType.LPAREN);
+        while (!match(TokenType.RPAREN)) {
+            parameters.add(parseIdentifier().value);
+            if (!match(TokenType.RPAREN)) {
+                expect(TokenType.OPERATOR, ",");
             }
         }
-        expect(')');
-
-        skipWhitespace();
-        expect('{');
-
-        Node body = parseBlock();
-
-        skipWhitespace();
-        expect('}');
-
-        return new SubroutineDeclarationNode(subroutineName, parameters, body);
+        return parameters;
     }
 
-    private StatementsNode parseBlock() {
+    private Node parseBlock() {
+        expect(TokenType.LBRACE);
         List<Node> statements = new ArrayList<>();
-        while (peek() != '}') {
+        while (!match(TokenType.RBRACE)) {
             statements.add(parseStatement());
-            skipWhitespace();
         }
         return new StatementsNode(statements);
     }
 
     private Node parseStatement() {
-        skipWhitespace();
-        if (peek() == 'p' && code.startsWith("print", index)) {
-            index += 5;
-            skipWhitespace();
-            Node expression = parseExpression();
-            skipWhitespace();
-            expect(';');
-            return new PrintNode(expression);
+        if (match(TokenType.KEYWORD, "print")) {
+            return parsePrintStatement();
+        } else if (match(TokenType.KEYWORD, "return")) {
+            return parseReturnStatement();
+        } else if (match(TokenType.KEYWORD, "sub")) {
+            return parseSubroutineDeclaration();
         } else {
-            return parseExpression();
+            Node expr = parseExpression();
+            expect(TokenType.SEMICOLON);
+            return expr;
         }
     }
 
+    private Node parsePrintStatement() {
+        expect(TokenType.KEYWORD, "print");
+        Node expression = parseExpression();
+        expect(TokenType.SEMICOLON);
+        return new PrintNode(expression);
+    }
+
+    private Node parseReturnStatement() {
+        expect(TokenType.KEYWORD, "return");
+        Node expression = parseExpression();
+        expect(TokenType.SEMICOLON);
+        return new ReturnNode(expression);
+    }
+
     private Node parseExpression() {
-        skipWhitespace();
         Node left = parsePrimary();
-        skipWhitespace();
-        while (peek() == '+' || peek() == '-' || peek() == '*' || peek() == '/' || peek() == '%') {
-            char op = next();
-            skipWhitespace();
+        while (match(TokenType.OPERATOR)) {
+            String operator = tokens.get(pos - 1).value;
             Node right = parsePrimary();
-            left = new BinaryOpNode(op, left, right);
-            skipWhitespace();
+            left = new BinaryOpNode(operator.charAt(0), left, right);
         }
         return left;
     }
 
     private Node parsePrimary() {
-        skipWhitespace();
-        char c = peek();
-        if (Character.isDigit(c)) {
-            return new NumberNode(parseNumber());
-        } else if (Character.isLetter(c)) {
-            String name = parseIdentifier().getName();
-            skipWhitespace();
-            if (peek() == '(') {
-                index++;
-                skipWhitespace();
-                Node argument = parseExpression();
-                skipWhitespace();
-                expect(')');
-                return new SubroutineCallNode(name, argument);
-            } else {
-                return new IdentifierNode(name, -1); // For simplicity, using -1 for the localIndex
-            }
-        } else {
-            throw new RuntimeException("Unexpected character: " + c);
+        Token token = next();
+        switch (token.type) {
+            case NUMBER:
+                return new NumberNode(Integer.parseInt(token.value));
+            case IDENTIFIER:
+                return new IdentifierNode(token.value);
+            case LPAREN:
+                Node expr = parseExpression();
+                expect(TokenType.RPAREN);
+                return expr;
+            default:
+                throw new RuntimeException("Unexpected character: " + token.value);
         }
     }
 
-    private int parseNumber() {
-        int start = index;
-        while (index < code.length() && Character.isDigit(code.charAt(index))) {
-            index++;
+    private Token parseIdentifier() {
+        Token token = next();
+        if (token.type != TokenType.IDENTIFIER) {
+            throw new RuntimeException("Expected identifier, found " + token.value);
         }
-        return Integer.parseInt(code.substring(start, index));
+        return token;
     }
 
-    private IdentifierNode parseIdentifier() {
-        int start = index;
-        while (index < code.length() && Character.isLetterOrDigit(code.charAt(index))) {
-            index++;
+    private boolean match(TokenType type) {
+        if (pos < tokens.size() && tokens.get(pos).type == type) {
+            pos++;
+            return true;
         }
-        return new IdentifierNode(code.substring(start, index), -1); // For simplicity, using -1 for the localIndex
+        return false;
     }
 
-    private void expect(char expected) {
-        if (peek() != expected) {
-            throw new RuntimeException("Expected '" + expected + "'");
+    private boolean match(TokenType type, String value) {
+        if (pos < tokens.size() && tokens.get(pos).type == type && tokens.get(pos).value.equals(value)) {
+            pos++;
+            return true;
         }
-        index++;
+        return false;
     }
 
-    private void expect(String expected) {
-        if (!code.startsWith(expected, index)) {
-            throw new RuntimeException("Expected '" + expected + "'");
+    private Token expect(TokenType type) {
+        if (pos < tokens.size() && tokens.get(pos).type == type) {
+            return tokens.get(pos++);
         }
-        index += expected.length();
+        throw new RuntimeException("Expected " + type + ", found " + tokens.get(pos).value);
     }
 
-    private void skipWhitespace() {
-        while (index < code.length() && Character.isWhitespace(code.charAt(index))) {
-            index++;
+    private Token expect(TokenType type, String value) {
+        if (pos < tokens.size() && tokens.get(pos).type == type && tokens.get(pos).value.equals(value)) {
+            return tokens.get(pos++);
         }
+        throw new RuntimeException("Expected " + type + " " + value + ", found " + tokens.get(pos).value);
     }
 
-    private char peek() {
-        if (index >= code.length()) {
-            return '\0';
-        }
-        return code.charAt(index);
-    }
-
-    private char next() {
-        char c = peek();
-        index++;
-        return c;
+    private Token next() {
+        return tokens.get(pos++);
     }
 }
-

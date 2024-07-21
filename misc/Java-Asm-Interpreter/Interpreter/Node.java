@@ -8,20 +8,21 @@ public abstract class Node {
 }
 
 abstract class CodeGeneratingNode extends Node {
+    @Override
     public abstract void generateCode(MethodVisitor mv);
 
-    @Override
+    // Remove the @Override annotation here as this method does not override any method in Node
     public void generateCode(ClassWriter cw) {
         throw new UnsupportedOperationException("CodeGeneratingNode cannot generateCode(ClassWriter).");
     }
 }
 
 abstract class MethodDefiningNode extends Node {
+    @Override
     public abstract void generateCode(ClassWriter cw);
 
-    @Override
+    // Remove the @Override annotation here as this method does not override any method in Node
     public void generateCode(MethodVisitor mv) {
-        throw new UnsupportedOperationException("CodeGeneratingNode cannot generateCode(MethodVisitor).");
+        throw new UnsupportedOperationException("MethodDefiningNode cannot generateCode(MethodVisitor).");
     }
 }
-

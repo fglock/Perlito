@@ -21,8 +21,7 @@ public class BinaryOpNode extends CodeGeneratingNode {
             case '-': return leftValue - rightValue;
             case '*': return leftValue * rightValue;
             case '/': return leftValue / rightValue;
-            case '%': return leftValue % rightValue;
-            default: throw new RuntimeException("Unknown operator: " + operator);
+            default: throw new RuntimeException("Unexpected operator: " + operator);
         }
     }
 
@@ -35,9 +34,7 @@ public class BinaryOpNode extends CodeGeneratingNode {
             case '-': mv.visitInsn(Opcodes.ISUB); break;
             case '*': mv.visitInsn(Opcodes.IMUL); break;
             case '/': mv.visitInsn(Opcodes.IDIV); break;
-            case '%': mv.visitInsn(Opcodes.IREM); break;
-            default: throw new RuntimeException("Unknown operator: " + operator);
+            default: throw new RuntimeException("Unexpected operator: " + operator);
         }
     }
 }
-

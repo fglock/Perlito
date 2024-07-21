@@ -3,25 +3,28 @@ import org.objectweb.asm.Opcodes;
 
 public class IdentifierNode extends CodeGeneratingNode {
     private final String name;
-    private final int localIndex;
+    private final int index;
 
-    public IdentifierNode(String name, int localIndex) {
-        this.name = name;
-        this.localIndex = localIndex;
+    public IdentifierNode(String name) {
+        this(name, -1); // Placeholder index; proper index handling should be added
     }
 
-    public String getName() {
-        return name;
+    public IdentifierNode(String name, int index) {
+        this.name = name;
+        this.index = index;
     }
 
     @Override
     public int evaluate() {
-        throw new UnsupportedOperationException("IdentifierNode cannot be evaluated directly.");
+        // Placeholder: Actual implementation would involve looking up the variable's value
+        return 0;
     }
 
     @Override
     public void generateCode(MethodVisitor mv) {
-        mv.visitVarInsn(Opcodes.ILOAD, localIndex);
+        if (index < 0) {
+            throw new UnsupportedOperationException("IdentifierNode cannot generate code without a valid index");
+        }
+        mv.visitVarInsn(Opcodes.ILOAD, index);
     }
 }
-
