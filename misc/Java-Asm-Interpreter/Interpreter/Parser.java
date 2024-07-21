@@ -32,21 +32,18 @@ public class Parser {
     }
 
     private Node parseReturnStatement() {
-        expect(TokenType.RETURN);
         Node expression = parseExpression();
         expect(TokenType.SEMICOLON);
         return new ReturnNode(expression);
     }
 
     private Node parsePrintStatement() {
-        expect(TokenType.PRINT);
         Node expression = parseExpression();
         expect(TokenType.SEMICOLON);
         return new PrintNode(expression);
     }
 
     private Node parseSubroutineDeclaration() {
-        expect(TokenType.SUB);
         String name = parseIdentifier().getName();
         expect(TokenType.LPAREN);
 
