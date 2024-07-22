@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 
 public class ASMMethodCreator implements Opcodes {
 
-    public static byte[] createClassWithMethod(Object[] data) throws Exception {
+    public static byte[] createClassWithMethod(Object[][] data) throws Exception {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         cw.visit(V1_8, ACC_PUBLIC, "GeneratedClass", null, "java/lang/Object", null);
 
@@ -23,20 +23,22 @@ public class ASMMethodCreator implements Opcodes {
         // Create the method
         System.out.println("Create the method");
 
-        // String return_type = "()Ljava/lang/Object;";    // returns an Object
-        String return_type = "()V";                     // returns void
+        String return_type = "()Ljava/lang/Object;";    // returns an Object
+        // String return_type = "()V";                     // returns void
 
         mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "generatedMethod", return_type, null, null);
         mv.visitCode();
 
         // Process the input data
-        System.out.println("Process the input data");
-        processInstructions(mv, data);
+        for (int i = 0; i < data.length; i++) {
+            System.out.println("Process the input data");
+            processInstructions(mv, data[i]);
+        }
 
         // Return the last value
         System.out.println("Return the last value");
-        mv.visitInsn(Opcodes.RETURN);   // returns void
-        // mv.visitInsn(Opcodes.ARETURN);      // returns an Object
+        // mv.visitInsn(Opcodes.RETURN);   // returns void
+        mv.visitInsn(Opcodes.ARETURN);      // returns an Object
 
         // Max stack and local variables
         mv.visitMaxs(0, 0);
@@ -62,16 +64,32 @@ private static void processInstructions(MethodVisitor mv, Object[] data) throws 
     System.out.println("Load the target object " + target);
     if (target instanceof Class<?>) {
         // If the target is a class, it means we're calling a static method
+        System.out.println(" is instanceof Class<?>");
         mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) target));
     } else if (target instanceof String) {
+        System.out.println(" is String");
         mv.visitLdcInsn(target);
     } else if (target instanceof Integer) {
+        System.out.println(" is Integer");
         mv.visitLdcInsn(target);
     } else {
+        System.out.println(" something else");
         // Assuming the target is an instance object reference
         // You'll need to load the correct reference to this object in the local variable
         mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
     }
+
+
+    //    // Load the target object
+    //    if (target instanceof Class) {
+    //        mv.visitLdcInsn(Type.getType((Class<?>) target));
+    //    } else if (target instanceof String) {
+    //        mv.visitLdcInsn(target);
+    //    } else {
+    //        Field field = target.getClass().getField("out");
+    //        mv.visitFieldInsn(GETSTATIC, target.getClass().getName().replace('.', '/'), field.getName(), Type.getDescriptor(field.getType()));
+    //    }
+
 
     // Load the arguments
     for (Object arg : args) {
@@ -101,15 +119,16 @@ private static void processInstructions(MethodVisitor mv, Object[] data) throws 
 private static String getMethodDescriptor(Object target, String methodName, Object[] args) throws NoSuchMethodException {
     Class<?>[] argTypes = new Class[args.length];
     for (int i = 0; i < args.length; i++) {
-        if (args[i] instanceof Integer) {
-            argTypes[i] = int.class;
-        } else if (args[i] instanceof String) {
-            argTypes[i] = String.class;
-        } else if (args[i] instanceof Class<?>) {
-            argTypes[i] = (Class<?>) args[i];
-        } else {
-            throw new IllegalArgumentException("Unsupported argument type: " + args[i].getClass());
-        }
+        // if (args[i] instanceof Integer) {
+        //     argTypes[i] = int.class;
+        // } else if (args[i] instanceof String) {
+        //     argTypes[i] = String.class;
+        // } else if (args[i] instanceof Class<?>) {
+        //     argTypes[i] = (Class<?>) args[i];
+        // } else {
+        //     throw new IllegalArgumentException("Unsupported argument type: " + args[i].getClass());
+        // }
+        argTypes[i] = (args[i] == null) ? Object.class : getPrimitiveClass(args[i].getClass());
     }
 
     Method method;
@@ -233,7 +252,15 @@ private static String getMethodDescriptor(Object target, String methodName, Obje
             //     System.out, "println", new Object[]{mathOps, "add", 5, 3
             // }};
 
-            Object[] data = { System.out, "println", "123" };
+            Object[][] data = {
+                { System.out, "println", "123" },
+                { System.out, "println", "456" },
+                // { Integer.class, "new", 5 },
+                // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
+                // { mathOps, "add", Integer.valueOf(5), Integer.valueOf(3) }
+                // { mathOps, "add", 5, 3 }
+                { MathOperations.class, "add", 5, 3 }
+            };
 
             // Create the class
             System.out.println("createClassWithMethod");
@@ -249,8 +276,8 @@ private static String getMethodDescriptor(Object target, String methodName, Obje
             Method method = generatedClass.getMethod("generatedMethod");
 
             System.out.println("invoke");
-            method.invoke(null);    // println returns void
-            // Object result = method.invoke(null);
+            // method.invoke(null);    // println returns void
+            Object result = method.invoke(null);
 
             // Print the result
             // System.out.println("Result of generatedMethod: " + result);
