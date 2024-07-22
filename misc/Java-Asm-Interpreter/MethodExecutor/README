@@ -17,3 +17,12 @@ Object[] data = {
 };
 execute(data);
  
+
+Compile:
+
+javac -cp . *.java
+
+Run:
+
+java -cp . MethodExecutor
+
