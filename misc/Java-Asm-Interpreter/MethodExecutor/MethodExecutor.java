@@ -1,9 +1,10 @@
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class MethodExecutor {
 
-    public static Object execute(Object[] data) throws Exception {
+    public static MethodResult execute(Object[] data) throws Exception {
         if (data == null || data.length < 2) {
             throw new IllegalArgumentException("Invalid data structure");
         }
@@ -11,19 +12,34 @@ public class MethodExecutor {
         Object target = data[0];
         String methodName = (String) data[1];
         Object[] args = new Object[data.length - 2];
+        int argIndex = 0;
 
         for (int i = 2; i < data.length; i++) {
             if (data[i] instanceof Object[]) {
-                args[i - 2] = execute((Object[]) data[i]);
+                MethodResult result = execute((Object[]) data[i]);
+                if (!result.discard) {
+                    args[argIndex++] = result.result;
+                }
             } else {
-                args[i - 2] = data[i];
+                args[argIndex++] = data[i];
             }
         }
 
-        return invokeMethod(target, methodName, args);
+        // Trim the args array to the actual number of arguments
+        Object[] trimmedArgs = new Object[argIndex];
+        System.arraycopy(args, 0, trimmedArgs, 0, argIndex);
+
+        MethodResult result = invokeMethod(target, methodName, trimmedArgs);
+        return result.discard ? new MethodResult(null, true) : result;
     }
 
-    private static Object invokeMethod(Object target, String methodName, Object[] args) throws Exception {
+    private static MethodResult invokeMethod(Object target, String methodName, Object[] args) throws Exception {
+        System.out.println("Invoking method: " + methodName + " on class: " + target.getClass().getName());
+        System.out.println("Arguments: ");
+        for (Object arg : args) {
+            System.out.println("  - " + (arg == null ? "null" : arg.getClass().getName()));
+        }
+
         if (target instanceof PrintStream && methodName.equals("println")) {
             return invokePrintStreamMethod((PrintStream) target, args);
         }
@@ -34,45 +50,41 @@ public class MethodExecutor {
         }
 
         Method method = target.getClass().getMethod(methodName, argTypes);
-        return method.invoke(target, args);
+        System.out.println("Resolved method: " + method.getName() + " with parameter types: ");
+        for (Class<?> paramType : method.getParameterTypes()) {
+            System.out.println("  - " + paramType.getName());
+        }
+
+        Object result = method.invoke(target, args);
+
+        // If the method returns void, set discard flag to true
+        boolean discard = method.getReturnType() == void.class;
+
+        return new MethodResult(result, discard);
     }
 
-    private static Object invokePrintStreamMethod(PrintStream target, Object[] args) {
+    private static MethodResult invokePrintStreamMethod(PrintStream target, Object[] args) throws Exception {
+        Class<?> printStreamClass = target.getClass();
+        Method printlnMethod;
+
         if (args.length == 0) {
-            target.println();
+            printlnMethod = printStreamClass.getDeclaredMethod("println");
         } else if (args.length == 1) {
-            if (args[0] == null) {
-                target.println((String) null);
-            } else if (args[0] instanceof String) {
-                target.println((String) args[0]);
-            } else if (args[0] instanceof Integer) {
-                target.println((Integer) args[0]);
-            } else if (args[0] instanceof Double) {
-                target.println((Double) args[0]);
-            } else if (args[0] instanceof Float) {
-                target.println((Float) args[0]);
-            } else if (args[0] instanceof Long) {
-                target.println((Long) args[0]);
-            } else if (args[0] instanceof Boolean) {
-                target.println((Boolean) args[0]);
-            } else if (args[0] instanceof Character) {
-                target.println((Character) args[0]);
-            } else {
-                target.println(args[0].toString());
-            }
+            Class<?> argType = (args[0] == null) ? Object.class : getPrimitiveClass(args[0].getClass());
+            printlnMethod = printStreamClass.getDeclaredMethod("println", argType);
         } else {
-            StringBuilder sb = new StringBuilder();
-            for (Object arg : args) {
-                if (arg == null) {
-                    sb.append("null");
-                } else {
-                    sb.append(arg.toString());
-                }
-                sb.append(" ");
-            }
-            target.println(sb.toString().trim());
+            throw new IllegalArgumentException("PrintStream.println method accepts at most one argument");
         }
-        return null;
+
+        System.out.println("Resolved PrintStream method: " + printlnMethod.getName() + " with parameter types: ");
+        for (Class<?> paramType : printlnMethod.getParameterTypes()) {
+            System.out.println("  - " + paramType.getName());
+        }
+
+        printlnMethod.invoke(target, args);
+
+        // PrintStream.println is a void method, so set discard flag to true
+        return new MethodResult(null, true);
     }
 
     private static Class<?> getPrimitiveClass(Class<?> clazz) {
