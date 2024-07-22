@@ -32,7 +32,7 @@ public class ASMMethodCreator implements Opcodes {
         // Process the input data
         for (int i = 0; i < data.length; i++) {
             System.out.println("Process the input data");
-            processInstructions(mv, data[i]);   // XXX check returnClass of the last argument
+            processInstructions(mv, data[i]);   // XXX check returnClass of the last argument (void, int, Object)
         }
 
         // Return the last value
@@ -97,7 +97,7 @@ public class ASMMethodCreator implements Opcodes {
             System.out.println("  argument: " + arg);
             if (arg instanceof Object[]) {
                 Class returnClass = processInstructions(mv, (Object[]) arg);
-                argTypes[i] = getPrimitiveClass(returnClass);   // XXX process returnClass
+                argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
             } else if (arg instanceof Integer) {
                 mv.visitLdcInsn(arg);
             } else if (arg instanceof String) {
@@ -133,7 +133,7 @@ public class ASMMethodCreator implements Opcodes {
         }
 
 
-        Class returnType = method.getReturnType();  // XXX save this
+        Class returnType = method.getReturnType();
         System.out.println("return type: " + returnType);
         return returnType;  // Class of the result
     }
@@ -180,7 +180,7 @@ public class ASMMethodCreator implements Opcodes {
                 // { Integer.class, "new", 5 },
                 // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
                 // { System.out, "println", new Object[]{ MathOperations.class, "add", 5, 3 } },
-                // { { MathOperations.class, "make", 5 }, "add", 6 },
+                // { { MathOperations.class, "make", 5 }, "add", 6 },       // XXX TODO first arg is method call
                 { MathOperations.class, "make", 5 },
                 { MathOperations.class, "print", 789 },
                 { MathOperations.class, "print", new Object[]{ MathOperations.class, "make", 5 } }
