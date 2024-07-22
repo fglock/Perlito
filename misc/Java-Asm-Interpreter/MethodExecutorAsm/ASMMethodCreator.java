@@ -49,172 +49,86 @@ public class ASMMethodCreator implements Opcodes {
         return cw.toByteArray();
     }
 
-
-private static void processInstructions(MethodVisitor mv, Object[] data) throws Exception {
-    if (data.length < 2) {
-        throw new IllegalArgumentException("Invalid data structure");
-    }
-
-    Object target = data[0];
-    String methodName = (String) data[1];
-    Object[] args = new Object[data.length - 2];
-    System.arraycopy(data, 2, args, 0, args.length);
-
-    // Load the target object
-    System.out.println("Load the target object " + target);
-    if (target instanceof Class<?>) {
-        // If the target is a class, it means we're calling a static method
-        System.out.println(" is instanceof Class<?>");
-        mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) target));
-    } else if (target instanceof String) {
-        System.out.println(" is String");
-        mv.visitLdcInsn(target);
-    } else if (target instanceof Integer) {
-        System.out.println(" is Integer");
-        mv.visitLdcInsn(target);
-    } else {
-        System.out.println(" something else");
-        // Assuming the target is an instance object reference
-        // You'll need to load the correct reference to this object in the local variable
-        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-    }
-
-
-    //    // Load the target object
-    //    if (target instanceof Class) {
-    //        mv.visitLdcInsn(Type.getType((Class<?>) target));
-    //    } else if (target instanceof String) {
-    //        mv.visitLdcInsn(target);
-    //    } else {
-    //        Field field = target.getClass().getField("out");
-    //        mv.visitFieldInsn(GETSTATIC, target.getClass().getName().replace('.', '/'), field.getName(), Type.getDescriptor(field.getType()));
-    //    }
-
-
-    // Load the arguments
-    for (Object arg : args) {
-        System.out.println("Load argument: " + arg);
-        if (arg instanceof Object[]) {
-            processInstructions(mv, (Object[]) arg);
-        } else if (arg instanceof Integer) {
-            mv.visitLdcInsn(arg);
-        } else if (arg instanceof String) {
-            mv.visitLdcInsn(arg);
-        } else if (arg instanceof Class<?>) {
-            mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) arg));
+    private static void processInstructions(MethodVisitor mv, Object[] data) throws Exception {
+        if (data.length < 2) {
+            throw new IllegalArgumentException("Invalid data structure");
+        }
+    
+        Object target = data[0];
+        String methodName = (String) data[1];
+        Object[] args = new Object[data.length - 2];
+        System.arraycopy(data, 2, args, 0, args.length);
+    
+        // Load the target object
+        System.out.println("Load the target object " + target);
+        if (target instanceof Class<?>) {
+            // If the target is a class, it means we're calling a static method
+            System.out.println(" is instanceof Class<?>");
+            mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) target));
+        } else if (target instanceof String) {
+            System.out.println(" is String");
+            mv.visitLdcInsn(target);
+        } else if (target instanceof Integer) {
+            System.out.println(" is Integer");
+            mv.visitLdcInsn(target);
         } else {
-            throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
+            System.out.println(" something else");
+    
+            // Load the instance of the target object
+            mv.visitVarInsn(ALOAD, 0);  // Assuming the target object is the first argument to the method
+    
+            // // Assuming the target is an instance object reference
+            // // You'll need to load the correct reference to this object in the local variable
+            // mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+    
+    
+            // Field field = target.getClass().getField("out");
+            // mv.visitFieldInsn(GETSTATIC, target.getClass().getName().replace('.', '/'), field.getName(), Type.getDescriptor(field.getType()));
+        }
+    
+        // Load the arguments
+        for (Object arg : args) {
+            System.out.println("Load argument: " + arg);
+            if (arg instanceof Object[]) {
+                processInstructions(mv, (Object[]) arg);
+            } else if (arg instanceof Integer) {
+                mv.visitLdcInsn(arg);
+            } else if (arg instanceof String) {
+                mv.visitLdcInsn(arg);
+            } else if (arg instanceof Class<?>) {
+                mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) arg));
+            } else {
+                throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
+            }
+        }
+    
+        // Invoke the method
+        String descriptor = getMethodDescriptor(target, methodName, args);
+        if (target instanceof Class<?>) {
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, ((Class<?>) target).getName().replace('.', '/'), methodName, descriptor, false);
+        } else {
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, target.getClass().getName().replace('.', '/'), methodName, descriptor, false);
         }
     }
 
-    // Invoke the method
-    String descriptor = getMethodDescriptor(target, methodName, args);
-    if (target instanceof Class<?>) {
-        mv.visitMethodInsn(Opcodes.INVOKESTATIC, ((Class<?>) target).getName().replace('.', '/'), methodName, descriptor, false);
-    } else {
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, target.getClass().getName().replace('.', '/'), methodName, descriptor, false);
-    }
-}
-
-private static String getMethodDescriptor(Object target, String methodName, Object[] args) throws NoSuchMethodException {
-    Class<?>[] argTypes = new Class[args.length];
-    for (int i = 0; i < args.length; i++) {
-        // if (args[i] instanceof Integer) {
-        //     argTypes[i] = int.class;
-        // } else if (args[i] instanceof String) {
-        //     argTypes[i] = String.class;
-        // } else if (args[i] instanceof Class<?>) {
-        //     argTypes[i] = (Class<?>) args[i];
-        // } else {
-        //     throw new IllegalArgumentException("Unsupported argument type: " + args[i].getClass());
-        // }
-        argTypes[i] = (args[i] == null) ? Object.class : getPrimitiveClass(args[i].getClass());
-    }
-
-    Method method;
-    if (target instanceof Class<?>) {
-        method = ((Class<?>) target).getMethod(methodName, argTypes);
-    } else {
-        method = target.getClass().getMethod(methodName, argTypes);
-    }
-
-    return org.objectweb.asm.Type.getMethodDescriptor(method);
-}
-
-
-    // private static void processInstructions(MethodVisitor mv, Object[] data) throws Exception {
-    //     if (data.length < 2) {
-    //         throw new IllegalArgumentException("Invalid data structure");
-    //     }
-    // 
-    //     Object target = data[0];
-    //     String methodName = (String) data[1];
-    //     Object[] args = new Object[data.length - 2];
-    //     System.arraycopy(data, 2, args, 0, args.length);
-    // 
-    //     // Load the target object
-    //     System.out.println("Load the target object " + target);
-    //     if (target instanceof Class<?>) {
-    //         // If the target is a class, it means we're calling a static method
-    //         mv.visitLdcInsn( org.objectweb.asm.Type.getType((Class<?>) target));
-    //     } else {
-    //         // Otherwise, it's an instance method, load the instance
-    //         mv.visitVarInsn(Opcodes.ALOAD, 0); // Assuming 'this' is at index 0
-    //     }
-    // 
-    //     // Load the arguments
-    //     for (Object arg : args) {
-    //         System.out.println("Load argument: " + arg);
-    //         if (arg instanceof Object[]) {
-    //             processInstructions(mv, (Object[]) arg);
-    //         } else if (arg instanceof Integer) {
-    //             mv.visitLdcInsn(arg);
-    //         } else if (arg instanceof String) {
-    //             mv.visitLdcInsn(arg);
-    //         } else if (arg instanceof Class<?>) {
-    //             mv.visitLdcInsn( org.objectweb.asm.Type.getType((Class<?>) arg));
-    //         } else {
-    //             throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
-    //         }
-    //     }
-    // 
-    //     // Invoke the method
-    //     String descriptor = getMethodDescriptor(target, methodName, args);
-    //     if (target instanceof Class<?>) {
-    //         mv.visitMethodInsn(Opcodes.INVOKESTATIC, ((Class<?>) target).getName().replace('.', '/'), methodName, descriptor, false);
-    //     } else {
-    //         mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, target.getClass().getName().replace('.', '/'), methodName, descriptor, false);
-    //     }
-    // }
+    private static String getMethodDescriptor(Object target, String methodName, Object[] args) throws NoSuchMethodException {
+        Class<?>[] argTypes = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            argTypes[i] = (args[i] == null) ? Object.class : getPrimitiveClass(args[i].getClass());
+            // System.out.println("type " + i + ": " + argTypes[i]);
+        }
     
-    // private static String getMethodDescriptor(Object target, String methodName, Object[] args) throws NoSuchMethodException {
-    //     Class<?>[] argTypes = new Class[args.length];
-    //     for (int i = 0; i < args.length; i++) {
-    //         // if (args[i] instanceof Integer) {
-    //         //     argTypes[i] = int.class;
-    //         // } else if (args[i] instanceof String) {
-    //         //     argTypes[i] = String.class;
-    //         // } else if (args[i] instanceof Class<?>) {
-    //         //     argTypes[i] = (Class<?>) args[i];
-    //         // } else {
-    //         //     throw new IllegalArgumentException("Unsupported argument type: " + args[i].getClass());
-    //         // }
-
-    //         argTypes[i] = (args[i] == null) ? Object.class : getPrimitiveClass(args[i].getClass());
-    //         System.out.println("type " + i + ": " + argTypes[i]);
-    //     }
-    //     System.out.println("call class " + target);
-    //     System.out.println("call method " + methodName);
-    // 
-    //     Method method;
-    //     if (target instanceof Class<?>) {
-    //         method = ((Class<?>) target).getMethod(methodName, argTypes);
-    //     } else {
-    //         method = target.getClass().getMethod(methodName, argTypes);
-    //     }
-    // 
-    //     return org.objectweb.asm.Type.getMethodDescriptor(method);
-    // }
+        Method method;
+        if (target instanceof Class<?>) {
+            method = ((Class<?>) target).getMethod(methodName, argTypes);
+        } else {
+            method = target.getClass().getMethod(methodName, argTypes);
+        }
+    
+        //     System.out.println("call class " + target);
+        //     System.out.println("call method " + methodName);
+        return org.objectweb.asm.Type.getMethodDescriptor(method);
+    }
 
     private static Class<?> getPrimitiveClass(Class<?> clazz) {
         if (clazz == Integer.class) {
@@ -253,13 +167,15 @@ private static String getMethodDescriptor(Object target, String methodName, Obje
             // }};
 
             Object[][] data = {
-                { System.out, "println", "123" },
-                { System.out, "println", "456" },
+                // { System.out, "println", "123" },
+                // { System.out, "println", "456" },
                 // { Integer.class, "new", 5 },
                 // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
                 // { System.out, "println", new Object[]{ MathOperations.class, "add", 5, 3 } },
                 // { { MathOperations.class, "make", 5 }, "add", 6 },
-                { MathOperations.class, "make", 5 }
+                { MathOperations.class, "make", 5 },
+                { MathOperations.class, "print", 789 },
+                // { MathOperations.class, "print", new Object[]{ MathOperations.class, "make", 5 } }
             };
 
             // Create the class

@@ -11,6 +11,20 @@ public class MathOperations {
         return String.valueOf(this.i);
     }
 
+    public static MathOperations print(int a) {
+        System.out.println("value=" + a);
+        return new MathOperations(a);
+    }
+
+    public static MathOperations print(Object a) {
+        return MathOperations.print( (MathOperations)a );
+    }
+
+    public MathOperations print() {
+        System.out.println("value=" + this.i);
+        return this;
+    }
+
     public static MathOperations make(int a) {
         return new MathOperations(a);
     }
