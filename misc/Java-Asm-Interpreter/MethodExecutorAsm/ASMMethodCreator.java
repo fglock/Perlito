@@ -240,7 +240,7 @@ private static String getMethodDescriptor(Object target, String methodName, Obje
     public static void main(String[] args) {
         try {
             // Example usage
-            MathOperations mathOps = new MathOperations();
+            // MathOperations mathOps = new MathOperations();
             // Object[] data = {
             //     System.out, "println", "Starting execution...",
             //     new Object[]{System.out, "println", new Object[]{mathOps, "add", 5, 3}},
@@ -257,9 +257,9 @@ private static String getMethodDescriptor(Object target, String methodName, Obje
                 { System.out, "println", "456" },
                 // { Integer.class, "new", 5 },
                 // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
-                // { mathOps, "add", Integer.valueOf(5), Integer.valueOf(3) }
-                // { mathOps, "add", 5, 3 }
-                { MathOperations.class, "add", 5, 3 }
+                // { System.out, "println", new Object[]{ MathOperations.class, "add", 5, 3 } },
+                // { { MathOperations.class, "make", 5 }, "add", 6 },
+                { MathOperations.class, "make", 5 }
             };
 
             // Create the class
@@ -280,7 +280,7 @@ private static String getMethodDescriptor(Object target, String methodName, Obje
             Object result = method.invoke(null);
 
             // Print the result
-            // System.out.println("Result of generatedMethod: " + result);
+            System.out.println("Result of generatedMethod: " + result);
         } catch (Exception e) {
             e.printStackTrace();
         }
