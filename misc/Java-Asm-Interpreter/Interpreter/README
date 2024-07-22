@@ -1,10 +1,14 @@
-in Ubuntu:
+experimental JIT/interpreter in Java
+
+- implements a very simple language with subroutines that looks like Perl
+
+Compile in Ubuntu:
 
 sudo apt-get install libasm-java
 
 javac -cp .:/usr/share/java/asm-9.7.jar *.java
 
-Run:
+Run in Ubuntu:
 
 java -cp .:/usr/share/java/asm-9.7.jar Interpreter
 
