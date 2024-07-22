@@ -20,6 +20,10 @@ public class MathOperations {
         return MathOperations.print( (MathOperations)a );
     }
 
+    public static MathOperations print(MathOperations a) {
+        return a.print();
+    }
+
     public MathOperations print() {
         System.out.println("value=" + this.i);
         return this;

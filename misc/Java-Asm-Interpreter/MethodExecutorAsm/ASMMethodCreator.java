@@ -32,7 +32,7 @@ public class ASMMethodCreator implements Opcodes {
         // Process the input data
         for (int i = 0; i < data.length; i++) {
             System.out.println("Process the input data");
-            processInstructions(mv, data[i]);
+            processInstructions(mv, data[i]);   // XXX check returnClass of the last argument
         }
 
         // Return the last value
@@ -49,7 +49,7 @@ public class ASMMethodCreator implements Opcodes {
         return cw.toByteArray();
     }
 
-    private static void processInstructions(MethodVisitor mv, Object[] data) throws Exception {
+    private static Class processInstructions(MethodVisitor mv, Object[] data) throws Exception {
         if (data.length < 2) {
             throw new IllegalArgumentException("Invalid data structure");
         }
@@ -86,11 +86,18 @@ public class ASMMethodCreator implements Opcodes {
             // mv.visitFieldInsn(GETSTATIC, target.getClass().getName().replace('.', '/'), field.getName(), Type.getDescriptor(field.getType()));
         }
     
-        // Load the arguments
-        for (Object arg : args) {
-            System.out.println("Load argument: " + arg);
+        // Load the arguments and types
+        System.out.println("Load arguments and types");
+        Class<?>[] argTypes = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            Object arg = args[i];
+
+            argTypes[i] = (arg == null) ? Object.class : getPrimitiveClass(arg.getClass());
+
+            System.out.println("  argument: " + arg);
             if (arg instanceof Object[]) {
-                processInstructions(mv, (Object[]) arg);
+                Class returnClass = processInstructions(mv, (Object[]) arg);
+                argTypes[i] = getPrimitiveClass(returnClass);   // XXX process returnClass
             } else if (arg instanceof Integer) {
                 mv.visitLdcInsn(arg);
             } else if (arg instanceof String) {
@@ -100,34 +107,35 @@ public class ASMMethodCreator implements Opcodes {
             } else {
                 throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
             }
-        }
-    
-        // Invoke the method
-        String descriptor = getMethodDescriptor(target, methodName, args);
-        if (target instanceof Class<?>) {
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, ((Class<?>) target).getName().replace('.', '/'), methodName, descriptor, false);
-        } else {
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, target.getClass().getName().replace('.', '/'), methodName, descriptor, false);
-        }
-    }
 
-    private static String getMethodDescriptor(Object target, String methodName, Object[] args) throws NoSuchMethodException {
-        Class<?>[] argTypes = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            argTypes[i] = (args[i] == null) ? Object.class : getPrimitiveClass(args[i].getClass());
-            // System.out.println("type " + i + ": " + argTypes[i]);
+            System.out.println("  type " + i + ": " + argTypes[i]);
         }
     
+        // Fetch the method descriptor
         Method method;
         if (target instanceof Class<?>) {
             method = ((Class<?>) target).getMethod(methodName, argTypes);
         } else {
             method = target.getClass().getMethod(methodName, argTypes);
         }
+
+        System.out.println("call class.method: " + target + " . " + methodName);
+        String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
     
-        //     System.out.println("call class " + target);
-        //     System.out.println("call method " + methodName);
-        return org.objectweb.asm.Type.getMethodDescriptor(method);
+
+        // Invoke the method
+        if (target instanceof Class<?>) {
+            System.out.println("invoke static");
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, ((Class<?>) target).getName().replace('.', '/'), methodName, descriptor, false);
+        } else {
+            System.out.println("invoke virtual");
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, target.getClass().getName().replace('.', '/'), methodName, descriptor, false);
+        }
+
+
+        Class returnType = method.getReturnType();  // XXX save this
+        System.out.println("return type: " + returnType);
+        return returnType;  // Class of the result
     }
 
     private static Class<?> getPrimitiveClass(Class<?> clazz) {
@@ -175,7 +183,7 @@ public class ASMMethodCreator implements Opcodes {
                 // { { MathOperations.class, "make", 5 }, "add", 6 },
                 { MathOperations.class, "make", 5 },
                 { MathOperations.class, "print", 789 },
-                // { MathOperations.class, "print", new Object[]{ MathOperations.class, "make", 5 } }
+                { MathOperations.class, "print", new Object[]{ MathOperations.class, "make", 5 } }
             };
 
             // Create the class
