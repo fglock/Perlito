@@ -1,0 +1,28 @@
+this is an interpreter using ASM to execute a data structure like (pseudo-code):
+
+[ (class or object), "method name", arg1, arg2 ... ]
+
+it can be recursive:
+
+[ (class or object), "method name", arg1, [ (class or object), "method name", ... ] ... ]
+
+
+// Example usage
+MathOperations mathOps = new MathOperations();
+Object[] data = {
+    System.out, "println", "Starting execution...",
+    new Object[]{System.out, "println", new Object[]{mathOps, "add", 5, 3}},
+    new Object[]{System.out, "println", new Object[]{mathOps, "multiply", 2, 4}},
+    new Object[]{System.out, "println", "Execution finished."}
+};
+// compile & execute using reflection
+ 
+
+Compile:
+
+javac -cp . *.java
+
+Run:
+
+java -cp . ASMMethodCreator
+
