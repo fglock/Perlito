@@ -5,6 +5,10 @@ public class MathOperations {
         this.baseValue = baseValue;
     }
 
+    public static int staticMethod(int a, int b) {
+        return a + b;
+    }
+
     public int add(int a, int b) {
         return a + b;
     }
@@ -21,8 +25,12 @@ public class MathOperations {
         return baseValue * a;
     }
 
-    public static int staticMethod(int a, int b) {
-        return a + b;
+    public static void noArgStaticMethod() {
+        System.out.println("No-arg static method called");
+    }
+
+    public void noArgInstanceMethod() {
+        System.out.println("No-arg instance method called");
     }
 }
 

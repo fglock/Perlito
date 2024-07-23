@@ -9,11 +9,16 @@ public class MethodPreprocessor {
         Object[][] preprocessedCalls = new Object[methodCalls.length][];
         for (int i = 0; i < methodCalls.length; i++) {
             preprocessedCalls[i] = preprocessCall(methodCalls[i]);
+            System.out.println("Preprocessed call: " + Arrays.toString(preprocessedCalls[i]));
         }
         return preprocessedCalls;
     }
 
     private static Object[] preprocessCall(Object[] call) throws Exception {
+        if (call.length < 2) {
+            throw new IllegalArgumentException("Call array length is less than 2: " + Arrays.toString(call));
+        }
+
         if (call[1] instanceof String && call[1].equals("new")) {
             // Handle constructor
             Class<?> targetClass = (Class<?>) call[0];
@@ -32,7 +37,7 @@ public class MethodPreprocessor {
 
             System.out.println("Attempting to find constructor for class: " + targetClass.getName() + " with arguments: " + Arrays.toString(argTypes));
             Constructor<?> constructor = targetClass.getConstructor(argTypes);
-            return new Object[]{constructor, args};
+            return new Object[]{constructor, null, args};
         } else {
             // Handle method (instance or static)
             Object target = call[0];
