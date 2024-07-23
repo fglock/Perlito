@@ -1,0 +1,120 @@
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
+public class MethodPreprocessor {
+    public static Object[][] preprocess(Object[][] methodCalls) throws Exception {
+        Object[][] preprocessedCalls = new Object[methodCalls.length][];
+        for (int i = 0; i < methodCalls.length; i++) {
+            preprocessedCalls[i] = preprocessCall(methodCalls[i]);
+        }
+        return preprocessedCalls;
+    }
+
+    public static Object[] preprocessCall(Object[] call) throws Exception {
+        if (call.length < 2) {
+            throw new IllegalArgumentException("Call array length is less than 2: " + Arrays.toString(call));
+        }
+
+        Object target = call[0];
+        String methodName = (String) call[1];
+        Object[] args = (call.length > 2) ? Arrays.copyOfRange(call, 2, call.length) : new Object[0];
+
+        // Handle nested target
+        if (target instanceof Object[]) {
+            Object[] nestedCall = preprocessNestedCall((Object[]) target);
+            target = nestedCall[0];
+            if (target instanceof Method) {
+                target = ((Method) target).getReturnType();
+            } else if (target instanceof Constructor) {
+                target = ((Constructor<?>) target).getDeclaringClass();
+            }
+        }
+
+        // Handle nested arguments
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] instanceof Object[]) {
+                Object[] nestedCall = preprocessNestedCall((Object[]) args[i]);
+                args[i] = nestedCall[0];
+                if (args[i] instanceof Method) {
+                    args[i] = ((Method) args[i]).getReturnType();
+                } else if (args[i] instanceof Constructor) {
+                    args[i] = ((Constructor<?>) args[i]).getDeclaringClass();
+                }
+            }
+        }
+
+        // Find the method or constructor
+        if (methodName.equals("new")) {
+            Class<?> clazz = (Class<?>) target;
+            Constructor<?> constructor = findConstructor(clazz, args);
+            return new Object[]{constructor, null, args};
+        } else {
+            Method method = findMethod(target, methodName, args);
+            return new Object[]{method, target, args};
+        }
+    }
+
+    private static Constructor<?> findConstructor(Class<?> clazz, Object[] args) throws NoSuchMethodException {
+        for (Constructor<?> constructor : clazz.getConstructors()) {
+            if (constructor.getParameterCount() == args.length) {
+                Class<?>[] parameterTypes = constructor.getParameterTypes();
+                boolean match = true;
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    if (!isAssignable(parameterTypes[i], args[i])) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    return constructor;
+                }
+            }
+        }
+        throw new NoSuchMethodException("No constructor found for class " + clazz.getName() + " with " + args.length + " arguments");
+    }
+
+    private static Method findMethod(Object target, String methodName, Object[] args) throws NoSuchMethodException {
+        Class<?> clazz = (target instanceof Class<?>) ? (Class<?>) target : target.getClass();
+        for (Method method : clazz.getMethods()) {
+            if (method.getName().equals(methodName) && method.getParameterCount() == args.length) {
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                boolean match = true;
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    if (!isAssignable(parameterTypes[i], args[i])) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    return method;
+                }
+            }
+        }
+        throw new NoSuchMethodException(clazz.getName() + "." + methodName + "(" + args.length + " arguments)");
+    }
+
+    private static boolean isAssignable(Class<?> parameterType, Object arg) {
+        if (parameterType.isPrimitive()) {
+            parameterType = getPrimitiveType(arg.getClass());
+        }
+        return parameterType.isAssignableFrom(arg.getClass());
+    }
+
+    private static Object[] preprocessNestedCall(Object[] nestedCall) throws Exception {
+        return preprocessCall(nestedCall);
+    }
+
+    private static Class<?> getPrimitiveType(Class<?> clazz) {
+        if (clazz == Integer.class) return int.class;
+        if (clazz == Long.class) return long.class;
+        if (clazz == Boolean.class) return boolean.class;
+        if (clazz == Byte.class) return byte.class;
+        if (clazz == Character.class) return char.class;
+        if (clazz == Float.class) return float.class;
+        if (clazz == Double.class) return double.class;
+        if (clazz == Short.class) return short.class;
+        return clazz;
+    }
+}
+
