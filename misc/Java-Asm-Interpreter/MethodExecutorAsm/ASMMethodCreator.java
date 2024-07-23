@@ -69,7 +69,12 @@ public class ASMMethodCreator implements Opcodes {
 
         // Load the target object
         System.out.println("Load the target object " + target);
-        if (target instanceof Class<?>) {
+        if (target instanceof Object[]) {
+            //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
+            Class returnClass = processInstructions(mv, (Object[]) target);
+            System.out.println(" target is type: " + returnClass);
+            target = returnClass;   // XXX need to decide if INVOKEVIRTUAL or INVOKESTATIC
+        } else if (target instanceof Class<?>) {
             // If the target is a class, it means we're calling a static method
             System.out.println(" is instanceof Class<?>");
             mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) target));
@@ -199,7 +204,8 @@ public class ASMMethodCreator implements Opcodes {
                 { Runtime.class, "make", 5 },
                 { Runtime.class, "print", 789 },
                 { Runtime.class, "print", new Object[]{ Runtime.class, "make", 5 } },
-                { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },
+                { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },  // use the argument
+                // { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
                 // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
             };
 
