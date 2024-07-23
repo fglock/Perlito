@@ -32,7 +32,9 @@ public class MethodExecutor {
                 {new MathOperations(10), "add", new Object[]{MathOperations.class, "staticMethod", 5, 3}, 3}, // Instance method with static method result as argument
                 {new MathOperations(10), "multiply", new Object[]{new MathOperations(5), "add", 2, 3}, 4}, // Instance method with another instance method result as argument
                 // More levels of nesting
-                {MathOperations.class, "new", new Object[]{MathOperations.class, "staticMethod", new Object[]{MathOperations.class, "staticMethod", 2, 3}, 3}}
+                {MathOperations.class, "new", new Object[]{MathOperations.class, "staticMethod", new Object[]{MathOperations.class, "staticMethod", 2, 3}, 3}},
+                // New example
+                {new Object[]{MathOperations.class, "new", 10}, "addToBase", new Object[]{new MathOperations(5), "add", 2, 3}}
             };
 
             Object[][] preprocessedCalls = MethodPreprocessor.preprocess(methodCalls);
