@@ -23,9 +23,11 @@ public class ASMMethodCreator implements Opcodes {
         // Create the method
         System.out.println("Create the method");
 
-        String return_type = "()Ljava/lang/Object;";    // returns an Object
+        String return_type = "(LMathOperations;)Ljava/lang/Object;";    // takes an object, returns an Object
+        // String return_type = "()Ljava/lang/Object;";    // returns an Object
         // String return_type = "()V";                     // returns void
 
+        // method is public static
         mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "generatedMethod", return_type, null, null);
         mv.visitCode();
 
@@ -96,8 +98,15 @@ public class ASMMethodCreator implements Opcodes {
 
             System.out.println("  argument: " + arg);
             if (arg instanceof Object[]) {
-                Class returnClass = processInstructions(mv, (Object[]) arg);
-                argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
+                if (  ((Object[])arg)[0].equals("ARG")) {
+                    // { "ARG", 0, int.class }   { ARG, index, type }
+                    argTypes[i] = getPrimitiveClass((Class)((Object[])arg)[2]);   // process returnClass
+                    // mv.visitVarInsn(ALOAD, (int)((Object[])arg)[1]);
+                    mv.visitVarInsn(ALOAD, (int)((Object[])arg)[1]);
+                } else {
+                    Class returnClass = processInstructions(mv, (Object[]) arg);
+                    argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
+                }
             } else if (arg instanceof Integer) {
                 mv.visitLdcInsn(arg);
             } else if (arg instanceof String) {
@@ -183,7 +192,8 @@ public class ASMMethodCreator implements Opcodes {
                 // { { MathOperations.class, "make", 5 }, "add", 6 },       // XXX TODO first arg is method call
                 { MathOperations.class, "make", 5 },
                 { MathOperations.class, "print", 789 },
-                { MathOperations.class, "print", new Object[]{ MathOperations.class, "make", 5 } }
+                { MathOperations.class, "print", new Object[]{ MathOperations.class, "make", 5 } },
+                { MathOperations.class, "print", new Object[]{"ARG", 0, MathOperations.class} },
             };
 
             // Create the class
@@ -197,11 +207,15 @@ public class ASMMethodCreator implements Opcodes {
 
             // Call the generated method using reflection
             System.out.println("generatedClass.getMethod");
-            Method method = generatedClass.getMethod("generatedMethod");
+            Method method = generatedClass.getMethod("generatedMethod", MathOperations.class);
+
+            String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
+            Class returnType = method.getReturnType();
+            System.out.println("method descriptor: " + descriptor + " return type: " + returnType);
 
             System.out.println("invoke");
             // method.invoke(null);    // println returns void
-            Object result = method.invoke(null);
+            Object result = method.invoke(null, new MathOperations(999));
 
             // Print the result
             System.out.println("Result of generatedMethod: " + result);
