@@ -196,6 +196,33 @@ public class ASMMethodCreator implements Opcodes {
                 { MathOperations.class, "print", new Object[]{"ARG", 0, MathOperations.class} },
             };
 
+            // TODO - first argument is an expression
+
+            /* TODO - statements like if/else
+
+                Label elseLabel = new Label();
+                Label endLabel = new Label();
+
+                // Generate code for the condition
+                condition.generateCode(mv);
+                // Assuming the condition leaves a boolean on the stack
+                mv.visitJumpInsn(IFEQ, elseLabel);
+
+                // Generate code for the if block
+                ifBlock.generateCode(mv);
+                mv.visitJumpInsn(GOTO, endLabel);
+
+                // Generate code for the else block
+                mv.visitLabel(elseLabel);
+                if (elseBlock != null) {
+                    elseBlock.generateCode(mv);
+                }
+
+                // End of the if/else structure
+                mv.visitLabel(endLabel);
+
+            */
+
             // Create the class
             System.out.println("createClassWithMethod");
             byte[] classData = createClassWithMethod(data);
