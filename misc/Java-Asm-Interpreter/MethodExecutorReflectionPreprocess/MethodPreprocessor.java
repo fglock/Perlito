@@ -13,12 +13,33 @@ public class MethodPreprocessor {
 
             Class<?>[] argTypes = new Class[args.length];
             for (int j = 0; j < args.length; j++) {
-                argTypes[j] = args[j].getClass();
+                argTypes[j] = (args[j] == null) ? Object.class : getPrimitiveClass(args[j].getClass());
             }
 
             Method method = target.getClass().getMethod(methodName, argTypes);
             preprocessedCalls[i] = new Object[]{method, target, args};
         }
         return preprocessedCalls;
+    }
+
+    private static Class<?> getPrimitiveClass(Class<?> clazz) {
+        if (clazz == Integer.class) {
+            return int.class;
+        } else if (clazz == Double.class) {
+            return double.class;
+        } else if (clazz == Float.class) {
+            return float.class;
+        } else if (clazz == Long.class) {
+            return long.class;
+        } else if (clazz == Boolean.class) {
+            return boolean.class;
+        } else if (clazz == Byte.class) {
+            return byte.class;
+        } else if (clazz == Short.class) {
+            return short.class;
+        } else if (clazz == Character.class) {
+            return char.class;
+        }
+        return clazz;
     }
 }
