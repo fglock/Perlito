@@ -61,6 +61,12 @@ public class ASMMethodCreator implements Opcodes {
         Object[] args = new Object[data.length - 2];
         System.arraycopy(data, 2, args, 0, args.length);
     
+        /* TODO - process statements: return, if/else
+
+                } else if (  ((Object[])arg)[0].equals("RETURN")) {
+                    mv.visitInsn(Opcodes.ARETURN);      // returns an Object
+        */
+
         // Load the target object
         System.out.println("Load the target object " + target);
         if (target instanceof Class<?>) {
@@ -194,6 +200,7 @@ public class ASMMethodCreator implements Opcodes {
                 { MathOperations.class, "print", 789 },
                 { MathOperations.class, "print", new Object[]{ MathOperations.class, "make", 5 } },
                 { MathOperations.class, "print", new Object[]{"ARG", 0, MathOperations.class} },
+                // { "RETURN", null, new Object[]{ MathOperations.class, "make", 5 } }
             };
 
             // TODO - first argument is an expression
