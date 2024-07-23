@@ -23,7 +23,7 @@ public class ASMMethodCreator implements Opcodes {
         // Create the method
         System.out.println("Create the method");
 
-        String return_type = "(LMathOperations;)Ljava/lang/Object;";    // takes an object, returns an Object
+        String return_type = "(LRuntime;)Ljava/lang/Object;";    // takes an object, returns an Object
         // String return_type = "()Ljava/lang/Object;";    // returns an Object
         // String return_type = "()V";                     // returns void
 
@@ -177,7 +177,7 @@ public class ASMMethodCreator implements Opcodes {
     public static void main(String[] args) {
         try {
             // Example usage
-            // MathOperations mathOps = new MathOperations();
+            // Runtime mathOps = new Runtime();
             // Object[] data = {
             //     System.out, "println", "Starting execution...",
             //     new Object[]{System.out, "println", new Object[]{mathOps, "add", 5, 3}},
@@ -194,13 +194,13 @@ public class ASMMethodCreator implements Opcodes {
                 // { System.out, "println", "456" },
                 // { Integer.class, "new", 5 },
                 // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
-                // { System.out, "println", new Object[]{ MathOperations.class, "add", 5, 3 } },
-                // { { MathOperations.class, "make", 5 }, "add", 6 },       // XXX TODO first arg is method call
-                { MathOperations.class, "make", 5 },
-                { MathOperations.class, "print", 789 },
-                { MathOperations.class, "print", new Object[]{ MathOperations.class, "make", 5 } },
-                { MathOperations.class, "print", new Object[]{"ARG", 0, MathOperations.class} },
-                // { "RETURN", null, new Object[]{ MathOperations.class, "make", 5 } }
+                // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
+                // { { Runtime.class, "make", 5 }, "add", 6 },       // XXX TODO first arg is method call
+                { Runtime.class, "make", 5 },
+                { Runtime.class, "print", 789 },
+                { Runtime.class, "print", new Object[]{ Runtime.class, "make", 5 } },
+                { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },
+                // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
             };
 
             // TODO - first argument is an expression
@@ -241,7 +241,7 @@ public class ASMMethodCreator implements Opcodes {
 
             // Call the generated method using reflection
             System.out.println("generatedClass.getMethod");
-            Method method = generatedClass.getMethod("generatedMethod", MathOperations.class);
+            Method method = generatedClass.getMethod("generatedMethod", Runtime.class);
 
             String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
             Class returnType = method.getReturnType();
@@ -249,7 +249,7 @@ public class ASMMethodCreator implements Opcodes {
 
             System.out.println("invoke");
             // method.invoke(null);    // println returns void
-            Object result = method.invoke(null, new MathOperations(999));
+            Object result = method.invoke(null, new Runtime(999));
 
             // Print the result
             System.out.println("Result of generatedMethod: " + result);
