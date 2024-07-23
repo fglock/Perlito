@@ -8,56 +8,71 @@ public class MethodPreprocessor {
     public static Object[][] preprocess(Object[][] methodCalls) throws Exception {
         Object[][] preprocessedCalls = new Object[methodCalls.length][];
         for (int i = 0; i < methodCalls.length; i++) {
-            Object[] call = methodCalls[i];
-            if (call[0] instanceof Class && call[1] instanceof String && call[1].equals("new")) {
-                // Handle constructor
-                Class<?> targetClass = (Class<?>) call[0];
-                Object[] args = new Object[call.length - 2];
-                System.arraycopy(call, 2, args, 0, call.length - 2);
+            preprocessedCalls[i] = preprocessCall(methodCalls[i]);
+        }
+        return preprocessedCalls;
+    }
 
-                Class<?>[] argTypes = new Class[args.length];
-                for (int j = 0; j < args.length; j++) {
-                    argTypes[j] = getPrimitiveType(args[j].getClass());
-                }
+    private static Object[] preprocessCall(Object[] call) throws Exception {
+        if (call[1] instanceof String && call[1].equals("new")) {
+            // Handle constructor
+            Class<?> targetClass = (Class<?>) call[0];
+            Object[] args = new Object[call.length - 2];
+            System.arraycopy(call, 2, args, 0, call.length - 2);
 
-                System.out.println("Attempting to find constructor for class: " + targetClass.getName() + " with arguments: " + Arrays.toString(argTypes));
-                Constructor<?> constructor = targetClass.getConstructor(argTypes);
-                preprocessedCalls[i] = new Object[]{constructor, args, new Object[0]};
-            } else {
-                // Handle method (instance or static)
-                Object target = call[0];
-                String methodName = (String) call[1];
-                Object[] args = new Object[call.length - 2];
-                System.arraycopy(call, 2, args, 0, call.length - 2);
-
-                Class<?>[] argTypes = new Class[args.length];
-                for (int j = 0; j < args.length; j++) {
-                    argTypes[j] = getPrimitiveType(args[j].getClass());
-                }
-
-                System.out.println("Attempting to find method: " + methodName + " for class: " + target.getClass().getName() + " with arguments: " + Arrays.toString(argTypes));
-                // Method method = target.getClass().getMethod(methodName, argTypes);
-                // if (Modifier.isStatic(method.getModifiers())) {
-                //     preprocessedCalls[i] = new Object[]{method, null, args};
-                // } else {
-                //     preprocessedCalls[i] = new Object[]{method, target, args};
-                // }
-
-                Method method;
-                if (target instanceof Class) {
-                    method = ((Class<?>) target).getMethod(methodName, argTypes);
-                    preprocessedCalls[i] = new Object[]{method, null, args};
+            Class<?>[] argTypes = new Class[args.length];
+            for (int j = 0; j < args.length; j++) {
+                if (args[j] instanceof Object[]) {
+                    args[j] = preprocessCall((Object[]) args[j]);
+                    argTypes[j] = getReturnType((Object[]) args[j]);
                 } else {
-                    method = target.getClass().getMethod(methodName, argTypes);
-                    if (Modifier.isStatic(method.getModifiers())) {
-                        preprocessedCalls[i] = new Object[]{method, null, args};
-                    } else {
-                        preprocessedCalls[i] = new Object[]{method, target, args};
-                    }
+                    argTypes[j] = getPrimitiveType(args[j].getClass());
+                }
+            }
+
+            System.out.println("Attempting to find constructor for class: " + targetClass.getName() + " with arguments: " + Arrays.toString(argTypes));
+            Constructor<?> constructor = targetClass.getConstructor(argTypes);
+            return new Object[]{constructor, args};
+        } else {
+            // Handle method (instance or static)
+            Object target = call[0];
+            String methodName = (String) call[1];
+            Object[] args = new Object[call.length - 2];
+            System.arraycopy(call, 2, args, 0, call.length - 2);
+
+            Class<?>[] argTypes = new Class[args.length];
+            for (int j = 0; j < args.length; j++) {
+                if (args[j] instanceof Object[]) {
+                    args[j] = preprocessCall((Object[]) args[j]);
+                    argTypes[j] = getReturnType((Object[]) args[j]);
+                } else {
+                    argTypes[j] = getPrimitiveType(args[j].getClass());
+                }
+            }
+
+            System.out.println("Attempting to find method: " + methodName + " for class: " + target.getClass().getName() + " with arguments: " + Arrays.toString(argTypes));
+            Method method;
+            if (target instanceof Class) {
+                method = ((Class<?>) target).getMethod(methodName, argTypes);
+                return new Object[]{method, null, args};
+            } else {
+                method = target.getClass().getMethod(methodName, argTypes);
+                if (Modifier.isStatic(method.getModifiers())) {
+                    return new Object[]{method, null, args};
+                } else {
+                    return new Object[]{method, target, args};
                 }
             }
         }
-        return preprocessedCalls;
+    }
+
+    private static Class<?> getReturnType(Object[] preprocessedCall) {
+        if (preprocessedCall[0] instanceof Method) {
+            return ((Method) preprocessedCall[0]).getReturnType();
+        } else if (preprocessedCall[0] instanceof Constructor) {
+            return ((Constructor<?>) preprocessedCall[0]).getDeclaringClass();
+        }
+        throw new IllegalArgumentException("Unsupported callable type");
     }
 
     private static Class<?> getPrimitiveType(Class<?> clazz) {

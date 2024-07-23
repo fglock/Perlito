@@ -24,22 +24,50 @@ public class MethodExecutor {
                 {new MathOperations(10), "add", 5, 3}, // Instance method call
                 {new MathOperations(10), "multiply", 2, 4}, // Instance method call
                 {new MathOperations(10), "addToBase", 5}, // Instance method call using baseValue
-                {new MathOperations(10), "multiplyWithBase", 2} // Instance method call using baseValue
+                {new MathOperations(10), "multiplyWithBase", 2}, // Instance method call using baseValue
+                // Nested method calls
+                {MathOperations.class, "new", new Object[]{MathOperations.class, "staticMethod", 5, 3}}, // Constructor with static method result as argument
+                {new MathOperations(10), "add", new Object[]{MathOperations.class, "staticMethod", 5, 3}, 3}, // Instance method with static method result as argument
+                {new MathOperations(10), "multiply", new Object[]{new MathOperations(5), "add", 2, 3}, 4}, // Instance method with another instance method result as argument
+                // More levels of nesting
+                {MathOperations.class, "new", new Object[]{MathOperations.class, "staticMethod", new Object[]{MathOperations.class, "staticMethod", 2, 3}, 3}}
             };
 
-            // Preprocess to resolve methods and constructors
             Object[][] preprocessedCalls = MethodPreprocessor.preprocess(methodCalls);
 
-            // Execute preprocessed methods and constructors
             for (Object[] call : preprocessedCalls) {
                 Object callable = call[0];
                 Object targetOrArgs = call[1];
-                Object[] methodArgs = (Object[]) call[2];
-                Object result = execute(callable, targetOrArgs, methodArgs);
-                System.out.println(result);
+                Object[] callArgs = (Object[]) call[2]; // Renamed to callArgs
+
+                // Evaluate nested calls
+                for (int i = 0; i < callArgs.length; i++) {
+                    if (callArgs[i] instanceof Object[]) {
+                        callArgs[i] = executeNestedCall((Object[]) callArgs[i]);
+                    }
+                }
+
+                Object result = execute(callable, targetOrArgs, callArgs);
+                System.out.println("Result: " + result);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private static Object executeNestedCall(Object[] nestedCall) throws Exception {
+        Object callable = nestedCall[0];
+        Object targetOrArgs = nestedCall[1];
+        Object[] args = (Object[]) nestedCall[2];
+
+        // Evaluate further nested calls
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] instanceof Object[]) {
+                args[i] = executeNestedCall((Object[]) args[i]);
+            }
+        }
+
+        return execute(callable, targetOrArgs, args);
+    }
 }
+
