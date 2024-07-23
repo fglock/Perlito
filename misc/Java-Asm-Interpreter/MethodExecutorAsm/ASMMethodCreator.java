@@ -73,7 +73,7 @@ public class ASMMethodCreator implements Opcodes {
             //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
             Class returnClass = processInstructions(mv, (Object[]) target);
             System.out.println(" target is type: " + returnClass);
-            target = returnClass;   // XXX need to decide if INVOKEVIRTUAL or INVOKESTATIC
+            target = returnClass;   // XXX need to decide if INVOKEVIRTUAL or INVOKESTATIC (instance or Class)
         } else if (target instanceof Class<?>) {
             // If the target is a class, it means we're calling a static method
             System.out.println(" is instanceof Class<?>");
