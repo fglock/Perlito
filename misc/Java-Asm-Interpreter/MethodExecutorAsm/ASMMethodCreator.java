@@ -39,7 +39,7 @@ public class ASMMethodCreator implements Opcodes {
         mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "generatedMethod", return_type, null, null);
         mv.visitCode();
 
-        generateCodeBlock(mv, data);    // Process the input data
+        generateCodeBlock(mv, className, data);    // Process the input data
 
         System.out.println("Return the last value");
         // mv.visitInsn(Opcodes.RETURN);   // returns void
@@ -51,16 +51,16 @@ public class ASMMethodCreator implements Opcodes {
         return cw.toByteArray();
     }
 
-    public static void generateCodeBlock(MethodVisitor mv, Object[][] data) throws Exception {
+    public static void generateCodeBlock(MethodVisitor mv, String className, Object[][] data) throws Exception {
         System.out.println("generateCodeBlock start");
         for (int i = 0; i < data.length; i++) {
             System.out.println("Process the input data line: "+i);
-            processInstructions(mv, data[i]);
+            processInstructions(mv, className, data[i]);
         }
         System.out.println("generateCodeBlock end");
     }
 
-    private static Class<?> processInstructions(MethodVisitor mv, Object[] data) throws Exception {
+    private static Class<?> processInstructions(MethodVisitor mv, String className, Object[] data) throws Exception {
         // if (data.length < 2) {
         //     throw new IllegalArgumentException("Invalid data structure");
         // }
@@ -76,7 +76,7 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("         method        " + data[1] + " ... ");
         if (target instanceof Object[]) {
             //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-            targetClass = processInstructions(mv, (Object[]) target);
+            targetClass = processInstructions(mv, className, (Object[]) target);
             System.out.println(" target is instance of: " + targetClass);
         } else if (target instanceof Class<?>) {
             targetIsInstance = false;       // If the target is a class, it means we're calling a static method
@@ -101,7 +101,8 @@ public class ASMMethodCreator implements Opcodes {
                 mv.visitVarInsn(ALOAD, (int)(data[1]));
                 return (Class<?>)(data[2]);   // return Class
             } else if ( target.equals("GETSTATIC")) {      // { "GETSTATIC", "env" }   { GETSTATIC, name }
-                mv.visitFieldInsn(Opcodes.GETSTATIC, "Runtime", (String)data[1], "LRuntime;");
+                System.out.println("retrieve field " + (String)data[1]);
+                mv.visitFieldInsn(Opcodes.GETSTATIC, className, (String)data[1], "LRuntime;");
                 return Runtime.class;   // return Class
             } else if ( target.equals("RETURN")) {      // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
                 System.out.println(" calling return");
@@ -111,13 +112,13 @@ public class ASMMethodCreator implements Opcodes {
                 System.out.println("IF start");
                 Label elseLabel = new Label();
                 Label endLabel = new Label();
-                generateCodeBlock(mv, (Object[][])data[2]);  // Generate code for the condition
+                generateCodeBlock(mv, className, (Object[][])data[2]);  // Generate code for the condition
                 mv.visitJumpInsn(IFEQ, elseLabel);  // Assuming the condition leaves a boolean on the stack
-                generateCodeBlock(mv, (Object[][])data[3]);  // Generate code for the if block
+                generateCodeBlock(mv, className, (Object[][])data[3]);  // Generate code for the if block
                 mv.visitJumpInsn(GOTO, endLabel);
                 mv.visitLabel(elseLabel);
                 if (data[4] != null) {            // Generate code for the else block
-                    generateCodeBlock(mv, (Object[][])data[4]);
+                    generateCodeBlock(mv, className, (Object[][])data[4]);
                 }
                 mv.visitLabel(endLabel);            // End of the if/else structure
                 // targetClass = Runtime.class;
@@ -156,7 +157,7 @@ public class ASMMethodCreator implements Opcodes {
                 argTypes[i] = (arg == null) ? Object.class : getPrimitiveClass(arg.getClass());
                 System.out.println("  argument: " + arg);
                 if (arg instanceof Object[]) {
-                    Class<?> returnClass = processInstructions(mv, (Object[]) arg);
+                    Class<?> returnClass = processInstructions(mv, className, (Object[]) arg);
                     argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
                 } else if (arg instanceof Integer) {
                     mv.visitLdcInsn(arg);
@@ -226,9 +227,12 @@ public class ASMMethodCreator implements Opcodes {
 
             // TODO - create multiple classes; ensure GC works for these classes
 
-            // TODO - "env" access
-            // {         "GETSTATIC", "env" },     // TODO retrieve closed variable
-            //          mv.visitFieldInsn(Opcodes.PUTFIELD, "GeneratedClass", "env", "I"); // Set the field
+            // TODO - "env" access - create a method to initialize the static field values, instead of using reflection
+            //          generatedClass.getField("env").set(null, mathOps);
+
+            //      - local variables like "my"
+
+            //      - goto, macros - control structures
 
             Runtime mathOps = new Runtime(111);
             String className = "GeneratedClass";
@@ -237,8 +241,8 @@ public class ASMMethodCreator implements Opcodes {
             System.out.println("createClassWithMethod");
             byte[] classData = createClassWithMethod(
                 className,
-                new Object[][]{     // closed variables  { name, initial value }
-                    { "env", mathOps },
+                new Object[][]{     // closed variables  { name }
+                    { "env" },
                 },
                 new Object[][]{
                     // { Integer.class, "new", 5 },     // calling a constructor with "new"
@@ -260,9 +264,9 @@ public class ASMMethodCreator implements Opcodes {
                     },
 
                     // { "GETSTATIC", "env" },     // TODO retrieve closed variable
-                    // { Runtime.class, "print", new Object[]{ "GETSTATIC", "env" } },
+                    { Runtime.class, "print", new Object[]{ "GETSTATIC", "env" } },
 
-                    { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional in the end
+                    { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional at the end
                 }
             );
 
@@ -273,7 +277,8 @@ public class ASMMethodCreator implements Opcodes {
             System.out.println("Generated class: " + generatedClass.getName());
 
             // Set the static field value
-            // myClass.getField("myStaticVar").setInt(null, 42);
+            // TODO - move to class definition; create initializer method
+            generatedClass.getField("env").set(null, mathOps);
 
             // Call the generated method using reflection
             System.out.println("generatedClass.getMethod");
