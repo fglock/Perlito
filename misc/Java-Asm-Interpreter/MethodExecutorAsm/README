@@ -20,9 +20,8 @@ Object[] data = {
 
 Compile:
 
-javac -cp . *.java
+javac -cp ./asm-9.7.jar:. *.java
 
 Run:
 
-java -cp . ASMMethodCreator
-
+java -cp ./asm-9.7.jar:. ASMMethodCreator
