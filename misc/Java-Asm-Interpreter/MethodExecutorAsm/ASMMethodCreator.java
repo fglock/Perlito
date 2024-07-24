@@ -7,12 +7,16 @@ import java.lang.reflect.Method;
 
 public class ASMMethodCreator implements Opcodes {
 
-    public static byte[] createClassWithMethod(Object[][] data) throws Exception {
+    public static byte[] createClassWithMethod(String className, Object[][] env, Object[][] data) throws Exception {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-        cw.visit(V1_8, ACC_PUBLIC, "GeneratedClass", null, "java/lang/Object", null);
+        cw.visit(V1_8, ACC_PUBLIC, className, null, "java/lang/Object", null);
 
-        // Add "env" field to the class
-        cw.visitField(Opcodes.ACC_PUBLIC, "env", "LRuntime;", null, null).visitEnd();
+        // Add static fields to the class (closed variables)
+        for (int i = 0; i < env.length; i++) {
+            String fieldName = (String)env[i][0];
+            System.out.println("Create static field: " + fieldName);
+            cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, fieldName, "LRuntime;", null, null).visitEnd();
+        }
 
         // Create default constructor
         System.out.println("Create default constructor");
@@ -96,6 +100,9 @@ public class ASMMethodCreator implements Opcodes {
             if ( target.equals("ARG")) {                // { "ARG", 0, int.class }   { ARG, index, type }
                 mv.visitVarInsn(ALOAD, (int)(data[1]));
                 return (Class<?>)(data[2]);   // return Class
+            } else if ( target.equals("GETSTATIC")) {      // { "GETSTATIC", "env" }   { GETSTATIC, name }
+                mv.visitFieldInsn(Opcodes.GETSTATIC, "Runtime", (String)data[1], "LRuntime;");
+                return Runtime.class;   // return Class
             } else if ( target.equals("RETURN")) {      // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
                 System.out.println(" calling return");
                 targetClass = Runtime.class;
@@ -214,46 +221,59 @@ public class ASMMethodCreator implements Opcodes {
 
     public static void main(String[] args) {
         try {
-            // Example usage
-            Runtime mathOps = new Runtime(1);
-
-            Object[][] data = {
-                // { Integer.class, "new", 5 },     // calling a constructor with "new"
-                // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
-                // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
-                { Runtime.class, "make", 5 },
-                { Runtime.class, "print", 789 },
-                { Runtime.class, "print", new Object[]{ Runtime.class, "make", 5 } },
-                { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },  // use the argument
-                { System.out, "println", "123" },
-                { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-                // { System.out, "println", new Object[]{ new Object[]{"ARG", 0, Runtime.class}, "add", 5 }},                // call a method in the argument
-                { new Object[]{"ARG", 0, Runtime.class}, "add", 5 },                // call a method in the argument
-
-                { "IF", null,
-                    new Object[][]{ { Runtime.class, "is_false" } },      // if condition
-                    new Object[][]{ { Runtime.class, "print", "if is true" } },    // if block
-                    new Object[][]{ { Runtime.class, "print", "if is false" } },    // else block
-                },
-
-                { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional in the end
-            };
 
             // TODO - calling constructor with "new"
 
             // TODO - create multiple classes; ensure GC works for these classes
 
             // TODO - "env" access
+            // {         "GETSTATIC", "env" },     // TODO retrieve closed variable
             //          mv.visitFieldInsn(Opcodes.PUTFIELD, "GeneratedClass", "env", "I"); // Set the field
+
+            Runtime mathOps = new Runtime(111);
+            String className = "GeneratedClass";
 
             // Create the class
             System.out.println("createClassWithMethod");
-            byte[] classData = createClassWithMethod(data);
+            byte[] classData = createClassWithMethod(
+                className,
+                new Object[][]{     // closed variables  { name, initial value }
+                    { "env", mathOps },
+                },
+                new Object[][]{
+                    // { Integer.class, "new", 5 },     // calling a constructor with "new"
+                    // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
+                    // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
+                    { Runtime.class, "make", 5 },
+                    { Runtime.class, "print", 789 },
+                    { Runtime.class, "print", new Object[]{ Runtime.class, "make", 5 } },
+                    { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },  // use the argument
+                    { System.out, "println", "123" },
+                    { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
+                    // { System.out, "println", new Object[]{ new Object[]{"ARG", 0, Runtime.class}, "add", 5 }},                // call a method in the argument
+                    { new Object[]{"ARG", 0, Runtime.class}, "add", 5 },                // call a method in the argument
+
+                    { "IF", null,
+                        new Object[][]{ { Runtime.class, "is_false" } },      // if condition
+                        new Object[][]{ { Runtime.class, "print", "if is true" } },    // if block
+                        new Object[][]{ { Runtime.class, "print", "if is false" } },    // else block
+                    },
+
+                    // { "GETSTATIC", "env" },     // TODO retrieve closed variable
+                    // { Runtime.class, "print", new Object[]{ "GETSTATIC", "env" } },
+
+                    { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional in the end
+                }
+            );
+
             CustomClassLoader loader = new CustomClassLoader();
-            Class<?> generatedClass = loader.defineClass("GeneratedClass", classData);
+            Class<?> generatedClass = loader.defineClass(className, classData);
 
             // Print debug statement
             System.out.println("Generated class: " + generatedClass.getName());
+
+            // Set the static field value
+            // myClass.getField("myStaticVar").setInt(null, 42);
 
             // Call the generated method using reflection
             System.out.println("generatedClass.getMethod");
