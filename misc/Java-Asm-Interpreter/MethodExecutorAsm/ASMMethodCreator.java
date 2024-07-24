@@ -85,6 +85,16 @@ public class ASMMethodCreator implements Opcodes {
             targetIsInstance = false;       // If the target is a class, it means we're calling a static method
             targetClass = (Class<?>)target;
             System.out.println(" is Class");
+            if ( methodName.equals("new") ) {
+                // we are we calling a constructor
+                System.out.println(" calling a constructor");
+                // TODO
+                //      mv.visitTypeInsn(Opcodes.NEW, "java/lang/Integer"); // Create a new Integer object
+                //      mv.visitInsn(Opcodes.DUP); // Duplicate the top operand stack value
+                //      mv.visitVarInsn(Opcodes.ILOAD, 1); // Load the method argument (int value)
+                //      mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Integer", "<init>", "(I)V", false); // Call the Integer constructor
+
+            }
             mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) target));
         } else if (target instanceof String) {
             System.out.println(" is String");
@@ -190,19 +200,9 @@ public class ASMMethodCreator implements Opcodes {
         try {
             // Example usage
             Runtime mathOps = new Runtime(1);
-            // Object[] data = {
-            //     System.out, "println", "Starting execution...",
-            //     new Object[]{System.out, "println", new Object[]{mathOps, "add", 5, 3}},
-            //     new Object[]{System.out, "println", new Object[]{mathOps, "multiply", 2, 4}},
-            //     new Object[]{System.out, "println", "Execution finished."}
-            // };
-
-            // Object[] data = {
-            //     System.out, "println", new Object[]{mathOps, "add", 5, 3
-            // }};
 
             Object[][] data = {
-                // { Integer.class, "new", 5 },
+                // { Integer.class, "new", 5 },     // calling a constructor with "new"
                 // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
                 // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
                 { Runtime.class, "make", 5 },
@@ -213,6 +213,10 @@ public class ASMMethodCreator implements Opcodes {
                 { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
                 // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
             };
+
+            // TODO - test "ARG" as target
+
+            // TODO - calling constructor with "new"
 
             // TODO - create multiple classes; ensure GC works for these classes
 
