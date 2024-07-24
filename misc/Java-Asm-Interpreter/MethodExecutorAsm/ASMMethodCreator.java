@@ -50,7 +50,6 @@ public class ASMMethodCreator implements Opcodes {
         mv.visitEnd();
 
         cw.visitEnd();
-
         return cw.toByteArray();
     }
 
@@ -92,25 +91,22 @@ public class ASMMethodCreator implements Opcodes {
         } else if (target instanceof String) {
             System.out.println(" is String");
 
-            if ( target.equals("ARG")) {
-                // { "ARG", 0, int.class }   { ARG, index, type }
+            if ( target.equals("ARG")) {                // { "ARG", 0, int.class }   { ARG, index, type }
                 mv.visitVarInsn(ALOAD, (int)(data[1]));
-                return (Class<?>)(data[2]);   // process returnClass
-            }
-            if ( target.equals("RETURN")) {
-                // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
+                return (Class<?>)(data[2]);   // return Class
+            } else if ( target.equals("RETURN")) {      // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
                 System.out.println(" calling return");
                 targetClass = Runtime.class;
                 isReturn = true;
+            } else {
+                throw new IllegalArgumentException("Unsupported target type: " + target);
+                // targetClass = target.getClass();
+                // mv.visitLdcInsn(target);
             }
-            else {
-                targetClass = target.getClass();
-                mv.visitLdcInsn(target);
-            }
-        } else if (target instanceof Integer) {
-            System.out.println(" is Integer");
-            targetClass = target.getClass();
-            mv.visitLdcInsn(target);
+        // } else if (target instanceof Integer) {
+        //     System.out.println(" is Integer");
+        //     targetClass = target.getClass();
+        //     mv.visitLdcInsn(target);
         } else if (target instanceof java.io.PrintStream) {
             System.out.println(" is " + target);
             targetClass = target.getClass();
@@ -124,9 +120,7 @@ public class ASMMethodCreator implements Opcodes {
         Class<?>[] argTypes = new Class<?>[args.length];
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
-
             argTypes[i] = (arg == null) ? Object.class : getPrimitiveClass(arg.getClass());
-
             System.out.println("  argument: " + arg);
             if (arg instanceof Object[]) {
                 Class<?> returnClass = processInstructions(mv, (Object[]) arg);
@@ -140,7 +134,6 @@ public class ASMMethodCreator implements Opcodes {
             } else {
                 throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
             }
-
             System.out.println("  type " + i + ": " + argTypes[i]);
         }
     
@@ -152,10 +145,8 @@ public class ASMMethodCreator implements Opcodes {
         // Fetch the method descriptor
         String methodName = (String) data[1];
         Method method = targetClass.getMethod(methodName, argTypes);
-
         System.out.println("call class.method: " + targetClass + " . " + methodName);
         String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
-    
 
         // Invoke the method
         if ( targetIsInstance ) {
@@ -165,7 +156,6 @@ public class ASMMethodCreator implements Opcodes {
             System.out.println("invoke static");
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, targetClass.getName().replace('.', '/'), methodName, descriptor, false);
         }
-
         Class<?> returnType = method.getReturnType();
         System.out.println("return type: " + returnType);
         return returnType;  // Class of the result
