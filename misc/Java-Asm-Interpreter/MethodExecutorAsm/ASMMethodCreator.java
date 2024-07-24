@@ -60,7 +60,6 @@ public class ASMMethodCreator implements Opcodes {
         }
     
         Object target = data[0];
-        String methodName = (String) data[1];
         Object[] args = new Object[data.length - 2];
         System.arraycopy(data, 2, args, 0, args.length);
     
@@ -77,14 +76,19 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("Load the target object " + target);
         if (target instanceof Object[]) {
             //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-            //  TODO - if (  ((Object[])arg)[0].equals("ARG")) {
-            Class<?> returnClass = processInstructions(mv, (Object[]) target);
-            System.out.println(" target is instance of: " + returnClass);
-            targetClass = returnClass;
+            if (  ((Object[])target)[0].equals("ARG")) {
+                System.out.println(" calling a method on an argument");
+                mv.visitVarInsn(ALOAD, (int)((Object[])target)[1]);
+                targetClass =  getPrimitiveClass((Class)((Object[])target)[2]);   // process returnClass
+            } else {
+                targetClass = processInstructions(mv, (Object[]) target);
+            }
+            System.out.println(" target is instance of: " + targetClass);
         } else if (target instanceof Class<?>) {
             targetIsInstance = false;       // If the target is a class, it means we're calling a static method
             targetClass = (Class<?>)target;
             System.out.println(" is Class");
+            String methodName = (String) data[1];
             if ( methodName.equals("new") ) {
                 // we are we calling a constructor
                 System.out.println(" calling a constructor");
@@ -155,6 +159,7 @@ public class ASMMethodCreator implements Opcodes {
         }
     
         // Fetch the method descriptor
+        String methodName = (String) data[1];
         Method method = targetClass.getMethod(methodName, argTypes);
 
         System.out.println("call class.method: " + targetClass + " . " + methodName);
@@ -211,10 +216,9 @@ public class ASMMethodCreator implements Opcodes {
                 { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },  // use the argument
                 { System.out, "println", "123" },
                 { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
+                { new Object[]{"ARG", 0, Runtime.class}, "add", 5 },                // call a method in the argument
                 // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
             };
-
-            // TODO - test "ARG" as target
 
             // TODO - calling constructor with "new"
 
