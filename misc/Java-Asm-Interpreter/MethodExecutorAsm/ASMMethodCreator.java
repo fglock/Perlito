@@ -113,18 +113,7 @@ public class ASMMethodCreator implements Opcodes {
             targetClass = target.getClass();
             mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
         } else {
-            // TODO - raise an error here
-            System.out.println(" something else: " + target);
-    
-            targetClass = target.getClass();
-            mv.visitLdcInsn(target);
-
-            // Load the instance of the target object
-            // targetClass = Runtime.class;
-            // mv.visitVarInsn(ALOAD, 0);  // Assuming the target object is the first argument to the method
-    
-            // Field field = target.getClass().getField("out");
-            // mv.visitFieldInsn(GETSTATIC, target.getClass().getName().replace('.', '/'), field.getName(), Type.getDescriptor(field.getType()));
+            throw new IllegalArgumentException("Unsupported target type: " + target);
         }
     
         // Load the arguments and types
