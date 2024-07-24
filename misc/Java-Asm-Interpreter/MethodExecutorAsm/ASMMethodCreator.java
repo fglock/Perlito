@@ -10,6 +10,9 @@ public class ASMMethodCreator implements Opcodes {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         cw.visit(V1_8, ACC_PUBLIC, "GeneratedClass", null, "java/lang/Object", null);
 
+        // Add "env" field to the class
+        classWriter.visitField(Opcodes.ACC_PUBLIC, "env", "I", null, null).visitEnd();
+
         // Create default constructor
         System.out.println("Create default constructor");
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
