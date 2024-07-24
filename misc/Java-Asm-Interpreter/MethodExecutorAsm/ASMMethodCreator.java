@@ -1,6 +1,7 @@
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Label;
 
 import java.lang.reflect.Method;
 
@@ -34,40 +35,41 @@ public class ASMMethodCreator implements Opcodes {
         mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "generatedMethod", return_type, null, null);
         mv.visitCode();
 
-        // Process the input data
-        for (int i = 0; i < data.length; i++) {
-            System.out.println("Process the input data");
-            processInstructions(mv, data[i]);   // XXX check returnClass of the last argument (void, int, Object)
-        }
+        generateCodeBlock(mv, data);    // Process the input data
 
-        // Return the last value
         System.out.println("Return the last value");
         // mv.visitInsn(Opcodes.RETURN);   // returns void
         mv.visitInsn(Opcodes.ARETURN);      // returns an Object
 
-        // Max stack and local variables
-        mv.visitMaxs(0, 0);
+        mv.visitMaxs(0, 0);                 // Max stack and local variables
         mv.visitEnd();
-
         cw.visitEnd();
         return cw.toByteArray();
     }
 
-    private static Class<?> processInstructions(MethodVisitor mv, Object[] data) throws Exception {
-        if (data.length < 2) {
-            throw new IllegalArgumentException("Invalid data structure");
+    public static void generateCodeBlock(MethodVisitor mv, Object[][] data) throws Exception {
+        System.out.println("generateCodeBlock start");
+        for (int i = 0; i < data.length; i++) {
+            System.out.println("Process the input data line: "+i);
+            processInstructions(mv, data[i]);
         }
+        System.out.println("generateCodeBlock end");
+    }
+
+    private static Class<?> processInstructions(MethodVisitor mv, Object[] data) throws Exception {
+        // if (data.length < 2) {
+        //     throw new IllegalArgumentException("Invalid data structure");
+        // }
     
         Object target = data[0];
-        Object[] args = new Object[data.length - 2];
-        System.arraycopy(data, 2, args, 0, args.length);
     
         boolean targetIsInstance = true;
         boolean isReturn = false;
         Class<?> targetClass;
 
         // Load the target object
-        System.out.println("Load the target object " + target);
+        System.out.println("Load the target object " + data[0]);
+        System.out.println("         method        " + data[1] + " ... ");
         if (target instanceof Object[]) {
             //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
             targetClass = processInstructions(mv, (Object[]) target);
@@ -98,6 +100,22 @@ public class ASMMethodCreator implements Opcodes {
                 System.out.println(" calling return");
                 targetClass = Runtime.class;
                 isReturn = true;
+            } else if ( target.equals("IF")) {      // { "IF", null, cond, if, else }
+                System.out.println("IF start");
+                Label elseLabel = new Label();
+                Label endLabel = new Label();
+                generateCodeBlock(mv, (Object[][])data[2]);  // Generate code for the condition
+                mv.visitJumpInsn(IFEQ, elseLabel);  // Assuming the condition leaves a boolean on the stack
+                generateCodeBlock(mv, (Object[][])data[3]);  // Generate code for the if block
+                mv.visitJumpInsn(GOTO, endLabel);
+                mv.visitLabel(elseLabel);
+                if (data[4] != null) {            // Generate code for the else block
+                    generateCodeBlock(mv, (Object[][])data[4]);
+                }
+                mv.visitLabel(endLabel);            // End of the if/else structure
+                // targetClass = Runtime.class;
+                System.out.println("IF end");
+                return Runtime.class;  // Class of the result
             } else {
                 throw new IllegalArgumentException("Unsupported target type: " + target);
                 // targetClass = target.getClass();
@@ -115,26 +133,37 @@ public class ASMMethodCreator implements Opcodes {
             throw new IllegalArgumentException("Unsupported target type: " + target);
         }
     
-        // Load the arguments and types
-        System.out.println("Load arguments and types");
-        Class<?>[] argTypes = new Class<?>[args.length];
-        for (int i = 0; i < args.length; i++) {
-            Object arg = args[i];
-            argTypes[i] = (arg == null) ? Object.class : getPrimitiveClass(arg.getClass());
-            System.out.println("  argument: " + arg);
-            if (arg instanceof Object[]) {
-                Class<?> returnClass = processInstructions(mv, (Object[]) arg);
-                argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
-            } else if (arg instanceof Integer) {
-                mv.visitLdcInsn(arg);
-            } else if (arg instanceof String) {
-                mv.visitLdcInsn(arg);
-            } else if (arg instanceof Class<?>) {
-                mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) arg));
-            } else {
-                throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
+        Class<?>[] argTypes = {};
+        boolean hasArguments = false;
+        if ( data.length > 2 ) {
+            // Load the arguments and types
+            hasArguments = true;
+            System.out.println("Load arguments and types");
+
+            Object[] args = new Object[data.length - 2];
+            System.arraycopy(data, 2, args, 0, args.length);
+
+            argTypes = new Class<?>[args.length];
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+                argTypes[i] = (arg == null) ? Object.class : getPrimitiveClass(arg.getClass());
+                System.out.println("  argument: " + arg);
+                if (arg instanceof Object[]) {
+                    Class<?> returnClass = processInstructions(mv, (Object[]) arg);
+                    argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
+                } else if (arg instanceof Integer) {
+                    mv.visitLdcInsn(arg);
+                } else if (arg instanceof String) {
+                    mv.visitLdcInsn(arg);
+                } else if (arg instanceof Class<?>) {
+                    mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) arg));
+                } else {
+                    throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
+                }
+                System.out.println("  type " + i + ": " + argTypes[i]);
             }
-            System.out.println("  type " + i + ": " + argTypes[i]);
+        } else {
+            System.out.println("no arguments");
         }
     
         if ( isReturn ) {
@@ -144,7 +173,8 @@ public class ASMMethodCreator implements Opcodes {
 
         // Fetch the method descriptor
         String methodName = (String) data[1];
-        Method method = targetClass.getMethod(methodName, argTypes);
+        Method method = hasArguments ? targetClass.getMethod(methodName, argTypes)
+            : targetClass.getMethod(methodName);
         System.out.println("call class.method: " + targetClass + " . " + methodName);
         String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
 
@@ -199,6 +229,13 @@ public class ASMMethodCreator implements Opcodes {
                 { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
                 // { System.out, "println", new Object[]{ new Object[]{"ARG", 0, Runtime.class}, "add", 5 }},                // call a method in the argument
                 { new Object[]{"ARG", 0, Runtime.class}, "add", 5 },                // call a method in the argument
+
+                { "IF", null,
+                    new Object[][]{ { Runtime.class, "is_false" } },      // if condition
+                    new Object[][]{ { Runtime.class, "print", "if is true" } },    // if block
+                    new Object[][]{ { Runtime.class, "print", "if is false" } },    // else block
+                },
+
                 { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional in the end
             };
 
@@ -208,31 +245,6 @@ public class ASMMethodCreator implements Opcodes {
 
             // TODO - "env" access
             //          mv.visitFieldInsn(Opcodes.PUTFIELD, "GeneratedClass", "env", "I"); // Set the field
-
-            /* TODO - statements like if/else
-
-                Label elseLabel = new Label();
-                Label endLabel = new Label();
-
-                // Generate code for the condition
-                condition.generateCode(mv);
-                // Assuming the condition leaves a boolean on the stack
-                mv.visitJumpInsn(IFEQ, elseLabel);
-
-                // Generate code for the if block
-                ifBlock.generateCode(mv);
-                mv.visitJumpInsn(GOTO, endLabel);
-
-                // Generate code for the else block
-                mv.visitLabel(elseLabel);
-                if (elseBlock != null) {
-                    elseBlock.generateCode(mv);
-                }
-
-                // End of the if/else structure
-                mv.visitLabel(endLabel);
-
-            */
 
             // Create the class
             System.out.println("createClassWithMethod");

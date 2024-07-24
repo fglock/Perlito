@@ -11,6 +11,19 @@ public class Runtime {
         return String.valueOf(this.i);
     }
 
+    public static boolean is_false() {
+        return false;
+    }
+
+    public static boolean is_true() {
+        return true;
+    }
+
+    public static Runtime print(String a) {
+        System.out.println("value=" + a);
+        return new Runtime(0);
+    }
+
     public static Runtime print(int a) {
         System.out.println("value=" + a);
         return new Runtime(a);
