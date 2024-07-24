@@ -7,7 +7,12 @@ import java.lang.reflect.Method;
 
 public class ASMMethodCreator implements Opcodes {
 
-    public static byte[] createClassWithMethod(String className, Object[][] env, Object[][] data) throws Exception {
+    public static byte[] createClassWithMethod(
+        String className, 
+        Object[][] env, 
+        Object[][] lexicals,
+        Object[][] data
+    ) throws Exception {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         cw.visit(V1_8, ACC_PUBLIC, className, null, "java/lang/Object", null);
 
@@ -16,6 +21,13 @@ public class ASMMethodCreator implements Opcodes {
             String fieldName = (String)env[i][0];
             System.out.println("Create static field: " + fieldName);
             cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, fieldName, "LRuntime;", null, null).visitEnd();
+        }
+
+        // Add instance fields to the class (lexical variables)
+        for (int i = 0; i < lexicals.length; i++) {
+            String fieldName = (String)lexicals[i][0];
+            System.out.println("Create static field: " + fieldName);
+            cw.visitField(Opcodes.ACC_PUBLIC, fieldName, "LRuntime;", null, null).visitEnd();
         }
 
         // Create default constructor
@@ -101,8 +113,17 @@ public class ASMMethodCreator implements Opcodes {
                 mv.visitVarInsn(ALOAD, (int)(data[1]));
                 return (Class<?>)(data[2]);   // return Class
             } else if ( target.equals("GETSTATIC")) {      // { "GETSTATIC", "env" }   { GETSTATIC, name }
-                System.out.println("retrieve field " + (String)data[1]);
+                System.out.println("retrieve static " + (String)data[1]);
                 mv.visitFieldInsn(Opcodes.GETSTATIC, className, (String)data[1], "LRuntime;");
+                return Runtime.class;   // return Class
+            } else if ( target.equals("GETFIELD")) {      // { "GETFIELD", "env" }   { GETFIELD, name }
+                System.out.println("retrieve field " + (String)data[1]);
+                mv.visitFieldInsn(Opcodes.GETFIELD, className, (String)data[1], "LRuntime;");
+                return Runtime.class;   // return Class
+            } else if ( target.equals("PUTFIELD")) {      // { "PUTFIELD", "env" }   { PUTFIELD, name }
+                System.out.println("put field " + (String)data[1]);
+                // TODO process argument
+                mv.visitFieldInsn(Opcodes.PUTFIELD, className, (String)data[1], "LRuntime;");
                 return Runtime.class;   // return Class
             } else if ( target.equals("RETURN")) {      // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
                 System.out.println(" calling return");
@@ -223,6 +244,9 @@ public class ASMMethodCreator implements Opcodes {
     public static void main(String[] args) {
         try {
 
+            //      - implement Callable and thread-safety
+            //          it may need locking when calling ASM
+
             // TODO - calling constructor with "new"
 
             // TODO - create multiple classes; ensure GC works for these classes
@@ -230,11 +254,11 @@ public class ASMMethodCreator implements Opcodes {
             // TODO - "env" access - create a method to initialize the static field values, instead of using reflection
             //          generatedClass.getField("env").set(null, mathOps);
 
-            //      - local variables like "my"
+            //      - lexical variables like "my"
+            //          GETFIELD, PUTFIELD
 
             //      - goto, macros - control structures
 
-            Runtime mathOps = new Runtime(111);
             String className = "GeneratedClass";
 
             // Create the class
@@ -244,9 +268,11 @@ public class ASMMethodCreator implements Opcodes {
                 new Object[][]{     // closed variables  { name }
                     { "env" },
                 },
+                new Object[][]{     // lexical variables  { name }
+                    { "var" },
+                },
                 new Object[][]{
                     // { Integer.class, "new", 5 },     // calling a constructor with "new"
-                    // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
                     // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
                     { Runtime.class, "make", 5 },
                     { Runtime.class, "print", 789 },
@@ -278,7 +304,10 @@ public class ASMMethodCreator implements Opcodes {
 
             // Set the static field value
             // TODO - move to class definition; create initializer method
-            generatedClass.getField("env").set(null, mathOps);
+            generatedClass.getField("env").set(null, new Runtime(111));
+
+            // TODO "lexical variable"
+            // generatedClass.getField("var").set(null, new Runtime(222));     // "lexical variable"
 
             // Call the generated method using reflection
             System.out.println("generatedClass.getMethod");
