@@ -63,9 +63,6 @@ public class ASMMethodCreator implements Opcodes {
         Object[] args = new Object[data.length - 2];
         System.arraycopy(data, 2, args, 0, args.length);
     
-        /* TODO - process statements: return, if/else
-        */
-
         boolean targetIsInstance = true;
         boolean isReturn = false;
         Class<?> targetClass;
@@ -74,14 +71,7 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("Load the target object " + target);
         if (target instanceof Object[]) {
             //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-            if (  ((Object[])target)[0].equals("ARG")) {
-                // {"ARG", 0, Runtime.class}
-                System.out.println(" calling a method on an argument");
-                mv.visitVarInsn(ALOAD, (int)((Object[])target)[1]);
-                targetClass =  getPrimitiveClass((Class)((Object[])target)[2]);   // process returnClass
-            } else {
-                targetClass = processInstructions(mv, (Object[]) target);
-            }
+            targetClass = processInstructions(mv, (Object[]) target);
             System.out.println(" target is instance of: " + targetClass);
         } else if (target instanceof Class<?>) {
             targetIsInstance = false;       // If the target is a class, it means we're calling a static method
@@ -102,6 +92,11 @@ public class ASMMethodCreator implements Opcodes {
         } else if (target instanceof String) {
             System.out.println(" is String");
 
+            if ( target.equals("ARG")) {
+                // { "ARG", 0, int.class }   { ARG, index, type }
+                mv.visitVarInsn(ALOAD, (int)(data[1]));
+                return (Class<?>)(data[2]);   // process returnClass
+            }
             if ( target.equals("RETURN")) {
                 // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
                 System.out.println(" calling return");
@@ -134,14 +129,8 @@ public class ASMMethodCreator implements Opcodes {
 
             System.out.println("  argument: " + arg);
             if (arg instanceof Object[]) {
-                if (  ((Object[])arg)[0].equals("ARG")) {
-                    // { "ARG", 0, int.class }   { ARG, index, type }
-                    argTypes[i] = getPrimitiveClass((Class)((Object[])arg)[2]);   // process returnClass
-                    mv.visitVarInsn(ALOAD, (int)((Object[])arg)[1]);
-                } else {
-                    Class<?> returnClass = processInstructions(mv, (Object[]) arg);
-                    argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
-                }
+                Class<?> returnClass = processInstructions(mv, (Object[]) arg);
+                argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
             } else if (arg instanceof Integer) {
                 mv.visitLdcInsn(arg);
             } else if (arg instanceof String) {
@@ -218,6 +207,7 @@ public class ASMMethodCreator implements Opcodes {
                 { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },  // use the argument
                 { System.out, "println", "123" },
                 { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
+                // { System.out, "println", new Object[]{ new Object[]{"ARG", 0, Runtime.class}, "add", 5 }},                // call a method in the argument
                 { new Object[]{"ARG", 0, Runtime.class}, "add", 5 },                // call a method in the argument
                 { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional in the end
             };
