@@ -82,8 +82,7 @@ public class ASMMethodCreator implements Opcodes {
             System.out.println(" target is instance of: " + returnClass);
             targetClass = returnClass;
         } else if (target instanceof Class<?>) {
-            // If the target is a class, it means we're calling a static method
-            targetIsInstance = false;
+            targetIsInstance = false;       // If the target is a class, it means we're calling a static method
             targetClass = (Class<?>)target;
             System.out.println(" is Class");
             mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) target));
@@ -95,18 +94,20 @@ public class ASMMethodCreator implements Opcodes {
             System.out.println(" is Integer");
             targetClass = target.getClass();
             mv.visitLdcInsn(target);
+        } else if (target instanceof java.io.PrintStream) {
+            System.out.println(" is " + target);
+            targetClass = target.getClass();
+            mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
         } else {
             // TODO - raise an error here
-            System.out.println(" something else");
+            System.out.println(" something else: " + target);
     
+            targetClass = target.getClass();
+            mv.visitLdcInsn(target);
+
             // Load the instance of the target object
-            targetClass = Runtime.class;
-            mv.visitVarInsn(ALOAD, 0);  // Assuming the target object is the first argument to the method
-    
-            // // Assuming the target is an instance object reference
-            // // You'll need to load the correct reference to this object in the local variable
-            // mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-    
+            // targetClass = Runtime.class;
+            // mv.visitVarInsn(ALOAD, 0);  // Assuming the target object is the first argument to the method
     
             // Field field = target.getClass().getField("out");
             // mv.visitFieldInsn(GETSTATIC, target.getClass().getName().replace('.', '/'), field.getName(), Type.getDescriptor(field.getType()));
@@ -125,7 +126,6 @@ public class ASMMethodCreator implements Opcodes {
                 if (  ((Object[])arg)[0].equals("ARG")) {
                     // { "ARG", 0, int.class }   { ARG, index, type }
                     argTypes[i] = getPrimitiveClass((Class)((Object[])arg)[2]);   // process returnClass
-                    // mv.visitVarInsn(ALOAD, (int)((Object[])arg)[1]);
                     mv.visitVarInsn(ALOAD, (int)((Object[])arg)[1]);
                 } else {
                     Class<?> returnClass = processInstructions(mv, (Object[]) arg);
@@ -189,7 +189,7 @@ public class ASMMethodCreator implements Opcodes {
     public static void main(String[] args) {
         try {
             // Example usage
-            // Runtime mathOps = new Runtime();
+            Runtime mathOps = new Runtime(1);
             // Object[] data = {
             //     System.out, "println", "Starting execution...",
             //     new Object[]{System.out, "println", new Object[]{mathOps, "add", 5, 3}},
@@ -202,17 +202,15 @@ public class ASMMethodCreator implements Opcodes {
             // }};
 
             Object[][] data = {
-                // { System.out, "println", "123" },
-                // { System.out, "println", "456" },
                 // { Integer.class, "new", 5 },
                 // { System.out, "println", new Object[]{mathOps, "add", 5, 3} },
                 // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
-                // { { Runtime.class, "make", 5 }, "add", 6 },       // XXX TODO first arg is method call
                 { Runtime.class, "make", 5 },
                 { Runtime.class, "print", 789 },
                 { Runtime.class, "print", new Object[]{ Runtime.class, "make", 5 } },
                 { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },  // use the argument
-                // { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
+                { System.out, "println", "123" },
+                { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
                 // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
             };
 
