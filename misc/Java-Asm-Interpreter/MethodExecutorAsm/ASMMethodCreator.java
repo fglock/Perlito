@@ -11,7 +11,7 @@ public class ASMMethodCreator implements Opcodes {
         cw.visit(V1_8, ACC_PUBLIC, "GeneratedClass", null, "java/lang/Object", null);
 
         // Add "env" field to the class
-        classWriter.visitField(Opcodes.ACC_PUBLIC, "env", "I", null, null).visitEnd();
+        cw.visitField(Opcodes.ACC_PUBLIC, "env", "LRuntime;", null, null).visitEnd();
 
         // Create default constructor
         System.out.println("Create default constructor");
@@ -54,7 +54,7 @@ public class ASMMethodCreator implements Opcodes {
         return cw.toByteArray();
     }
 
-    private static Class processInstructions(MethodVisitor mv, Object[] data) throws Exception {
+    private static Class<?> processInstructions(MethodVisitor mv, Object[] data) throws Exception {
         if (data.length < 2) {
             throw new IllegalArgumentException("Invalid data structure");
         }
@@ -70,27 +70,37 @@ public class ASMMethodCreator implements Opcodes {
                     mv.visitInsn(Opcodes.ARETURN);      // returns an Object
         */
 
+        boolean targetIsInstance = true;
+        Class<?> targetClass;
+
         // Load the target object
         System.out.println("Load the target object " + target);
         if (target instanceof Object[]) {
             //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-            Class returnClass = processInstructions(mv, (Object[]) target);
-            System.out.println(" target is type: " + returnClass);
-            target = returnClass;   // XXX need to decide if INVOKEVIRTUAL or INVOKESTATIC (instance or Class)
+            //  TODO - if (  ((Object[])arg)[0].equals("ARG")) {
+            Class<?> returnClass = processInstructions(mv, (Object[]) target);
+            System.out.println(" target is instance of: " + returnClass);
+            targetClass = returnClass;
         } else if (target instanceof Class<?>) {
             // If the target is a class, it means we're calling a static method
-            System.out.println(" is instanceof Class<?>");
+            targetIsInstance = false;
+            targetClass = (Class<?>)target;
+            System.out.println(" is Class");
             mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) target));
         } else if (target instanceof String) {
             System.out.println(" is String");
+            targetClass = target.getClass();
             mv.visitLdcInsn(target);
         } else if (target instanceof Integer) {
             System.out.println(" is Integer");
+            targetClass = target.getClass();
             mv.visitLdcInsn(target);
         } else {
+            // TODO - raise an error here
             System.out.println(" something else");
     
             // Load the instance of the target object
+            targetClass = Runtime.class;
             mv.visitVarInsn(ALOAD, 0);  // Assuming the target object is the first argument to the method
     
             // // Assuming the target is an instance object reference
@@ -104,7 +114,7 @@ public class ASMMethodCreator implements Opcodes {
     
         // Load the arguments and types
         System.out.println("Load arguments and types");
-        Class<?>[] argTypes = new Class[args.length];
+        Class<?>[] argTypes = new Class<?>[args.length];
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
 
@@ -118,7 +128,7 @@ public class ASMMethodCreator implements Opcodes {
                     // mv.visitVarInsn(ALOAD, (int)((Object[])arg)[1]);
                     mv.visitVarInsn(ALOAD, (int)((Object[])arg)[1]);
                 } else {
-                    Class returnClass = processInstructions(mv, (Object[]) arg);
+                    Class<?> returnClass = processInstructions(mv, (Object[]) arg);
                     argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
                 }
             } else if (arg instanceof Integer) {
@@ -135,28 +145,22 @@ public class ASMMethodCreator implements Opcodes {
         }
     
         // Fetch the method descriptor
-        Method method;
-        if (target instanceof Class<?>) {
-            method = ((Class<?>) target).getMethod(methodName, argTypes);
-        } else {
-            method = target.getClass().getMethod(methodName, argTypes);
-        }
+        Method method = targetClass.getMethod(methodName, argTypes);
 
-        System.out.println("call class.method: " + target + " . " + methodName);
+        System.out.println("call class.method: " + targetClass + " . " + methodName);
         String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
     
 
         // Invoke the method
-        if (target instanceof Class<?>) {
-            System.out.println("invoke static");
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, ((Class<?>) target).getName().replace('.', '/'), methodName, descriptor, false);
-        } else {
+        if ( targetIsInstance ) {
             System.out.println("invoke virtual");
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, target.getClass().getName().replace('.', '/'), methodName, descriptor, false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, targetClass.getName().replace('.', '/'), methodName, descriptor, false);
+        } else {
+            System.out.println("invoke static");
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, targetClass.getName().replace('.', '/'), methodName, descriptor, false);
         }
 
-
-        Class returnType = method.getReturnType();
+        Class<?> returnType = method.getReturnType();
         System.out.println("return type: " + returnType);
         return returnType;  // Class of the result
     }
@@ -260,7 +264,7 @@ public class ASMMethodCreator implements Opcodes {
             Method method = generatedClass.getMethod("generatedMethod", Runtime.class);
 
             String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
-            Class returnType = method.getReturnType();
+            Class<?> returnType = method.getReturnType();
             System.out.println("method descriptor: " + descriptor + " return type: " + returnType);
 
             System.out.println("invoke");
