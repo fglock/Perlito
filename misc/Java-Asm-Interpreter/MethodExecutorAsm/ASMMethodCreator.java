@@ -64,12 +64,10 @@ public class ASMMethodCreator implements Opcodes {
         System.arraycopy(data, 2, args, 0, args.length);
     
         /* TODO - process statements: return, if/else
-
-                } else if (  ((Object[])arg)[0].equals("RETURN")) {
-                    mv.visitInsn(Opcodes.ARETURN);      // returns an Object
         */
 
         boolean targetIsInstance = true;
+        boolean isReturn = false;
         Class<?> targetClass;
 
         // Load the target object
@@ -77,6 +75,7 @@ public class ASMMethodCreator implements Opcodes {
         if (target instanceof Object[]) {
             //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
             if (  ((Object[])target)[0].equals("ARG")) {
+                // {"ARG", 0, Runtime.class}
                 System.out.println(" calling a method on an argument");
                 mv.visitVarInsn(ALOAD, (int)((Object[])target)[1]);
                 targetClass =  getPrimitiveClass((Class)((Object[])target)[2]);   // process returnClass
@@ -102,8 +101,17 @@ public class ASMMethodCreator implements Opcodes {
             mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) target));
         } else if (target instanceof String) {
             System.out.println(" is String");
-            targetClass = target.getClass();
-            mv.visitLdcInsn(target);
+
+            if ( target.equals("RETURN")) {
+                // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
+                System.out.println(" calling return");
+                targetClass = Runtime.class;
+                isReturn = true;
+            }
+            else {
+                targetClass = target.getClass();
+                mv.visitLdcInsn(target);
+            }
         } else if (target instanceof Integer) {
             System.out.println(" is Integer");
             targetClass = target.getClass();
@@ -147,6 +155,11 @@ public class ASMMethodCreator implements Opcodes {
             System.out.println("  type " + i + ": " + argTypes[i]);
         }
     
+        if ( isReturn ) {
+            mv.visitInsn(Opcodes.ARETURN);      // returns an Object
+            return targetClass;  // Class of the result
+        }
+
         // Fetch the method descriptor
         String methodName = (String) data[1];
         Method method = targetClass.getMethod(methodName, argTypes);
@@ -206,7 +219,7 @@ public class ASMMethodCreator implements Opcodes {
                 { System.out, "println", "123" },
                 { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
                 { new Object[]{"ARG", 0, Runtime.class}, "add", 5 },                // call a method in the argument
-                // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
+                { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional in the end
             };
 
             // TODO - calling constructor with "new"
@@ -215,10 +228,6 @@ public class ASMMethodCreator implements Opcodes {
 
             // TODO - "env" access
             //          mv.visitFieldInsn(Opcodes.PUTFIELD, "GeneratedClass", "env", "I"); // Set the field
-
-            // TODO - first argument is an expression
-
-            // TODO - RETURN
 
             /* TODO - statements like if/else
 
