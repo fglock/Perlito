@@ -212,7 +212,14 @@ public class ASMMethodCreator implements Opcodes {
                 // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
             };
 
+            // TODO - create multiple classes; ensure GC works for these classes
+
+            // TODO - "env" access
+            //          mv.visitFieldInsn(Opcodes.PUTFIELD, "GeneratedClass", "env", "I"); // Set the field
+
             // TODO - first argument is an expression
+
+            // TODO - RETURN
 
             /* TODO - statements like if/else
 
