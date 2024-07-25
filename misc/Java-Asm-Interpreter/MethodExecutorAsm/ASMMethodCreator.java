@@ -60,9 +60,12 @@ public class ASMMethodCreator implements Opcodes {
         mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "call", return_type, null, new String[]{"java/lang/Exception"});
         mv.visitCode();
 
-        generateCodeBlock(mv, className, data);    // Process the input data
+        Label returnLabel = new Label();
+
+        generateCodeBlock(mv, className, data, returnLabel);    // Process the input data
 
         System.out.println("Return the last value");
+        mv.visitLabel(returnLabel);
         // mv.visitInsn(Opcodes.RETURN);   // returns void
         mv.visitInsn(Opcodes.ARETURN);      // returns an Object
 
@@ -72,16 +75,21 @@ public class ASMMethodCreator implements Opcodes {
         return cw.toByteArray();            // Generate the bytecode
     }
 
-    public static void generateCodeBlock(MethodVisitor mv, String className, Object[][] data) throws Exception {
+    public static void generateCodeBlock(
+        MethodVisitor mv, 
+        String className, 
+        Object[][] data,
+        Label returnLabel
+    ) throws Exception {
         System.out.println("generateCodeBlock start");
         for (int i = 0; i < data.length; i++) {
             System.out.println("Process the input data line: "+i);
-            processInstructions(mv, className, data[i]);
+            processInstructions(mv, className, data[i], returnLabel);
         }
         System.out.println("generateCodeBlock end");
     }
 
-    private static Class<?> processInstructions(MethodVisitor mv, String className, Object[] data) throws Exception {
+    private static Class<?> processInstructions(MethodVisitor mv, String className, Object[] data, Label returnLabel) throws Exception {
         // if (data.length < 2) {
         //     throw new IllegalArgumentException("Invalid data structure");
         // }
@@ -97,7 +105,7 @@ public class ASMMethodCreator implements Opcodes {
         // System.out.println("         method        " + data[1] + " ... ");
         if (target instanceof Object[]) {
             //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-            targetClass = processInstructions(mv, className, (Object[]) target);
+            targetClass = processInstructions(mv, className, (Object[]) target, returnLabel);
             System.out.println(" target is instance of: " + targetClass);
         } else if (target instanceof Class<?>) {
             targetIsInstance = false;       // If the target is a class, it means we're calling a static method
@@ -120,7 +128,6 @@ public class ASMMethodCreator implements Opcodes {
 
             if ( target.equals("ARG")) {                // { "ARG" }
                 System.out.println("retrieve field " + "arg");
-                // TODO use index
                 mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
                 mv.visitFieldInsn(Opcodes.GETFIELD, className, "arg", "LRuntime;"); // Load the field value
                 return Runtime.class;   // return Class
@@ -147,13 +154,13 @@ public class ASMMethodCreator implements Opcodes {
                 System.out.println("IF start");
                 Label elseLabel = new Label();
                 Label endLabel = new Label();
-                generateCodeBlock(mv, className, (Object[][])data[2]);  // Generate code for the condition
+                generateCodeBlock(mv, className, (Object[][])data[2], returnLabel);  // Generate code for the condition
                 mv.visitJumpInsn(IFEQ, elseLabel);  // Assuming the condition leaves a boolean on the stack
-                generateCodeBlock(mv, className, (Object[][])data[3]);  // Generate code for the if block
+                generateCodeBlock(mv, className, (Object[][])data[3], returnLabel);  // Generate code for the if block
                 mv.visitJumpInsn(GOTO, endLabel);
                 mv.visitLabel(elseLabel);
                 if (data[4] != null) {            // Generate code for the else block
-                    generateCodeBlock(mv, className, (Object[][])data[4]);
+                    generateCodeBlock(mv, className, (Object[][])data[4], returnLabel);
                 }
                 mv.visitLabel(endLabel);            // End of the if/else structure
                 // targetClass = Runtime.class;
@@ -192,7 +199,7 @@ public class ASMMethodCreator implements Opcodes {
                 argTypes[i] = (arg == null) ? Object.class : getPrimitiveClass(arg.getClass());
                 System.out.println("  argument: " + arg);
                 if (arg instanceof Object[]) {
-                    Class<?> returnClass = processInstructions(mv, className, (Object[]) arg);
+                    Class<?> returnClass = processInstructions(mv, className, (Object[]) arg, returnLabel);
                     argTypes[i] = getPrimitiveClass(returnClass);   // process returnClass
                 } else if (arg instanceof Integer) {
                     mv.visitLdcInsn(arg);
@@ -210,7 +217,8 @@ public class ASMMethodCreator implements Opcodes {
         }
     
         if ( isReturn ) {
-            mv.visitInsn(Opcodes.ARETURN);      // returns an Object
+            // mv.visitInsn(Opcodes.ARETURN);      // returns an Object
+            mv.visitJumpInsn(GOTO, returnLabel);
             return targetClass;  // Class of the result
         }
 
@@ -258,8 +266,7 @@ public class ASMMethodCreator implements Opcodes {
     public static void main(String[] args) {
         try {
 
-            //      - implement Callable and thread-safety
-            //          it may need locking when calling ASM
+            // TODO - implement thread-safety - it may need locking when calling ASM
 
             // TODO - calling constructor with "new"
 
@@ -270,8 +277,13 @@ public class ASMMethodCreator implements Opcodes {
 
             //      - lexical variables like "my"
             //          GETFIELD, PUTFIELD
+            //          initialize variables
 
             //      - goto, macros - control structures
+            //      - implement "local"
+            //      - eval, BEGIN-block
+            //      - subroutine declaration
+            //          create a Runtime.call(arg) method
 
             String className = "GeneratedClass";
 
