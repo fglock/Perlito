@@ -9,6 +9,8 @@ import java.util.concurrent.Callable;
 
 public class ASMMethodCreator implements Opcodes {
 
+    public static Runtime anonSub;
+
     public static byte[] createClassWithMethod(
         String className, 
         Object[][] env, 
@@ -180,7 +182,11 @@ public class ASMMethodCreator implements Opcodes {
                 // retrieve the Callable constructor
                 Constructor<?> callableConstructor = (Constructor<?>) generatedClass.getDeclaredConstructor(Runtime.class);
 
-                // TODO - save the constructor in a Runtime object
+                // save the constructor in a public place
+                @SuppressWarnings("unchecked")
+                Constructor<? extends Callable<Runtime>> typedConstructor = (Constructor<? extends Callable<Runtime>>) callableConstructor;
+                ASMMethodCreator.anonSub = new Runtime(typedConstructor);
+
 
                 // Create an instance of the class with argument "new Runtime(999)" and call the call() method
                 // Runtime result = (Runtime) callableConstructor.newInstance(new Runtime(999)).call();

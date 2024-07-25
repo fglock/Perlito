@@ -12,6 +12,12 @@ public class Runtime {
         this.i = (long)i;
     }
 
+    @SuppressWarnings("unchecked")
+    public Runtime( Constructor<? extends Callable<Runtime>> subroutineReference ) {
+        this.i = 0;
+        this.subroutineReference = subroutineReference;
+    }
+
     public Runtime apply(Runtime a) throws Exception {
         Runtime result = subroutineReference.newInstance(a).call();
         return result;
