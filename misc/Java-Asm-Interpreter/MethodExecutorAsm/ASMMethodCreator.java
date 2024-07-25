@@ -399,6 +399,10 @@ public class ASMMethodCreator implements Opcodes {
 
             // debug the anon sub field
             System.out.println("Result of generatedMethod SUB: " + result.subroutineReference );
+            Callable<?> sub = result.subroutineReference.newInstance(new Runtime(567));
+            System.out.println("Result of generatedMethod SUB.callable: " + sub );
+            Runtime rr = result.subroutineReference.newInstance(new Runtime(567)).call();
+            System.out.println("Result of generatedMethod SUB.callable.called: " + rr );
 
         } catch (Exception e) {
             e.printStackTrace();
