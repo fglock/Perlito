@@ -4,6 +4,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Label;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 
 public class ASMMethodCreator implements Opcodes {
 
@@ -13,8 +14,15 @@ public class ASMMethodCreator implements Opcodes {
         Object[][] lexicals,
         Object[][] data
     ) throws Exception {
+        // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-        cw.visit(V1_8, ACC_PUBLIC, className, null, "java/lang/Object", null);
+
+        // Define the class with version, access flags, name, signature, superclass, and interfaces
+        // the class implements Callable
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, className, null, "java/lang/Object", new String[]{"java/util/concurrent/Callable"});
+
+        // Add a private instance field to store the call() argument
+        cw.visitField(Opcodes.ACC_PRIVATE, "arg", "LRuntime;", null, null).visitEnd();
 
         // Add static fields to the class (closed variables)
         for (int i = 0; i < env.length; i++) {
@@ -30,25 +38,26 @@ public class ASMMethodCreator implements Opcodes {
             cw.visitField(Opcodes.ACC_PUBLIC, fieldName, "LRuntime;", null, null).visitEnd();
         }
 
-        // Create default constructor
-        System.out.println("Create default constructor");
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        // Add a constructor that accepts a Runtime parameter
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(LRuntime;)V", null, null);
         mv.visitCode();
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-        mv.visitInsn(RETURN);
-        mv.visitMaxs(1, 1);
+        mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false); // Call the superclass constructor
+        mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
+        mv.visitVarInsn(Opcodes.ALOAD, 1); // Load the constructor parameter
+        mv.visitFieldInsn(Opcodes.PUTFIELD, className, "arg", "LRuntime;"); // Store the parameter in the field
+        mv.visitInsn(Opcodes.RETURN); // Return void
+        mv.visitMaxs(0, 0); // Automatically computed
         mv.visitEnd();
 
         // Create the method
         System.out.println("Create the method");
-
-        String return_type = "(LRuntime;)Ljava/lang/Object;";    // takes an object, returns an Object
+        String return_type = "()Ljava/lang/Object;";       // Callable takes no arguments, returns an Object
         // String return_type = "()Ljava/lang/Object;";    // returns an Object
         // String return_type = "()V";                     // returns void
 
-        // method is public static
-        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "generatedMethod", return_type, null, null);
+        // method is public, instance method
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "call", return_type, null, new String[]{"java/lang/Exception"});
         mv.visitCode();
 
         generateCodeBlock(mv, className, data);    // Process the input data
@@ -59,8 +68,8 @@ public class ASMMethodCreator implements Opcodes {
 
         mv.visitMaxs(0, 0);                 // Max stack and local variables
         mv.visitEnd();
-        cw.visitEnd();
-        return cw.toByteArray();
+        cw.visitEnd();                      // Complete the class
+        return cw.toByteArray();            // Generate the bytecode
     }
 
     public static void generateCodeBlock(MethodVisitor mv, String className, Object[][] data) throws Exception {
@@ -110,7 +119,10 @@ public class ASMMethodCreator implements Opcodes {
             System.out.println(" is String");
 
             if ( target.equals("ARG")) {                // { "ARG", 0, int.class }   { ARG, index, type }
-                mv.visitVarInsn(ALOAD, (int)(data[1]));
+                System.out.println("retrieve field " + "arg");
+                // TODO use index
+                mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
+                mv.visitFieldInsn(Opcodes.GETFIELD, className, "arg", "LRuntime;"); // Load the field value
                 return (Class<?>)(data[2]);   // return Class
             } else if ( target.equals("GETSTATIC")) {      // { "GETSTATIC", "env" }   { GETSTATIC, name }
                 System.out.println("retrieve static " + (String)data[1]);
@@ -118,11 +130,13 @@ public class ASMMethodCreator implements Opcodes {
                 return Runtime.class;   // return Class
             } else if ( target.equals("GETFIELD")) {      // { "GETFIELD", "env" }   { GETFIELD, name }
                 System.out.println("retrieve field " + (String)data[1]);
+                mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
                 mv.visitFieldInsn(Opcodes.GETFIELD, className, (String)data[1], "LRuntime;");
                 return Runtime.class;   // return Class
             } else if ( target.equals("PUTFIELD")) {      // { "PUTFIELD", "env" }   { PUTFIELD, name }
                 System.out.println("put field " + (String)data[1]);
                 // TODO process argument
+                mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
                 mv.visitFieldInsn(Opcodes.PUTFIELD, className, (String)data[1], "LRuntime;");
                 return Runtime.class;   // return Class
             } else if ( target.equals("RETURN")) {      // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
@@ -276,6 +290,7 @@ public class ASMMethodCreator implements Opcodes {
                     // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
                     { Runtime.class, "make", 5 },
                     { Runtime.class, "print", 789 },
+                    {"ARG", 0, Runtime.class},          // retrieve the argument
                     { Runtime.class, "print", new Object[]{ Runtime.class, "make", 5 } },
                     { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },  // use the argument
                     { System.out, "println", "123" },
@@ -289,8 +304,7 @@ public class ASMMethodCreator implements Opcodes {
                         new Object[][]{ { Runtime.class, "print", "if is false" } },    // else block
                     },
 
-                    // { "GETSTATIC", "env" },     // TODO retrieve closed variable
-                    { Runtime.class, "print", new Object[]{ "GETSTATIC", "env" } },
+                    { Runtime.class, "print", new Object[]{ "GETSTATIC", "env" } },  // retrieve closed variable
 
                     { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional at the end
                 }
@@ -309,17 +323,10 @@ public class ASMMethodCreator implements Opcodes {
             // TODO "lexical variable"
             // generatedClass.getField("var").set(null, new Runtime(222));     // "lexical variable"
 
-            // Call the generated method using reflection
-            System.out.println("generatedClass.getMethod");
-            Method method = generatedClass.getMethod("generatedMethod", Runtime.class);
-
-            String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
-            Class<?> returnType = method.getReturnType();
-            System.out.println("method descriptor: " + descriptor + " return type: " + returnType);
-
-            System.out.println("invoke");
-            // method.invoke(null);    // println returns void
-            Object result = method.invoke(null, new Runtime(999));
+            // Create an instance of the class with argument "new Runtime(999)" and call the call() method
+            Callable<?> callableInstance = (Callable<?>) generatedClass.getDeclaredConstructor(Runtime.class).newInstance(new Runtime(999));
+            System.out.println("call");
+            Runtime result = (Runtime) callableInstance.call();
 
             // Print the result
             System.out.println("Result of generatedMethod: " + result);
