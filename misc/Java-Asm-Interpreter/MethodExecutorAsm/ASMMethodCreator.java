@@ -94,7 +94,7 @@ public class ASMMethodCreator implements Opcodes {
 
         // Load the target object
         System.out.println("Load the target object " + data[0]);
-        System.out.println("         method        " + data[1] + " ... ");
+        // System.out.println("         method        " + data[1] + " ... ");
         if (target instanceof Object[]) {
             //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
             targetClass = processInstructions(mv, className, (Object[]) target);
@@ -118,12 +118,12 @@ public class ASMMethodCreator implements Opcodes {
         } else if (target instanceof String) {
             System.out.println(" is String");
 
-            if ( target.equals("ARG")) {                // { "ARG", 0, int.class }   { ARG, index, type }
+            if ( target.equals("ARG")) {                // { "ARG" }
                 System.out.println("retrieve field " + "arg");
                 // TODO use index
                 mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
                 mv.visitFieldInsn(Opcodes.GETFIELD, className, "arg", "LRuntime;"); // Load the field value
-                return (Class<?>)(data[2]);   // return Class
+                return Runtime.class;   // return Class
             } else if ( target.equals("GETSTATIC")) {      // { "GETSTATIC", "env" }   { GETSTATIC, name }
                 System.out.println("retrieve static " + (String)data[1]);
                 mv.visitFieldInsn(Opcodes.GETSTATIC, className, (String)data[1], "LRuntime;");
@@ -290,13 +290,13 @@ public class ASMMethodCreator implements Opcodes {
                     // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
                     { Runtime.class, "make", 5 },
                     { Runtime.class, "print", 789 },
-                    {"ARG", 0, Runtime.class},          // retrieve the argument
+                    { "ARG" },          // retrieve the argument
                     { Runtime.class, "print", new Object[]{ Runtime.class, "make", 5 } },
-                    { Runtime.class, "print", new Object[]{"ARG", 0, Runtime.class} },  // use the argument
+                    { Runtime.class, "print", new Object[]{ "ARG" } },  // use the argument
                     { System.out, "println", "123" },
                     { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-                    // { System.out, "println", new Object[]{ new Object[]{"ARG", 0, Runtime.class}, "add", 5 }},                // call a method in the argument
-                    { new Object[]{"ARG", 0, Runtime.class}, "add", 5 },                // call a method in the argument
+                    // { System.out, "println", new Object[]{ new Object[]{ "ARG" }, "add", 5 }},                // call a method in the argument
+                    { new Object[]{ "ARG" }, "add", 5 },                // call a method in the argument
 
                     { "IF", null,
                         new Object[][]{ { Runtime.class, "is_false" } },      // if condition
