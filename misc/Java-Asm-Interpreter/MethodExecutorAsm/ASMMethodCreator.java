@@ -294,6 +294,9 @@ public class ASMMethodCreator implements Opcodes {
     public static void main(String[] args) {
         try {
 
+            //      - when something is called in void context, we need to POP the JVM stack
+            //        to cleanup the unused value
+
             // TODO - implement thread-safety - it may need locking when calling ASM
 
             // TODO - calling constructor with "new"
