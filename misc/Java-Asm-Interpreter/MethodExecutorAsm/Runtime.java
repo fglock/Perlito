@@ -1,9 +1,13 @@
 import java.lang.reflect.Constructor;
 import java.util.concurrent.Callable;
+import java.util.HashMap;
 
 public class Runtime {
     private final long i; 
-    Constructor<? extends Callable<Runtime>> subroutineReference;
+
+    public static HashMap<String, Class<?>> anonSubs = new HashMap<String, Class<?>>();    
+
+    Constructor<? extends Callable<?>> subroutineReference;
 
     public Runtime(long i) {
         this.i = i;
@@ -13,13 +17,28 @@ public class Runtime {
     }
 
     @SuppressWarnings("unchecked")
-    public Runtime( Constructor<? extends Callable<Runtime>> subroutineReference ) {
+    // public Runtime( Constructor<? extends Callable<Runtime>> subroutineReference ) {
+    public Runtime( Constructor<? extends Callable<?>> subroutineReference ) {
         this.i = 0;
         this.subroutineReference = subroutineReference;
     }
 
+    public static Runtime make_sub( String className ) throws Exception {
+
+        // XXX TODO - the class can be removed from the hash once we retrieve the constructor
+        Class<?> clazz = Runtime.anonSubs.get(className);
+        System.out.println("make_sub " + className);
+
+        @SuppressWarnings("unchecked")
+        Constructor<? extends Callable<?>> constructor = (Constructor<? extends Callable<?>>) clazz.getConstructor(Runtime.class);
+
+        Runtime rr = new Runtime(-1);
+        rr.subroutineReference = constructor;
+        return rr;
+    }
+
     public Runtime apply(Runtime a) throws Exception {
-        Runtime result = subroutineReference.newInstance(a).call();
+        Runtime result = (Runtime) subroutineReference.newInstance(a).call();
         return result;
     }
 

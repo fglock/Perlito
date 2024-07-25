@@ -9,8 +9,6 @@ import java.util.concurrent.Callable;
 
 public class ASMMethodCreator implements Opcodes {
 
-    public static Runtime anonSub;
-
     public static byte[] createClassWithMethod(
         String className, 
         Object[][] env, 
@@ -19,6 +17,8 @@ public class ASMMethodCreator implements Opcodes {
     ) throws Exception {
         // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+
+        className = className.replace('.', '/');
 
         // Define the class with version, access flags, name, signature, superclass, and interfaces
         // the class implements Callable
@@ -175,23 +175,20 @@ public class ASMMethodCreator implements Opcodes {
                 Object[][] newEnv  = (Object[][])data[2];    // env
                 Object[][] newLexicals = (Object[][])data[3];    // lexicals
                 Object[][] newData = (Object[][])data[4];    // data
+
+
+                // newClassName = newClassName.replace('.', '/');
+
                 byte[] classData = createClassWithMethod(newClassName, newEnv, newLexicals, newData);
                 Class<?> generatedClass = loader.defineClass(newClassName, classData);
                 generatedClass.getField("env").set(null, new Runtime(111));     // TODO set static field value
-                // retrieve the Callable constructor
-                Constructor<?> callableConstructor = (Constructor<?>) generatedClass.getDeclaredConstructor(Runtime.class);
 
-                // save the constructor in a public place
-                @SuppressWarnings("unchecked")
-                Constructor<? extends Callable<Runtime>> typedConstructor = (Constructor<? extends Callable<Runtime>>) callableConstructor;
-                ASMMethodCreator.anonSub = new Runtime(typedConstructor);
+                // save the class in a public place
+                Runtime.anonSubs.put(newClassName, generatedClass);
 
-                // push a pointer to the subroutine to the JVM stack
-                mv.visitFieldInsn(Opcodes.GETSTATIC, "ASMMethodCreator", "anonSub", "LRuntime;"); // Load the static field ASMMethodCreator.anonSub
-
-                // Create an instance of the class with argument "new Runtime(999)" and call the call() method
-                // Runtime result = (Runtime) callableConstructor.newInstance(new Runtime(999)).call();
-
+                // Runtime.make_sub(className);
+                mv.visitLdcInsn(newClassName);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "Runtime", "make_sub", "(Ljava/lang/String;)LRuntime;", false);
                 System.out.println("SUB end");
                 return Runtime.class;  // Class of the result
             } else {
@@ -316,7 +313,7 @@ public class ASMMethodCreator implements Opcodes {
             //      - subroutine declaration
             //          create a Runtime.call(arg) method
 
-            String className = "GeneratedClass";
+            String className = "anon.GeneratedClass";
 
             // Create the class
             System.out.println("createClassWithMethod");
@@ -350,7 +347,7 @@ public class ASMMethodCreator implements Opcodes {
                     { Runtime.class, "print", new Object[]{ "GETSTATIC", "env" } },  // retrieve closed variable
 
                     { new Object[]{ "SUB",
-                        "myAnonSub",
+                        "anon.myAnonSub",
                         new Object[][]{     // closed variables  { name }
                             { "env" },
                         },
@@ -358,9 +355,9 @@ public class ASMMethodCreator implements Opcodes {
                             { "var2" },
                         },
                         new Object[][]{
-                            { Runtime.class, "print", 1234567 },
+                            { Runtime.class, "print", new Object[]{ "ARG" } },
                         }
-                    }, "apply", new Object[]{ Runtime.class, "make", 5 } },
+                    }, "apply", new Object[]{ Runtime.class, "make", 55555 } },
 
                     { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional at the end
                 }
