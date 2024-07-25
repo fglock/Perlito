@@ -347,6 +347,20 @@ public class ASMMethodCreator implements Opcodes {
 
                     { Runtime.class, "print", new Object[]{ "GETSTATIC", "env" } },  // retrieve closed variable
 
+                    // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional at the end
+
+                    // { new Object[]{ "SUB",
+                    //     "myAnonSub",
+                    //     new Object[][]{     // closed variables  { name }
+                    //         { "env" },
+                    //     },
+                    //     new Object[][]{     // lexical variables  { name }
+                    //         { "var2" },
+                    //     },
+                    //     new Object[][]{
+                    //         { Runtime.class, "print", 1234567 },
+                    //     }
+                    // }, "apply", new Object[]{ Runtime.class, "make", 5 } },
 
                     { "SUB",
                         "myAnonSub",
@@ -359,9 +373,7 @@ public class ASMMethodCreator implements Opcodes {
                         new Object[][]{
                             { Runtime.class, "print", 1234567 },
                         }
-                    },
-
-                    { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional at the end
+                    }
                 }
             );
 
@@ -384,6 +396,10 @@ public class ASMMethodCreator implements Opcodes {
 
             // Print the result
             System.out.println("Result of generatedMethod: " + result);
+
+            // debug the anon sub field
+            System.out.println("Result of generatedMethod SUB: " + result.subroutineReference );
+
         } catch (Exception e) {
             e.printStackTrace();
         }
