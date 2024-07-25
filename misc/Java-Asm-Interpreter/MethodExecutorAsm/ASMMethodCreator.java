@@ -4,6 +4,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Label;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 import java.util.concurrent.Callable;
 
 public class ASMMethodCreator implements Opcodes {
@@ -166,6 +167,26 @@ public class ASMMethodCreator implements Opcodes {
                 // targetClass = Runtime.class;
                 System.out.println("IF end");
                 return Runtime.class;  // Class of the result
+            } else if ( target.equals("SUB")) {      // { "SUB", className, env, lexicals, body }
+                System.out.println("SUB start");
+                CustomClassLoader loader = new CustomClassLoader();             // XXX reuse class loader
+                String newClassName = (String)data[1];
+                Object[][] newEnv  = (Object[][])data[2];    // env
+                Object[][] newLexicals = (Object[][])data[3];    // lexicals
+                Object[][] newData = (Object[][])data[4];    // data
+                byte[] classData = createClassWithMethod(newClassName, newEnv, newLexicals, newData);
+                Class<?> generatedClass = loader.defineClass(className, classData);
+                generatedClass.getField("env").set(null, new Runtime(111));     // TODO set static field value
+                // retrieve the Callable constructor
+                Constructor<?> callableConstructor = (Constructor<?>) generatedClass.getDeclaredConstructor(Runtime.class);
+
+                // TODO - save the constructor in a Runtime object
+
+                // Create an instance of the class with argument "new Runtime(999)" and call the call() method
+                // Runtime result = (Runtime) callableConstructor.newInstance(new Runtime(999)).call();
+
+                System.out.println("SUB end");
+                return Runtime.class;  // Class of the result
             } else {
                 throw new IllegalArgumentException("Unsupported target type: " + target);
                 // targetClass = target.getClass();
@@ -325,7 +346,6 @@ public class ASMMethodCreator implements Opcodes {
             CustomClassLoader loader = new CustomClassLoader();
             Class<?> generatedClass = loader.defineClass(className, classData);
 
-            // Print debug statement
             System.out.println("Generated class: " + generatedClass.getName());
 
             // Set the static field value
