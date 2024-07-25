@@ -1,10 +1,20 @@
+import java.lang.reflect.Constructor;
+import java.util.concurrent.Callable;
+
 public class Runtime {
     private final long i; 
+    private Constructor<? extends Callable<Runtime>> subroutineReference;
+
     public Runtime(long i) {
         this.i = i;
     }
     public Runtime(int i) {
         this.i = (long)i;
+    }
+
+    public Runtime apply(Runtime a) throws Exception {
+        Runtime result = subroutineReference.newInstance(a).call();
+        return result;
     }
 
     public String toString() {
