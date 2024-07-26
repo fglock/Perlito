@@ -254,9 +254,12 @@ public class ASMMethodCreator implements Opcodes {
       } else if (target.equals("MY")) { // { "MY", "$a" }
         System.out.println("MY " + data[1]);
         // TODO set in the scope/frame
-
-        // return Runtime.class; // Class of the result
-        throw new Exception("Not implemented: 'my' declaration");
+        String var = (String)data[1];
+        if ( scope.getVariableIndexInCurrentScope(var) != -1 ) {
+            System.out.println("Warning: \"my\" variable " + var + " masks earlier declaration in same scope");
+        }
+        scope.addVariable(var);
+        return Runtime.class; // Class of the result
       } else if (target.equals("SUB")) { // { "SUB", className, env, body }
         System.out.println("SUB start");
         Object[][] newEnv = (Object[][]) data[1]; // env
@@ -429,7 +432,7 @@ public class ASMMethodCreator implements Opcodes {
                   new Object[] {Runtime.class, "make", 55555}
                 },
 
-                // { "MY", "$a" },
+                { "MY", "$a" },
 
                 {"RETURN", null, new Object[] {Runtime.class, "make", 5}}
               });

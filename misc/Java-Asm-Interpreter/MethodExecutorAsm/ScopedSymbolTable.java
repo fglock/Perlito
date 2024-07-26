@@ -30,5 +30,9 @@ class ScopedSymbolTable {
         }
         return -1;
     }
+
+    public int getVariableIndexInCurrentScope(String name) {
+        return stack.peek().getVariableIndex(name);
+    }
 }
 
