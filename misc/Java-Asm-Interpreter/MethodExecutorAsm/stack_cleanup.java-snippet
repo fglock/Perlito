@@ -1,0 +1,85 @@
+// testing a procedure for stack cleanup
+
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+
+public class ASMStackFlagExample implements Opcodes {
+
+    public static void main(String[] args) throws Exception {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+
+        // Define the class
+        cw.visit(V1_8, ACC_PUBLIC, "ExampleClass", null, "java/lang/Object", null);
+
+        // Define the default constructor
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+
+        // Define a method that uses a flag for stack cleanup
+        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "methodWithFlag", "()V", null, null);
+        mv.visitCode();
+
+        // Push the flag onto the stack
+        mv.visitFieldInsn(GETSTATIC, "StackFlag", "FLAG", "LStackFlag;");
+
+        // Simulate some operations with different types
+        mv.visitInsn(ICONST_5); // Push an integer
+        mv.visitInsn(ICONST_3); // Push another integer
+        mv.visitInsn(IADD); // Add the two integers
+
+        mv.visitLdcInsn("Hello"); // Push a string
+        mv.visitInsn(ACONST_NULL); // Push a null reference
+
+        // Cleanup: Pop the stack until the flag is encountered
+        mv.visitLabel(new org.objectweb.asm.Label());
+        mv.visitInsn(DUP); // Duplicate the top of the stack
+
+        // Check if the top of the stack is an object reference
+        mv.visitInsn(DUP);
+        mv.visitTypeInsn(INSTANCEOF, "java/lang/Object");
+        mv.visitJumpInsn(IFEQ, new org.objectweb.asm.Label());
+
+        // Compare with the flag
+        mv.visitInsn(DUP);
+        mv.visitFieldInsn(GETSTATIC, "StackFlag", "FLAG", "LStackFlag;");
+        mv.visitJumpInsn(IF_ACMPEQ, new org.objectweb.asm.Label());
+
+        // Pop the top of the stack and repeat
+        mv.visitInsn(POP);
+        mv.visitJumpInsn(GOTO, new org.objectweb.asm.Label());
+
+        // End of cleanup
+        mv.visitLabel(new org.objectweb.asm.Label());
+        mv.visitInsn(POP); // Pop the flag
+
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(3, 3); // Automatically computed
+        mv.visitEnd();
+
+        // Complete the class
+        cw.visitEnd();
+
+        // Generate the bytecode
+        byte[] classData = cw.toByteArray();
+
+        // Load the class
+        MyClassLoader loader = new MyClassLoader();
+        Class<?> exampleClass = loader.defineClass("ExampleClass", classData);
+
+        // Invoke the methodWithFlag method
+        exampleClass.getMethod("methodWithFlag").invoke(null);
+    }
+
+    // Custom class loader to load the generated class
+    static class MyClassLoader extends ClassLoader {
+        public Class<?> defineClass(String name, byte[] bytecode) {
+            return defineClass(name, bytecode, 0, bytecode.length);
+        }
+    }
+}
