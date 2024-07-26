@@ -41,10 +41,6 @@ non-method "statements" have a string as first argument:
 
     { "GETSTATIC", "env" }
 
-{ GETFIELD, name }  retrieves a lexical variable ("my")
-
-    { "GETFIELD", "var" }
-
 // Example usage
 MathOperations mathOps = new MathOperations();
 Object[] data = {
