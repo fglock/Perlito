@@ -108,10 +108,12 @@ public class ASMMethodCreator implements Opcodes {
       Label returnLabel)
       throws Exception {
     System.out.println("generateCodeBlock start");
+    scope.enterScope();
     for (int i = 0; i < data.length; i++) {
       System.out.println("Process the input data line: " + i);
       processInstructions(mv, className, scope, data[i], returnLabel);
     }
+    scope.exitScope();
     System.out.println("generateCodeBlock end");
   }
 
@@ -182,14 +184,11 @@ public class ASMMethodCreator implements Opcodes {
         isReturn = true;
       } else if (target.equals("IF")) { // { "IF", null, cond, if, else }
         System.out.println("IF start");
+        scope.enterScope();
         Label elseLabel = new Label();
         Label endLabel = new Label();
-        generateCodeBlock(
-            mv,
-            className,
-            scope,
-            (Object[][]) data[2],
-            returnLabel); // Generate code for the condition
+        processInstructions(
+            mv, className, scope, (Object[])data[2], returnLabel); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, elseLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
@@ -203,20 +202,18 @@ public class ASMMethodCreator implements Opcodes {
           generateCodeBlock(mv, className, scope, (Object[][]) data[4], returnLabel);
         }
         mv.visitLabel(endLabel); // End of the if/else structure
+        scope.exitScope();
         System.out.println("IF end");
         return Runtime.class; // Class of the result
       } else if (target.equals("WHILE")) { // { "WHILE", null, cond, body }
         System.out.println("WHILE start");
+        scope.enterScope();
         Label startLabel = new Label();
         Label endLabel = new Label();
 
         mv.visitLabel(startLabel);
-        generateCodeBlock(
-            mv,
-            className,
-            scope,
-            (Object[][]) data[2],
-            returnLabel); // Generate code for the condition
+        processInstructions(
+            mv, className, scope, (Object[])data[2], returnLabel); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
@@ -226,26 +223,20 @@ public class ASMMethodCreator implements Opcodes {
             returnLabel); // Generate code for the loop body
         mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
         mv.visitLabel(endLabel); // End of the loop
+        scope.exitScope();
         System.out.println("WHILE end");
         return Runtime.class; // Class of the result
       } else if (target.equals("FOR")) { // { "FOR", init, cond, incr, body }
         System.out.println("FOR start");
+        scope.enterScope();
         Label startLabel = new Label();
         Label endLabel = new Label();
 
-        generateCodeBlock(
-            mv,
-            className,
-            scope,
-            (Object[][]) data[1],
-            returnLabel); // Generate code for the initialization
+        processInstructions(
+            mv, className, scope, (Object[])data[1], returnLabel); // Generate code for the initialization
         mv.visitLabel(startLabel);
-        generateCodeBlock(
-            mv,
-            className,
-            scope,
-            (Object[][]) data[2],
-            returnLabel); // Generate code for the condition
+        processInstructions(
+            mv, className, scope, (Object[])data[2], returnLabel); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
@@ -253,14 +244,11 @@ public class ASMMethodCreator implements Opcodes {
             scope,
             (Object[][]) data[4],
             returnLabel); // Generate code for the loop body
-        generateCodeBlock(
-            mv,
-            className,
-            scope,
-            (Object[][]) data[3],
-            returnLabel); // Generate code for the increment
+        processInstructions(
+            mv, className, scope, (Object[])data[3], returnLabel); // Generate code for the increment
         mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
         mv.visitLabel(endLabel); // End of the loop
+        scope.exitScope();
         System.out.println("FOR end");
         return Runtime.class; // Class of the result
       } else if (target.equals("MY")) { // { "MY", "$a" }
@@ -421,7 +409,7 @@ public class ASMMethodCreator implements Opcodes {
                 {
                   "IF",
                   null,
-                  new Object[][] {{Runtime.class, "is_false"}}, // if condition
+                  new Object[] {Runtime.class, "is_false"}, // if condition
                   new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
                   new Object[][] {{Runtime.class, "print", "if is false"}}, // else block
                 },

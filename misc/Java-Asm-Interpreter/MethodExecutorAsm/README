@@ -19,7 +19,7 @@ non-method "statements" have a string as first argument:
 { "IF", null, { cond }, { ifBlock }, { elseBlock } } if/else statement. The elseBlock can be null.
 
     { "IF", null,
-        new Object[][]{ { Runtime.class, "is_false" } },                // if condition
+        new Object[] { Runtime.class, "is_false" },                     // if condition
         new Object[][]{ { Runtime.class, "print", "if is true" } },     // if block
         new Object[][]{ { Runtime.class, "print", "if is false" } },    // else block
     },
