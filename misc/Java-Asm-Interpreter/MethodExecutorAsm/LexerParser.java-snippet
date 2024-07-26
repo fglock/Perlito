@@ -1,0 +1,207 @@
+/*
+
+A simple lexer to tokenize the input Perl-like program.
+
+A simple recursive descent parser to parse the tokens and generate the array-of-arrays structure.
+
+Variable Declaration:
+
+    parseVariableDeclaration(): Parses a variable declaration and initialization statement.
+    Example: my $v = 10; is parsed into { "SETVAR", "v", 10 }.
+
+Subroutine Definition:
+
+    parseSubroutine(): Parses a subroutine definition.
+    Example: my $sub = sub { return $v + 20 }; is parsed into { "SUB", "sub", new Object[][]{}, new Object[][]{}, body.toArray(new Object[0][]) }.
+
+If Statement:
+
+    parseIfStatement(): Parses an if statement.
+    Example: if ($v) { print "ok" } is parsed into { "IF", null, new Object[][]{ { "GETVAR", "v" } }, ifBody.toArray(new Object[0][]), null }
+
+*/
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Lexer {
+    public enum TokenType {
+        NUMBER("\\d+"),
+        IDENTIFIER("[a-zA-Z_][a-zA-Z0-9_]*"),
+        OPERATOR("[+\\-*/]"),
+        ASSIGNMENT("="),
+        SEMICOLON(";"),
+        COMMA(","),
+        OPEN_PAREN("\\("),
+        CLOSE_PAREN("\\)"),
+        OPEN_BRACE("\\{"),
+        CLOSE_BRACE("\\}"),
+        IF("if"),
+        PRINT("print"),
+        RETURN("return"),
+        SUB("sub"),
+        MY("my"),
+        WHITESPACE("[ \t\r\n]+");
+
+        public final String pattern;
+
+        TokenType(String pattern) {
+            this.pattern = pattern;
+        }
+    }
+
+    public static class Token {
+        public final TokenType type;
+        public final String value;
+
+        public Token(TokenType type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Token(%s, %s)", type.name(), value);
+        }
+    }
+
+    public static List<Token> tokenize(String input) {
+        List<Token> tokens = new ArrayList<>();
+        StringBuilder tokenPatternsBuffer = new StringBuilder();
+        for (TokenType tokenType : TokenType.values()) {
+            tokenPatternsBuffer.append(String.format("|(?<%s>%s)", tokenType.name(), tokenType.pattern));
+        }
+        Pattern tokenPatterns = Pattern.compile(tokenPatternsBuffer.substring(1));
+
+        Matcher matcher = tokenPatterns.matcher(input);
+        while (matcher.find()) {
+            for (TokenType tokenType : TokenType.values()) {
+                if (matcher.group(tokenType.name()) != null) {
+                    if (tokenType != TokenType.WHITESPACE) {
+                        tokens.add(new Token(tokenType, matcher.group(tokenType.name())));
+                    }
+                    break;
+                }
+            }
+        }
+        return tokens;
+    }
+
+    public static void main(String[] args) {
+        String input = "my $v = 10; my $sub = sub { return $v + 20 }; if ($v) { print \"ok\" }";
+        List<Token> tokens = tokenize(input);
+        for (Token token : tokens) {
+            System.out.println(token);
+        }
+    }
+}
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Parser {
+    private final List<Lexer.Token> tokens;
+    private int position;
+
+    public Parser(List<Lexer.Token> tokens) {
+        this.tokens = tokens;
+        this.position = 0;
+    }
+
+    private Lexer.Token peek() {
+        if (position < tokens.size()) {
+            return tokens.get(position);
+        }
+        return null;
+    }
+
+    private Lexer.Token consume() {
+        if (position < tokens.size()) {
+            return tokens.get(position++);
+        }
+        return null;
+    }
+
+    private void expect(Lexer.TokenType type) {
+        Lexer.Token token = consume();
+        if (token == null || token.type != type) {
+            throw new RuntimeException("Expected " + type + " but found " + (token == null ? "EOF" : token.type));
+        }
+    }
+
+    public Object[][] parse() {
+        List<Object[]> statements = new ArrayList<>();
+        while (peek() != null) {
+            statements.add(parseStatement());
+        }
+        return statements.toArray(new Object[0][]);
+    }
+
+    private Object[] parseStatement() {
+        Lexer.Token token = peek();
+        if (token.type == Lexer.TokenType.MY) {
+            return parseVariableDeclaration();
+        } else if (token.type == Lexer.TokenType.IF) {
+            return parseIfStatement();
+        } else if (token.type == Lexer.TokenType.IDENTIFIER && "sub".equals(token.value)) {
+            return parseSubroutine();
+        } else {
+            throw new RuntimeException("Unexpected token: " + token);
+        }
+    }
+
+    private Object[] parseVariableDeclaration() {
+        expect(Lexer.TokenType.MY);
+        expect(Lexer.TokenType.IDENTIFIER);
+        String varName = consume().value;
+        expect(Lexer.TokenType.ASSIGNMENT);
+        int value = Integer.parseInt(consume().value);
+        expect(Lexer.TokenType.SEMICOLON);
+        return new Object[]{"SETVAR", varName, value};
+    }
+
+    private Object[] parseSubroutine() {
+        expect(Lexer.TokenType.IDENTIFIER
+        expect(Lexer.TokenType.IDENTIFIER); // 'sub'
+        expect(Lexer.TokenType.OPEN_BRACE);
+        List<Object[]> body = new ArrayList<>();
+        while (peek().type != Lexer.TokenType.CLOSE_BRACE) {
+            body.add(parseStatement());
+        }
+        expect(Lexer.TokenType.CLOSE_BRACE);
+        return new Object[]{"SUB", "sub", new Object[][]{}, new Object[][]{}, body.toArray(new Object[0][])};
+    }
+
+    private Object[] parseIfStatement() {
+        expect(Lexer.TokenType.IF);
+        expect(Lexer.TokenType.OPEN_PAREN);
+        expect(Lexer.TokenType.IDENTIFIER);
+        String varName = consume().value;
+        expect(Lexer.TokenType.CLOSE_PAREN);
+        expect(Lexer.TokenType.OPEN_BRACE);
+        List<Object[]> ifBody = new ArrayList<>();
+        while (peek().type != Lexer.TokenType.CLOSE_BRACE) {
+            ifBody.add(parseStatement());
+        }
+        expect(Lexer.TokenType.CLOSE_BRACE);
+        return new Object[]{"IF", null, new Object[][]{{"GETVAR", varName}}, ifBody.toArray(new Object[0][]), null};
+    }
+
+    public static void main(String[] args) {
+        String input = "my $v = 10; my $sub = sub { return $v + 20 }; if ($v) { print \"ok\" }";
+        List<Lexer.Token> tokens = Lexer.tokenize(input);
+        Parser parser = new Parser(tokens);
+        Object[][] program = parser.parse();
+        printProgram(program);
+    }
+
+    private static void printProgram(Object[][] program) {
+        for (Object[] statement : program) {
+            System.out.println(java.util.Arrays.deepToString(statement));
+        }
+    }
+}
+

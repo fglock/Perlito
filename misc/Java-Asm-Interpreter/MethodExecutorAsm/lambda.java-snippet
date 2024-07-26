@@ -1,0 +1,62 @@
+import org.objectweb.asm.*;
+
+import java.util.function.Supplier;
+
+public class GeneratedClass {
+    public static void main(String[] args) throws Exception {
+        // ASM code to generate the bytecode
+        ClassWriter cw = new ClassWriter(0);
+        MethodVisitor mv;
+
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, "GeneratedClass", null, "java/lang/Object", null);
+
+        {
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
+            mv.visitCode();
+
+            // Step 3: Define the subroutine
+            mv.visitInvokeDynamicInsn("apply", "()Ljava/util/function/Supplier;", new Handle(
+                    Opcodes.H_INVOKESTATIC,
+                    "java/lang/invoke/LambdaMetafactory",
+                    "metafactory",
+                    "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;"
+                            + "Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)"
+                            + "Ljava/lang/invoke/CallSite;",
+                    false),
+                    Type.getType("()Ljava/lang/Object;"),
+                    new Handle(Opcodes.H_INVOKESTATIC, "GeneratedClass", "lambda$main$0", "()Ljava/lang/Object;", false),
+                    Type.getType("()Ljava/lang/Object;"));
+            mv.visitVarInsn(Opcodes.ASTORE, 2); // Store in local variable 2
+
+            // Retrieve the Supplier and call its get method
+            mv.visitVarInsn(Opcodes.ALOAD, 2);
+            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/function/Supplier", "get", "()Ljava/lang/Object;", true);
+            mv.visitInsn(Opcodes.POP);
+
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(3, 3);
+            mv.visitEnd();
+        }
+        cw.visitEnd();
+
+        // Load the generated class and invoke the main method
+        byte[] bytecode = cw.toByteArray();
+        MyClassLoader loader = new MyClassLoader();
+        Class<?> generatedClass = loader.defineClass("GeneratedClass", bytecode);
+        generatedClass.getMethod("main", String[].class).invoke(null, (Object) new String[]{});
+    }
+
+    // This is the method that the Supplier will call
+    public static Object lambda$main$0() {
+        // Implementation of the method
+        return "Hello, World!";
+    }
+
+    // Custom class loader to load the generated class
+    static class MyClassLoader extends ClassLoader {
+        public Class<?> defineClass(String name, byte[] bytecode) {
+            return defineClass(name, bytecode, 0, bytecode.length);
+        }
+    }
+}
+
