@@ -50,7 +50,7 @@ public class ASMMethodCreator implements Opcodes {
           Opcodes.PUTSTATIC, className, fieldName, "LRuntime;"); // Set the static field
     }
     mv.visitInsn(Opcodes.RETURN);
-    mv.visitMaxs(1, 0);
+    mv.visitMaxs(0, 0);
     mv.visitEnd();
 
     // Add a constructor without parameters
@@ -111,14 +111,18 @@ public class ASMMethodCreator implements Opcodes {
     scope.enterScope();
     for (int i = 0; i < data.length; i++) {
       System.out.println("Process the input data line: " + i);
-      processInstructions(mv, className, scope, data[i], returnLabel);
+      processInstructions(mv, className, scope, data[i], returnLabel,
+          i != (data.length - 1) // void context, except for the last line
+        );
     }
     scope.exitScope();
     System.out.println("generateCodeBlock end");
   }
 
   private static Class<?> processInstructions(
-      MethodVisitor mv, String className, ScopedSymbolTable scope, Object[] data, Label returnLabel)
+      MethodVisitor mv, String className, ScopedSymbolTable scope, Object[] data, Label returnLabel,
+            boolean isVoidContext
+        )
       throws Exception {
     // if (data.length < 2) {
     //     throw new IllegalArgumentException("Invalid data structure");
@@ -135,7 +139,7 @@ public class ASMMethodCreator implements Opcodes {
     // System.out.println("         method        " + data[1] + " ... ");
     if (target instanceof Object[]) {
       //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-      targetClass = processInstructions(mv, className, scope, (Object[]) target, returnLabel);
+      targetClass = processInstructions(mv, className, scope, (Object[]) target, returnLabel, isVoidContext);
       System.out.println(" target is instance of: " + targetClass);
     } else if (target instanceof Class<?>) {
       targetIsInstance = false; // If the target is a class, it means we're calling a static method
@@ -192,7 +196,7 @@ public class ASMMethodCreator implements Opcodes {
             className,
             scope,
             (Object[]) data[1],
-            returnLabel); // Generate code for the condition
+            returnLabel, false); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, elseLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
@@ -221,7 +225,7 @@ public class ASMMethodCreator implements Opcodes {
             className,
             scope,
             (Object[]) data[1],
-            returnLabel); // Generate code for the condition
+            returnLabel, false); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
@@ -245,14 +249,14 @@ public class ASMMethodCreator implements Opcodes {
             className,
             scope,
             (Object[]) data[1],
-            returnLabel); // Generate code for the initialization
+            returnLabel, true); // Generate code for the initialization
         mv.visitLabel(startLabel);
         processInstructions(
             mv,
             className,
             scope,
             (Object[]) data[2],
-            returnLabel); // Generate code for the condition
+            returnLabel, false); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
@@ -265,7 +269,7 @@ public class ASMMethodCreator implements Opcodes {
             className,
             scope,
             (Object[]) data[3],
-            returnLabel); // Generate code for the increment
+            returnLabel, true); // Generate code for the increment
         mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
         mv.visitLabel(endLabel); // End of the loop
         scope.exitScope();
@@ -309,7 +313,7 @@ public class ASMMethodCreator implements Opcodes {
                   + var
                   + "\"?)");
         }
-        processInstructions(mv, className, scope, (Object[]) data[2], returnLabel);
+        processInstructions(mv, className, scope, (Object[]) data[2], returnLabel, false);
         mv.visitVarInsn(Opcodes.ASTORE, varIndex);
         System.out.println("SETVAR end " + varIndex);
         return Runtime.class; // Class of the result
@@ -363,7 +367,7 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("  argument: " + arg);
         if (arg instanceof Object[]) {
           Class<?> returnClass =
-              processInstructions(mv, className, scope, (Object[]) arg, returnLabel);
+              processInstructions(mv, className, scope, (Object[]) arg, returnLabel, false);
           argTypes[i] = getPrimitiveClass(returnClass); // process returnClass
         } else if (arg instanceof Integer) {
           mv.visitLdcInsn(arg);
@@ -462,11 +466,26 @@ public class ASMMethodCreator implements Opcodes {
                 // { System.out, "println", new Object[]{ new Object[]{ "ARG" }, "add", 5 }},
                 //         // call a method in the argument
                 {new Object[] {"ARG"}, "add", 5}, // call a method in the argument
+                // {"MY", "$a"}, // "MY" doesn't generate bytecode
+                // {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
                 {
                   "IF",
                   new Object[] {Runtime.class, "is_false"}, // if condition
                   new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
-                  new Object[][] {{Runtime.class, "print", "if is false"}}, // else block
+                  new Object[][] { // else block
+                    {Runtime.class, "print", "if is false"},
+                    // {new Object[] {"ARG"}, "add", 5}, // call a method in the argument
+                    // {
+                    //   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+                    // },
+                    // {"MY", "$a"}, // "MY" doesn't generate bytecode
+                    // {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
+                    //   },
+                    // },
+                    // {
+                    //   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+                    // },
+                  },
                 },
                 {
                   Runtime.class, "print", new Object[] {"GETSTATIC", "env"}
@@ -484,11 +503,9 @@ public class ASMMethodCreator implements Opcodes {
                   "apply",
                   new Object[] {Runtime.class, "make", 55555}
                 },
-                {"MY", "$a"}, // "MY" doesn't generate bytecode
-                {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
-                {
-                  Runtime.class, "print", new Object[] {"GETVAR", "$a"},
-                },
+                // {
+                //   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+                // },
                 {"RETURN", null, new Object[] {Runtime.class, "make", 5}}
               });
 
