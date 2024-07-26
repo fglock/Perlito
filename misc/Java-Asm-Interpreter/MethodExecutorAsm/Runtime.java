@@ -1,10 +1,9 @@
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.concurrent.Callable;
 
 public class Runtime {
   private final long i;
-  Constructor<? extends Callable<?>> subroutineReference; // used by apply()
+  Method subroutineReference; // used by apply()
 
   public static HashMap<String, Class<?>> anonSubs =
       new HashMap<String, Class<?>>(); // temp storage for make_sub()
@@ -22,19 +21,16 @@ public class Runtime {
   }
 
   public static Runtime make_sub(String className) throws Exception {
+    // finish setting up a CODE object
     Class<?> clazz = Runtime.anonSubs.remove(className);
-
-    @SuppressWarnings("unchecked")
-    Constructor<? extends Callable<?>> constructor =
-        (Constructor<? extends Callable<?>>) clazz.getConstructor(Runtime.class);
-
+    Method mm = clazz.getMethod("apply", Runtime.class);
     Runtime rr = new Runtime(-1);
-    rr.subroutineReference = constructor;
+    rr.subroutineReference = mm;
     return rr;
   }
 
   public Runtime apply(Runtime a) throws Exception {
-    Runtime result = (Runtime) subroutineReference.newInstance(a).call();
+    Runtime result = (Runtime) subroutineReference.invoke(null, a);
     return result;
   }
 

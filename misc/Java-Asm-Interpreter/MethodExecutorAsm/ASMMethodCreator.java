@@ -9,7 +9,7 @@ public class ASMMethodCreator implements Opcodes {
   static int classCounter = 0;
 
   public static Class<?> createClassWithMethod(
-      String sourceFilename, Object[][] env, Object[][] lexicals, Object[][] data)
+      String sourceFilename, Object[][] env, Object[][] data)
       throws Exception {
     // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options
     ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
@@ -21,17 +21,13 @@ public class ASMMethodCreator implements Opcodes {
     cw.visitSource(sourceFilename, null);
 
     // Define the class with version, access flags, name, signature, superclass, and interfaces
-    // the class implements Callable
     cw.visit(
         Opcodes.V1_8,
         Opcodes.ACC_PUBLIC,
         className,
         null,
         "java/lang/Object",
-        new String[] {"java/util/concurrent/Callable"});
-
-    // Add a private instance field to store the call() argument
-    cw.visitField(Opcodes.ACC_PRIVATE, "arg", "LRuntime;", null, null).visitEnd();
+        null);
 
     // Add static fields to the class (closed variables)
     for (int i = 0; i < env.length; i++) {
@@ -39,13 +35,6 @@ public class ASMMethodCreator implements Opcodes {
       System.out.println("Create static field: " + fieldName);
       cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, fieldName, "LRuntime;", null, null)
           .visitEnd();
-    }
-
-    // Add instance fields to the class (lexical variables)
-    for (int i = 0; i < lexicals.length; i++) {
-      String fieldName = (String) lexicals[i][0];
-      System.out.println("Create static field: " + fieldName);
-      cw.visitField(Opcodes.ACC_PUBLIC, fieldName, "LRuntime;", null, null).visitEnd();
     }
 
     MethodVisitor mv;
@@ -71,8 +60,8 @@ public class ASMMethodCreator implements Opcodes {
     mv.visitMaxs(1, 0);
     mv.visitEnd();
 
-    // Add a constructor that accepts a Runtime parameter
-    mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(LRuntime;)V", null, null);
+    // Add a constructor without parameters
+    mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
     mv.visitCode();
     mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
     mv.visitMethodInsn(
@@ -81,24 +70,18 @@ public class ASMMethodCreator implements Opcodes {
         "<init>",
         "()V",
         false); // Call the superclass constructor
-    mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
-    mv.visitVarInsn(Opcodes.ALOAD, 1); // Load the constructor parameter
-    mv.visitFieldInsn(
-        Opcodes.PUTFIELD, className, "arg", "LRuntime;"); // Store the parameter in the field
     mv.visitInsn(Opcodes.RETURN); // Return void
     mv.visitMaxs(0, 0); // Automatically computed
     mv.visitEnd();
 
     // Create the method
     System.out.println("Create the method");
-    String return_type = "()Ljava/lang/Object;"; // Callable takes no arguments, returns an Object
-    // String return_type = "()Ljava/lang/Object;";    // returns an Object
-    // String return_type = "()V";                     // returns void
+    String return_type = "(LRuntime;)Ljava/lang/Object;"; // takes an Object arg, returns an Object
 
-    // method is public, instance method
+    // method is public, static method
     mv =
         cw.visitMethod(
-            Opcodes.ACC_PUBLIC, "call", return_type, null, new String[] {"java/lang/Exception"});
+            Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "apply", return_type, null, new String[] {"java/lang/Exception"});
     mv.visitCode();
 
     Label returnLabel = new Label();
@@ -172,27 +155,27 @@ public class ASMMethodCreator implements Opcodes {
       System.out.println(" is String");
 
       if (target.equals("ARG")) { // { "ARG" }
-        System.out.println("retrieve field " + "arg");
-        mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
-        mv.visitFieldInsn(Opcodes.GETFIELD, className, "arg", "LRuntime;"); // Load the field value
+        System.out.println("retrieve arg");
+        mv.visitVarInsn(Opcodes.ALOAD, 0); // Load argument
         return Runtime.class; // return Class
       } else if (target.equals("GETSTATIC")) { // { "GETSTATIC", "env" }   { GETSTATIC, name }
         System.out.println("retrieve static " + (String) data[1]);
         mv.visitFieldInsn(Opcodes.GETSTATIC, className, (String) data[1], "LRuntime;");
         return Runtime.class; // return Class
-      } else if (target.equals("GETFIELD")) { // { "GETFIELD", "var" }   { GETFIELD, name }
-        System.out.println("retrieve field " + (String) data[1]);
-        mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
-        mv.visitFieldInsn(Opcodes.GETFIELD, className, (String) data[1], "LRuntime;");
-        return Runtime.class; // return Class
-      } else if (target.equals("PUTFIELD")) { // { "PUTFIELD", "var" }   { PUTFIELD, name }
-        System.out.println("put field " + (String) data[1]);
-        // TODO process argument
-        // mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
-        // mv.visitFieldInsn(Opcodes.PUTFIELD, className, (String) data[1], "LRuntime;");
-        // return Runtime.class; // return Class
-        throw new Exception("Not implemented: PUTFIELD");
-      } else if (target.equals(
+      }
+      // } else if (target.equals("GETFIELD")) { // { "GETFIELD", "var" }   { GETFIELD, name }
+      //   System.out.println("retrieve field " + (String) data[1]);
+      //   mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
+      //   mv.visitFieldInsn(Opcodes.GETFIELD, className, (String) data[1], "LRuntime;");
+      //   return Runtime.class; // return Class
+      // } else if (target.equals("PUTFIELD")) { // { "PUTFIELD", "var" }   { PUTFIELD, name }
+      //   System.out.println("put field " + (String) data[1]);
+      //   // TODO process argument
+      //   // mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
+      //   // mv.visitFieldInsn(Opcodes.PUTFIELD, className, (String) data[1], "LRuntime;");
+      //   // return Runtime.class; // return Class
+      //   throw new Exception("Not implemented: PUTFIELD");
+      else if (target.equals(
           "RETURN")) { // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
         System.out.println(" calling return");
         targetClass = Runtime.class;
@@ -286,14 +269,13 @@ public class ASMMethodCreator implements Opcodes {
 
         // return Runtime.class; // Class of the result
         throw new Exception("Not implemented: 'my' declaration");
-      } else if (target.equals("SUB")) { // { "SUB", className, env, lexicals, body }
+      } else if (target.equals("SUB")) { // { "SUB", className, env, body }
         System.out.println("SUB start");
         Object[][] newEnv = (Object[][]) data[1]; // env
-        Object[][] newLexicals = (Object[][]) data[2]; // lexicals
-        Object[][] newData = (Object[][]) data[3]; // data
+        Object[][] newData = (Object[][]) data[2]; // data
 
         Class<?> generatedClass =
-            createClassWithMethod(sourceFilename, newEnv, newLexicals, newData);
+            createClassWithMethod(sourceFilename, newEnv, newData);
         generatedClass.getField("env").set(null, new Runtime(111)); // TODO set static field value
 
         // this will be called at runtime: Runtime.make_sub(className);
@@ -424,9 +406,6 @@ public class ASMMethodCreator implements Opcodes {
               new Object[][] { // closed variables  { name }
                 {"env"},
               },
-              new Object[][] { // lexical variables  { name }
-                {"var"},
-              },
               new Object[][] {
                 // { Integer.class, "new", 5 },     // calling a constructor with "new"
                 // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
@@ -455,9 +434,6 @@ public class ASMMethodCreator implements Opcodes {
                     "SUB",
                     new Object[][] { // closed variables  { name }
                       {"env"},
-                    },
-                    new Object[][] { // lexical variables  { name }
-                      {"var2"},
                     },
                     new Object[][] {
                       {Runtime.class, "print", new Object[] {"ARG"}},

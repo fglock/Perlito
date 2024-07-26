@@ -24,16 +24,13 @@ non-method "statements" have a string as first argument:
         new Object[][]{ { Runtime.class, "print", "if is false" } },    // else block
     },
 
-{ "SUB", className, env, lexicals, body }   defines a subroutine
+{ "SUB", className, env, body }   defines a subroutine
 
     // define and call an anonymous subroutine
     { new Object[]{ "SUB",
         "anon.myAnonSub",
         new Object[][]{     // closed variables  { name }
             { "env" },
-        },
-        new Object[][]{     // lexical variables  { name }
-            { "var2" },
         },
         new Object[][]{
             { Runtime.class, "print", new Object[]{ "ARG" } },
