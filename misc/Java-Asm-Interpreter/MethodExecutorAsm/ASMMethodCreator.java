@@ -188,7 +188,11 @@ public class ASMMethodCreator implements Opcodes {
         Label elseLabel = new Label();
         Label endLabel = new Label();
         processInstructions(
-            mv, className, scope, (Object[])data[1], returnLabel); // Generate code for the condition
+            mv,
+            className,
+            scope,
+            (Object[]) data[1],
+            returnLabel); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, elseLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
@@ -213,7 +217,11 @@ public class ASMMethodCreator implements Opcodes {
 
         mv.visitLabel(startLabel);
         processInstructions(
-            mv, className, scope, (Object[])data[1], returnLabel); // Generate code for the condition
+            mv,
+            className,
+            scope,
+            (Object[]) data[1],
+            returnLabel); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
@@ -233,10 +241,18 @@ public class ASMMethodCreator implements Opcodes {
         Label endLabel = new Label();
 
         processInstructions(
-            mv, className, scope, (Object[])data[1], returnLabel); // Generate code for the initialization
+            mv,
+            className,
+            scope,
+            (Object[]) data[1],
+            returnLabel); // Generate code for the initialization
         mv.visitLabel(startLabel);
         processInstructions(
-            mv, className, scope, (Object[])data[2], returnLabel); // Generate code for the condition
+            mv,
+            className,
+            scope,
+            (Object[]) data[2],
+            returnLabel); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
@@ -245,7 +261,11 @@ public class ASMMethodCreator implements Opcodes {
             (Object[][]) data[4],
             returnLabel); // Generate code for the loop body
         processInstructions(
-            mv, className, scope, (Object[])data[3], returnLabel); // Generate code for the increment
+            mv,
+            className,
+            scope,
+            (Object[]) data[3],
+            returnLabel); // Generate code for the increment
         mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
         mv.visitLabel(endLabel); // End of the loop
         scope.exitScope();
@@ -254,11 +274,44 @@ public class ASMMethodCreator implements Opcodes {
       } else if (target.equals("MY")) { // { "MY", "$a" }
         System.out.println("MY " + data[1]);
         // TODO set in the scope/frame
-        String var = (String)data[1];
-        if ( scope.getVariableIndexInCurrentScope(var) != -1 ) {
-            System.out.println("Warning: \"my\" variable " + var + " masks earlier declaration in same scope");
+        String var = (String) data[1];
+        if (scope.getVariableIndexInCurrentScope(var) != -1) {
+          System.out.println(
+              "Warning: \"my\" variable " + var + " masks earlier declaration in same scope");
         }
         scope.addVariable(var);
+        return Runtime.class; // Class of the result
+      } else if (target.equals("GETVAR")) { // { "GETVAR", "$a" }
+        System.out.println("GETVAR " + data[1]);
+        String var = (String) data[1];
+        int varIndex = scope.getVariableIndex(var);
+        if (varIndex == -1) {
+          System.out.println(
+              "Warning: Global symbol \""
+                  + var
+                  + "\" requires explicit package name (did you forget to declare \"my "
+                  + var
+                  + "\"?)");
+        }
+        mv.visitVarInsn(Opcodes.ALOAD, varIndex);
+        System.out.println("GETVAR end " + varIndex);
+        return Runtime.class; // Class of the result
+      } else if (target.equals(
+          "SETVAR")) { // { "SETVAR", "$a", new Object[] {Runtime.class, "make", 12} },
+        System.out.println("SETVAR " + data[1]);
+        String var = (String) data[1];
+        int varIndex = scope.getVariableIndex(var);
+        if (varIndex == -1) {
+          System.out.println(
+              "Warning: Global symbol \""
+                  + var
+                  + "\" requires explicit package name (did you forget to declare \"my "
+                  + var
+                  + "\"?)");
+        }
+        processInstructions(mv, className, scope, (Object[]) data[2], returnLabel);
+        mv.visitVarInsn(Opcodes.ASTORE, varIndex);
+        System.out.println("SETVAR end " + varIndex);
         return Runtime.class; // Class of the result
       } else if (target.equals("SUB")) { // { "SUB", className, env, body }
         System.out.println("SUB start");
@@ -431,9 +484,11 @@ public class ASMMethodCreator implements Opcodes {
                   "apply",
                   new Object[] {Runtime.class, "make", 55555}
                 },
-
-                { "MY", "$a" },
-
+                {"MY", "$a"}, // "MY" doesn't generate bytecode
+                {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
+                {
+                  Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+                },
                 {"RETURN", null, new Object[] {Runtime.class, "make", 5}}
               });
 
