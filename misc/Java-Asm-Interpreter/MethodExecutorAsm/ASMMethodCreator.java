@@ -1,5 +1,4 @@
 import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -167,7 +166,7 @@ public class ASMMethodCreator implements Opcodes {
         //      mv.visitVarInsn(Opcodes.ILOAD, 1); // Load the method argument (int value)
         //      mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Integer", "<init>", "(I)V",
         // false); // Call the Integer constructor
-
+        throw new Exception("Not implemented: calling a constructor");
       }
     } else if (target instanceof String) {
       System.out.println(" is String");
@@ -189,9 +188,10 @@ public class ASMMethodCreator implements Opcodes {
       } else if (target.equals("PUTFIELD")) { // { "PUTFIELD", "var" }   { PUTFIELD, name }
         System.out.println("put field " + (String) data[1]);
         // TODO process argument
-        mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
-        mv.visitFieldInsn(Opcodes.PUTFIELD, className, (String) data[1], "LRuntime;");
-        return Runtime.class; // return Class
+        // mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
+        // mv.visitFieldInsn(Opcodes.PUTFIELD, className, (String) data[1], "LRuntime;");
+        // return Runtime.class; // return Class
+        throw new Exception("Not implemented: PUTFIELD");
       } else if (target.equals(
           "RETURN")) { // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
         System.out.println(" calling return");
@@ -284,7 +284,8 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("MY " + data[1]);
         // TODO set in the scope/frame
 
-        return Runtime.class; // Class of the result
+        // return Runtime.class; // Class of the result
+        throw new Exception("Not implemented: 'my' declaration");
       } else if (target.equals("SUB")) { // { "SUB", className, env, lexicals, body }
         System.out.println("SUB start");
         Object[][] newEnv = (Object[][]) data[1]; // env
@@ -295,11 +296,9 @@ public class ASMMethodCreator implements Opcodes {
             createClassWithMethod(sourceFilename, newEnv, newLexicals, newData);
         generatedClass.getField("env").set(null, new Runtime(111)); // TODO set static field value
 
-        // save the class in a public place
+        // this will be called at runtime: Runtime.make_sub(className);
         String newClassName = "org.perlito.anon" + String.valueOf(classCounter++);
         Runtime.anonSubs.put(newClassName, generatedClass);
-
-        // Runtime.make_sub(className);
         mv.visitLdcInsn(newClassName);
         mv.visitMethodInsn(
             Opcodes.INVOKESTATIC, "Runtime", "make_sub", "(Ljava/lang/String;)LRuntime;", false);
@@ -357,7 +356,6 @@ public class ASMMethodCreator implements Opcodes {
     }
 
     if (isReturn) {
-      // mv.visitInsn(Opcodes.ARETURN);      // returns an Object
       mv.visitJumpInsn(GOTO, returnLabel);
       return targetClass; // Class of the result
     }
@@ -475,7 +473,6 @@ public class ASMMethodCreator implements Opcodes {
               });
 
       System.out.println("Generated class: " + generatedClass.getName());
-      // Set the static field value
       // TODO - move to class definition; create initializer method
       generatedClass.getField("env").set(null, new Runtime(111));
 
