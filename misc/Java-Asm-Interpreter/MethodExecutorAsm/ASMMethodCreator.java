@@ -9,8 +9,9 @@ import java.util.concurrent.Callable;
 
 public class ASMMethodCreator implements Opcodes {
 
+    static int classCounter = 0;
+
     public static Class<?> createClassWithMethod(
-        String className, 
         Object[][] env, 
         Object[][] lexicals,
         Object[][] data
@@ -18,8 +19,8 @@ public class ASMMethodCreator implements Opcodes {
         // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
-        String classNameDot = className;
-        className = className.replace('.', '/');
+        String classNameDot = "org.perlito.anon" + String.valueOf(classCounter++);
+        String className = classNameDot.replace('.', '/');
 
         // Define the class with version, access flags, name, signature, superclass, and interfaces
         // the class implements Callable
@@ -175,15 +176,15 @@ public class ASMMethodCreator implements Opcodes {
                 return Runtime.class;  // Class of the result
             } else if ( target.equals("SUB")) {      // { "SUB", className, env, lexicals, body }
                 System.out.println("SUB start");
-                String newClassName = (String)data[1];
-                Object[][] newEnv  = (Object[][])data[2];    // env
-                Object[][] newLexicals = (Object[][])data[3];    // lexicals
-                Object[][] newData = (Object[][])data[4];    // data
+                Object[][] newEnv  = (Object[][])data[1];    // env
+                Object[][] newLexicals = (Object[][])data[2];    // lexicals
+                Object[][] newData = (Object[][])data[3];    // data
 
-                Class<?> generatedClass = createClassWithMethod(newClassName, newEnv, newLexicals, newData);
+                Class<?> generatedClass = createClassWithMethod(newEnv, newLexicals, newData);
                 generatedClass.getField("env").set(null, new Runtime(111));     // TODO set static field value
 
                 // save the class in a public place
+                String newClassName = "org.perlito.anon" + String.valueOf(classCounter++);
                 Runtime.anonSubs.put(newClassName, generatedClass);
 
                 // Runtime.make_sub(className);
@@ -313,12 +314,9 @@ public class ASMMethodCreator implements Opcodes {
             //      - subroutine declaration
             //          create a Runtime.call(arg) method
 
-            String className = "anon.GeneratedClass";
-
             // Create the class
             System.out.println("createClassWithMethod");
             Class<?> generatedClass = createClassWithMethod(
-                className,
                 new Object[][]{     // closed variables  { name }
                     { "env" },
                 },
@@ -347,7 +345,6 @@ public class ASMMethodCreator implements Opcodes {
                     { Runtime.class, "print", new Object[]{ "GETSTATIC", "env" } },  // retrieve closed variable
 
                     { new Object[]{ "SUB",
-                        "anon.myAnonSub",
                         new Object[][]{     // closed variables  { name }
                             { "env" },
                         },
