@@ -418,38 +418,6 @@ public class ASMMethodCreator implements Opcodes {
   public static void main(String[] args) {
     try {
 
-      // TODO - add debug information (line numbers)
-      //          Label thisLabel = new Label();
-      //          mv.visitLabel(thisLabel);
-      //          mv.visitLineNumber(10, thisLabel); // Associate line number 10 with thisLabel
-
-      //      - when something is called in void context, we need to POP the JVM stack
-      //        to cleanup the unused value
-
-      // TODO - tests
-      //        test FOR, WHILE
-
-      // TODO - implement thread-safety - it may need locking when calling ASM
-
-      // TODO - calling constructor with "new"
-
-      // TODO - create multiple classes; ensure GC works for these classes
-
-      // TODO - "env" access - create a method to initialize the static field values, instead of
-      // using reflection
-      //          generatedClass.getField("env").set(null, mathOps);
-      //          use "clinit" method
-
-      //      - lexical variables like "my"
-      //          GETFIELD, PUTFIELD
-      //          initialize variables
-
-      //      - goto, macros - control structures
-      //      - implement "local"
-      //      - eval, BEGIN-block
-      //      - subroutine declaration
-      //          create a Runtime.call(arg) method
-
       // Create the class
       System.out.println("createClassWithMethod");
       Class<?> generatedClass =
@@ -503,32 +471,58 @@ public class ASMMethodCreator implements Opcodes {
 
                 // { "MY", "$a" },
 
-                {
-                  "RETURN", null, new Object[] {Runtime.class, "make", 5}
-                } // RETURN is optional at the end
+                {"RETURN", null, new Object[] {Runtime.class, "make", 5}}
               });
 
       System.out.println("Generated class: " + generatedClass.getName());
-
       // Set the static field value
       // TODO - move to class definition; create initializer method
       generatedClass.getField("env").set(null, new Runtime(111));
 
-      // TODO "lexical variable"
-      // generatedClass.getField("var").set(null, new Runtime(222));     // "lexical variable"
+      // Convert into a Runtime object
+      String newClassName = "org.perlito.anon" + String.valueOf(classCounter++);
+      Runtime.anonSubs.put(newClassName, generatedClass);
+      Runtime anonSub = Runtime.make_sub(newClassName);
+      Runtime result = anonSub.apply(new Runtime(999));
 
-      // Create an instance of the class with argument "new Runtime(999)" and call the call() method
-      Callable<?> callableInstance =
-          (Callable<?>)
-              generatedClass.getDeclaredConstructor(Runtime.class).newInstance(new Runtime(999));
-      System.out.println("call");
-      Runtime result = (Runtime) callableInstance.call();
-
-      // Print the result
       System.out.println("Result of generatedMethod: " + result);
-
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 }
+
+/* TODO
+
+  - add debug information (line numbers)
+      Label thisLabel = new Label();
+      mv.visitLabel(thisLabel);
+      mv.visitLineNumber(10, thisLabel); // Associate line number 10 with thisLabel
+
+  - when something is called in void context, we need to POP the JVM stack
+    to cleanup the unused value. Note: it also works without this
+
+  - tests
+    test FOR, WHILE
+
+  - implement thread-safety - it may need locking when calling ASM
+
+  - calling constructor with "new"
+
+  - create multiple classes; ensure GC works for these classes
+
+  - "env" access - create a method to initialize the static field values, instead of using reflection
+      generatedClass.getField("env").set(null, mathOps);
+      use "clinit" method
+
+  - lexical variables like "my"
+      GETFIELD, PUTFIELD
+      initialize variables
+      create "PAD" information and assign to each block at runtime
+
+  - goto, macros - control structures
+  - implement "local"
+  - eval, BEGIN-block
+  - named subroutine declaration
+
+*/

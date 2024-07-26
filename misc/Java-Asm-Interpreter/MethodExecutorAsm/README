@@ -12,7 +12,7 @@ non-method "statements" have a string as first argument:
 
     {"ARG"}
 
-{ "RETURN", null, value } returns the value. Otherwise, the method returns the last value.
+{ "RETURN", null, value } returns the value. RETURN is optional at the end: the method returns the last value.
 
     { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
 
