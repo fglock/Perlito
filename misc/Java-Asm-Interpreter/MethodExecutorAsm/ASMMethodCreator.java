@@ -43,6 +43,20 @@ public class ASMMethodCreator implements Opcodes {
             cw.visitField(Opcodes.ACC_PUBLIC, fieldName, "LRuntime;", null, null).visitEnd();
         }
 
+
+        // Create the class initializer method
+        mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+        mv.visitCode();
+        // Initialize the static fields
+        // TODO
+        // // mv.visitInsn(Opcodes.ICONST_5); // Push the constant value 5 onto the stack
+        // // mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "staticField", "I"); // Set the static field
+        // Return from the method
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(1, 0);
+        mv.visitEnd();
+
+
         // Add a constructor that accepts a Runtime parameter
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(LRuntime;)V", null, null);
         mv.visitCode();
@@ -308,6 +322,7 @@ public class ASMMethodCreator implements Opcodes {
 
             // TODO - "env" access - create a method to initialize the static field values, instead of using reflection
             //          generatedClass.getField("env").set(null, mathOps);
+            //          use "clinit" method
 
             //      - lexical variables like "my"
             //          GETFIELD, PUTFIELD
