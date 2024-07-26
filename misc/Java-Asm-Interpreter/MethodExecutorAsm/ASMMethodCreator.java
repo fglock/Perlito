@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 
 public class ASMMethodCreator implements Opcodes {
 
-    public static byte[] createClassWithMethod(
+    public static Class<?> createClassWithMethod(
         String className, 
         Object[][] env, 
         Object[][] lexicals,
@@ -18,6 +18,7 @@ public class ASMMethodCreator implements Opcodes {
         // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
+        String classNameDot = className;
         className = className.replace('.', '/');
 
         // Define the class with version, access flags, name, signature, superclass, and interfaces
@@ -72,10 +73,14 @@ public class ASMMethodCreator implements Opcodes {
         // mv.visitInsn(Opcodes.RETURN);   // returns void
         mv.visitInsn(Opcodes.ARETURN);      // returns an Object
 
-        mv.visitMaxs(0, 0);                 // Max stack and local variables
+        mv.visitMaxs(0, 0);                 // max stack and local variables
         mv.visitEnd();
-        cw.visitEnd();                      // Complete the class
-        return cw.toByteArray();            // Generate the bytecode
+        cw.visitEnd();                      // complete the class
+        byte[] classData = cw.toByteArray();    // generate the bytecode
+
+        CustomClassLoader loader = new CustomClassLoader();
+        Class<?> generatedClass = loader.defineClass(classNameDot, classData);  // generate the class
+        return generatedClass;
     }
 
     public static void generateCodeBlock(
@@ -137,12 +142,12 @@ public class ASMMethodCreator implements Opcodes {
                 System.out.println("retrieve static " + (String)data[1]);
                 mv.visitFieldInsn(Opcodes.GETSTATIC, className, (String)data[1], "LRuntime;");
                 return Runtime.class;   // return Class
-            } else if ( target.equals("GETFIELD")) {      // { "GETFIELD", "env" }   { GETFIELD, name }
+            } else if ( target.equals("GETFIELD")) {      // { "GETFIELD", "var" }   { GETFIELD, name }
                 System.out.println("retrieve field " + (String)data[1]);
                 mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
                 mv.visitFieldInsn(Opcodes.GETFIELD, className, (String)data[1], "LRuntime;");
                 return Runtime.class;   // return Class
-            } else if ( target.equals("PUTFIELD")) {      // { "PUTFIELD", "env" }   { PUTFIELD, name }
+            } else if ( target.equals("PUTFIELD")) {      // { "PUTFIELD", "var" }   { PUTFIELD, name }
                 System.out.println("put field " + (String)data[1]);
                 // TODO process argument
                 mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
@@ -170,17 +175,12 @@ public class ASMMethodCreator implements Opcodes {
                 return Runtime.class;  // Class of the result
             } else if ( target.equals("SUB")) {      // { "SUB", className, env, lexicals, body }
                 System.out.println("SUB start");
-                CustomClassLoader loader = new CustomClassLoader();             // XXX reuse class loader?
                 String newClassName = (String)data[1];
                 Object[][] newEnv  = (Object[][])data[2];    // env
                 Object[][] newLexicals = (Object[][])data[3];    // lexicals
                 Object[][] newData = (Object[][])data[4];    // data
 
-
-                // newClassName = newClassName.replace('.', '/');
-
-                byte[] classData = createClassWithMethod(newClassName, newEnv, newLexicals, newData);
-                Class<?> generatedClass = loader.defineClass(newClassName, classData);
+                Class<?> generatedClass = createClassWithMethod(newClassName, newEnv, newLexicals, newData);
                 generatedClass.getField("env").set(null, new Runtime(111));     // TODO set static field value
 
                 // save the class in a public place
@@ -317,7 +317,7 @@ public class ASMMethodCreator implements Opcodes {
 
             // Create the class
             System.out.println("createClassWithMethod");
-            byte[] classData = createClassWithMethod(
+            Class<?> generatedClass = createClassWithMethod(
                 className,
                 new Object[][]{     // closed variables  { name }
                     { "env" },
@@ -362,9 +362,6 @@ public class ASMMethodCreator implements Opcodes {
                     { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional at the end
                 }
             );
-
-            CustomClassLoader loader = new CustomClassLoader();
-            Class<?> generatedClass = loader.defineClass(className, classData);
 
             System.out.println("Generated class: " + generatedClass.getName());
 

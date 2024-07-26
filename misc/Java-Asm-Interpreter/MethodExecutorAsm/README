@@ -8,21 +8,45 @@ it can be recursive:
 
 non-method "statements" have a string as first argument:
 
-{ "ARG", index, class } retrieve a positional argument. Arguments start in zero.
+{ "ARG" } retrieve the argument object.
 
-    {"ARG", 0, Runtime.class}         
+    {"ARG"}
 
-{ "RETURN", null value } returns the value. Otherwise, the method returns the last value.
+{ "RETURN", null, value } returns the value. Otherwise, the method returns the last value.
 
     { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
 
 { "IF", null, { cond }, { ifBlock }, { elseBlock } } if/else statement. The elseBlock can be null.
 
     { "IF", null,
-        new Object[][]{ { Runtime.class, "is_false" } },      // if condition
-        new Object[][]{ { Runtime.class, "print", "if is true" } },    // if block
+        new Object[][]{ { Runtime.class, "is_false" } },                // if condition
+        new Object[][]{ { Runtime.class, "print", "if is true" } },     // if block
         new Object[][]{ { Runtime.class, "print", "if is false" } },    // else block
     },
+
+{ "SUB", className, env, lexicals, body }   defines a subroutine
+
+    // define and call an anonymous subroutine
+    { new Object[]{ "SUB",
+        "anon.myAnonSub",
+        new Object[][]{     // closed variables  { name }
+            { "env" },
+        },
+        new Object[][]{     // lexical variables  { name }
+            { "var2" },
+        },
+        new Object[][]{
+            { Runtime.class, "print", new Object[]{ "ARG" } },
+        }
+    }, "apply", new Object[]{ Runtime.class, "make", 55555 } },
+
+{ GETSTATIC, name } retrieves a captured variable in a closure
+
+    { "GETSTATIC", "env" }
+
+{ GETFIELD, name }  retrieves a lexical variable ("my")
+
+    { "GETFIELD", "var" }
 
 // Example usage
 MathOperations mathOps = new MathOperations();
