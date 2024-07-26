@@ -8,6 +8,9 @@ public class Runtime {
 
     public static HashMap<String, Class<?>> anonSubs = new HashMap<String, Class<?>>();    // temp storage for make_sub()
 
+    public Runtime() {
+        this.i = 0;
+    }
     public Runtime(long i) {
         this.i = i;
     }

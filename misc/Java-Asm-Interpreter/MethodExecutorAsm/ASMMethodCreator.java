@@ -43,22 +43,26 @@ public class ASMMethodCreator implements Opcodes {
             cw.visitField(Opcodes.ACC_PUBLIC, fieldName, "LRuntime;", null, null).visitEnd();
         }
 
+        MethodVisitor mv;
 
         // Create the class initializer method
         mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
         mv.visitCode();
-        // Initialize the static fields
-        // TODO
-        // // mv.visitInsn(Opcodes.ICONST_5); // Push the constant value 5 onto the stack
-        // // mv.visitFieldInsn(Opcodes.PUTSTATIC, className, "staticField", "I"); // Set the static field
-        // Return from the method
+        for (int i = 0; i < env.length; i++) {  // Initialize the static fields
+            String fieldName = (String)env[i][0];
+            System.out.println("Init static field: " + fieldName);
+            mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "Runtime", "<init>", "()V", false); // Create a new instance of Runtime
+            mv.visitFieldInsn(Opcodes.PUTSTATIC, className, fieldName, "LRuntime;"); // Set the static field
+        }
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 0);
         mv.visitEnd();
 
 
         // Add a constructor that accepts a Runtime parameter
-        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(LRuntime;)V", null, null);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(LRuntime;)V", null, null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false); // Call the superclass constructor
@@ -185,8 +189,35 @@ public class ASMMethodCreator implements Opcodes {
                     generateCodeBlock(mv, className, (Object[][])data[4], returnLabel);
                 }
                 mv.visitLabel(endLabel);            // End of the if/else structure
-                // targetClass = Runtime.class;
                 System.out.println("IF end");
+                return Runtime.class;  // Class of the result
+            } else if (target.equals("WHILE")) {  // { "WHILE", null, cond, body }
+                System.out.println("WHILE start");
+                Label startLabel = new Label();
+                Label endLabel = new Label();
+
+                mv.visitLabel(startLabel);
+                generateCodeBlock(mv, className, (Object[][])data[2], returnLabel);  // Generate code for the condition
+                mv.visitJumpInsn(IFEQ, endLabel);  // Assuming the condition leaves a boolean on the stack
+                generateCodeBlock(mv, className, (Object[][])data[3], returnLabel);  // Generate code for the loop body
+                mv.visitJumpInsn(GOTO, startLabel);  // Jump back to the start of the loop
+                mv.visitLabel(endLabel);  // End of the loop
+                System.out.println("WHILE end");
+                return Runtime.class;  // Class of the result
+            } else if (target.equals("FOR")) {  // { "FOR", init, cond, incr, body }
+                System.out.println("FOR start");
+                Label startLabel = new Label();
+                Label endLabel = new Label();
+                
+                generateCodeBlock(mv, className, (Object[][])data[1], returnLabel);  // Generate code for the initialization
+                mv.visitLabel(startLabel);
+                generateCodeBlock(mv, className, (Object[][])data[2], returnLabel);  // Generate code for the condition
+                mv.visitJumpInsn(IFEQ, endLabel);  // Assuming the condition leaves a boolean on the stack
+                generateCodeBlock(mv, className, (Object[][])data[4], returnLabel);  // Generate code for the loop body
+                generateCodeBlock(mv, className, (Object[][])data[3], returnLabel);  // Generate code for the increment
+                mv.visitJumpInsn(GOTO, startLabel);  // Jump back to the start of the loop
+                mv.visitLabel(endLabel);  // End of the loop
+                System.out.println("FOR end");
                 return Runtime.class;  // Class of the result
             } else if ( target.equals("MY")) {      // { "MY", "$a" }
                 System.out.println("MY " + data[1]);
@@ -313,6 +344,9 @@ public class ASMMethodCreator implements Opcodes {
 
             //      - when something is called in void context, we need to POP the JVM stack
             //        to cleanup the unused value
+
+            // TODO - tests
+            //        test FOR, WHILE
 
             // TODO - implement thread-safety - it may need locking when calling ASM
 
