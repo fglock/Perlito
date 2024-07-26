@@ -1,10 +1,10 @@
 this is a Lisp-like interpreter using ASM to execute a data structure like (pseudo-code):
 
-    [ (class or object), "method name", arg1, arg2 ... ]
+    { (class or object), "method name", arg1, arg2 ... }
 
 it can be recursive:
 
-    [ (class or object), "method name", arg1, [ (class or object), "method name", ... ] ... ]
+    { (class or object), "method name", arg1, { (class or object), "method name", ... } ... }
 
 non-method "statements" have a string as first argument:
 
