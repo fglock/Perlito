@@ -174,6 +174,11 @@ public class ASMMethodCreator implements Opcodes {
                 // targetClass = Runtime.class;
                 System.out.println("IF end");
                 return Runtime.class;  // Class of the result
+            } else if ( target.equals("MY")) {      // { "MY", "$a" }
+                System.out.println("MY " + data[1]);
+                // TODO set in the scope/frame
+
+                return Runtime.class;  // Class of the result
             } else if ( target.equals("SUB")) {      // { "SUB", className, env, lexicals, body }
                 System.out.println("SUB start");
                 Object[][] newEnv  = (Object[][])data[1];    // env
@@ -355,6 +360,8 @@ public class ASMMethodCreator implements Opcodes {
                             { Runtime.class, "print", new Object[]{ "ARG" } },
                         }
                     }, "apply", new Object[]{ Runtime.class, "make", 55555 } },
+
+                    // { "MY", "$a" },
 
                     { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }        // RETURN is optional at the end
                 }
