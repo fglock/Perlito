@@ -9,8 +9,7 @@ public class ASMMethodCreator implements Opcodes {
   static int classCounter = 0;
 
   public static Class<?> createClassWithMethod(
-      String sourceFilename, Object[][] env, Object[][] data)
-      throws Exception {
+      ScopedSymbolTable scope, Object[][] env, Object[][] data) throws Exception {
     // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options
     ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
@@ -18,16 +17,10 @@ public class ASMMethodCreator implements Opcodes {
     String className = classNameDot.replace('.', '/');
 
     // Set the source file name for runtime error messages
-    cw.visitSource(sourceFilename, null);
+    cw.visitSource(scope.fileName, null);
 
     // Define the class with version, access flags, name, signature, superclass, and interfaces
-    cw.visit(
-        Opcodes.V1_8,
-        Opcodes.ACC_PUBLIC,
-        className,
-        null,
-        "java/lang/Object",
-        null);
+    cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, className, null, "java/lang/Object", null);
 
     // Add static fields to the class (closed variables)
     for (int i = 0; i < env.length; i++) {
@@ -81,12 +74,16 @@ public class ASMMethodCreator implements Opcodes {
     // method is public, static method
     mv =
         cw.visitMethod(
-            Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "apply", return_type, null, new String[] {"java/lang/Exception"});
+            Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC,
+            "apply",
+            return_type,
+            null,
+            new String[] {"java/lang/Exception"});
     mv.visitCode();
 
     Label returnLabel = new Label();
 
-    generateCodeBlock(mv, className, sourceFilename, data, returnLabel); // Process the input data
+    generateCodeBlock(mv, className, scope, data, returnLabel); // Process the input data
 
     System.out.println("Return the last value");
     mv.visitLabel(returnLabel);
@@ -104,18 +101,22 @@ public class ASMMethodCreator implements Opcodes {
   }
 
   public static void generateCodeBlock(
-      MethodVisitor mv, String className, String sourceFilename, Object[][] data, Label returnLabel)
+      MethodVisitor mv,
+      String className,
+      ScopedSymbolTable scope,
+      Object[][] data,
+      Label returnLabel)
       throws Exception {
     System.out.println("generateCodeBlock start");
     for (int i = 0; i < data.length; i++) {
       System.out.println("Process the input data line: " + i);
-      processInstructions(mv, className, sourceFilename, data[i], returnLabel);
+      processInstructions(mv, className, scope, data[i], returnLabel);
     }
     System.out.println("generateCodeBlock end");
   }
 
   private static Class<?> processInstructions(
-      MethodVisitor mv, String className, String sourceFilename, Object[] data, Label returnLabel)
+      MethodVisitor mv, String className, ScopedSymbolTable scope, Object[] data, Label returnLabel)
       throws Exception {
     // if (data.length < 2) {
     //     throw new IllegalArgumentException("Invalid data structure");
@@ -132,8 +133,7 @@ public class ASMMethodCreator implements Opcodes {
     // System.out.println("         method        " + data[1] + " ... ");
     if (target instanceof Object[]) {
       //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-      targetClass =
-          processInstructions(mv, className, sourceFilename, (Object[]) target, returnLabel);
+      targetClass = processInstructions(mv, className, scope, (Object[]) target, returnLabel);
       System.out.println(" target is instance of: " + targetClass);
     } else if (target instanceof Class<?>) {
       targetIsInstance = false; // If the target is a class, it means we're calling a static method
@@ -187,20 +187,20 @@ public class ASMMethodCreator implements Opcodes {
         generateCodeBlock(
             mv,
             className,
-            sourceFilename,
+            scope,
             (Object[][]) data[2],
             returnLabel); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, elseLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
             className,
-            sourceFilename,
+            scope,
             (Object[][]) data[3],
             returnLabel); // Generate code for the if block
         mv.visitJumpInsn(GOTO, endLabel);
         mv.visitLabel(elseLabel);
         if (data[4] != null) { // Generate code for the else block
-          generateCodeBlock(mv, className, sourceFilename, (Object[][]) data[4], returnLabel);
+          generateCodeBlock(mv, className, scope, (Object[][]) data[4], returnLabel);
         }
         mv.visitLabel(endLabel); // End of the if/else structure
         System.out.println("IF end");
@@ -214,14 +214,14 @@ public class ASMMethodCreator implements Opcodes {
         generateCodeBlock(
             mv,
             className,
-            sourceFilename,
+            scope,
             (Object[][]) data[2],
             returnLabel); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
             className,
-            sourceFilename,
+            scope,
             (Object[][]) data[3],
             returnLabel); // Generate code for the loop body
         mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
@@ -236,27 +236,27 @@ public class ASMMethodCreator implements Opcodes {
         generateCodeBlock(
             mv,
             className,
-            sourceFilename,
+            scope,
             (Object[][]) data[1],
             returnLabel); // Generate code for the initialization
         mv.visitLabel(startLabel);
         generateCodeBlock(
             mv,
             className,
-            sourceFilename,
+            scope,
             (Object[][]) data[2],
             returnLabel); // Generate code for the condition
         mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
         generateCodeBlock(
             mv,
             className,
-            sourceFilename,
+            scope,
             (Object[][]) data[4],
             returnLabel); // Generate code for the loop body
         generateCodeBlock(
             mv,
             className,
-            sourceFilename,
+            scope,
             (Object[][]) data[3],
             returnLabel); // Generate code for the increment
         mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
@@ -274,8 +274,7 @@ public class ASMMethodCreator implements Opcodes {
         Object[][] newEnv = (Object[][]) data[1]; // env
         Object[][] newData = (Object[][]) data[2]; // data
 
-        Class<?> generatedClass =
-            createClassWithMethod(sourceFilename, newEnv, newData);
+        Class<?> generatedClass = createClassWithMethod(scope, newEnv, newData);
         generatedClass.getField("env").set(null, new Runtime(111)); // TODO set static field value
 
         // this will be called at runtime: Runtime.make_sub(className);
@@ -320,7 +319,7 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("  argument: " + arg);
         if (arg instanceof Object[]) {
           Class<?> returnClass =
-              processInstructions(mv, className, sourceFilename, (Object[]) arg, returnLabel);
+              processInstructions(mv, className, scope, (Object[]) arg, returnLabel);
           argTypes[i] = getPrimitiveClass(returnClass); // process returnClass
         } else if (arg instanceof Integer) {
           mv.visitLdcInsn(arg);
@@ -402,7 +401,7 @@ public class ASMMethodCreator implements Opcodes {
       System.out.println("createClassWithMethod");
       Class<?> generatedClass =
           createClassWithMethod(
-              "test.pl", // source filename
+              new ScopedSymbolTable("test.pl"), // source filename, top-level scope
               new Object[][] { // closed variables  { name }
                 {"env"},
               },
