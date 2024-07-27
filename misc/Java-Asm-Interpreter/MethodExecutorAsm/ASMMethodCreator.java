@@ -24,7 +24,8 @@ public class ASMMethodCreator implements Opcodes {
     // Define the class with version, access flags, name, signature, superclass, and interfaces
     cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, className, null, "java/lang/Object", null);
 
-    // Add static fields to the class (closure variables)
+    // Add static fields to the class
+    // closure variables are stored here; they are copied to local vars at runtime
     for (int i = 0; i < env.length; i++) {
       String fieldName = env[i];
       System.out.println("Create static field: " + fieldName);
@@ -144,21 +145,14 @@ public class ASMMethodCreator implements Opcodes {
       Label returnLabel,
       boolean isVoidContext)
       throws Exception {
-    // if (data.length < 2) {
-    //     throw new IllegalArgumentException("Invalid data structure");
-    // }
 
-    Object target = data[0];
-
+    Object target = data[0]; // Load the target object
     boolean targetIsInstance = true;
     boolean isReturn = false;
     Class<?> targetClass;
 
-    // Load the target object
     System.out.println("Load the target object " + data[0]);
-    // System.out.println("         method        " + data[1] + " ... ");
-    if (target instanceof Object[]) {
-      //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
+    if (target instanceof Object[]) { //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
       targetClass =
           processInstructions(mv, className, scope, (Object[]) target, returnLabel, false);
       System.out.println(" target is instance of: " + targetClass);
@@ -305,6 +299,7 @@ public class ASMMethodCreator implements Opcodes {
       } else if (target.equals("MY")) { // { "MY", "$a" }
         System.out.println("MY " + data[1]);
         // TODO set in the scope/frame
+        // TODO initialize the Runtime object
         String var = (String) data[1];
         if (scope.getVariableIndexInCurrentScope(var) != -1) {
           System.out.println(
@@ -354,10 +349,6 @@ public class ASMMethodCreator implements Opcodes {
 
         // retrieve closure variable list
         // alternately, scan the AST for variables and capture only the ones that are used
-        ScopedSymbolTable newScope =
-            new ScopedSymbolTable(scope.fileName); // same filename, new top-level scope
-        newScope.enterScope();
-
         Map<Integer, String> visibleVariables = scope.getAllVisibleVariables();
         String[] newEnv = new String[visibleVariables.size()];
         System.out.println(" scope.getAllVisibleVariables");
@@ -365,12 +356,11 @@ public class ASMMethodCreator implements Opcodes {
           String variableName = visibleVariables.get(index);
           System.out.println("  " + index + " " + variableName);
           newEnv[index] = variableName;
-          newScope.addVariable(variableName);
         }
 
         Object[][] newData = (Object[][]) data[2]; // AST
 
-        Class<?> generatedClass = createClassWithMethod(newScope, newEnv, newData);
+        Class<?> generatedClass = createClassWithMethod(scope, newEnv, newData);
         String newClassNameDot = generatedClass.getName();
         String newClassName = newClassNameDot.replace('.', '/');
         System.out.println(
@@ -384,6 +374,7 @@ public class ASMMethodCreator implements Opcodes {
         }
 
         // this will be called at runtime: Runtime.make_sub(className);
+        // TODO move the "make_sub" to ASM
         Runtime.anonSubs.put(newClassName, generatedClass);
         mv.visitLdcInsn(newClassName);
         mv.visitMethodInsn(
@@ -572,12 +563,8 @@ public class ASMMethodCreator implements Opcodes {
                 {"RETURN", null, new Object[] {Runtime.class, "make", 5}}
               });
 
-      System.out.println("Generated class: " + generatedClass.getName());
-      // TODO - move to class definition; create initializer method
-      // generatedClass.getField("env").set(null, new Runtime(111));
-
       // Convert into a Runtime object
-      String newClassName = "org.perlito.anon" + String.valueOf(classCounter++);
+      String newClassName = generatedClass.getName();
       Runtime.anonSubs.put(newClassName, generatedClass);
       Runtime anonSub = Runtime.make_sub(newClassName);
       Runtime result = anonSub.apply(new Runtime(999));
@@ -626,7 +613,9 @@ public class ASMMethodCreator implements Opcodes {
 
   - goto, macros - control structures
   - implement "local"
-  - eval, BEGIN-block
+  - eval string
+        freeze the scope at eval string, we will need it to compile the string later
+  - BEGIN-block
   - named subroutine declaration
 
 */
