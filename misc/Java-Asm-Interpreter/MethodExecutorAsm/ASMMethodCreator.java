@@ -151,7 +151,7 @@ public class ASMMethodCreator implements Opcodes {
     if (target instanceof Object[]) {
       //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
       targetClass =
-          processInstructions(mv, className, scope, (Object[]) target, returnLabel, isVoidContext);
+          processInstructions(mv, className, scope, (Object[]) target, returnLabel, false);
       System.out.println(" target is instance of: " + targetClass);
     } else if (target instanceof Class<?>) {
       targetIsInstance = false; // If the target is a class, it means we're calling a static method
@@ -222,11 +222,11 @@ public class ASMMethodCreator implements Opcodes {
             scope,
             (Object[][]) data[2],
             returnLabel,
-            isVoidContext); // Generate code for the if block
+            true); // Generate code for the if block
         mv.visitJumpInsn(GOTO, endLabel);
         mv.visitLabel(elseLabel);
         if (data[3] != null) { // Generate code for the else block
-          generateCodeBlock(mv, className, scope, (Object[][]) data[3], returnLabel, isVoidContext);
+          generateCodeBlock(mv, className, scope, (Object[][]) data[3], returnLabel, true);
         }
         mv.visitLabel(endLabel); // End of the if/else structure
         scope.exitScope();
@@ -425,8 +425,9 @@ public class ASMMethodCreator implements Opcodes {
         hasArguments
             ? targetClass.getMethod(methodName, argTypes)
             : targetClass.getMethod(methodName);
-    System.out.println("call class.method: " + targetClass + " . " + methodName);
     String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
+    System.out.println(
+        "call class.method: " + targetClass + " . " + methodName + " descriptor: " + descriptor);
 
     // Invoke the method
     if (targetIsInstance) {
@@ -446,8 +447,9 @@ public class ASMMethodCreator implements Opcodes {
           descriptor,
           false);
     }
-    if (isVoidContext) {
-      // mv.visitInsn(Opcodes.POP); // XXX bug?
+    if (isVoidContext && descriptor.charAt(descriptor.length() - 1) != 'V') {
+      System.out.println(" in void context");
+      mv.visitInsn(Opcodes.POP); // cleanup the stack
     }
     Class<?> returnType = method.getReturnType();
     System.out.println("return type: " + returnType);
@@ -495,10 +497,10 @@ public class ASMMethodCreator implements Opcodes {
                 {Runtime.class, "print", new Object[] {Runtime.class, "make", 5}},
                 {Runtime.class, "print", new Object[] {"ARG"}}, // use the argument
                 {System.out, "println", "123"},
-                {new Object[] {Runtime.class, "make", 5}, "add", 5},
+                {new Object[] {Runtime.class, "make", 5}, "add", 6},
                 // { System.out, "println", new Object[]{ new Object[]{ "ARG" }, "add", 5 }},
                 //         // call a method in the argument
-                {new Object[] {"ARG"}, "add", 5}, // call a method in the argument
+                {new Object[] {"ARG"}, "add", 7}, // call a method in the argument
                 {"MY", "$a"}, // "MY" doesn't generate bytecode
                 {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
                 {
@@ -567,6 +569,9 @@ public class ASMMethodCreator implements Opcodes {
 
   - when something is called in void context, we need to POP the JVM stack
     to cleanup the unused value. Note: it also works without this
+        - "return" in a block should ASTORE the result and then "goto" end of sub,
+          instead of push to stack
+        - "if" in end of sub should inject a "return" in both blocks
 
   - tests
     test FOR, WHILE
