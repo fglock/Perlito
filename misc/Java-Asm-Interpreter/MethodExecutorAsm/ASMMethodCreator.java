@@ -561,6 +561,17 @@ public class ASMMethodCreator implements Opcodes {
 
 /* TODO
 
+  - global variables and namespaces
+
+  - lexical variables like "my"
+      initialize variables
+
+  - local variables
+      set up the cleanup before RETURN
+      set up exception handling
+
+  - set up the closed variables in the new anon subroutine
+
   - add debug information (line numbers)
       Label thisLabel = new Label();
       mv.visitLabel(thisLabel);
@@ -584,11 +595,6 @@ public class ASMMethodCreator implements Opcodes {
   - "env" access - create a method to initialize the static field values, instead of using reflection
       generatedClass.getField("env").set(null, mathOps);
       use "clinit" method
-
-  - lexical variables like "my"
-      GETFIELD, PUTFIELD
-      initialize variables
-      create "PAD" information and assign to each block at runtime
 
   - goto, macros - control structures
   - implement "local"
