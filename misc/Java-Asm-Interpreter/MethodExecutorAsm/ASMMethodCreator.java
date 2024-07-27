@@ -253,7 +253,7 @@ public class ASMMethodCreator implements Opcodes {
             scope,
             (Object[][]) data[2],
             returnLabel,
-            isVoidContext); // Generate code for the loop body
+            true); // Generate code for the loop body
         mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
         mv.visitLabel(endLabel); // End of the loop
         scope.exitScope();
@@ -516,9 +516,9 @@ public class ASMMethodCreator implements Opcodes {
                     // },
                     {"MY", "$a"}, // "MY" doesn't generate bytecode
                     {"SETVAR", "$a", new Object[] {Runtime.class, "make", 13}},
-                    // {
-                    //   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
-                    // },
+                    {
+                      Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+                    },
                   },
                 },
                 {
