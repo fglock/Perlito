@@ -24,7 +24,7 @@ public class ASMMethodCreator implements Opcodes {
     // Define the class with version, access flags, name, signature, superclass, and interfaces
     cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, className, null, "java/lang/Object", null);
 
-    // Add static fields to the class (closed variables)
+    // Add static fields to the class (closure variables)
     for (int i = 0; i < env.length; i++) {
       String fieldName = env[i];
       System.out.println("Create static field: " + fieldName);
@@ -37,20 +37,20 @@ public class ASMMethodCreator implements Opcodes {
     // Create the class initializer method
     mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
     mv.visitCode();
-    for (int i = 0; i < env.length; i++) { // Initialize the static fields
-      String fieldName = (String) env[i];
-      System.out.println("Init static field: " + fieldName);
-      mv.visitTypeInsn(Opcodes.NEW, "Runtime");
-      mv.visitInsn(Opcodes.DUP);
-      mv.visitMethodInsn(
-          Opcodes.INVOKESPECIAL,
-          "Runtime",
-          "<init>",
-          "()V",
-          false); // Create a new instance of Runtime
-      mv.visitFieldInsn(
-          Opcodes.PUTSTATIC, className, fieldName, "LRuntime;"); // Set the static field
-    }
+    // for (int i = 0; i < env.length; i++) { // Initialize the static fields
+    //   String fieldName = (String) env[i];
+    //   System.out.println("Init static field: " + fieldName);
+    //   mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+    //   mv.visitInsn(Opcodes.DUP);
+    //   mv.visitMethodInsn(
+    //       Opcodes.INVOKESPECIAL,
+    //       "Runtime",
+    //       "<init>",
+    //       "()V",
+    //       false); // Create a new instance of Runtime
+    //   mv.visitFieldInsn(
+    //       Opcodes.PUTSTATIC, className, fieldName, "LRuntime;"); // Set the static field
+    // }
     mv.visitInsn(Opcodes.RETURN);
     mv.visitMaxs(0, 0);
     mv.visitEnd();
@@ -83,9 +83,17 @@ public class ASMMethodCreator implements Opcodes {
             new String[] {"java/lang/Exception"});
 
     // generate the subroutine block
-    scope.enterScope();
-    scope.addVariable("@_"); // argument is local variable zero
     mv.visitCode();
+
+    // initialize local variables with the closure values from the static fields
+    // skip zero because it is the "@_" argument list
+    for (int i = 1; i < env.length; i++) {
+      String fieldName = (String) env[i];
+      System.out.println("Init closure variable: " + fieldName);
+      mv.visitFieldInsn(Opcodes.GETSTATIC, className, fieldName, "LRuntime;");
+      mv.visitVarInsn(Opcodes.ASTORE, i);
+    }
+
     Label returnLabel = new Label();
     generateCodeBlock(mv, className, scope, data, returnLabel, false); // Process the input data
     System.out.println("Return the last value");
@@ -93,7 +101,6 @@ public class ASMMethodCreator implements Opcodes {
     mv.visitInsn(Opcodes.ARETURN); // returns an Object
     mv.visitMaxs(0, 0); // max stack and local variables
     mv.visitEnd();
-    scope.exitScope();
 
     cw.visitEnd(); // complete the class
     byte[] classData = cw.toByteArray(); // generate the bytecode
@@ -345,23 +352,25 @@ public class ASMMethodCreator implements Opcodes {
       } else if (target.equals("SUB")) { // { "SUB", className, env, body }
         System.out.println("SUB start");
 
-        // retrieve captured variable list
+        // retrieve closure variable list
         // alternately, scan the AST for variables and capture only the ones that are used
+        ScopedSymbolTable newScope =
+            new ScopedSymbolTable(scope.fileName); // same filename, new top-level scope
+        newScope.enterScope();
+
         Map<Integer, String> visibleVariables = scope.getAllVisibleVariables();
         String[] newEnv = new String[visibleVariables.size()];
         System.out.println(" scope.getAllVisibleVariables");
         for (Integer index : visibleVariables.keySet()) {
-          System.out.println("  " + index + " " + visibleVariables.get(index));
-          newEnv[index] = visibleVariables.get(index);
+          String variableName = visibleVariables.get(index);
+          System.out.println("  " + index + " " + variableName);
+          newEnv[index] = variableName;
+          newScope.addVariable(variableName);
         }
 
-        Object[][] newData = (Object[][]) data[2]; // data
+        Object[][] newData = (Object[][]) data[2]; // AST
 
-        Class<?> generatedClass =
-            createClassWithMethod(
-                new ScopedSymbolTable(scope.fileName), // same filename, new top-level scope
-                newEnv,
-                newData);
+        Class<?> generatedClass = createClassWithMethod(newScope, newEnv, newData);
         String newClassNameDot = generatedClass.getName();
         String newClassName = newClassNameDot.replace('.', '/');
         System.out.println(
@@ -370,7 +379,7 @@ public class ASMMethodCreator implements Opcodes {
 
         // initialize the static fields
         for (int i = 0; i < newEnv.length; i++) {
-          mv.visitVarInsn(Opcodes.ALOAD, i); // Load local variable
+          mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
           mv.visitFieldInsn(PUTSTATIC, newClassName, (String) newEnv[i], "LRuntime;");
         }
 
@@ -500,10 +509,14 @@ public class ASMMethodCreator implements Opcodes {
 
       // Create the class
       System.out.println("createClassWithMethod");
+      ScopedSymbolTable scope =
+          new ScopedSymbolTable("test.pl"); // source filename, top-level scope
+      scope.enterScope();
+      scope.addVariable("@_"); // argument is local variable zero
       Class<?> generatedClass =
           createClassWithMethod(
-              new ScopedSymbolTable("test.pl"), // source filename, top-level scope
-              new String[] {}, // closed variables  { name }
+              scope,
+              new String[] {}, // closure variables  { name }
               new Object[][] {
                 // { Integer.class, "new", 5 },     // calling a constructor with "new"
                 // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
@@ -538,16 +551,15 @@ public class ASMMethodCreator implements Opcodes {
                     },
                   },
                 },
-                // {
-                //   Runtime.class, "print", new Object[] {"GETSTATIC", "env"}
-                // }, // retrieve closed variable
                 {
                   new Object[] {
                     "SUB",
-                    new Object[][] { // closed variables  { name }
-                      // {"env"},
-                    },
+                    new String[] {}, // closure variables  { name }
                     new Object[][] {
+                      {System.out, "println", "Inside sub"},
+                      {
+                        Runtime.class, "print", new Object[] {"GETVAR", "$a"}, // closure var
+                      },
                       {Runtime.class, "print", new Object[] {"GETVAR", "@_"}},
                     }
                   },
@@ -587,8 +599,6 @@ public class ASMMethodCreator implements Opcodes {
   - local variables
       set up the cleanup before RETURN
       set up exception handling
-
-  - set up the closed variables in the new anon subroutine
 
   - add debug information (line numbers)
       Label thisLabel = new Label();
