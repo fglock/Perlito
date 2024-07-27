@@ -1,3 +1,5 @@
+
+import java.util.Map;
 import java.lang.reflect.Method;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -352,6 +354,12 @@ public class ASMMethodCreator implements Opcodes {
                 newEnv,
                 newData);
         generatedClass.getField("env").set(null, new Runtime(111)); // TODO set static field value
+
+        Map<Integer, String> visibleVariables = scope.getAllVisibleVariables();
+        System.out.println(" scope.getAllVisibleVariables");
+        for (Integer index: visibleVariables.keySet()) {
+            System.out.println("  " + index + " " + visibleVariables.get(index));
+        }
 
         // // prepare an array with captures
         // mv.visitIntInsn(Opcodes.BIPUSH, args.length); // sets the size of the array

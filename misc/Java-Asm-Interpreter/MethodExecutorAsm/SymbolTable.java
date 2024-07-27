@@ -2,7 +2,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 class SymbolTable {
-    private Map<String, Integer> table = new HashMap<>();
+    public Map<String, Integer> table = new HashMap<>();
     public int index = 0; 
 
     public int addVariable(String name) {
