@@ -98,7 +98,7 @@ public class ASMMethodCreator implements Opcodes {
     Label returnLabel = new Label();
     generateCodeBlock(mv, className, scope, data, returnLabel, false); // Process the input data
     System.out.println("Return the last value");
-    mv.visitLabel(returnLabel);
+    mv.visitLabel(returnLabel); // "return" from other places arrive here
     mv.visitInsn(Opcodes.ARETURN); // returns an Object
     mv.visitMaxs(0, 0); // max stack and local variables
     mv.visitEnd();
@@ -434,6 +434,9 @@ public class ASMMethodCreator implements Opcodes {
 
     if (isReturn) {
       mv.visitJumpInsn(GOTO, returnLabel);
+      // if (isVoidContext) {
+      //   mv.visitInsn(Opcodes.POP); // cleanup the stack
+      // }
       return targetClass; // Class of the result
     }
 
@@ -550,6 +553,15 @@ public class ASMMethodCreator implements Opcodes {
                       {System.out, "println", "Inside sub"},
                       {
                         Runtime.class, "print", new Object[] {"GETVAR", "$a"}, // closure var
+                      },
+                      {
+                        "IF",
+                        new Object[] {Runtime.class, "is_false"}, // if condition
+                        new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
+                        new Object[][] { // else block
+                          {Runtime.class, "print", "if is false"},
+                          {"RETURN", null, new Object[] {"GETVAR", "$a"}}, // return from block
+                        },
                       },
                       {Runtime.class, "print", new Object[] {"GETVAR", "@_"}},
                     }
