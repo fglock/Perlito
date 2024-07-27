@@ -601,10 +601,14 @@ public class ASMMethodCreator implements Opcodes {
 
 /* TODO
 
-  - global variables and namespaces
+  - connect with a Perl parser
 
-  - lexical variables like "my"
-      initialize variables
+  - test different Perl data types
+        - array, hash, string, double, references
+        - experiment with Perlito runtime
+
+  - global variables and namespaces
+        - named subroutine declaration
 
   - local variables
       set up the cleanup before RETURN
@@ -615,14 +619,10 @@ public class ASMMethodCreator implements Opcodes {
       mv.visitLabel(thisLabel);
       mv.visitLineNumber(10, thisLabel); // Associate line number 10 with thisLabel
 
-  - when something is called in void context, we need to POP the JVM stack
-    to cleanup the unused value. Note: it also works without this
-        - "return" in a block should ASTORE the result and then "goto" end of sub,
-          instead of push to stack
+  - when something is called in void context, we need to POP the JVM stack to cleanup the unused value.
         - "if" in end of sub should inject a "return" in both blocks
 
   - tests
-    test FOR, WHILE
 
   - implement thread-safety - it may need locking when calling ASM
 
@@ -630,15 +630,13 @@ public class ASMMethodCreator implements Opcodes {
 
   - create multiple classes; ensure GC works for these classes
 
-  - "env" access - create a method to initialize the static field values, instead of using reflection
-      generatedClass.getField("env").set(null, mathOps);
-      use "clinit" method
-
   - goto, macros - control structures
-  - implement "local"
+        - test FOR, WHILE
+
   - eval string
         freeze the scope at eval string, we will need it to compile the string later
+
   - BEGIN-block
-  - named subroutine declaration
 
 */
+
