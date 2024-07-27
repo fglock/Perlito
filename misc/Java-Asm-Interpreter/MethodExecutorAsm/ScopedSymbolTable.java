@@ -10,7 +10,12 @@ class ScopedSymbolTable {
     }
 
     public void enterScope() {
+        int lastIndex = 1;
+        if (!stack.isEmpty()) {
+            lastIndex = stack.peek().index;
+        }
         stack.push(new SymbolTable());
+        stack.peek().index = lastIndex;
     }
 
     public void exitScope() {
