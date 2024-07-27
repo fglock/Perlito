@@ -143,7 +143,6 @@ my $PARSE_FAIL = { FAIL => 1 };
 use constant {
     END_TOKEN  => -1,
     WHITESPACE => -2,
-    KEYWORD    => -3,
     IDENTIFIER => -4,
     NUMBER     => -5,
     OPERATOR   => -9,
@@ -181,7 +180,6 @@ use constant {
 my %TOKEN_NAME = (    # this is used to produce error messages
     END_TOKEN()     => 'END_TOKEN',
     WHITESPACE()    => 'WHITESPACE',
-    KEYWORD()       => 'KEYWORD',
     IDENTIFIER()    => 'IDENTIFIER',
     NUMBER()        => 'NUMBER',
     OPERATOR()      => 'OPERATOR',
