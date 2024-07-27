@@ -298,14 +298,25 @@ public class ASMMethodCreator implements Opcodes {
         return Runtime.class; // Class of the result
       } else if (target.equals("MY")) { // { "MY", "$a" }
         System.out.println("MY " + data[1]);
-        // TODO set in the scope/frame
-        // TODO initialize the Runtime object
         String var = (String) data[1];
         if (scope.getVariableIndexInCurrentScope(var) != -1) {
           System.out.println(
               "Warning: \"my\" variable " + var + " masks earlier declaration in same scope");
         }
-        scope.addVariable(var);
+        int varIndex = scope.addVariable(var);
+        // TODO optimization - SETVAR+MY can be combined
+        mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitMethodInsn(
+            Opcodes.INVOKESPECIAL,
+            "Runtime",
+            "<init>",
+            "()V",
+            false); // Create a new instance of Runtime
+        if (!isVoidContext) {
+          mv.visitInsn(Opcodes.DUP);
+        }
+        mv.visitVarInsn(Opcodes.ASTORE, varIndex);
         return Runtime.class; // Class of the result
       } else if (target.equals("GETVAR")) { // { "GETVAR", "$a" }
         System.out.println("GETVAR " + data[1]);
@@ -525,7 +536,7 @@ public class ASMMethodCreator implements Opcodes {
                 // }},
                 //         // call a method in the argument
                 {new Object[] {"GETVAR", "@_"}, "add", 7}, // call a method in the argument
-                {"MY", "$a"}, // "MY" doesn't generate bytecode
+                {"MY", "$a"},
                 {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
                 {
                   "IF",
