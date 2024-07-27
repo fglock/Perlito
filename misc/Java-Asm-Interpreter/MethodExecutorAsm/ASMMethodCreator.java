@@ -353,6 +353,17 @@ public class ASMMethodCreator implements Opcodes {
                 newData);
         generatedClass.getField("env").set(null, new Runtime(111)); // TODO set static field value
 
+        // // prepare an array with captures
+        // mv.visitIntInsn(Opcodes.BIPUSH, args.length); // sets the size of the array
+        // mv.visitTypeInsn(Opcodes.ANEWARRAY, "Result"); // creates a new array of type Result
+        // for (int i = 0; i < args.length; i++) {
+        //   // Store ALOAD 1 in array[0]
+        //   mv.visitInsn(Opcodes.DUP); // Duplicate array reference
+        //   mv.visitIntInsn(Opcodes.BIPUSH, i+0); // Index 0
+        //   mv.visitVarInsn(Opcodes.ALOAD, i+1); // Load local variable 1
+        //   mv.visitInsn(Opcodes.AASTORE);
+        // }
+
         // this will be called at runtime: Runtime.make_sub(className);
         String newClassName = "org.perlito.anon" + String.valueOf(classCounter++);
         Runtime.anonSubs.put(newClassName, generatedClass);
