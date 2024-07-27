@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 class SymbolTable {
     private Map<String, Integer> table = new HashMap<>();
-    public int index = 1;   // start after subroutine arguments
+    public int index = 0; 
 
     public int addVariable(String name) {
         if (!table.containsKey(name)) {

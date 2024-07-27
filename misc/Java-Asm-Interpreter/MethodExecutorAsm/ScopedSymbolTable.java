@@ -10,7 +10,7 @@ class ScopedSymbolTable {
     }
 
     public void enterScope() {
-        int lastIndex = 1;
+        int lastIndex = 0;
         if (!stack.isEmpty()) {
             lastIndex = stack.peek().index;
         }
@@ -27,7 +27,9 @@ class ScopedSymbolTable {
     }
 
     public int getVariableIndex(String name) {
+        System.out.println(" scope.getVariableIndex " + name);
         for (int i = stack.size() - 1; i >= 0; i--) {
+            System.out.println(" scope.lookup level " + i);
             int index = stack.get(i).getVariableIndex(name);
             if (index != -1) {
                 return index;

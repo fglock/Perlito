@@ -8,9 +8,11 @@ it can be recursive:
 
 non-method "statements" have a string as first argument:
 
-{ "ARG" } retrieve the argument object.
+{ "MY", "$x" } declare a lexical variable.
 
-    {"ARG"}
+{ "GETVAR", "@_" } retrieve the argument object.
+
+{ "SETVAR", "$x" } set a variable.
 
 { "RETURN", null, value } returns the value. RETURN is optional at the end: the method returns the last value.
 

@@ -79,19 +79,20 @@ public class ASMMethodCreator implements Opcodes {
             return_type,
             null,
             new String[] {"java/lang/Exception"});
+
+    // generate the subroutine block
+    scope.enterScope();
+    scope.addVariable("@_"); // argument is local variable zero
     mv.visitCode();
-
     Label returnLabel = new Label();
-
     generateCodeBlock(mv, className, scope, data, returnLabel, false); // Process the input data
-
     System.out.println("Return the last value");
     mv.visitLabel(returnLabel);
-    // mv.visitInsn(Opcodes.RETURN);   // returns void
     mv.visitInsn(Opcodes.ARETURN); // returns an Object
-
     mv.visitMaxs(0, 0); // max stack and local variables
     mv.visitEnd();
+    scope.exitScope();
+
     cw.visitEnd(); // complete the class
     byte[] classData = cw.toByteArray(); // generate the bytecode
 
@@ -172,14 +173,7 @@ public class ASMMethodCreator implements Opcodes {
     } else if (target instanceof String) {
       System.out.println(" is String");
 
-      if (target.equals("ARG")) { // { "ARG" }
-        System.out.println("retrieve arg");
-        if (!isVoidContext) {
-          System.out.println("  not void context");
-          mv.visitVarInsn(Opcodes.ALOAD, 0); // Load argument
-        }
-        return Runtime.class; // return Class
-      } else if (target.equals("GETSTATIC")) { // { "GETSTATIC", "env" }   { GETSTATIC, name }
+      if (target.equals("GETSTATIC")) { // { "GETSTATIC", "env" }   { GETSTATIC, name }
         System.out.println("retrieve static " + (String) data[1]);
         if (!isVoidContext) {
           mv.visitFieldInsn(Opcodes.GETSTATIC, className, (String) data[1], "LRuntime;");
@@ -352,7 +346,11 @@ public class ASMMethodCreator implements Opcodes {
         Object[][] newEnv = (Object[][]) data[1]; // env
         Object[][] newData = (Object[][]) data[2]; // data
 
-        Class<?> generatedClass = createClassWithMethod(scope, newEnv, newData);
+        Class<?> generatedClass =
+            createClassWithMethod(
+                new ScopedSymbolTable(scope.fileName), // same filename, new top-level scope
+                newEnv,
+                newData);
         generatedClass.getField("env").set(null, new Runtime(111)); // TODO set static field value
 
         // this will be called at runtime: Runtime.make_sub(className);
@@ -493,14 +491,15 @@ public class ASMMethodCreator implements Opcodes {
                 // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
                 {Runtime.class, "make", 5},
                 {Runtime.class, "print", 789},
-                {"ARG"}, // retrieve the argument
+                {"GETVAR", "@_"}, // retrieve the argument
                 {Runtime.class, "print", new Object[] {Runtime.class, "make", 5}},
-                {Runtime.class, "print", new Object[] {"ARG"}}, // use the argument
+                {Runtime.class, "print", new Object[] {"GETVAR", "@_"}}, // use the argument
                 {System.out, "println", "123"},
                 {new Object[] {Runtime.class, "make", 5}, "add", 6},
-                // { System.out, "println", new Object[]{ new Object[]{ "ARG" }, "add", 5 }},
+                // { System.out, "println", new Object[]{ new Object[]{ "GETVAR", "@_" }, "add", 5
+                // }},
                 //         // call a method in the argument
-                {new Object[] {"ARG"}, "add", 7}, // call a method in the argument
+                {new Object[] {"GETVAR", "@_"}, "add", 7}, // call a method in the argument
                 {"MY", "$a"}, // "MY" doesn't generate bytecode
                 {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
                 {
@@ -509,8 +508,8 @@ public class ASMMethodCreator implements Opcodes {
                   new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
                   new Object[][] { // else block
                     {Runtime.class, "print", "if is false"},
-                    // {"ARG"},
-                    // {new Object[] {"ARG"}, "add", 5}, // call a method in the argument
+                    // {"GETVAR", "@_"},
+                    // {new Object[] {"GETVAR", "@_"}, "add", 5}, // call a method in the argument
                     // {
                     //   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
                     // },
@@ -531,7 +530,7 @@ public class ASMMethodCreator implements Opcodes {
                       {"env"},
                     },
                     new Object[][] {
-                      {Runtime.class, "print", new Object[] {"ARG"}},
+                      {Runtime.class, "print", new Object[] {"GETVAR", "@_"}},
                     }
                   },
                   "apply",
