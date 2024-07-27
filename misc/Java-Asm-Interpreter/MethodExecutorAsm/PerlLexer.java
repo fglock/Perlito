@@ -136,14 +136,26 @@ public class PerlLexer {
           }
           break;
         case '&':
-          if (next == '&' || next == '=') {
+          if (next == '&') {
             position++;
+            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          }
+          if (next == '=' || next == '.') {
+            position++;
+            if (position < length && input[position] == '=') {
+              position++;
+              return new Token(TokenType.OPERATOR, new String(input, start, 3));
+            }
             return new Token(TokenType.OPERATOR, new String(input, start, 2));
           }
           break;
         case '*':
           if (next == '*' || next == '=') {
             position++;
+            if (next == '*' && position < length && input[position] == '=') {
+              position++;
+              return new Token(TokenType.OPERATOR, new String(input, start, 3));
+            }
             return new Token(TokenType.OPERATOR, new String(input, start, 2));
           }
           break;
@@ -182,38 +194,55 @@ public class PerlLexer {
           }
           break;
         case '<':
-          if (next == '<' || next == '=') {
+          if (next == '=' || next == '<') {
             position++;
+            if (next == '<' && position < length && input[position] == '=') {
+              position++;
+              return new Token(TokenType.OPERATOR, new String(input, start, 3));
+            }
             return new Token(TokenType.OPERATOR, new String(input, start, 2));
-          } else if (next == '=') {
+          }
+          if (next == '=') {
             position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 3));
+            if (position < length && input[position] == '>') {
+              position++;
+              return new Token(TokenType.OPERATOR, new String(input, start, 3));
+            }
           }
           break;
         case '=':
-          if (next == '=' || next == '>' || next == '~') {
+          if (next == '=' || next == '>') {
             position++;
             return new Token(TokenType.OPERATOR, new String(input, start, 2));
-          } else if (next == '>') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 3));
           }
           break;
         case '>':
-          if (next == '>' || next == '=') {
+          if (next == '=' || next == '>') {
             position++;
+            if (next == '>' && position < length && input[position] == '=') {
+              position++;
+              return new Token(TokenType.OPERATOR, new String(input, start, 3));
+            }
             return new Token(TokenType.OPERATOR, new String(input, start, 2));
           }
           break;
         case '^':
           if (next == '=' || next == '^') {
             position++;
+            if (next == '.' && position < length && input[position] == '=') {
+              position++;
+              return new Token(TokenType.OPERATOR, new String(input, start, 3));
+            }
             return new Token(TokenType.OPERATOR, new String(input, start, 2));
           }
           break;
         case '|':
-          if (next == '|' || next == '=') {
+          if (next == '=' || next == '|') {
             position++;
+            if (next == '.' && position < length && input[position] == '=') {
+              position++;
+              return new Token(TokenType.OPERATOR, new String(input, start, 3));
+            }
             return new Token(TokenType.OPERATOR, new String(input, start, 2));
           }
           break;
@@ -236,7 +265,9 @@ public class PerlLexer {
   }
 
   public static void main(String[] args) {
-    String code = "my $var = 42; print \"Hello, World!\\n\"; $a == $b; qq{ x \" y € z };";
+    String code =
+        "my $var = 42; print \"Hello, World!\\n\"; $a == $b; qq{ x \" y € z }; "
+            + " &&= &.= **= ... //= <<= <=> >>= ^.= |.= ||= ";
     PerlLexer lexer = new PerlLexer(code);
     List<Token> tokens = lexer.tokenize();
 
