@@ -1,6 +1,5 @@
-
-import java.util.Map;
 import java.lang.reflect.Method;
+import java.util.Map;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -9,6 +8,7 @@ import org.objectweb.asm.Opcodes;
 public class ASMMethodCreator implements Opcodes {
 
   static int classCounter = 0;
+  static CustomClassLoader loader = new CustomClassLoader();
 
   public static Class<?> createClassWithMethod(
       ScopedSymbolTable scope, Object[][] env, Object[][] data) throws Exception {
@@ -98,7 +98,6 @@ public class ASMMethodCreator implements Opcodes {
     cw.visitEnd(); // complete the class
     byte[] classData = cw.toByteArray(); // generate the bytecode
 
-    CustomClassLoader loader = new CustomClassLoader();
     Class<?> generatedClass = loader.defineClass(classNameDot, classData); // generate the class
     return generatedClass;
   }
@@ -345,7 +344,16 @@ public class ASMMethodCreator implements Opcodes {
         return Runtime.class; // Class of the result
       } else if (target.equals("SUB")) { // { "SUB", className, env, body }
         System.out.println("SUB start");
-        Object[][] newEnv = (Object[][]) data[1]; // env
+
+        // retrieve captured variable list
+        Map<Integer, String> visibleVariables = scope.getAllVisibleVariables();
+        Object[][] newEnv = new Object[visibleVariables.size()][];
+        System.out.println(" scope.getAllVisibleVariables");
+        for (Integer index : visibleVariables.keySet()) {
+          System.out.println("  " + index + " " + visibleVariables.get(index));
+          newEnv[index] = new Object[] {visibleVariables.get(index)};
+        }
+
         Object[][] newData = (Object[][]) data[2]; // data
 
         Class<?> generatedClass =
@@ -353,27 +361,19 @@ public class ASMMethodCreator implements Opcodes {
                 new ScopedSymbolTable(scope.fileName), // same filename, new top-level scope
                 newEnv,
                 newData);
-        generatedClass.getField("env").set(null, new Runtime(111)); // TODO set static field value
+        String newClassNameDot = generatedClass.getName();
+        String newClassName = newClassNameDot.replace('.', '/');
+        System.out.println(
+            "Generated class name: " + newClassNameDot + " internal " + newClassName);
+        System.out.println("Generated class env:  " + newEnv);
 
-        Map<Integer, String> visibleVariables = scope.getAllVisibleVariables();
-        System.out.println(" scope.getAllVisibleVariables");
-        for (Integer index: visibleVariables.keySet()) {
-            System.out.println("  " + index + " " + visibleVariables.get(index));
+        // initialize the static fields
+        for (Integer index : visibleVariables.keySet()) {
+          mv.visitVarInsn(Opcodes.ALOAD, index); // Load local variable
+          mv.visitFieldInsn(PUTSTATIC, newClassName, (String) newEnv[index][0], "LRuntime;");
         }
 
-        // // prepare an array with captures
-        // mv.visitIntInsn(Opcodes.BIPUSH, args.length); // sets the size of the array
-        // mv.visitTypeInsn(Opcodes.ANEWARRAY, "Result"); // creates a new array of type Result
-        // for (int i = 0; i < args.length; i++) {
-        //   // Store ALOAD 1 in array[0]
-        //   mv.visitInsn(Opcodes.DUP); // Duplicate array reference
-        //   mv.visitIntInsn(Opcodes.BIPUSH, i+0); // Index 0
-        //   mv.visitVarInsn(Opcodes.ALOAD, i+1); // Load local variable 1
-        //   mv.visitInsn(Opcodes.AASTORE);
-        // }
-
         // this will be called at runtime: Runtime.make_sub(className);
-        String newClassName = "org.perlito.anon" + String.valueOf(classCounter++);
         Runtime.anonSubs.put(newClassName, generatedClass);
         mv.visitLdcInsn(newClassName);
         mv.visitMethodInsn(
@@ -503,7 +503,7 @@ public class ASMMethodCreator implements Opcodes {
           createClassWithMethod(
               new ScopedSymbolTable("test.pl"), // source filename, top-level scope
               new Object[][] { // closed variables  { name }
-                {"env"},
+                // {"env"},
               },
               new Object[][] {
                 // { Integer.class, "new", 5 },     // calling a constructor with "new"
@@ -539,14 +539,14 @@ public class ASMMethodCreator implements Opcodes {
                     },
                   },
                 },
-                {
-                  Runtime.class, "print", new Object[] {"GETSTATIC", "env"}
-                }, // retrieve closed variable
+                // {
+                //   Runtime.class, "print", new Object[] {"GETSTATIC", "env"}
+                // }, // retrieve closed variable
                 {
                   new Object[] {
                     "SUB",
                     new Object[][] { // closed variables  { name }
-                      {"env"},
+                      // {"env"},
                     },
                     new Object[][] {
                       {Runtime.class, "print", new Object[] {"GETVAR", "@_"}},
@@ -563,7 +563,7 @@ public class ASMMethodCreator implements Opcodes {
 
       System.out.println("Generated class: " + generatedClass.getName());
       // TODO - move to class definition; create initializer method
-      generatedClass.getField("env").set(null, new Runtime(111));
+      // generatedClass.getField("env").set(null, new Runtime(111));
 
       // Convert into a Runtime object
       String newClassName = "org.perlito.anon" + String.valueOf(classCounter++);
