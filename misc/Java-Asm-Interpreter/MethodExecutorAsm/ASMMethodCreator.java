@@ -11,7 +11,7 @@ public class ASMMethodCreator implements Opcodes {
   static CustomClassLoader loader = new CustomClassLoader();
 
   public static Class<?> createClassWithMethod(
-      ScopedSymbolTable scope, Object[][] env, Object[][] data) throws Exception {
+      ScopedSymbolTable scope, String[] env, Object[][] data) throws Exception {
     // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options
     ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
@@ -26,7 +26,7 @@ public class ASMMethodCreator implements Opcodes {
 
     // Add static fields to the class (closed variables)
     for (int i = 0; i < env.length; i++) {
-      String fieldName = (String) env[i][0];
+      String fieldName = env[i];
       System.out.println("Create static field: " + fieldName);
       cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, fieldName, "LRuntime;", null, null)
           .visitEnd();
@@ -38,7 +38,7 @@ public class ASMMethodCreator implements Opcodes {
     mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
     mv.visitCode();
     for (int i = 0; i < env.length; i++) { // Initialize the static fields
-      String fieldName = (String) env[i][0];
+      String fieldName = (String) env[i];
       System.out.println("Init static field: " + fieldName);
       mv.visitTypeInsn(Opcodes.NEW, "Runtime");
       mv.visitInsn(Opcodes.DUP);
@@ -174,7 +174,7 @@ public class ASMMethodCreator implements Opcodes {
     } else if (target instanceof String) {
       System.out.println(" is String");
 
-      if (target.equals("GETSTATIC")) { // { "GETSTATIC", "env" }   { GETSTATIC, name }
+      if (target.equals("GETSTATIC")) { // { "GETSTATIC", "field" }   { GETSTATIC, name }
         System.out.println("retrieve static " + (String) data[1]);
         if (!isVoidContext) {
           mv.visitFieldInsn(Opcodes.GETSTATIC, className, (String) data[1], "LRuntime;");
@@ -346,12 +346,13 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("SUB start");
 
         // retrieve captured variable list
+        // alternately, scan the AST for variables and capture only the ones that are used
         Map<Integer, String> visibleVariables = scope.getAllVisibleVariables();
-        Object[][] newEnv = new Object[visibleVariables.size()][];
+        String[] newEnv = new String[visibleVariables.size()];
         System.out.println(" scope.getAllVisibleVariables");
         for (Integer index : visibleVariables.keySet()) {
           System.out.println("  " + index + " " + visibleVariables.get(index));
-          newEnv[index] = new Object[] {visibleVariables.get(index)};
+          newEnv[index] = visibleVariables.get(index);
         }
 
         Object[][] newData = (Object[][]) data[2]; // data
@@ -368,9 +369,9 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("Generated class env:  " + newEnv);
 
         // initialize the static fields
-        for (Integer index : visibleVariables.keySet()) {
-          mv.visitVarInsn(Opcodes.ALOAD, index); // Load local variable
-          mv.visitFieldInsn(PUTSTATIC, newClassName, (String) newEnv[index][0], "LRuntime;");
+        for (int i = 0; i < newEnv.length; i++) {
+          mv.visitVarInsn(Opcodes.ALOAD, i); // Load local variable
+          mv.visitFieldInsn(PUTSTATIC, newClassName, (String) newEnv[i], "LRuntime;");
         }
 
         // this will be called at runtime: Runtime.make_sub(className);
@@ -502,9 +503,7 @@ public class ASMMethodCreator implements Opcodes {
       Class<?> generatedClass =
           createClassWithMethod(
               new ScopedSymbolTable("test.pl"), // source filename, top-level scope
-              new Object[][] { // closed variables  { name }
-                // {"env"},
-              },
+              new String[] {}, // closed variables  { name }
               new Object[][] {
                 // { Integer.class, "new", 5 },     // calling a constructor with "new"
                 // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
