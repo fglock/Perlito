@@ -112,155 +112,236 @@ public class PerlLexer {
   private Token consumeOperator() {
     int start = position;
     char current = input[position];
-    position++;
-
-    if (position < length) {
-      char next = input[position];
+    if (position < length &&  (current < 128 && isOperator[current]) ) {
       switch (current) {
         case '!':
-          if (next == '=' || next == '~') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "!=");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '~') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "!~");
           }
           break;
         case '$':
-          if (next == '#') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == '#') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "$#");
           }
           break;
         case '%':
-          if (next == '=') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "%=");
           }
           break;
         case '&':
-          if (next == '&') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 3 <= input.length
+              && input[position + 1] == '&'
+              && input[position + 2] == '=') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "&&=");
           }
-          if (next == '=' || next == '.') {
-            position++;
-            if (position < length && input[position] == '=') {
-              position++;
-              return new Token(TokenType.OPERATOR, new String(input, start, 3));
-            }
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 3 <= input.length
+              && input[position + 1] == '.'
+              && input[position + 2] == '=') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "&.=");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '&') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "&&");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "&=");
           }
           break;
         case '*':
-          if (next == '*' || next == '=') {
-            position++;
-            if (next == '*' && position < length && input[position] == '=') {
-              position++;
-              return new Token(TokenType.OPERATOR, new String(input, start, 3));
-            }
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 3 <= input.length
+              && input[position + 1] == '*'
+              && input[position + 2] == '=') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "**=");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '*') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "**");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "*=");
           }
           break;
         case '+':
-          if (next == '+' || next == '=') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == '+') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "++");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "+=");
           }
           break;
         case '-':
-          if (next == '-' || next == '>' || next == '=') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == '-') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "--");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "-=");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '>') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "->");
           }
           break;
         case '.':
-          if (next == '.' || next == '=') {
-            position++;
-            if (next == '.' && position < length && input[position] == '.') {
-              position++;
-              return new Token(TokenType.OPERATOR, new String(input, start, 3));
-            }
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 3 <= input.length
+              && input[position + 1] == '.'
+              && input[position + 2] == '.') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "...");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '.') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "..");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, ".=");
           }
           break;
         case '/':
-          if (next == '/' || next == '=') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 3 <= input.length
+              && input[position + 1] == '/'
+              && input[position + 2] == '=') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "//=");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '/') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "//");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "/=");
           }
           break;
         case ':':
-          if (next == ':') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == ':') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "::");
           }
           break;
         case '<':
-          if (next == '=' || next == '<') {
-            position++;
-            if (next == '<' && position < length && input[position] == '=') {
-              position++;
-              return new Token(TokenType.OPERATOR, new String(input, start, 3));
-            }
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 3 <= input.length
+              && input[position + 1] == '<'
+              && input[position + 2] == '=') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "<<=");
           }
-          if (next == '=') {
-            position++;
-            if (position < length && input[position] == '>') {
-              position++;
-              return new Token(TokenType.OPERATOR, new String(input, start, 3));
-            }
+          if (position + 3 <= input.length
+              && input[position + 1] == '='
+              && input[position + 2] == '>') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "<=>");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '<') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "<<");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "<=");
           }
           break;
         case '=':
-          if (next == '=' || next == '>') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "==");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '>') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "=>");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '~') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "=~");
           }
           break;
         case '>':
-          if (next == '=' || next == '>') {
-            position++;
-            if (next == '>' && position < length && input[position] == '=') {
-              position++;
-              return new Token(TokenType.OPERATOR, new String(input, start, 3));
-            }
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 3 <= input.length
+              && input[position + 1] == '>'
+              && input[position + 2] == '=') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, ">>=");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, ">=");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '>') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, ">>");
           }
           break;
         case '^':
-          if (next == '=' || next == '^') {
-            position++;
-            if (next == '.' && position < length && input[position] == '=') {
-              position++;
-              return new Token(TokenType.OPERATOR, new String(input, start, 3));
-            }
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 3 <= input.length
+              && input[position + 1] == '.'
+              && input[position + 2] == '=') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "^.=");
           }
-          break;
-        case '|':
-          if (next == '=' || next == '|') {
-            position++;
-            if (next == '.' && position < length && input[position] == '=') {
-              position++;
-              return new Token(TokenType.OPERATOR, new String(input, start, 3));
-            }
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "^=");
           }
-          break;
-        case '~':
-          if (next == '~') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == '^') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "^^");
           }
           break;
         case 'x':
-          if (next == '=') {
-            position++;
-            return new Token(TokenType.OPERATOR, new String(input, start, 2));
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "x=");
+          }
+          break;
+        case '|':
+          if (position + 3 <= input.length
+              && input[position + 1] == '.'
+              && input[position + 2] == '=') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "|.=");
+          }
+          if (position + 3 <= input.length
+              && input[position + 1] == '|'
+              && input[position + 2] == '=') {
+            position += 3;
+            return new Token(TokenType.OPERATOR, "||=");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '=') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "|=");
+          }
+          if (position + 2 <= input.length && input[position + 1] == '|') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "||");
+          }
+          break;
+        case '~':
+          if (position + 2 <= input.length && input[position + 1] == '~') {
+            position += 2;
+            return new Token(TokenType.OPERATOR, "~~");
           }
           break;
       }
     }
 
+    position++;
     return new Token(TokenType.OPERATOR, new String(input, start, 1));
   }
 
