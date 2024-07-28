@@ -2,40 +2,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
-  private static final char EOF = (char) -1;
-  private final char[] input;
-  private int position;
-  private int length;
-  private static boolean isOperator[];
+  public static final char EOF = (char) -1;
+  public final char[] input;
+  public int position;
+  public int length;
+  public static boolean isOperator[];
 
   static {
     isOperator = new boolean[128];
     for (char c : "!\"#$%&'()*+,-./:;<=>?@[\\]^`{|}~".toCharArray()) {
       isOperator[c] = true;
-    }
-  }
-
-  public enum TokenType {
-    WHITESPACE,
-    NEWLINE,
-    IDENTIFIER,
-    NUMBER,
-    OPERATOR,
-    STRING
-  }
-
-  public static class Token {
-    public final TokenType type;
-    public final String text;
-
-    public Token(TokenType type, String text) {
-      this.type = type;
-      this.text = text;
-    }
-
-    @Override
-    public String toString() {
-      return "Token{" + "type=" + type + ", text='" + text + '\'' + '}';
     }
   }
 
@@ -52,11 +28,13 @@ public class Lexer {
     while ((token = nextToken()) != null) {
       tokens.add(token);
     }
+    tokens.add(new Token(TokenType.EOF, "\n"));
+    tokens.add(new Token(TokenType.EOF, "\n"));
 
     return tokens;
   }
 
-  private Token nextToken() {
+  public Token nextToken() {
     if (position >= length) {
       return null;
     }
@@ -82,7 +60,7 @@ public class Lexer {
     }
   }
 
-  private Token consumeWhitespace() {
+  public Token consumeWhitespace() {
     int start = position;
     while (position < length
         && Character.isWhitespace(input[position])
@@ -92,7 +70,7 @@ public class Lexer {
     return new Token(TokenType.WHITESPACE, new String(input, start, position - start));
   }
 
-  private Token consumeNumber() {
+  public Token consumeNumber() {
     int start = position;
     while (position < length && Character.isDigit(input[position])) {
       position++;
@@ -100,7 +78,7 @@ public class Lexer {
     return new Token(TokenType.NUMBER, new String(input, start, position - start));
   }
 
-  private Token consumeIdentifier() {
+  public Token consumeIdentifier() {
     int start = position;
     while (position < length
         && (Character.isLetterOrDigit(input[position]) || input[position] == '_')) {
@@ -109,10 +87,10 @@ public class Lexer {
     return new Token(TokenType.IDENTIFIER, new String(input, start, position - start));
   }
 
-  private Token consumeOperator() {
+  public Token consumeOperator() {
     int start = position;
     char current = input[position];
-    if (position < length &&  (current < 128 && isOperator[current]) ) {
+    if (position < length && (current < 128 && isOperator[current])) {
       switch (current) {
         case '!':
           if (position + 2 <= input.length && input[position + 1] == '=') {
