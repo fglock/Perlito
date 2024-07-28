@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class PerlLexer {
+public class Lexer {
   private static final char EOF = (char) -1;
   private final char[] input;
   private int position;
@@ -39,7 +39,7 @@ public class PerlLexer {
     }
   }
 
-  public PerlLexer(String input) {
+  public Lexer(String input) {
     this.input = input.toCharArray();
     this.length = this.input.length;
     this.position = 0;
@@ -349,7 +349,7 @@ public class PerlLexer {
     String code =
         "my $var = 42; print \"Hello, World!\\n\"; $a == $b; qq{ x \" y € z }; "
             + " &&= &.= **= ... //= <<= <=> >>= ^.= |.= ||= ";
-    PerlLexer lexer = new PerlLexer(code);
+    Lexer lexer = new Lexer(code);
     List<Token> tokens = lexer.tokenize();
 
     for (Token token : tokens) {
