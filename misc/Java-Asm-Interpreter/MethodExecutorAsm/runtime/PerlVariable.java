@@ -3,8 +3,8 @@ public class PerlVariable {
         INTEGER, STRING, REFERENCE, CODE_REFERENCE, OBJECT
     }
 
-    private Type type;
-    private Object value;
+    public Type type;
+    public Object value;
 
     // Constructors
     public PerlVariable(int value) {
@@ -74,6 +74,11 @@ public class PerlVariable {
     }
 
     // Setters
+    public void set(PerlVariable value) {
+        this.type = value.type;
+        this.value = value.value;
+    }
+
     public void setInteger(int value) {
         this.type = Type.INTEGER;
         this.value = value;
