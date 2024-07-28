@@ -1,171 +1,208 @@
 import java.util.ArrayList;
 import java.util.List;
 
-class Parser {
-    public final Lexer lexer;
-    public Token currentToken;
+public class Parser {
+    private List<Token> tokens;
+    private int position;
 
-    public Parser(Lexer lexer) {
-        this.lexer = lexer;
-        this.currentToken = lexer.nextToken();
+    public Parser(List<Token> tokens) {
+        this.tokens = tokens;
+        this.position = 0;
+    }
+
+    private Token peek() {
+        if (position < tokens.size()) {
+            return tokens.get(position);
+        }
+        return new Token(TokenType.EOF, "");
+    }
+
+    private Token consume() {
+        if (position < tokens.size()) {
+            return tokens.get(position++);
+        }
+        return new Token(TokenType.EOF, "");
+    }
+
+    private boolean match(TokenType type) {
+        if (peek().type == type) {
+            consume();
+            return true;
+        }
+        return false;
+    }
+
+    private void skipWhitespace() {
+        while (peek().type == TokenType.WHITESPACE || peek().type == TokenType.NEWLINE) {
+            consume();
+        }
     }
 
     public Node parse() {
+        skipWhitespace();
+        return parseBlock();
+    }
+
+    private BlockNode parseBlock() {
         List<Node> statements = new ArrayList<>();
-        while (currentToken.type != TokenType.EOF) {
-            System.out.println(currentToken);
+        while (peek().type != TokenType.EOF) {
             statements.add(parseStatement());
+            skipWhitespace();
         }
         return new BlockNode(statements);
     }
 
-    public Node parseStatement() {
-        Node expr = parseExpression();
-        if (currentToken.type == TokenType.NEWLINE) {
-            advance();
+    private Node parseStatement() {
+        skipWhitespace();
+        Token token = peek();
+
+        if (token.type == TokenType.IDENTIFIER && token.text.equals("my")) {
+            consume();
+            skipWhitespace();
+            return parseVariableDeclaration();
+        } else {
+            return parseExpression();
         }
-        return expr;
     }
 
-    public Node parseExpression() {
+    private Node parseVariableDeclaration() {
+        skipWhitespace();
+        List<VariableNode> variables = new ArrayList<>();
+        while (peek().type == TokenType.OPERATOR && (peek().text.equals("$") || peek().text.equals("@") || peek().text.equals("%"))) {
+            Token varTypeToken = consume();
+            Token nameToken = consume();
+            if (nameToken.type != TokenType.IDENTIFIER) {
+                throw new RuntimeException("Expected identifier but found " + nameToken.text);
+            }
+            variables.add(new VariableNode(varTypeToken.text + nameToken.text));
+            skipWhitespace();
+            if (peek().type == TokenType.OPERATOR && peek().text.equals(",")) {
+                consume();
+                skipWhitespace();
+            } else {
+                break;
+            }
+        }
+
+        Token eqToken = consume(); // Consume the '=' operator
+        if (eqToken.type != TokenType.OPERATOR || !eqToken.text.equals("=")) {
+            throw new RuntimeException("Expected '=' but found " + eqToken.text);
+        }
+
+        skipWhitespace();
+        List<Node> values = parseExpressionList();
+
+        Token semiToken = consume(); // Consume the ';' operator
+        if (semiToken.type != TokenType.OPERATOR || !semiToken.text.equals(";")) {
+            throw new RuntimeException("Expected ';' but found " + semiToken.text);
+        }
+
+        return new VariableDeclarationNode(variables, values);
+    }
+
+    private List<Node> parseExpressionList() {
+        List<Node> expressions = new ArrayList<>();
+        expressions.add(parseExpression());
+        while (peek().type == TokenType.OPERATOR && peek().text.equals(",")) {
+            consume();
+            skipWhitespace();
+            expressions.add(parseExpression());
+        }
+        return expressions;
+    }
+
+    private Node parseExpression() {
         Node left = parsePrimary();
-        while (currentToken.type == TokenType.OPERATOR) {
-            String operator = currentToken.text;
-            advance();
+        skipWhitespace();
+        while (peek().type == TokenType.OPERATOR && (peek().text.equals("+") || peek().text.equals("-") || peek().text.equals("**"))) {
+            Token operator = consume();
+            skipWhitespace();
             Node right = parsePrimary();
-            left = new BinaryOpNode(left, operator, right);
+            left = new BinaryOpNode(left, operator.text, right);
+            skipWhitespace();
         }
         return left;
     }
 
-    public Node parsePrimary() {
-        Token token = currentToken;
+    private Node parsePrimary() {
+        Token token = consume();
         switch (token.type) {
             case IDENTIFIER:
-                advance();
                 return new VariableNode(token.text);
             case NUMBER:
-                advance();
                 return new NumberNode(token.text);
             case STRING:
-                advance();
                 return new StringNode(token.text);
+            case OPERATOR:
+                if (token.text.equals("(")) {
+                    List<Node> expressions = parseExpressionList();
+                    if (peek().type == TokenType.OPERATOR && peek().text.equals(")")) {
+                        consume(); // consume ')'
+                        return new TupleNode(expressions);
+                    } else {
+                        throw new RuntimeException("Expected ')' but found " + peek().text);
+                    }
+                } else if (token.text.equals("$") || token.text.equals("@") || token.text.equals("%")) {
+                    Token nameToken = consume();
+                    if (nameToken.type != TokenType.IDENTIFIER) {
+                        throw new RuntimeException("Expected identifier but found " + nameToken.text);
+                    }
+                    return new VariableNode(token.text + nameToken.text);
+                } else if (token.text.equals("[")) {
+                    Node index = parseExpression();
+                    if (peek().type == TokenType.OPERATOR && peek().text.equals("]")) {
+                        consume(); // consume ']'
+                        return new ArrayIndexNode(new VariableNode(token.text), index);
+                    } else {
+                        throw new RuntimeException("Expected ']' but found " + peek().text);
+                    }
+                }
             default:
                 throw new RuntimeException("Unexpected token: " + token);
         }
     }
 
-    public void advance() {
-        currentToken = lexer.nextToken();
-    }
+    public static void main(String[] args) {
+        List<Token> tokens = List.of(
+            new Token(TokenType.IDENTIFIER, "my"),
+            new Token(TokenType.WHITESPACE, " "),
+            new Token(TokenType.OPERATOR, "$"),
+            new Token(TokenType.IDENTIFIER, "b"),
+            new Token(TokenType.OPERATOR, ","),
+            new Token(TokenType.WHITESPACE, " "),
+            new Token(TokenType.OPERATOR, "@"),
+            new Token(TokenType.IDENTIFIER, "a"),
+            new Token(TokenType.WHITESPACE, " "),
+            new Token(TokenType.OPERATOR, "="),
+            new Token(TokenType.WHITESPACE, " "),
+            new Token(TokenType.OPERATOR, "("),
+            new Token(TokenType.NUMBER, "7"),
+            new Token(TokenType.OPERATOR, ","),
+            new Token(TokenType.WHITESPACE, " "),
+            new Token(TokenType.NUMBER, "8"),
+            new Token(TokenType.OPERATOR, ","),
+            new Token(TokenType.WHITESPACE, " "),
+            new Token(TokenType.NUMBER, "9"),
+            new Token(TokenType.OPERATOR, ")"),
+            new Token(TokenType.OPERATOR, ";"),
+            new Token(TokenType.WHITESPACE, " "),
+            new Token(TokenType.OPERATOR, "$"),
+            new Token(TokenType.IDENTIFIER, "a"),
+            new Token(TokenType.OPERATOR, "["),
+            new Token(TokenType.NUMBER, "10"),
+            new Token(TokenType.OPERATOR, "]"),
+            new Token(TokenType.WHITESPACE, " "),
+            new Token(TokenType.OPERATOR, "+"),
+            new Token(TokenType.WHITESPACE, " "),
+            new Token(TokenType.OPERATOR, "$"),
+            new Token(TokenType.IDENTIFIER, "b"),
+            new Token(TokenType.OPERATOR, "**"),
+            new Token(TokenType.NUMBER, "2"),
+            new Token(TokenType.EOF, "")
+        );
 
-        public static void main(String[] args) {
-            // String code = "$var1 = 42 + 3.14 * 2";
-            String code = "42+3*2";
-            Lexer lexer = new Lexer(code);
-            Parser parser = new Parser(lexer);
-            Node ast = parser.parse();
-            
-            // Print the tokens
-            List<Token> tokens = lexer.tokenize();
-            for (Token token : tokens) {
-              System.out.println(token);
-            }
-
-            // Print the AST or process it further
-            System.out.println(ast);
-        }
-
-}
-
-// AST Node classes
-abstract class Node {
-    public abstract String toString(int indent);
-
-    protected String indentString(int indent) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < indent; i++) {
-            sb.append("  "); // Two spaces per indent level
-        }
-        return sb.toString();
-    }
-}
-
-class BlockNode extends Node {
-    List<Node> statements;
-
-    BlockNode(List<Node> statements) {
-        this.statements = statements;
-    }
-
-    @Override
-    public String toString(int indent) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(indentString(indent)).append("BlockNode:\n");
-        for (Node stmt : statements) {
-            sb.append(stmt.toString(indent + 1)).append("\n");
-        }
-        return sb.toString();
+        Parser parser = new Parser(tokens);
+        Node ast = parser.parse();
+        System.out.println(ast.toString(0));
     }
 }
-
-class VariableNode extends Node {
-    String name;
-
-    VariableNode(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString(int indent) {
-        return indentString(indent) + "VariableNode: " + name;
-    }
-}
-
-class NumberNode extends Node {
-    String value;
-
-    NumberNode(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString(int indent) {
-        return indentString(indent) + "NumberNode: " + value;
-    }
-}
-
-class StringNode extends Node {
-    String value;
-
-    StringNode(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString(int indent) {
-        return indentString(indent) + "StringNode: " + value;
-    }
-}
-
-class BinaryOpNode extends Node {
-    Node left;
-    String operator;
-    Node right;
-
-    BinaryOpNode(Node left, String operator, Node right) {
-        this.left = left;
-        this.operator = operator;
-        this.right = right;
-    }
-
-    @Override
-    public String toString(int indent) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(indentString(indent)).append("BinaryOpNode: ").append(operator).append("\n");
-        sb.append(left.toString(indent + 1)).append("\n");
-        sb.append(right.toString(indent + 1));
-        return sb.toString();
-    }
-}
-
