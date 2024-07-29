@@ -48,6 +48,9 @@ public class Parser {
                     Node expr = parseExpression(0);
                     consume(TokenType.OPERATOR, ")");
                     return expr;
+                } else if (token.text.equals("$")) {
+                    Node operand = parsePrimary();
+                    return new UnaryOperatorNode("$", operand);
                 }
                 // Handle other primary cases like lists, etc.
                 throw new RuntimeException("Unexpected operator: " + token); // Ensure all paths return a value
@@ -73,6 +76,7 @@ public class Parser {
             case "-":
             case "*":
             case "/":
+            case "=":
                 return new BinaryOperatorNode(token.text, left, right);
             case "->":
                 return new PostfixOperatorNode(token.text, left);
@@ -106,6 +110,8 @@ public class Parser {
     private int getPrecedence(Token token) {
         // Define precedence levels for operators
         switch (token.text) {
+            case "=":
+                return 1; // Lower precedence for assignment
             case "+":
             case "-":
                 return 10;
@@ -116,7 +122,8 @@ public class Parser {
                 return 30;
             case "?":
                 return 5; // Ternary operator precedence
-            // Define other precedence levels
+            case "$":
+                return 3; // Higher precedence for prefix operator
             default:
                 return 0;
         }
@@ -146,6 +153,11 @@ public class Parser {
         IdentifierNode(String name) {
             this.name = name;
         }
+
+        @Override
+        public String toString() {
+            return "Identifier(" + name + ")";
+        }
     }
 
     class NumberNode extends Node {
@@ -154,6 +166,11 @@ public class Parser {
         NumberNode(String value) {
             this.value = value;
         }
+
+        @Override
+        public String toString() {
+            return "Number(" + value + ")";
+        }
     }
 
     class StringNode extends Node {
@@ -161,6 +178,11 @@ public class Parser {
 
         StringNode(String value) {
             this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return "String(" + value + ")";
         }
     }
 
@@ -174,6 +196,11 @@ public class Parser {
             this.left = left;
             this.right = right;
         }
+
+        @Override
+        public String toString() {
+            return "BinaryOperator(" + operator + ", " + left + ", " + right + ")";
+        }
     }
 
     class PostfixOperatorNode extends Node {
@@ -183,6 +210,11 @@ public class Parser {
         PostfixOperatorNode(String operator, Node operand) {
             this.operator = operator;
             this.operand = operand;
+        }
+
+        @Override
+        public String toString() {
+            return "PostfixOperator(" + operator + ", " + operand + ")";
         }
     }
 
@@ -198,9 +230,13 @@ public class Parser {
             this.trueExpr = trueExpr;
             this.falseExpr = falseExpr;
         }
+
+        @Override
+        public String toString() {
+            return "TernaryOperator(" + condition + " ? " + trueExpr + " : " + falseExpr + ")";
+        }
     }
 
-    // Additional node classes for completeness
     class UnaryOperatorNode extends Node {
         String operator;
         Node operand;
@@ -209,6 +245,11 @@ public class Parser {
             this.operator = operator;
             this.operand = operand;
         }
+
+        @Override
+        public String toString() {
+            return "UnaryOperator(" + operator + ", " + operand + ")";
+        }
     }
 
     class ListNode extends Node {
@@ -216,6 +257,11 @@ public class Parser {
 
         ListNode(List<Node> elements) {
             this.elements = elements;
+        }
+
+        @Override
+        public String toString() {
+            return "List(" + elements + ")";
         }
     }
 
@@ -231,6 +277,15 @@ public class Parser {
         }
         consume(TokenType.OPERATOR, ")");
         return new ListNode(elements);
+    }
+
+    public static void main(String[] args) {
+        String code = "my $var = 42; print \"Hello, World!\\n\";";
+        Lexer lexer = new Lexer(code);
+        List<Token> tokens = lexer.tokenize();
+        Parser parser = new Parser(tokens);
+        Node ast = parser.parse();
+        System.out.println(ast);
     }
 }
 
