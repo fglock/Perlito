@@ -224,30 +224,6 @@ public class ASMMethodCreator implements Opcodes {
         ctx.symbolTable.exitScope();
         System.out.println("FOR end");
         return Runtime.class; // Class of the result
-      } else if (target.equals("MY")) { // { "MY", "$a" }
-        System.out.println("MY " + data[1]);
-        String var = (String) data[1];
-        if (ctx.symbolTable.getVariableIndexInCurrentScope(var) != -1) {
-          System.out.println(
-              "Warning: \"my\" variable "
-                  + var
-                  + " masks earlier declaration in same ctx.symbolTable");
-        }
-        int varIndex = ctx.symbolTable.addVariable(var);
-        // TODO optimization - SETVAR+MY can be combined
-        ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
-        ctx.mv.visitInsn(Opcodes.DUP);
-        ctx.mv.visitMethodInsn(
-            Opcodes.INVOKESPECIAL,
-            "Runtime",
-            "<init>",
-            "()V",
-            false); // Create a new instance of Runtime
-        if (ctx.contextType != ContextType.VOID) {
-          ctx.mv.visitInsn(Opcodes.DUP);
-        }
-        ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
-        return Runtime.class; // Class of the result
       } else if (target.equals("SETVAR")) { // { "SETVAR", "$a", new Object[] { "PARSE", "12} },
         System.out.println("SETVAR " + data[1]);
         String var = (String) data[1];
@@ -281,9 +257,19 @@ public class ASMMethodCreator implements Opcodes {
           newEnv[index] = variableName;
         }
 
+        // create the new method
+        EmitterContext subCtx =
+            new EmitterContext(
+                ctx.fileName, // same source filename
+                null, // java class name
+                ctx.symbolTable, // closure symbolTable
+                null, // return label
+                null, // method visitor
+                ContextType.VOID, // main program has void context
+                true // is boxed
+                );
         Object[][] newData = (Object[][]) data[2]; // AST
-
-        Class<?> generatedClass = createClassWithMethod(ctx, newEnv, newData);
+        Class<?> generatedClass = createClassWithMethod(subCtx, newEnv, newData);
         String newClassNameDot = generatedClass.getName();
         String newClassName = newClassNameDot.replace('.', '/');
         System.out.println(
@@ -451,8 +437,11 @@ public class ASMMethodCreator implements Opcodes {
                 // }},
                 //         // call a method in the argument
                 // {new Object[] {"PARSE", "@_"}, "add", 7}, // call a method in the argument
-                {"MY", "$a"},
+                {"PARSE", "my $a"},
                 {"SETVAR", "$a", new Object[] {"PARSE", "12"}},
+                {
+                  Runtime.class, "print", new Object[] {"PARSE", "$a"},
+                },
                 {
                   "IF",
                   new Object[] {Runtime.class, "is_false"}, // if condition
@@ -464,11 +453,12 @@ public class ASMMethodCreator implements Opcodes {
                     // {
                     //   Runtime.class, "print", new Object[] {"PARSE", "$a"},
                     // },
-                    {"MY", "$a"},
+                    {"PARSE", "my $a"},
                     {"SETVAR", "$a", new Object[] {"PARSE", "13"}},
                     {
                       Runtime.class, "print", new Object[] {"PARSE", "$a"},
                     },
+                    {Runtime.class, "print", "end if"},
                   },
                 },
                 {"PARSE", "$a"},
@@ -499,6 +489,7 @@ public class ASMMethodCreator implements Opcodes {
                 {
                   Runtime.class, "print", new Object[] {"PARSE", "$a"},
                 },
+                {Runtime.class, "print", "end"},
                 {"PARSE", "return 5"}
               });
 

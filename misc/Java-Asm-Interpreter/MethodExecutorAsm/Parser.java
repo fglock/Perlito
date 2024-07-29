@@ -6,7 +6,21 @@ public class Parser {
   private static final Set<String> TERMINATORS =
       new HashSet<>(Arrays.asList(":", ";", ")", "}", "]"));
   private static final Set<String> UNARY_OP =
-      new HashSet<>(Arrays.asList("!", "\\", "-", "+", "--", "++", "$", "@", "*", "&", "$#"));
+      new HashSet<>(
+          Arrays.asList(
+              "!",
+              "\\",
+              "-",
+              "+",
+              "--",
+              "++", // operators
+              "$",
+              "@",
+              "%",
+              "*",
+              "&",
+              "$#" // sigils
+              ));
 
   public Parser(List<Token> tokens) {
     this.tokens = tokens;

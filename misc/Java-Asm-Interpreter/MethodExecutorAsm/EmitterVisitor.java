@@ -68,10 +68,12 @@ public class EmitterVisitor implements Visitor {
   @Override
   public void visit(UnaryOperatorNode node) {
     // Emit code for unary operator
-    System.out.println("visit(UnaryOperatorNode) " + node.operator);
-    if (node.operator.equals("$") || node.operator.equals("@")) {
+    String operator = node.operator;
+    System.out.println("visit(UnaryOperatorNode) " + operator);
+    if (operator.equals("$") || operator.equals("@") || operator.equals("%")) {
+        String sigil = operator;
         if (node.operand instanceof IdentifierNode) { // $a
-            String var = node.operator + ((IdentifierNode) node.operand).name;
+            String var = sigil + ((IdentifierNode) node.operand).name;
             System.out.println("GETVAR " + var);
             int varIndex = ctx.symbolTable.getVariableIndex(var);
             if (varIndex == -1) {
@@ -87,11 +89,40 @@ public class EmitterVisitor implements Visitor {
             }
             System.out.println("GETVAR end " + varIndex);
         }
-    } else if (node.operator.equals("my")) {
-      // TODO
-      node.operand.accept(this);
+    } else if (operator.equals("my")) {
+        Node sigilNode = node.operand;
+        if (sigilNode instanceof UnaryOperatorNode) { // my + $ @ %
+            String sigil = ((UnaryOperatorNode) sigilNode).operator;
+            if (sigil.equals("$") || sigil.equals("@") || sigil.equals("%")) {
+                Node identifierNode = ((UnaryOperatorNode) sigilNode).operand;
+                if (identifierNode instanceof IdentifierNode) { // my $a
+                    String var = sigil + ((IdentifierNode) identifierNode).name;
+                    System.out.println("MY " + var);
+                    if (ctx.symbolTable.getVariableIndexInCurrentScope(var) != -1) {
+                      System.out.println(
+                          "Warning: \"my\" variable "
+                              + var
+                              + " masks earlier declaration in same ctx.symbolTable");
+                    }
+                    int varIndex = ctx.symbolTable.addVariable(var);
+                    // TODO optimization - SETVAR+MY can be combined
+                    ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+                    ctx.mv.visitInsn(Opcodes.DUP);
+                    ctx.mv.visitMethodInsn(
+                        Opcodes.INVOKESPECIAL,
+                        "Runtime",
+                        "<init>",
+                        "()V",
+                        false); // Create a new instance of Runtime
+                    if (ctx.contextType != ContextType.VOID) {
+                      ctx.mv.visitInsn(Opcodes.DUP);
+                    }
+                    ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
+                }
+            }
+        }
     }
-    else if (node.operator.equals("return")) {
+    else if (operator.equals("return")) {
       // set call context to SCALAR - XXX might need RUNTIME call context
       EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
       node.operand.accept(new EmitterVisitor(childCtx));
