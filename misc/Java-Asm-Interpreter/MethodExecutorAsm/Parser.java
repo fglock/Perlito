@@ -3,6 +3,7 @@ import java.util.*;
 public class Parser {
     private final List<Token> tokens;
     private int position = 0;
+    private static final Set<String> TERMINATORS = new HashSet<>(Arrays.asList(":", ";", ")", "}", "]"));
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -17,7 +18,7 @@ public class Parser {
 
         while (true) {
             Token token = peek();
-            if (token.type == TokenType.EOF || token.text.equals(":") || token.text.equals(";")) {
+            if (token.type == TokenType.EOF || TERMINATORS.contains(token.text)) {
                 break;
             }
 
