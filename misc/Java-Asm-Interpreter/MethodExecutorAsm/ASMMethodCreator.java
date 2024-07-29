@@ -249,7 +249,7 @@ public class ASMMethodCreator implements Opcodes {
         ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
         return Runtime.class; // Class of the result
       } else if (target.equals(
-          "SETVAR")) { // { "SETVAR", "$a", new Object[] {Runtime.class, "make", 12} },
+          "SETVAR")) { // { "SETVAR", "$a", new Object[] { "PARSE", "12} },
         System.out.println("SETVAR " + data[1]);
         String var = (String) data[1];
         int varIndex = ctx.symbolTable.getVariableIndex(var);
@@ -434,20 +434,20 @@ public class ASMMethodCreator implements Opcodes {
               new Object[][] {
                 // { Integer.class, "new", 5 },     // calling a constructor with "new"
                 // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
-                {Runtime.class, "make", 5},
+                { "PARSE", "5"},
                 {Runtime.class, "print", 789},
                 {"PARSE", "@_"}, // retrieve the argument
-                {Runtime.class, "print", new Object[] {Runtime.class, "make", 5}},
+                {Runtime.class, "print", new Object[] { "PARSE", "5"}},
 
                 {Runtime.class, "print", new Object[] {"PARSE", "@_"}}, // use the argument
                 {System.out, "println", "123"},
-                // {new Object[] {Runtime.class, "make", 5}, "add", 6},
+                // {new Object[] { "PARSE", "5}, "add", 6},
                 // { System.out, "println", new Object[]{ new Object[]{ "PARSE", "@_" }, "add", 5
                 // }},
                 //         // call a method in the argument
                 // {new Object[] {"PARSE", "@_"}, "add", 7}, // call a method in the argument
                 {"MY", "$a"},
-                {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
+                {"SETVAR", "$a", new Object[] { "PARSE", "12"}},
                 {
                   "IF",
                   new Object[] {Runtime.class, "is_false"}, // if condition
@@ -460,7 +460,7 @@ public class ASMMethodCreator implements Opcodes {
                     //   Runtime.class, "print", new Object[] {"PARSE", "$a"},
                     // },
                     {"MY", "$a"}, 
-                    {"SETVAR", "$a", new Object[] {Runtime.class, "make", 13}},
+                    {"SETVAR", "$a", new Object[] { "PARSE", "13"}},
                     {
                       Runtime.class, "print", new Object[] {"PARSE", "$a"},
                     },
@@ -489,7 +489,7 @@ public class ASMMethodCreator implements Opcodes {
                     }
                   },
                   "apply",
-                  new Object[] {Runtime.class, "make", 55555}
+                  new Object[] { "PARSE", "55555"}
                 },
                 {
                   Runtime.class, "print", new Object[] {"PARSE", "$a"},
