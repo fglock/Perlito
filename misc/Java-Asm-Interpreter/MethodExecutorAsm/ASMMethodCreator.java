@@ -652,5 +652,13 @@ public class ASMMethodCreator implements Opcodes {
 
   - BEGIN-block
 
+  - read code from STDIN
+
+        // Read input from STDIN
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter code:");
+        String code = scanner.nextLine();
+        scanner.close();
+
 */
 
