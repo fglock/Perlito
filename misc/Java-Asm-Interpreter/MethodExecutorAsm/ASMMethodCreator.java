@@ -2,7 +2,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class ASMMethodCreator implements Opcodes {
@@ -10,19 +9,19 @@ public class ASMMethodCreator implements Opcodes {
   static int classCounter = 0;
   static CustomClassLoader loader = new CustomClassLoader();
 
-  public static Class<?> createClassWithMethod(
-      ScopedSymbolTable scope, String[] env, Object[][] data) throws Exception {
+  public static Class<?> createClassWithMethod(EmitterContext ctx, String[] env, Object[][] data)
+      throws Exception {
     // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options
     ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
-    String classNameDot = "org.perlito.anon" + String.valueOf(classCounter++);
-    String className = classNameDot.replace('.', '/');
+    String javaClassNameDot = "org.perlito.anon" + String.valueOf(classCounter++);
+    String javaClassName = javaClassNameDot.replace('.', '/');
 
     // Set the source file name for runtime error messages
-    cw.visitSource(scope.fileName, null);
+    cw.visitSource(ctx.fileName, null);
 
     // Define the class with version, access flags, name, signature, superclass, and interfaces
-    cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, className, null, "java/lang/Object", null);
+    cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, javaClassName, null, "java/lang/Object", null);
 
     // Add static fields to the class
     // closure variables are stored here; they are copied to local vars at runtime
@@ -33,49 +32,50 @@ public class ASMMethodCreator implements Opcodes {
           .visitEnd();
     }
 
-    MethodVisitor mv;
+    ctx.contextType = ContextType.RUNTIME;
+    ctx.javaClassName = javaClassName;
 
     // Create the class initializer method
-    mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
-    mv.visitCode();
+    ctx.mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+    ctx.mv.visitCode();
     // for (int i = 0; i < env.length; i++) { // Initialize the static fields
     //   String fieldName = (String) env[i];
     //   System.out.println("Init static field: " + fieldName);
-    //   mv.visitTypeInsn(Opcodes.NEW, "Runtime");
-    //   mv.visitInsn(Opcodes.DUP);
-    //   mv.visitMethodInsn(
+    //   ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+    //   ctx.mv.visitInsn(Opcodes.DUP);
+    //   ctx.mv.visitMethodInsn(
     //       Opcodes.INVOKESPECIAL,
     //       "Runtime",
     //       "<init>",
     //       "()V",
     //       false); // Create a new instance of Runtime
-    //   mv.visitFieldInsn(
-    //       Opcodes.PUTSTATIC, className, fieldName, "LRuntime;"); // Set the static field
+    //   ctx.mv.visitFieldInsn(
+    //       Opcodes.PUTSTATIC, javaClassName, fieldName, "LRuntime;"); // Set the static field
     // }
-    mv.visitInsn(Opcodes.RETURN);
-    mv.visitMaxs(0, 0);
-    mv.visitEnd();
+    ctx.mv.visitInsn(Opcodes.RETURN);
+    ctx.mv.visitMaxs(0, 0);
+    ctx.mv.visitEnd();
 
     // Add a constructor without parameters
-    mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
-    mv.visitCode();
-    mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
-    mv.visitMethodInsn(
+    ctx.mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+    ctx.mv.visitCode();
+    ctx.mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
+    ctx.mv.visitMethodInsn(
         Opcodes.INVOKESPECIAL,
         "java/lang/Object",
         "<init>",
         "()V",
         false); // Call the superclass constructor
-    mv.visitInsn(Opcodes.RETURN); // Return void
-    mv.visitMaxs(0, 0); // Automatically computed
-    mv.visitEnd();
+    ctx.mv.visitInsn(Opcodes.RETURN); // Return void
+    ctx.mv.visitMaxs(0, 0); // Automatically computed
+    ctx.mv.visitEnd();
 
     // Create the method
     System.out.println("Create the method");
     String return_type = "(LRuntime;)Ljava/lang/Object;"; // takes an Object arg, returns an Object
 
     // method is public, static method
-    mv =
+    ctx.mv =
         cw.visitMethod(
             Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC,
             "apply",
@@ -84,77 +84,59 @@ public class ASMMethodCreator implements Opcodes {
             new String[] {"java/lang/Exception"});
 
     // generate the subroutine block
-    mv.visitCode();
+    ctx.mv.visitCode();
 
     // initialize local variables with the closure values from the static fields
     // skip zero because it is the "@_" argument list
     for (int i = 1; i < env.length; i++) {
       String fieldName = env[i];
       System.out.println("Init closure variable: " + fieldName);
-      mv.visitFieldInsn(Opcodes.GETSTATIC, className, fieldName, "LRuntime;");
-      mv.visitVarInsn(Opcodes.ASTORE, i);
+      ctx.mv.visitFieldInsn(Opcodes.GETSTATIC, javaClassName, fieldName, "LRuntime;");
+      ctx.mv.visitVarInsn(Opcodes.ASTORE, i);
     }
 
-    Label returnLabel = new Label();
-    generateCodeBlock(mv, className, scope, data, returnLabel, false); // Process the input data
+    ctx.returnLabel = new Label();
+    generateCodeBlock(ctx, data); // Process the input data
     System.out.println("Return the last value");
-    mv.visitLabel(returnLabel); // "return" from other places arrive here
-    mv.visitInsn(Opcodes.ARETURN); // returns an Object
-    mv.visitMaxs(0, 0); // max stack and local variables
-    mv.visitEnd();
+    ctx.mv.visitLabel(ctx.returnLabel); // "return" from other places arrive here
+    ctx.mv.visitInsn(Opcodes.ARETURN); // returns an Object
+    ctx.mv.visitMaxs(0, 0); // max stack and local variables
+    ctx.mv.visitEnd();
 
     cw.visitEnd(); // complete the class
     byte[] classData = cw.toByteArray(); // generate the bytecode
 
-    Class<?> generatedClass = loader.defineClass(classNameDot, classData); // generate the class
+    Class<?> generatedClass = loader.defineClass(javaClassNameDot, classData); // generate the class
     return generatedClass;
   }
 
-  public static void generateCodeBlock(
-      MethodVisitor mv,
-      String className,
-      ScopedSymbolTable scope,
-      Object[][] data,
-      Label returnLabel,
-      boolean isVoidContext)
-      throws Exception {
+  public static void generateCodeBlock(EmitterContext ctx, Object[][] data) throws Exception {
     System.out.println("generateCodeBlock start");
-    scope.enterScope();
+    ctx.symbolTable.enterScope();
+
+    EmitterContext ctxMiddle =
+        ctx.with(ContextType.VOID); // statements in the middle of the block have context VOID
+
     for (int i = 0; i < data.length; i++) {
       System.out.println("Process the input data line: " + i);
       processInstructions(
-          mv,
-          className,
-          scope,
-          data[i],
-          returnLabel,
-          isVoidContext
-              ? isVoidContext
-              : i != (data.length - 1) // void context, except for the last line
-          );
+          i == (data.length - 1) ? ctx : ctxMiddle, // void context, except for the last line
+          data[i]);
     }
-    scope.exitScope();
+    ctx.symbolTable.exitScope();
     System.out.println("generateCodeBlock end");
   }
 
-  private static Class<?> processInstructions(
-      MethodVisitor mv,
-      String className,
-      ScopedSymbolTable scope,
-      Object[] data,
-      Label returnLabel,
-      boolean isVoidContext)
-      throws Exception {
+  private static Class<?> processInstructions(EmitterContext ctx, Object[] data) throws Exception {
 
     Object target = data[0]; // Load the target object
     boolean targetIsInstance = true;
     boolean isReturn = false;
     Class<?> targetClass;
 
-    System.out.println("Load the target object " + data[0]);
+    System.out.println("processInstructions " + data[0] + " context: " + ctx.contextType);
     if (target instanceof Object[]) { //  { new Object[]{ Runtime.class, "make", 5 }, "add", 5 },
-      targetClass =
-          processInstructions(mv, className, scope, (Object[]) target, returnLabel, false);
+      targetClass = processInstructions(ctx, (Object[]) target);
       System.out.println(" target is instance of: " + targetClass);
     } else if (target instanceof Class<?>) {
       targetIsInstance = false; // If the target is a class, it means we're calling a static method
@@ -165,10 +147,11 @@ public class ASMMethodCreator implements Opcodes {
         // we are we calling a constructor
         System.out.println(" calling a constructor");
         // TODO
-        //      mv.visitTypeInsn(Opcodes.NEW, "java/lang/Integer"); // Create a new Integer object
-        //      mv.visitInsn(Opcodes.DUP); // Duplicate the top operand stack value
-        //      mv.visitVarInsn(Opcodes.ILOAD, 1); // Load the method argument (int value)
-        //      mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Integer", "<init>", "(I)V",
+        //      ctx.mv.visitTypeInsn(Opcodes.NEW, "java/lang/Integer"); // Create a new Integer
+        // object
+        //      ctx.mv.visitInsn(Opcodes.DUP); // Duplicate the top operand stack value
+        //      ctx.mv.visitVarInsn(Opcodes.ILOAD, 1); // Load the method argument (int value)
+        //      ctx.mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Integer", "<init>", "(I)V",
         // false); // Call the Integer constructor
         throw new Exception("Not implemented: calling a constructor");
       }
@@ -178,183 +161,103 @@ public class ASMMethodCreator implements Opcodes {
       if (target.equals("PARSE")) { // { "PARSE", "1+1" }
         String code = (String) data[1];
         System.out.println("parse code: " + code);
-        System.out.println("  call context " + (isVoidContext ? "void" : "scalar"));
+        System.out.println("  call context " + ctx.contextType);
         Lexer lexer = new Lexer(code);
         List<Token> tokens = lexer.tokenize();
         Parser parser = new Parser(tokens);
         Node ast = parser.parse();
-
         System.out.println("-- AST:\n" + Parser.getASTString(ast) + "--\n");
-
-        EmitterContext ctx =
-            new EmitterContext(
-                scope,
-                returnLabel,
-                mv,
-                isVoidContext ? ContextType.VOID : ContextType.SCALAR, // call context
-                true // is boxed
-                );
         EmitterVisitor visitor = new EmitterVisitor(ctx);
         ast.accept(visitor);
-
-        // visitor.emitReturnLabel(); // Emit the return label at the end
-        // targetClass =
-        //     processInstructions(mv, className, scope, (Object[]) {ast}, returnLabel,
-        // isVoidContext);
-        // if (arg instanceof NumberNode) {
-        //     NumberNode node = (NumberNode) arg;
-        //     argTypes[i] = int.class;
-        //     mv.visitLdcInsn(Integer.valueOf(node.value));    // emit integer
-        // }
-
         return Runtime.class; // return Class
-      } else if (target.equals("GETSTATIC")) { // { "GETSTATIC", "field" }   { GETSTATIC, name }
-        System.out.println("retrieve static " + (String) data[1]);
-        if (!isVoidContext) {
-          mv.visitFieldInsn(Opcodes.GETSTATIC, className, (String) data[1], "LRuntime;");
-        }
-        return Runtime.class; // return Class
-      }
-      // } else if (target.equals("GETFIELD")) { // { "GETFIELD", "var" }   { GETFIELD, name }
-      //   System.out.println("retrieve field " + (String) data[1]);
-      //   mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
-      //   mv.visitFieldInsn(Opcodes.GETFIELD, className, (String) data[1], "LRuntime;");
-      //   return Runtime.class; // return Class
-      // } else if (target.equals("PUTFIELD")) { // { "PUTFIELD", "var" }   { PUTFIELD, name }
-      //   System.out.println("put field " + (String) data[1]);
-      //   // TODO process argument
-      //   // mv.visitVarInsn(Opcodes.ALOAD, 0); // Load 'this'
-      //   // mv.visitFieldInsn(Opcodes.PUTFIELD, className, (String) data[1], "LRuntime;");
-      //   // return Runtime.class; // return Class
-      //   throw new Exception("Not implemented: PUTFIELD");
-      else if (target.equals(
+      } else if (target.equals(
           "RETURN")) { // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
         System.out.println(" calling return");
         targetClass = Runtime.class;
         isReturn = true;
       } else if (target.equals("IF")) { // { "IF", cond, if, else }
         System.out.println("IF start");
-        scope.enterScope();
+        ctx.symbolTable.enterScope();
         Label elseLabel = new Label();
         Label endLabel = new Label();
         processInstructions(
-            mv,
-            className,
-            scope,
-            (Object[]) data[1],
-            returnLabel,
-            false); // Generate code for the condition
-        mv.visitJumpInsn(IFEQ, elseLabel); // Assuming the condition leaves a boolean on the stack
-        generateCodeBlock(
-            mv,
-            className,
-            scope,
-            (Object[][]) data[2],
-            returnLabel,
-            true); // Generate code for the if block
-        mv.visitJumpInsn(GOTO, endLabel);
-        mv.visitLabel(elseLabel);
+            ctx.with(ContextType.SCALAR), (Object[]) data[1]); // Generate code for the condition
+        ctx.mv.visitJumpInsn(
+            IFEQ, elseLabel); // Assuming the condition leaves a boolean on the stack
+        generateCodeBlock(ctx, (Object[][]) data[2]); // Generate code for the if block
+        ctx.mv.visitJumpInsn(GOTO, endLabel);
+        ctx.mv.visitLabel(elseLabel);
         if (data[3] != null) { // Generate code for the else block
-          generateCodeBlock(mv, className, scope, (Object[][]) data[3], returnLabel, true);
+          generateCodeBlock(ctx, (Object[][]) data[3]);
         }
-        mv.visitLabel(endLabel); // End of the if/else structure
-        scope.exitScope();
+        ctx.mv.visitLabel(endLabel); // End of the if/else structure
+        ctx.symbolTable.exitScope();
         System.out.println("IF end");
         return Runtime.class; // Class of the result
       } else if (target.equals("WHILE")) { // { "WHILE", cond, body }
         System.out.println("WHILE start");
-        scope.enterScope();
+        ctx.symbolTable.enterScope();
         Label startLabel = new Label();
         Label endLabel = new Label();
 
-        mv.visitLabel(startLabel);
+        ctx.mv.visitLabel(startLabel);
         processInstructions(
-            mv,
-            className,
-            scope,
-            (Object[]) data[1],
-            returnLabel,
-            false); // Generate code for the condition
-        mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
-        generateCodeBlock(
-            mv,
-            className,
-            scope,
-            (Object[][]) data[2],
-            returnLabel,
-            true); // Generate code for the loop body
-        mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
-        mv.visitLabel(endLabel); // End of the loop
-        scope.exitScope();
+            ctx.with(ContextType.SCALAR), (Object[]) data[1]); // Generate code for the condition
+        ctx.mv.visitJumpInsn(
+            IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
+        generateCodeBlock(ctx, (Object[][]) data[2]); // Generate code for the loop body
+        ctx.mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
+        ctx.mv.visitLabel(endLabel); // End of the loop
+        ctx.symbolTable.exitScope();
         System.out.println("WHILE end");
         return Runtime.class; // Class of the result
       } else if (target.equals("FOR")) { // { "FOR", init, cond, incr, body }
         System.out.println("FOR start");
-        scope.enterScope();
+        ctx.symbolTable.enterScope();
         Label startLabel = new Label();
         Label endLabel = new Label();
 
+        processInstructions(ctx, (Object[]) data[1]); // Generate code for the initialization
+        ctx.mv.visitLabel(startLabel);
         processInstructions(
-            mv,
-            className,
-            scope,
-            (Object[]) data[1],
-            returnLabel,
-            true); // Generate code for the initialization
-        mv.visitLabel(startLabel);
-        processInstructions(
-            mv,
-            className,
-            scope,
-            (Object[]) data[2],
-            returnLabel,
-            false); // Generate code for the condition
-        mv.visitJumpInsn(IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
-        generateCodeBlock(
-            mv,
-            className,
-            scope,
-            (Object[][]) data[4],
-            returnLabel,
-            true); // Generate code for the loop body
-        processInstructions(
-            mv,
-            className,
-            scope,
-            (Object[]) data[3],
-            returnLabel,
-            true); // Generate code for the increment
-        mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
-        mv.visitLabel(endLabel); // End of the loop
-        scope.exitScope();
+            ctx.with(ContextType.SCALAR), (Object[]) data[2]); // Generate code for the condition
+        ctx.mv.visitJumpInsn(
+            IFEQ, endLabel); // Assuming the condition leaves a boolean on the stack
+        generateCodeBlock(ctx, (Object[][]) data[4]); // Generate code for the loop body
+        processInstructions(ctx, (Object[]) data[3]); // Generate code for the increment
+        ctx.mv.visitJumpInsn(GOTO, startLabel); // Jump back to the start of the loop
+        ctx.mv.visitLabel(endLabel); // End of the loop
+        ctx.symbolTable.exitScope();
         System.out.println("FOR end");
         return Runtime.class; // Class of the result
       } else if (target.equals("MY")) { // { "MY", "$a" }
         System.out.println("MY " + data[1]);
         String var = (String) data[1];
-        if (scope.getVariableIndexInCurrentScope(var) != -1) {
+        if (ctx.symbolTable.getVariableIndexInCurrentScope(var) != -1) {
           System.out.println(
-              "Warning: \"my\" variable " + var + " masks earlier declaration in same scope");
+              "Warning: \"my\" variable "
+                  + var
+                  + " masks earlier declaration in same ctx.symbolTable");
         }
-        int varIndex = scope.addVariable(var);
+        int varIndex = ctx.symbolTable.addVariable(var);
         // TODO optimization - SETVAR+MY can be combined
-        mv.visitTypeInsn(Opcodes.NEW, "Runtime");
-        mv.visitInsn(Opcodes.DUP);
-        mv.visitMethodInsn(
+        ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+        ctx.mv.visitInsn(Opcodes.DUP);
+        ctx.mv.visitMethodInsn(
             Opcodes.INVOKESPECIAL,
             "Runtime",
             "<init>",
             "()V",
             false); // Create a new instance of Runtime
-        if (!isVoidContext) {
-          mv.visitInsn(Opcodes.DUP);
+        if (ctx.contextType != ContextType.VOID) {
+          ctx.mv.visitInsn(Opcodes.DUP);
         }
-        mv.visitVarInsn(Opcodes.ASTORE, varIndex);
+        ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
         return Runtime.class; // Class of the result
       } else if (target.equals("GETVAR")) { // { "GETVAR", "$a" }
         System.out.println("GETVAR " + data[1]);
         String var = (String) data[1];
-        int varIndex = scope.getVariableIndex(var);
+        int varIndex = ctx.symbolTable.getVariableIndex(var);
         if (varIndex == -1) {
           System.out.println(
               "Warning: Global symbol \""
@@ -363,8 +266,8 @@ public class ASMMethodCreator implements Opcodes {
                   + var
                   + "\"?)");
         }
-        if (!isVoidContext) {
-          mv.visitVarInsn(Opcodes.ALOAD, varIndex);
+        if (ctx.contextType != ContextType.VOID) {
+          ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex);
         }
         System.out.println("GETVAR end " + varIndex);
         return Runtime.class; // Class of the result
@@ -372,7 +275,7 @@ public class ASMMethodCreator implements Opcodes {
           "SETVAR")) { // { "SETVAR", "$a", new Object[] {Runtime.class, "make", 12} },
         System.out.println("SETVAR " + data[1]);
         String var = (String) data[1];
-        int varIndex = scope.getVariableIndex(var);
+        int varIndex = ctx.symbolTable.getVariableIndex(var);
         if (varIndex == -1) {
           System.out.println(
               "Warning: Global symbol \""
@@ -381,21 +284,21 @@ public class ASMMethodCreator implements Opcodes {
                   + var
                   + "\"?)");
         }
-        if (!isVoidContext) {
-          mv.visitInsn(Opcodes.DUP);
+        processInstructions(ctx.with(ContextType.SCALAR), (Object[]) data[2]);
+        ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
+        if (ctx.contextType != ContextType.VOID) {
+          ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex);    // return the variable
         }
-        processInstructions(mv, className, scope, (Object[]) data[2], returnLabel, false);
-        mv.visitVarInsn(Opcodes.ASTORE, varIndex);
         System.out.println("SETVAR end " + varIndex);
         return Runtime.class; // Class of the result
-      } else if (target.equals("SUB")) { // { "SUB", className, env, body }
+      } else if (target.equals("SUB")) { // { "SUB", javaClassName, env, body }
         System.out.println("SUB start");
 
         // retrieve closure variable list
         // alternately, scan the AST for variables and capture only the ones that are used
-        Map<Integer, String> visibleVariables = scope.getAllVisibleVariables();
+        Map<Integer, String> visibleVariables = ctx.symbolTable.getAllVisibleVariables();
         String[] newEnv = new String[visibleVariables.size()];
-        System.out.println(" scope.getAllVisibleVariables");
+        System.out.println(" ctx.symbolTable.getAllVisibleVariables");
         for (Integer index : visibleVariables.keySet()) {
           String variableName = visibleVariables.get(index);
           System.out.println("  " + index + " " + variableName);
@@ -404,7 +307,7 @@ public class ASMMethodCreator implements Opcodes {
 
         Object[][] newData = (Object[][]) data[2]; // AST
 
-        Class<?> generatedClass = createClassWithMethod(scope, newEnv, newData);
+        Class<?> generatedClass = createClassWithMethod(ctx, newEnv, newData);
         String newClassNameDot = generatedClass.getName();
         String newClassName = newClassNameDot.replace('.', '/');
         System.out.println(
@@ -413,31 +316,25 @@ public class ASMMethodCreator implements Opcodes {
 
         // initialize the static fields
         for (int i = 0; i < newEnv.length; i++) {
-          mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
-          mv.visitFieldInsn(PUTSTATIC, newClassName, newEnv[i], "LRuntime;");
+          ctx.mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
+          ctx.mv.visitFieldInsn(PUTSTATIC, newClassName, newEnv[i], "LRuntime;");
         }
 
-        // this will be called at runtime: Runtime.make_sub(className);
+        // this will be called at runtime: Runtime.make_sub(javaClassName);
         // TODO move the "make_sub" to ASM
         Runtime.anonSubs.put(newClassName, generatedClass);
-        mv.visitLdcInsn(newClassName);
-        mv.visitMethodInsn(
+        ctx.mv.visitLdcInsn(newClassName);
+        ctx.mv.visitMethodInsn(
             Opcodes.INVOKESTATIC, "Runtime", "make_sub", "(Ljava/lang/String;)LRuntime;", false);
         System.out.println("SUB end");
         return Runtime.class; // Class of the result
       } else {
         throw new IllegalArgumentException("Unsupported target type: " + target);
-        // targetClass = target.getClass();
-        // mv.visitLdcInsn(target);
       }
-      // } else if (target instanceof Integer) {
-      //     System.out.println(" is Integer");
-      //     targetClass = target.getClass();
-      //     mv.visitLdcInsn(target);
     } else if (target instanceof java.io.PrintStream) {
       System.out.println(" is " + target);
       targetClass = target.getClass();
-      mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+      ctx.mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
     } else {
       throw new IllegalArgumentException("Unsupported target type: " + target);
     }
@@ -451,6 +348,7 @@ public class ASMMethodCreator implements Opcodes {
 
       Object[] args = new Object[data.length - 2];
       System.arraycopy(data, 2, args, 0, args.length);
+      EmitterContext ctxScalar = ctx.with(ContextType.SCALAR);
 
       argTypes = new Class<?>[args.length];
       for (int i = 0; i < args.length; i++) {
@@ -458,15 +356,14 @@ public class ASMMethodCreator implements Opcodes {
         argTypes[i] = (arg == null) ? Object.class : getPrimitiveClass(arg.getClass());
         System.out.println("  argument: " + arg);
         if (arg instanceof Object[]) {
-          Class<?> returnClass =
-              processInstructions(mv, className, scope, (Object[]) arg, returnLabel, false);
+          Class<?> returnClass = processInstructions(ctxScalar, (Object[]) arg);
           argTypes[i] = getPrimitiveClass(returnClass); // process returnClass
         } else if (arg instanceof Integer) {
-          mv.visitLdcInsn(arg);
+          ctxScalar.mv.visitLdcInsn(arg);
         } else if (arg instanceof String) {
-          mv.visitLdcInsn(arg);
+          ctxScalar.mv.visitLdcInsn(arg);
         } else if (arg instanceof Class<?>) {
-          mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) arg));
+          ctxScalar.mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) arg));
         } else {
           throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
         }
@@ -477,10 +374,7 @@ public class ASMMethodCreator implements Opcodes {
     }
 
     if (isReturn) {
-      mv.visitJumpInsn(GOTO, returnLabel);
-      // if (isVoidContext) {
-      //   mv.visitInsn(Opcodes.POP); // cleanup the stack
-      // }
+      ctx.mv.visitJumpInsn(GOTO, ctx.returnLabel);
       return targetClass; // Class of the result
     }
 
@@ -492,12 +386,12 @@ public class ASMMethodCreator implements Opcodes {
             : targetClass.getMethod(methodName);
     String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
     System.out.println(
-        "call class.method: " + targetClass + " . " + methodName + " descriptor: " + descriptor);
+        "call class.method: " + targetClass + " . " + methodName + " descriptor: " + descriptor + " context: " + ctx.contextType);
 
     // Invoke the method
     if (targetIsInstance) {
       System.out.println("invoke virtual");
-      mv.visitMethodInsn(
+      ctx.mv.visitMethodInsn(
           Opcodes.INVOKEVIRTUAL,
           targetClass.getName().replace('.', '/'),
           methodName,
@@ -505,16 +399,16 @@ public class ASMMethodCreator implements Opcodes {
           false);
     } else {
       System.out.println("invoke static");
-      mv.visitMethodInsn(
+      ctx.mv.visitMethodInsn(
           Opcodes.INVOKESTATIC,
           targetClass.getName().replace('.', '/'),
           methodName,
           descriptor,
           false);
     }
-    if (isVoidContext && descriptor.charAt(descriptor.length() - 1) != 'V') {
+    if (ctx.contextType == ContextType.VOID && descriptor.charAt(descriptor.length() - 1) != 'V') {
       System.out.println(" in void context");
-      mv.visitInsn(Opcodes.POP); // cleanup the stack
+      ctx.mv.visitInsn(Opcodes.POP); // cleanup the stack
     }
     Class<?> returnType = method.getReturnType();
     System.out.println("return type: " + returnType);
@@ -545,15 +439,25 @@ public class ASMMethodCreator implements Opcodes {
   public static void main(String[] args) {
     try {
 
+      // Create the compiler context
+      EmitterContext ctx =
+          new EmitterContext(
+              "test.pl", // source filename
+              null, // java class name
+              new ScopedSymbolTable(), // top-level ctx.symbolTable
+              null, // return label
+              null, // method visitor
+              ContextType.VOID, // main program has void context
+              true // is boxed
+              );
+      ctx.symbolTable.enterScope();
+      ctx.symbolTable.addVariable("@_"); // argument is local variable zero
+
       // Create the class
       System.out.println("createClassWithMethod");
-      ScopedSymbolTable scope =
-          new ScopedSymbolTable("test.pl"); // source filename, top-level scope
-      scope.enterScope();
-      scope.addVariable("@_"); // argument is local variable zero
       Class<?> generatedClass =
           createClassWithMethod(
-              scope,
+              ctx,
               new String[] {}, // closure variables  { name }
               new Object[][] {
                 // { Integer.class, "new", 5 },     // calling a constructor with "new"
@@ -562,13 +466,14 @@ public class ASMMethodCreator implements Opcodes {
                 {Runtime.class, "print", 789},
                 {"GETVAR", "@_"}, // retrieve the argument
                 {Runtime.class, "print", new Object[] {Runtime.class, "make", 5}},
+
                 {Runtime.class, "print", new Object[] {"GETVAR", "@_"}}, // use the argument
                 {System.out, "println", "123"},
-                {new Object[] {Runtime.class, "make", 5}, "add", 6},
+                // {new Object[] {Runtime.class, "make", 5}, "add", 6},
                 // { System.out, "println", new Object[]{ new Object[]{ "GETVAR", "@_" }, "add", 5
                 // }},
                 //         // call a method in the argument
-                {new Object[] {"GETVAR", "@_"}, "add", 7}, // call a method in the argument
+                // {new Object[] {"GETVAR", "@_"}, "add", 7}, // call a method in the argument
                 {"MY", "$a"},
                 {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
                 {
@@ -589,34 +494,35 @@ public class ASMMethodCreator implements Opcodes {
                     },
                   },
                 },
-                {
-                  new Object[] {
-                    "SUB",
-                    new String[] {}, // closure variables  { name }
-                    new Object[][] {
-                      {System.out, "println", "Inside sub"},
-                      {
-                        Runtime.class, "print", new Object[] {"GETVAR", "$a"}, // closure var
-                      },
-                      {
-                        "IF",
-                        new Object[] {Runtime.class, "is_false"}, // if condition
-                        new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
-                        new Object[][] { // else block
-                          {Runtime.class, "print", "if is false"},
-                          {"RETURN", null, new Object[] {"GETVAR", "$a"}}, // return from block
-                        },
-                      },
-                      {Runtime.class, "print", new Object[] {"GETVAR", "@_"}},
-                    }
-                  },
-                  "apply",
-                  new Object[] {Runtime.class, "make", 55555}
-                },
-                {
-                  Runtime.class, "print", new Object[] {"GETVAR", "$a"},
-                },
-                {"PARSE", "return 5"}
+         //       {"GETVAR", "$a"},
+         //       {
+         //         new Object[] {
+         //           "SUB",
+         //           new String[] {}, // closure variables  { name }
+         //           new Object[][] {
+         //             {System.out, "println", "Inside sub"},
+         //             {
+         //               Runtime.class, "print", new Object[] {"GETVAR", "$a"}, // closure var
+         //             },
+         //             {
+         //               "IF",
+         //               new Object[] {Runtime.class, "is_false"}, // if condition
+         //               new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
+         //               new Object[][] { // else block
+         //                 {Runtime.class, "print", "if is false"},
+         //                 {"RETURN", null, new Object[] {"GETVAR", "$a"}}, // return from block
+         //               },
+         //             },
+         //             {Runtime.class, "print", new Object[] {"GETVAR", "@_"}},
+         //           }
+         //         },
+         //         "apply",
+         //         new Object[] {Runtime.class, "make", 55555}
+         //       },
+         //       {
+         //         Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+         //       },
+         //       {"PARSE", "return 5"}
               });
 
       // Convert into a Runtime object
@@ -649,8 +555,8 @@ public class ASMMethodCreator implements Opcodes {
 
   - add debug information (line numbers)
       Label thisLabel = new Label();
-      mv.visitLabel(thisLabel);
-      mv.visitLineNumber(10, thisLabel); // Associate line number 10 with thisLabel
+      ctx.mv.visitLabel(thisLabel);
+      ctx.mv.visitLineNumber(10, thisLabel); // Associate line number 10 with thisLabel
 
   - when something is called in void context, we need to POP the JVM stack to cleanup the unused value.
         - "if" in end of sub should inject a "return" in both blocks
@@ -667,7 +573,7 @@ public class ASMMethodCreator implements Opcodes {
         - test FOR, WHILE
 
   - eval string
-        freeze the scope at eval string, we will need it to compile the string later
+        freeze the ctx.symbolTable at eval string, we will need it to compile the string later
 
   - BEGIN-block
 

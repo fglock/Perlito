@@ -2,18 +2,24 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 public class EmitterContext {
-  public final ScopedSymbolTable symbolTable;
-  public final Label returnLabel;
-  public final MethodVisitor mv;
-  public final ContextType contextType; // Use the enum here
-  public final boolean isBoxed; // true for boxed object, false for native object
+  public String fileName;
+  public String javaClassName;
+  public ScopedSymbolTable symbolTable;
+  public Label returnLabel;
+  public MethodVisitor mv;
+  public ContextType contextType; // Use the enum here
+  public boolean isBoxed; // true for boxed object, false for native object
 
   public EmitterContext(
+      String fileName,
+      String javaClassName,
       ScopedSymbolTable symbolTable,
       Label returnLabel,
       MethodVisitor mv,
       ContextType contextType,
       boolean isBoxed) {
+    this.fileName = fileName;
+    this.javaClassName = javaClassName;
     this.symbolTable = symbolTable;
     this.returnLabel = returnLabel;
     this.mv = mv;
@@ -23,6 +29,9 @@ public class EmitterContext {
 
   // Method to create a new context with updated contextType and isBoxed
   public EmitterContext with(ContextType contextType, boolean isBoxed) {
-    return new EmitterContext(this.symbolTable, this.returnLabel, this.mv, contextType, isBoxed);
+    return new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, isBoxed);
+  }
+  public EmitterContext with(ContextType contextType) {
+    return new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, this.isBoxed);
   }
 }

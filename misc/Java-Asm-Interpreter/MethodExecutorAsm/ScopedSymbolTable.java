@@ -12,16 +12,10 @@ class ScopedSymbolTable {
     // A stack to manage nested scopes of symbol tables
     private Stack<SymbolTable> stack = new Stack<>();
     
-    // The name of the file associated with this symbol table
-    public String fileName;
-
     /**
-     * Constructs a ScopedSymbolTable for a given file.
-     * 
-     * @param fileName The name of the file.
+     * Constructs a ScopedSymbolTable.
      */
-    public ScopedSymbolTable(String fileName) {
-        this.fileName = fileName;
+    public ScopedSymbolTable() {
     }
 
     /**

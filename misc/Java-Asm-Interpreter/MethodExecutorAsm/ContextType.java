@@ -1,5 +1,6 @@
 public enum ContextType {
     VOID,
     SCALAR,
-    LIST
+    LIST,
+    RUNTIME
 }
