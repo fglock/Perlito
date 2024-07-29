@@ -1,9 +1,9 @@
 import java.lang.reflect.Method;
-import java.util.Map;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import java.util.*;
 
 public class ASMMethodCreator implements Opcodes {
 
@@ -434,6 +434,12 @@ public class ASMMethodCreator implements Opcodes {
           mv.visitLdcInsn(arg);
         } else if (arg instanceof Class<?>) {
           mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) arg));
+        }
+        // AST nodes
+        else if (arg instanceof NumberNode) {
+            NumberNode node = (NumberNode) arg;
+            argTypes[i] = int.class;
+            mv.visitLdcInsn(Integer.valueOf(node.value));    // emit integer
         } else {
           throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
         }
@@ -507,6 +513,14 @@ public class ASMMethodCreator implements Opcodes {
       return char.class;
     }
     return clazz;
+  }
+
+  public static Node parse(String code) {
+    Lexer lexer = new Lexer(code);
+    List<Token> tokens = lexer.tokenize();
+    Parser parser = new Parser(tokens);
+    Node ast = parser.parse();
+    return ast;
   }
 
   public static void main(String[] args) {
@@ -583,7 +597,7 @@ public class ASMMethodCreator implements Opcodes {
                 {
                   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
                 },
-                {"RETURN", null, new Object[] {Runtime.class, "make", 5}}
+                {"RETURN", null, new Object[] {Runtime.class, "make", parse("5")}}
               });
 
       // Convert into a Runtime object
