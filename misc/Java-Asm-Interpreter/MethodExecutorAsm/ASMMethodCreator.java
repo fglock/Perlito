@@ -248,8 +248,7 @@ public class ASMMethodCreator implements Opcodes {
         }
         ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
         return Runtime.class; // Class of the result
-      } else if (target.equals(
-          "SETVAR")) { // { "SETVAR", "$a", new Object[] { "PARSE", "12} },
+      } else if (target.equals("SETVAR")) { // { "SETVAR", "$a", new Object[] { "PARSE", "12} },
         System.out.println("SETVAR " + data[1]);
         String var = (String) data[1];
         int varIndex = ctx.symbolTable.getVariableIndex(var);
@@ -264,7 +263,7 @@ public class ASMMethodCreator implements Opcodes {
         processInstructions(ctx.with(ContextType.SCALAR), (Object[]) data[2]);
         ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
         if (ctx.contextType != ContextType.VOID) {
-          ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex);    // return the variable
+          ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex); // return the variable
         }
         System.out.println("SETVAR end " + varIndex);
         return Runtime.class; // Class of the result
@@ -358,7 +357,14 @@ public class ASMMethodCreator implements Opcodes {
             : targetClass.getMethod(methodName);
     String descriptor = org.objectweb.asm.Type.getMethodDescriptor(method);
     System.out.println(
-        "call class.method: " + targetClass + " . " + methodName + " descriptor: " + descriptor + " context: " + ctx.contextType);
+        "call class.method: "
+            + targetClass
+            + " . "
+            + methodName
+            + " descriptor: "
+            + descriptor
+            + " context: "
+            + ctx.contextType);
 
     // Invoke the method
     if (targetIsInstance) {
@@ -434,11 +440,10 @@ public class ASMMethodCreator implements Opcodes {
               new Object[][] {
                 // { Integer.class, "new", 5 },     // calling a constructor with "new"
                 // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
-                { "PARSE", "5"},
+                {"PARSE", "5"},
                 {Runtime.class, "print", 789},
                 {"PARSE", "@_"}, // retrieve the argument
-                {Runtime.class, "print", new Object[] { "PARSE", "5"}},
-
+                {Runtime.class, "print", new Object[] {"PARSE", "5"}},
                 {Runtime.class, "print", new Object[] {"PARSE", "@_"}}, // use the argument
                 {System.out, "println", "123"},
                 // {new Object[] { "PARSE", "5}, "add", 6},
@@ -447,7 +452,7 @@ public class ASMMethodCreator implements Opcodes {
                 //         // call a method in the argument
                 // {new Object[] {"PARSE", "@_"}, "add", 7}, // call a method in the argument
                 {"MY", "$a"},
-                {"SETVAR", "$a", new Object[] { "PARSE", "12"}},
+                {"SETVAR", "$a", new Object[] {"PARSE", "12"}},
                 {
                   "IF",
                   new Object[] {Runtime.class, "is_false"}, // if condition
@@ -459,8 +464,8 @@ public class ASMMethodCreator implements Opcodes {
                     // {
                     //   Runtime.class, "print", new Object[] {"PARSE", "$a"},
                     // },
-                    {"MY", "$a"}, 
-                    {"SETVAR", "$a", new Object[] { "PARSE", "13"}},
+                    {"MY", "$a"},
+                    {"SETVAR", "$a", new Object[] {"PARSE", "13"}},
                     {
                       Runtime.class, "print", new Object[] {"PARSE", "$a"},
                     },
@@ -489,7 +494,7 @@ public class ASMMethodCreator implements Opcodes {
                     }
                   },
                   "apply",
-                  new Object[] { "PARSE", "55555"}
+                  new Object[] {"PARSE", "55555"}
                 },
                 {
                   Runtime.class, "print", new Object[] {"PARSE", "$a"},
