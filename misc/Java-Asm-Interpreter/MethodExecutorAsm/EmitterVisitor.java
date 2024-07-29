@@ -2,18 +2,18 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class EmitterVisitor implements Visitor {
-    private final MethodVisitor mv;
+    private final EmitterContext ctx;
 
-    public EmitterVisitor(MethodVisitor mv) {
-        this.mv = mv;
+    public EmitterVisitor(EmitterContext ctx) {
+        this.ctx = ctx;
     }
 
     @Override
     public void visit(NumberNode node) {
         if (node.value.contains(".")) {
-            mv.visitLdcInsn(Double.valueOf(node.value)); // emit double
+            ctx.mv.visitLdcInsn(Double.valueOf(node.value)); // emit double
         } else {
-            mv.visitLdcInsn(Integer.valueOf(node.value)); // emit integer
+            ctx.mv.visitLdcInsn(Integer.valueOf(node.value)); // emit integer
         }
     }
 
@@ -28,16 +28,16 @@ public class EmitterVisitor implements Visitor {
         node.right.accept(this);
         switch (node.operator) {
             case "+":
-                mv.visitInsn(Opcodes.IADD);
+                ctx.mv.visitInsn(Opcodes.IADD);
                 break;
             case "-":
-                mv.visitInsn(Opcodes.ISUB);
+                ctx.mv.visitInsn(Opcodes.ISUB);
                 break;
             case "*":
-                mv.visitInsn(Opcodes.IMUL);
+                ctx.mv.visitInsn(Opcodes.IMUL);
                 break;
             case "/":
-                mv.visitInsn(Opcodes.IDIV);
+                ctx.mv.visitInsn(Opcodes.IDIV);
                 break;
             // Add other operators as needed
         }
@@ -47,6 +47,12 @@ public class EmitterVisitor implements Visitor {
     public void visit(UnaryOperatorNode node) {
         node.operand.accept(this);
         // Emit code for unary operator
+        if (node.operator.equals("my")) {
+            ctx.mv.visitJumpInsn(Opcodes.GOTO, ctx.returnLabel);
+        }
+        if (node.operator.equals("return")) {
+            ctx.mv.visitJumpInsn(Opcodes.GOTO, ctx.returnLabel);
+        }
     }
 
     @Override
@@ -71,7 +77,7 @@ public class EmitterVisitor implements Visitor {
 
     @Override
     public void visit(StringNode node) {
-        mv.visitLdcInsn(node.value); // emit string
+        ctx.mv.visitLdcInsn(node.value); // emit string
     }
 
     // Add other visit methods as needed

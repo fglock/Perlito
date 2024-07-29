@@ -47,6 +47,10 @@ public class Parser {
                     Node operand = parsePrimary();
                     return new UnaryOperatorNode("my", operand);
                 }
+                if (token.text.equals("return")) {
+                    Node operand = parsePrimary();
+                    return new UnaryOperatorNode("return", operand);
+                }
                 return new IdentifierNode(token.text);
             case NUMBER:
                 return parseNumber(token);
