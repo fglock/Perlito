@@ -49,7 +49,7 @@ public class Parser {
                 }
                 return new IdentifierNode(token.text);
             case NUMBER:
-                return new NumberNode(token.text);
+                return parseNumber(token);
             case STRING:
                 return new StringNode(token.text);
             case OPERATOR:
@@ -60,6 +60,8 @@ public class Parser {
                 } else if (token.text.equals("$")) {
                     Node operand = parsePrimary();
                     return new UnaryOperatorNode("$", operand);
+                } else if (token.text.equals(".")) {
+                    return parseFractionalNumber();
                 }
                 break;
             case EOF:
@@ -68,6 +70,44 @@ public class Parser {
                 throw new RuntimeException("Unexpected token: " + token);
         }
         throw new RuntimeException("Unexpected token: " + token);
+    }
+
+    private Node parseNumber(Token token) {
+        StringBuilder number = new StringBuilder(token.text);
+    
+        // Check for fractional part
+        if (peek().text.equals(".")) {
+            number.append(consume().text); // consume '.'
+            number.append(consume(TokenType.NUMBER).text); // consume digits after '.'
+        }
+    
+        // Check for exponent part
+        if (peek().text.equals("e") || peek().text.equals("E")) {
+            number.append(consume().text); // consume 'e' or 'E'
+            if (peek().text.equals("-") || peek().text.equals("+")) {
+                number.append(consume().text); // consume '-' or '+'
+            }
+            number.append(consume(TokenType.NUMBER).text); // consume exponent digits
+        }
+    
+        return new NumberNode(number.toString());
+    }
+    
+    private Node parseFractionalNumber() {
+        StringBuilder number = new StringBuilder("0.");
+    
+        number.append(consume(TokenType.NUMBER).text); // consume digits after '.'
+    
+        // Check for exponent part
+        if (peek().text.equals("e") || peek().text.equals("E")) {
+            number.append(consume().text); // consume 'e' or 'E'
+            if (peek().text.equals("-") || peek().text.equals("+")) {
+                number.append(consume().text); // consume '-' or '+'
+            }
+            number.append(consume(TokenType.NUMBER).text); // consume exponent digits
+        }
+    
+        return new NumberNode(number.toString());
     }
 
     private Node parseInfix(Node left, int precedence) {
@@ -115,6 +155,14 @@ public class Parser {
             return new Token(TokenType.EOF, "");
         }
         return tokens.get(position++);
+    }
+
+    private Token consume(TokenType type) {
+        Token token = consume();
+        if (token.type != type) {
+            throw new RuntimeException("Expected token " + type + " but got " + token);
+        }
+        return token;
     }
 
     private void consume(TokenType type, String text) {
