@@ -175,7 +175,37 @@ public class ASMMethodCreator implements Opcodes {
     } else if (target instanceof String) {
       System.out.println(" is String");
 
-      if (target.equals("GETSTATIC")) { // { "GETSTATIC", "field" }   { GETSTATIC, name }
+      if (target.equals("PARSE")) {     // { "PARSE", "1+1" }
+        String code = (String) data[1];
+        System.out.println("parse code: " + code);
+        System.out.println("  call context " + (isVoidContext ? "void" : "scalar"));
+        Lexer lexer = new Lexer(code);
+        List<Token> tokens = lexer.tokenize();
+        Parser parser = new Parser(tokens);
+        Node ast = parser.parse();
+
+        System.out.println(Parser.getASTString(ast));
+
+        EmitterContext ctx = new EmitterContext(
+            scope, 
+            mv, 
+            isVoidContext ? ContextType.VOID : ContextType.SCALAR, // call context
+            true   // is boxed
+        );
+        EmitterVisitor visitor = new EmitterVisitor(ctx);
+        ast.accept(visitor);
+
+        // visitor.emitReturnLabel(); // Emit the return label at the end
+        // targetClass =
+        //     processInstructions(mv, className, scope, (Object[]) {ast}, returnLabel, isVoidContext);
+        // if (arg instanceof NumberNode) {
+        //     NumberNode node = (NumberNode) arg;
+        //     argTypes[i] = int.class;
+        //     mv.visitLdcInsn(Integer.valueOf(node.value));    // emit integer
+        // }
+
+        return Runtime.class; // return Class
+      } else if (target.equals("GETSTATIC")) { // { "GETSTATIC", "field" }   { GETSTATIC, name }
         System.out.println("retrieve static " + (String) data[1]);
         if (!isVoidContext) {
           mv.visitFieldInsn(Opcodes.GETSTATIC, className, (String) data[1], "LRuntime;");
@@ -434,12 +464,6 @@ public class ASMMethodCreator implements Opcodes {
           mv.visitLdcInsn(arg);
         } else if (arg instanceof Class<?>) {
           mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) arg));
-        }
-        // AST nodes
-        else if (arg instanceof NumberNode) {
-            NumberNode node = (NumberNode) arg;
-            argTypes[i] = int.class;
-            mv.visitLdcInsn(Integer.valueOf(node.value));    // emit integer
         } else {
           throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
         }
@@ -513,14 +537,6 @@ public class ASMMethodCreator implements Opcodes {
       return char.class;
     }
     return clazz;
-  }
-
-  public static Node parse(String code) {
-    Lexer lexer = new Lexer(code);
-    List<Token> tokens = lexer.tokenize();
-    Parser parser = new Parser(tokens);
-    Node ast = parser.parse();
-    return ast;
   }
 
   public static void main(String[] args) {
@@ -597,7 +613,7 @@ public class ASMMethodCreator implements Opcodes {
                 {
                   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
                 },
-                {"RETURN", null, new Object[] {Runtime.class, "make", parse("5")}}
+                {"RETURN", null, new Object[]{ "PARSE", "5" }}
               });
 
       // Convert into a Runtime object

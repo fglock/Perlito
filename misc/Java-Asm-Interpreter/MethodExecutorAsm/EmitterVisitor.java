@@ -10,10 +10,39 @@ public class EmitterVisitor implements Visitor {
 
     @Override
     public void visit(NumberNode node) {
-        if (node.value.contains(".")) {
-            ctx.mv.visitLdcInsn(Double.valueOf(node.value)); // emit double
+        boolean isInteger = !node.value.contains(".");
+        if (ctx.isBoxed) {  // expect a Runtime object
+            if (isInteger) {
+                System.out.println("visit(NumberNode) emit boxed integer");
+                ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+                ctx.mv.visitInsn(Opcodes.DUP);
+                ctx.mv.visitLdcInsn(Integer.valueOf(node.value)); // Push the integer argument onto the stack
+                ctx.mv.visitMethodInsn(
+                    Opcodes.INVOKESPECIAL,
+                    "Runtime",
+                    "<init>",
+                    "(I)V",
+                    false); // Call new Runtime(int)
+            } else {
+                ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+                ctx.mv.visitInsn(Opcodes.DUP);
+                ctx.mv.visitLdcInsn(Double.valueOf(node.value)); // Push the double argument onto the stack
+                ctx.mv.visitMethodInsn(
+                    Opcodes.INVOKESPECIAL,
+                    "Runtime",
+                    "<init>",
+                    "(D)V",
+                    false); // Call new Runtime(double)
+            }
         } else {
-            ctx.mv.visitLdcInsn(Integer.valueOf(node.value)); // emit integer
+            if (isInteger) {
+                ctx.mv.visitLdcInsn(Integer.parseInt(node.value)); // emit native integer
+            } else {
+                ctx.mv.visitLdcInsn(Double.parseDouble(node.value)); // emit native double
+            }
+        }
+        if (ctx.contextType == ContextType.VOID) {
+            ctx.mv.visitInsn(Opcodes.POP);
         }
     }
 
