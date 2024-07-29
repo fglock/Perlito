@@ -17,7 +17,7 @@ public class Parser {
 
         while (true) {
             Token token = peek();
-            if (token.type == TokenType.EOF || token.text.equals(":")) {
+            if (token.type == TokenType.EOF || token.text.equals(":") || token.text.equals(";")) {
                 break;
             }
 
@@ -42,6 +42,10 @@ public class Parser {
 
         switch (token.type) {
             case IDENTIFIER:
+                if (token.text.equals("my")) {
+                    Node operand = parsePrimary();
+                    return new UnaryOperatorNode("my", operand);
+                }
                 return new IdentifierNode(token.text);
             case NUMBER:
                 return new NumberNode(token.text);
