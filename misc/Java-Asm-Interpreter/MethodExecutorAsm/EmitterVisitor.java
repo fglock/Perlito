@@ -69,11 +69,29 @@ public class EmitterVisitor implements Visitor {
   public void visit(UnaryOperatorNode node) {
     // Emit code for unary operator
     System.out.println("visit(UnaryOperatorNode) " + node.operator);
-    if (node.operator.equals("my")) {
+    if (node.operator.equals("$") || node.operator.equals("@")) {
+        if (node.operand instanceof IdentifierNode) { // $a
+            String var = node.operator + ((IdentifierNode) node.operand).name;
+            System.out.println("GETVAR " + var);
+            int varIndex = ctx.symbolTable.getVariableIndex(var);
+            if (varIndex == -1) {
+              System.out.println(
+                  "Warning: Global symbol \""
+                      + var
+                      + "\" requires explicit package name (did you forget to declare \"my "
+                      + var
+                      + "\"?)");
+            }
+            if (ctx.contextType != ContextType.VOID) {
+              ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex);
+            }
+            System.out.println("GETVAR end " + varIndex);
+        }
+    } else if (node.operator.equals("my")) {
       // TODO
       node.operand.accept(this);
     }
-    if (node.operator.equals("return")) {
+    else if (node.operator.equals("return")) {
       // set call context to SCALAR - XXX might need RUNTIME call context
       EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
       node.operand.accept(new EmitterVisitor(childCtx));

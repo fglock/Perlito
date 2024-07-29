@@ -254,23 +254,6 @@ public class ASMMethodCreator implements Opcodes {
         }
         ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
         return Runtime.class; // Class of the result
-      } else if (target.equals("GETVAR")) { // { "GETVAR", "$a" }
-        System.out.println("GETVAR " + data[1]);
-        String var = (String) data[1];
-        int varIndex = ctx.symbolTable.getVariableIndex(var);
-        if (varIndex == -1) {
-          System.out.println(
-              "Warning: Global symbol \""
-                  + var
-                  + "\" requires explicit package name (did you forget to declare \"my "
-                  + var
-                  + "\"?)");
-        }
-        if (ctx.contextType != ContextType.VOID) {
-          ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex);
-        }
-        System.out.println("GETVAR end " + varIndex);
-        return Runtime.class; // Class of the result
       } else if (target.equals(
           "SETVAR")) { // { "SETVAR", "$a", new Object[] {Runtime.class, "make", 12} },
         System.out.println("SETVAR " + data[1]);
@@ -464,16 +447,16 @@ public class ASMMethodCreator implements Opcodes {
                 // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
                 {Runtime.class, "make", 5},
                 {Runtime.class, "print", 789},
-                {"GETVAR", "@_"}, // retrieve the argument
+                {"PARSE", "@_"}, // retrieve the argument
                 {Runtime.class, "print", new Object[] {Runtime.class, "make", 5}},
 
-                {Runtime.class, "print", new Object[] {"GETVAR", "@_"}}, // use the argument
+                {Runtime.class, "print", new Object[] {"PARSE", "@_"}}, // use the argument
                 {System.out, "println", "123"},
                 // {new Object[] {Runtime.class, "make", 5}, "add", 6},
-                // { System.out, "println", new Object[]{ new Object[]{ "GETVAR", "@_" }, "add", 5
+                // { System.out, "println", new Object[]{ new Object[]{ "PARSE", "@_" }, "add", 5
                 // }},
                 //         // call a method in the argument
-                // {new Object[] {"GETVAR", "@_"}, "add", 7}, // call a method in the argument
+                // {new Object[] {"PARSE", "@_"}, "add", 7}, // call a method in the argument
                 {"MY", "$a"},
                 {"SETVAR", "$a", new Object[] {Runtime.class, "make", 12}},
                 {
@@ -482,19 +465,19 @@ public class ASMMethodCreator implements Opcodes {
                   new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
                   new Object[][] { // else block
                     {Runtime.class, "print", "if is false"},
-                    // {"GETVAR", "@_"},
-                    // {new Object[] {"GETVAR", "@_"}, "add", 5}, // call a method in the argument
+                    // {"PARSE", "@_"},
+                    // {new Object[] {"PARSE", "@_"}, "add", 5}, // call a method in the argument
                     // {
-                    //   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+                    //   Runtime.class, "print", new Object[] {"PARSE", "$a"},
                     // },
-                    {"MY", "$a"}, // "MY" doesn't generate bytecode
+                    {"MY", "$a"}, 
                     {"SETVAR", "$a", new Object[] {Runtime.class, "make", 13}},
                     {
-                      Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+                      Runtime.class, "print", new Object[] {"PARSE", "$a"},
                     },
                   },
                 },
-                {"GETVAR", "$a"},
+                {"PARSE", "$a"},
                 {
                   new Object[] {
                     "SUB",
@@ -502,7 +485,7 @@ public class ASMMethodCreator implements Opcodes {
                     new Object[][] {
                       {System.out, "println", "Inside sub"},
                       {
-                        Runtime.class, "print", new Object[] {"GETVAR", "$a"}, // closure var
+                        Runtime.class, "print", new Object[] {"PARSE", "$a"}, // closure var
                       },
                       {
                         "IF",
@@ -510,17 +493,17 @@ public class ASMMethodCreator implements Opcodes {
                         new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
                         new Object[][] { // else block
                           {Runtime.class, "print", "if is false"},
-                          {"RETURN", null, new Object[] {"GETVAR", "$a"}}, // return from block
+                          {"RETURN", null, new Object[] {"PARSE", "$a"}}, // return from block
                         },
                       },
-                      {Runtime.class, "print", new Object[] {"GETVAR", "@_"}},
+                      {Runtime.class, "print", new Object[] {"PARSE", "@_"}},
                     }
                   },
                   "apply",
                   new Object[] {Runtime.class, "make", 55555}
                 },
                 {
-                  Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+                  Runtime.class, "print", new Object[] {"PARSE", "$a"},
                 },
                 {"PARSE", "return 5"}
               });

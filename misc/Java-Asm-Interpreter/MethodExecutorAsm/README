@@ -10,7 +10,7 @@ non-method "statements" have a string as first argument:
 
 { "MY", "$x" } declare a lexical variable.
 
-{ "GETVAR", "@_" } retrieve the argument object.
+{ "PARSE", "@_" } parse the argument object.
 
 { "SETVAR", "$x" } set a variable.
 
