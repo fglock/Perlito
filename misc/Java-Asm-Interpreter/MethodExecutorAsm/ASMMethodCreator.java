@@ -1,9 +1,9 @@
 import java.lang.reflect.Method;
+import java.util.*;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import java.util.*;
 
 public class ASMMethodCreator implements Opcodes {
 
@@ -175,7 +175,7 @@ public class ASMMethodCreator implements Opcodes {
     } else if (target instanceof String) {
       System.out.println(" is String");
 
-      if (target.equals("PARSE")) {     // { "PARSE", "1+1" }
+      if (target.equals("PARSE")) { // { "PARSE", "1+1" }
         String code = (String) data[1];
         System.out.println("parse code: " + code);
         System.out.println("  call context " + (isVoidContext ? "void" : "scalar"));
@@ -186,19 +186,21 @@ public class ASMMethodCreator implements Opcodes {
 
         System.out.println("-- AST:\n" + Parser.getASTString(ast) + "--\n");
 
-        EmitterContext ctx = new EmitterContext(
-            scope, 
-            returnLabel,
-            mv, 
-            isVoidContext ? ContextType.VOID : ContextType.SCALAR, // call context
-            true   // is boxed
-        );
+        EmitterContext ctx =
+            new EmitterContext(
+                scope,
+                returnLabel,
+                mv,
+                isVoidContext ? ContextType.VOID : ContextType.SCALAR, // call context
+                true // is boxed
+                );
         EmitterVisitor visitor = new EmitterVisitor(ctx);
         ast.accept(visitor);
 
         // visitor.emitReturnLabel(); // Emit the return label at the end
         // targetClass =
-        //     processInstructions(mv, className, scope, (Object[]) {ast}, returnLabel, isVoidContext);
+        //     processInstructions(mv, className, scope, (Object[]) {ast}, returnLabel,
+        // isVoidContext);
         // if (arg instanceof NumberNode) {
         //     NumberNode node = (NumberNode) arg;
         //     argTypes[i] = int.class;
@@ -614,7 +616,7 @@ public class ASMMethodCreator implements Opcodes {
                 {
                   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
                 },
-                { "PARSE", "return 5" }
+                {"PARSE", "return 5"}
               });
 
       // Convert into a Runtime object
@@ -680,4 +682,3 @@ public class ASMMethodCreator implements Opcodes {
   - create RUNTIME call context
 
 */
-
