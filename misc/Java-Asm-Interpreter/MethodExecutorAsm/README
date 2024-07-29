@@ -14,10 +14,6 @@ non-method "statements" have a string as first argument:
 
 { "SETVAR", "$x" } set a variable.
 
-{ "RETURN", null, value } returns the value. RETURN is optional at the end: the method returns the last value.
-
-    { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
-
 { "IF", { cond }, { ifBlock }, { elseBlock } } if/else statement. The elseBlock can be null.
 
     { "IF",

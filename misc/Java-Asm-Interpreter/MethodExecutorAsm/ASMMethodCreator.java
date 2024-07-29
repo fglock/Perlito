@@ -131,7 +131,6 @@ public class ASMMethodCreator implements Opcodes {
 
     Object target = data[0]; // Load the target object
     boolean targetIsInstance = true;
-    boolean isReturn = false;
     Class<?> targetClass;
 
     System.out.println("processInstructions " + data[0] + " context: " + ctx.contextType);
@@ -170,11 +169,6 @@ public class ASMMethodCreator implements Opcodes {
         EmitterVisitor visitor = new EmitterVisitor(ctx);
         ast.accept(visitor);
         return Runtime.class; // return Class
-      } else if (target.equals(
-          "RETURN")) { // { "RETURN", null, new Object[]{ Runtime.class, "make", 5 } }
-        System.out.println(" calling return");
-        targetClass = Runtime.class;
-        isReturn = true;
       } else if (target.equals("IF")) { // { "IF", cond, if, else }
         System.out.println("IF start");
         ctx.symbolTable.enterScope();
@@ -356,11 +350,6 @@ public class ASMMethodCreator implements Opcodes {
       System.out.println("no arguments");
     }
 
-    if (isReturn) {
-      ctx.mv.visitJumpInsn(GOTO, ctx.returnLabel);
-      return targetClass; // Class of the result
-    }
-
     // Fetch the method descriptor
     String methodName = (String) data[1];
     Method method =
@@ -493,7 +482,7 @@ public class ASMMethodCreator implements Opcodes {
                         new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
                         new Object[][] { // else block
                           {Runtime.class, "print", "if is false"},
-                          {"RETURN", null, new Object[] {"PARSE", "$a"}}, // return from block
+                          {"PARSE", "return $a"}, // return from block
                         },
                       },
                       {Runtime.class, "print", new Object[] {"PARSE", "@_"}},
