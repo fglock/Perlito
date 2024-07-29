@@ -494,7 +494,7 @@ public class ASMMethodCreator implements Opcodes {
                     },
                   },
                 },
-         //       {"GETVAR", "$a"},
+                {"GETVAR", "$a"},
          //       {
          //         new Object[] {
          //           "SUB",
@@ -519,10 +519,10 @@ public class ASMMethodCreator implements Opcodes {
          //         "apply",
          //         new Object[] {Runtime.class, "make", 55555}
          //       },
-         //       {
-         //         Runtime.class, "print", new Object[] {"GETVAR", "$a"},
-         //       },
-         //       {"PARSE", "return 5"}
+                {
+                  Runtime.class, "print", new Object[] {"GETVAR", "$a"},
+                },
+                {"PARSE", "return 5"}
               });
 
       // Convert into a Runtime object
