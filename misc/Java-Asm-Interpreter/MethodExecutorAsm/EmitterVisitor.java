@@ -41,6 +41,7 @@ public class EmitterVisitor implements Visitor {
                 ctx.mv.visitLdcInsn(Double.parseDouble(node.value)); // emit native double
             }
         }
+        System.out.println("Emit context " + (ctx.contextType == ContextType.VOID ? "void" : "scalar"));
         if (ctx.contextType == ContextType.VOID) {
             ctx.mv.visitInsn(Opcodes.POP);
         }
@@ -74,13 +75,20 @@ public class EmitterVisitor implements Visitor {
 
     @Override
     public void visit(UnaryOperatorNode node) {
-        node.operand.accept(this);
         // Emit code for unary operator
+        System.out.println("visit(UnaryOperatorNode) " + node.operator);
         if (node.operator.equals("my")) {
-            ctx.mv.visitJumpInsn(Opcodes.GOTO, ctx.returnLabel);
+            // TODO
+            node.operand.accept(this);
         }
         if (node.operator.equals("return")) {
+            // set call context to SCALAR - XXX might need RUNTIME call context
+            EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
+            node.operand.accept(new EmitterVisitor(childCtx));
             ctx.mv.visitJumpInsn(Opcodes.GOTO, ctx.returnLabel);
+            // if (ctx.contextType == ContextType.VOID) {
+            //     ctx.mv.visitInsn(Opcodes.POP);
+            // }
         }
     }
 

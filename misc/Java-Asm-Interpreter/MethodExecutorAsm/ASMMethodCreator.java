@@ -184,10 +184,11 @@ public class ASMMethodCreator implements Opcodes {
         Parser parser = new Parser(tokens);
         Node ast = parser.parse();
 
-        System.out.println(Parser.getASTString(ast));
+        System.out.println("-- AST:\n" + Parser.getASTString(ast) + "--\n");
 
         EmitterContext ctx = new EmitterContext(
             scope, 
+            returnLabel,
             mv, 
             isVoidContext ? ContextType.VOID : ContextType.SCALAR, // call context
             true   // is boxed
@@ -613,7 +614,7 @@ public class ASMMethodCreator implements Opcodes {
                 {
                   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
                 },
-                {"RETURN", null, new Object[]{ "PARSE", "5" }}
+                { "PARSE", "return 5" }
               });
 
       // Convert into a Runtime object
@@ -675,6 +676,8 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("Enter code:");
         String code = scanner.nextLine();
         scanner.close();
+
+  - create RUNTIME call context
 
 */
 
