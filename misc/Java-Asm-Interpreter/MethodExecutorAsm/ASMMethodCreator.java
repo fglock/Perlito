@@ -495,30 +495,30 @@ public class ASMMethodCreator implements Opcodes {
                   },
                 },
                 {"GETVAR", "$a"},
-         //       {
-         //         new Object[] {
-         //           "SUB",
-         //           new String[] {}, // closure variables  { name }
-         //           new Object[][] {
-         //             {System.out, "println", "Inside sub"},
-         //             {
-         //               Runtime.class, "print", new Object[] {"GETVAR", "$a"}, // closure var
-         //             },
-         //             {
-         //               "IF",
-         //               new Object[] {Runtime.class, "is_false"}, // if condition
-         //               new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
-         //               new Object[][] { // else block
-         //                 {Runtime.class, "print", "if is false"},
-         //                 {"RETURN", null, new Object[] {"GETVAR", "$a"}}, // return from block
-         //               },
-         //             },
-         //             {Runtime.class, "print", new Object[] {"GETVAR", "@_"}},
-         //           }
-         //         },
-         //         "apply",
-         //         new Object[] {Runtime.class, "make", 55555}
-         //       },
+                {
+                  new Object[] {
+                    "SUB",
+                    new String[] {}, // closure variables  { name }
+                    new Object[][] {
+                      {System.out, "println", "Inside sub"},
+                      {
+                        Runtime.class, "print", new Object[] {"GETVAR", "$a"}, // closure var
+                      },
+                      {
+                        "IF",
+                        new Object[] {Runtime.class, "is_false"}, // if condition
+                        new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
+                        new Object[][] { // else block
+                          {Runtime.class, "print", "if is false"},
+                          {"RETURN", null, new Object[] {"GETVAR", "$a"}}, // return from block
+                        },
+                      },
+                      {Runtime.class, "print", new Object[] {"GETVAR", "@_"}},
+                    }
+                  },
+                  "apply",
+                  new Object[] {Runtime.class, "make", 55555}
+                },
                 {
                   Runtime.class, "print", new Object[] {"GETVAR", "$a"},
                 },
