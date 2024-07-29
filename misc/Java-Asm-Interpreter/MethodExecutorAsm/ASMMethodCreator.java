@@ -34,6 +34,7 @@ public class ASMMethodCreator implements Opcodes {
 
     ctx.contextType = ContextType.RUNTIME;
     ctx.javaClassName = javaClassName;
+    ctx.isBoxed = true;
 
     // Create the class initializer method
     ctx.mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
@@ -265,8 +266,8 @@ public class ASMMethodCreator implements Opcodes {
                 ctx.symbolTable, // closure symbolTable
                 null, // return label
                 null, // method visitor
-                ContextType.VOID, // main program has void context
-                true // is boxed
+                null, // call context
+                false // is boxed
                 );
         Object[][] newData = (Object[][]) data[2]; // AST
         Class<?> generatedClass = createClassWithMethod(subCtx, newEnv, newData);
@@ -411,8 +412,8 @@ public class ASMMethodCreator implements Opcodes {
               new ScopedSymbolTable(), // top-level ctx.symbolTable
               null, // return label
               null, // method visitor
-              ContextType.VOID, // main program has void context
-              true // is boxed
+              null, // call context
+              false // is boxed
               );
       ctx.symbolTable.enterScope();
       ctx.symbolTable.addVariable("@_"); // argument is local variable zero
@@ -508,7 +509,13 @@ public class ASMMethodCreator implements Opcodes {
 
 /* TODO
 
-  - connect with a Perl parser
+  - connect with a Perl parser WIP
+
+  - cleanup the closure code to only add the lexical variables mentioned in the AST
+
+  - format error messages and warnings
+        - compile time: get file position from lexer
+        - run-time: add annotations to the bytecode
 
   - test different Perl data types
         - array, hash, string, double, references
@@ -552,7 +559,5 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("Enter code:");
         String code = scanner.nextLine();
         scanner.close();
-
-  - create RUNTIME call context
 
 */
