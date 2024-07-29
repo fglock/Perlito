@@ -89,7 +89,7 @@ public class ASMMethodCreator implements Opcodes {
     // initialize local variables with the closure values from the static fields
     // skip zero because it is the "@_" argument list
     for (int i = 1; i < env.length; i++) {
-      String fieldName = (String) env[i];
+      String fieldName = env[i];
       System.out.println("Init closure variable: " + fieldName);
       mv.visitFieldInsn(Opcodes.GETSTATIC, className, fieldName, "LRuntime;");
       mv.visitVarInsn(Opcodes.ASTORE, i);
@@ -381,7 +381,7 @@ public class ASMMethodCreator implements Opcodes {
         // initialize the static fields
         for (int i = 0; i < newEnv.length; i++) {
           mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
-          mv.visitFieldInsn(PUTSTATIC, newClassName, (String) newEnv[i], "LRuntime;");
+          mv.visitFieldInsn(PUTSTATIC, newClassName, newEnv[i], "LRuntime;");
         }
 
         // this will be called at runtime: Runtime.make_sub(className);
