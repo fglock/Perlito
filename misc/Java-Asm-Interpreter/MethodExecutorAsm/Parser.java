@@ -17,6 +17,10 @@ public class Parser {
 
         while (true) {
             Token token = peek();
+            if (token.type == TokenType.EOF) {
+                break;
+            }
+
             int tokenPrecedence = getPrecedence(token);
 
             if (tokenPrecedence < precedence) {
@@ -52,11 +56,13 @@ public class Parser {
                     Node operand = parsePrimary();
                     return new UnaryOperatorNode("$", operand);
                 }
-                // Handle other primary cases like lists, etc.
-                throw new RuntimeException("Unexpected operator: " + token); // Ensure all paths return a value
+                break;
+            case EOF:
+                return null; // End of input
             default:
                 throw new RuntimeException("Unexpected token: " + token);
         }
+        throw new RuntimeException("Unexpected token: " + token);
     }
 
     private Node parseInfix(Node left, int precedence) {
@@ -87,6 +93,9 @@ public class Parser {
     }
 
     private Token peek() {
+        while (position < tokens.size() && (tokens.get(position).type == TokenType.WHITESPACE || tokens.get(position).type == TokenType.NEWLINE)) {
+            position++;
+        }
         if (position >= tokens.size()) {
             return new Token(TokenType.EOF, "");
         }
@@ -94,17 +103,20 @@ public class Parser {
     }
 
     private Token consume() {
-        Token token = peek();
-        position++;
-        return token;
+        while (position < tokens.size() && (tokens.get(position).type == TokenType.WHITESPACE || tokens.get(position).type == TokenType.NEWLINE)) {
+            position++;
+        }
+        if (position >= tokens.size()) {
+            return new Token(TokenType.EOF, "");
+        }
+        return tokens.get(position++);
     }
 
-    private Token consume(TokenType type, String text) {
-        Token token = peek();
+    private void consume(TokenType type, String text) {
+        Token token = consume();
         if (token.type != type || !token.text.equals(text)) {
-            throw new RuntimeException("Expected token: " + text + " but found: " + token);
+            throw new RuntimeException("Expected token " + type + " with text " + text + " but got " + token);
         }
-        return consume();
     }
 
     private int getPrecedence(Token token) {
