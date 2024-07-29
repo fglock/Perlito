@@ -1,4 +1,4 @@
-public class PostfixOperatorNode extends Node {
+public class PostfixOperatorNode implements Node {
     String operator;
     Node operand;
 
@@ -8,8 +8,8 @@ public class PostfixOperatorNode extends Node {
     }
 
     @Override
-    public String toString() {
-        return "PostfixOperator(" + operator + ", " + operand + ")";
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }
 

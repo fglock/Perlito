@@ -1,15 +1,15 @@
-public class UnaryOperatorNode extends Node {
-    String operator;
-    Node operand;
+public class UnaryOperatorNode implements Node {
+    public final String operator;
+    public final Node operand;
 
-    UnaryOperatorNode(String operator, Node operand) {
+    public UnaryOperatorNode(String operator, Node operand) {
         this.operator = operator;
         this.operand = operand;
     }
 
     @Override
-    public String toString() {
-        return "UnaryOperator(" + operator + ", " + operand + ")";
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }
 

@@ -1,10 +1,10 @@
-public class TernaryOperatorNode extends Node {
-    String operator;
-    Node condition;
-    Node trueExpr;
-    Node falseExpr;
+public class TernaryOperatorNode implements Node {
+    public final String operator;
+    public final Node condition;
+    public final Node trueExpr;
+    public final Node falseExpr;
 
-    TernaryOperatorNode(String operator, Node condition, Node trueExpr, Node falseExpr) {
+    public TernaryOperatorNode(String operator, Node condition, Node trueExpr, Node falseExpr) {
         this.operator = operator;
         this.condition = condition;
         this.trueExpr = trueExpr;
@@ -12,8 +12,8 @@ public class TernaryOperatorNode extends Node {
     }
 
     @Override
-    public String toString() {
-        return "TernaryOperator(" + condition + " ? " + trueExpr + " : " + falseExpr + ")";
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }
 

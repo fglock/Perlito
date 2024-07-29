@@ -1,17 +1,17 @@
-public class BinaryOperatorNode extends Node {
-    String operator;
-    Node left;
-    Node right;
+public class BinaryOperatorNode implements Node {
+    public final String operator;
+    public final Node left;
+    public final Node right;
 
-    BinaryOperatorNode(String operator, Node left, Node right) {
+    public BinaryOperatorNode(String operator, Node left, Node right) {
         this.operator = operator;
         this.left = left;
         this.right = right;
     }
 
     @Override
-    public String toString() {
-        return "BinaryOperator(" + operator + ", " + left + ", " + right + ")";
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }
 

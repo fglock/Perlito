@@ -1,13 +1,13 @@
-public class NumberNode extends Node {
-    String value;
+public class NumberNode implements Node {
+    public final String value;
 
-    NumberNode(String value) {
+    public NumberNode(String value) {
         this.value = value;
     }
 
     @Override
-    public String toString() {
-        return "Number(" + value + ")";
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }
 

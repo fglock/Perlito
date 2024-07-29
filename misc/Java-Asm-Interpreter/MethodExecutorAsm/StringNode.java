@@ -1,4 +1,4 @@
-public class StringNode extends Node {
+public class StringNode implements Node {
     String value;
 
     StringNode(String value) {
@@ -8,6 +8,11 @@ public class StringNode extends Node {
     @Override
     public String toString() {
         return "String(" + value + ")";
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }
 

@@ -1,13 +1,13 @@
-public class IdentifierNode extends Node {
-    String name;
+public class IdentifierNode implements Node {
+    public final String name;
 
-    IdentifierNode(String name) {
+    public IdentifierNode(String name) {
         this.name = name;
     }
 
     @Override
-    public String toString() {
-        return "Identifier(" + name + ")";
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }
 

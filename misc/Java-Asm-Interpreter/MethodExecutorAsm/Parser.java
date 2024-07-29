@@ -223,13 +223,19 @@ public class Parser {
         return new ListNode(elements);
     }
 
+    public static String getASTString(Node node) {
+        PrintVisitor printVisitor = new PrintVisitor();
+        node.accept(printVisitor);
+        return printVisitor.getResult();
+    }
+
     public static void main(String[] args) {
         String code = "my $var = 42; 1 ? 2 : 3; print \"Hello, World!\\n\";";
         Lexer lexer = new Lexer(code);
         List<Token> tokens = lexer.tokenize();
         Parser parser = new Parser(tokens);
         Node ast = parser.parse();
-        System.out.println(ast);
+        System.out.println(getASTString(ast));
     }
 }
 
