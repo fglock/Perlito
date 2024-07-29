@@ -17,7 +17,7 @@ public class Parser {
 
         while (true) {
             Token token = peek();
-            if (token.type == TokenType.EOF) {
+            if (token.type == TokenType.EOF || token.text.equals(":")) {
                 break;
             }
 
@@ -124,18 +124,18 @@ public class Parser {
         switch (token.text) {
             case "=":
                 return 1; // Lower precedence for assignment
+            case "?":
+                return 2; // Precedence for ternary operator
             case "+":
             case "-":
-                return 10;
+                return 3;
             case "*":
             case "/":
-                return 20;
+                return 4;
             case "->":
-                return 30;
-            case "?":
-                return 5; // Ternary operator precedence
+                return 5;
             case "$":
-                return 3; // Higher precedence for prefix operator
+                return 6; // Higher precedence for prefix operator
             default:
                 return 0;
         }
@@ -292,7 +292,7 @@ public class Parser {
     }
 
     public static void main(String[] args) {
-        String code = "my $var = 42; print \"Hello, World!\\n\";";
+        String code = "my $var = 42; 1 ? 2 : 3; print \"Hello, World!\\n\";";
         Lexer lexer = new Lexer(code);
         List<Token> tokens = lexer.tokenize();
         Parser parser = new Parser(tokens);
