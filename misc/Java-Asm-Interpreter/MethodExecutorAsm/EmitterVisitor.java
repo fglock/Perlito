@@ -1,4 +1,5 @@
 import org.objectweb.asm.Opcodes;
+import java.util.List;
 
 public class EmitterVisitor implements Visitor {
   private final EmitterContext ctx;
@@ -147,10 +148,26 @@ public class EmitterVisitor implements Visitor {
 
   @Override
   public void visit(BlockNode node) {
-    for (Node element : node.elements) {
-      element.accept(this);
+    System.out.println("generateCodeBlock start");
+    ctx.symbolTable.enterScope();
+    EmitterVisitor voidVisitor =
+        new EmitterVisitor(
+        ctx.with(ContextType.VOID)); // statements in the middle of the block have context VOID
+    List<Node> list = node.elements;
+    for (int i = 0; i < list.size(); i++) {
+        Node element = list.get(i);
+        if (i == list.size() - 1) {
+            // Special case for the last element
+            System.out.println("Last element: " + element);
+            element.accept(this);
+        } else {
+            // General case for all other elements
+            System.out.println("Element: " + element);
+            element.accept(voidVisitor);
+        }
     }
-    // Emit code for block
+    ctx.symbolTable.exitScope();
+    System.out.println("generateCodeBlock end");
   }
 
   @Override

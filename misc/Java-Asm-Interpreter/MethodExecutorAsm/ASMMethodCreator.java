@@ -499,6 +499,7 @@ public class ASMMethodCreator implements Opcodes {
                   Runtime.class, "print", new Object[] {"PARSE", "$a"},
                 },
                 {Runtime.class, "print", "end"},
+                {Runtime.class, "print", new Object[] {"PARSE", "do { $a; 123 }"}},
                 {"PARSE", "return 5"}
               });
 

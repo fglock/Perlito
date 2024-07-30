@@ -27,7 +27,7 @@ public class Parser {
   }
 
   public Node parse() {
-    return parseBlock();
+    return parseExpression(0);
   }
 
   private Node parseBlock() {
@@ -125,6 +125,15 @@ public class Parser {
         if (token.text.equals("return")) {
           Node operand = parsePrimary();
           return new UnaryOperatorNode("return", operand);
+        }
+        if (token.text.equals("do")) {
+          token = peek();
+          if (token.type == TokenType.OPERATOR && token.text.equals("{")) {
+            consume(TokenType.OPERATOR, "{");
+            Node block = parseBlock();
+            consume(TokenType.OPERATOR, "}");
+            return block;
+          }
         }
         return new IdentifierNode(token.text);
       case NUMBER:
