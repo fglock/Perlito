@@ -1,18 +1,6 @@
-this is a Lisp-like interpreter using ASM to execute a data structure like (pseudo-code):
+This is a Perl compiler under development.
 
-    { (class or object), "method name", arg1, arg2 ... }
-
-it can be recursive:
-
-    { (class or object), "method name", arg1, { (class or object), "method name", ... } ... }
-
-non-method "statements" have a string as first argument:
-
-{ "PARSE", "@_" } parse the argument object.
-
-{ "AST", node } emit the node object.
-
-{ "SETVAR", "$x" } set a variable.
+It compiles Perl into Java bytecode and runs it.
 
 
 Compile:
@@ -21,4 +9,5 @@ javac -cp ./asm-9.7.jar:. *.java
 
 Run:
 
-java -cp ./asm-9.7.jar:. ASMMethodCreator
+java -cp ./asm-9.7.jar Main -e ' print 123 '
+
