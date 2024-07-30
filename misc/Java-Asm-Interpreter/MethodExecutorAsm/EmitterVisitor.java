@@ -92,6 +92,13 @@ public class EmitterVisitor implements Visitor {
             }
             System.out.println("GETVAR end " + varIndex);
         }
+    } else if (operator.equals("print")) {
+      EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
+      node.operand.accept(new EmitterVisitor(childCtx));
+      ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "print", "()LRuntime;", false);
+      if (ctx.contextType == ContextType.VOID) {
+        ctx.mv.visitInsn(Opcodes.POP);
+      }
     } else if (operator.equals("my")) {
         Node sigilNode = node.operand;
         if (sigilNode instanceof UnaryOperatorNode) { // my + $ @ %
@@ -126,13 +133,9 @@ public class EmitterVisitor implements Visitor {
         }
     }
     else if (operator.equals("return")) {
-      // set call context to SCALAR - XXX might need RUNTIME call context
-      EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
+      EmitterContext childCtx = ctx.with(ContextType.RUNTIME, ctx.isBoxed);
       node.operand.accept(new EmitterVisitor(childCtx));
       ctx.mv.visitJumpInsn(Opcodes.GOTO, ctx.returnLabel);
-      // if (ctx.contextType == ContextType.VOID) {
-      //     ctx.mv.visitInsn(Opcodes.POP);
-      // }
     }
   }
 

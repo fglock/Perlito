@@ -52,25 +52,27 @@ public class Runtime {
 
   public static Runtime print(String a) {
     System.out.println("value=" + a);
-    return new Runtime(0);
+    return new Runtime(1);
   }
 
   public static Runtime print(int a) {
     System.out.println("value=" + a);
-    return new Runtime(a);
+    return new Runtime(1);
   }
 
   public static Runtime print(Object a) {
-    return Runtime.print((Runtime) a);
+    Runtime.print((Runtime) a);
+    return new Runtime(1);
   }
 
   public static Runtime print(Runtime a) {
-    return a.print();
+    a.print();
+    return new Runtime(1);
   }
 
   public Runtime print() {
     System.out.println("value=" + this.i);
-    return this;
+    return new Runtime(1);
   }
 
   public static Runtime make(int a) {

@@ -125,6 +125,10 @@ public class Parser {
 
     switch (token.type) {
       case IDENTIFIER:
+        if (token.text.equals("print")) {
+          Node operand = parsePrimary();
+          return new UnaryOperatorNode("print", operand);
+        }
         if (token.text.equals("my")) {
           Node operand = parsePrimary();
           return new UnaryOperatorNode("my", operand);

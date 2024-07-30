@@ -422,16 +422,9 @@ public class ASMMethodCreator implements Opcodes {
                 {Runtime.class, "print", new Object[] {"PARSE", "5"}},
                 {Runtime.class, "print", new Object[] {"PARSE", "@_"}}, // use the argument
                 {System.out, "println", "123"},
-                // {new Object[] { "PARSE", "5}, "add", 6},
-                // { System.out, "println", new Object[]{ new Object[]{ "PARSE", "@_" }, "add", 5
-                // }},
-                //         // call a method in the argument
-                // {new Object[] {"PARSE", "@_"}, "add", 7}, // call a method in the argument
                 {"PARSE", "my $a"},
                 {"SETVAR", "$a", new Object[] {"PARSE", "12"}},
-                {
-                  Runtime.class, "print", new Object[] {"PARSE", "$a"},
-                },
+                {"PARSE", "print $a"},
                 {"PARSE", "$a"},
                 {
                   new Object[] {
@@ -439,20 +432,16 @@ public class ASMMethodCreator implements Opcodes {
                     new String[] {}, // closure variables  { name }
                     new Object[][] {
                       {System.out, "println", "Inside sub"},
-                      {
-                        Runtime.class, "print", new Object[] {"PARSE", "$a"}, // closure var
-                      },
-                      {Runtime.class, "print", new Object[] {"PARSE", "@_"}},
+                      {"PARSE", "print $a"}, // closure var
+                      {"PARSE", "print @_"},
                     }
                   },
                   "apply",
                   new Object[] {"PARSE", "55555"}, ContextType.SCALAR
                 },
-                {
-                  Runtime.class, "print", new Object[] {"PARSE", "$a"},
-                },
+                {"PARSE", "print $a"},
                 {Runtime.class, "print", "end"},
-                {Runtime.class, "print", new Object[] {"PARSE", "do { $a; if (1) { 123 } else { 456 } }"}},
+                {"PARSE", "do { $a; if (1) { print 123 } elsif (3) { print 345 } else { print 456 } }"},
                 {"PARSE", "return 5"}
               });
 
