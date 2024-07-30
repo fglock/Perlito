@@ -171,25 +171,6 @@ public class ASMMethodCreator implements Opcodes {
         EmitterVisitor visitor = new EmitterVisitor(ctx);
         ast.accept(visitor);
         return Runtime.class; // return Class
-      } else if (target.equals("IF")) { // { "IF", cond, if, else }
-        System.out.println("IF start");
-        ctx.symbolTable.enterScope();
-        Label elseLabel = new Label();
-        Label endLabel = new Label();
-        processInstructions(
-            ctx.with(ContextType.SCALAR), (Object[]) data[1]); // Generate code for the condition
-        ctx.mv.visitJumpInsn(
-            IFEQ, elseLabel); // Assuming the condition leaves a boolean on the stack
-        generateCodeBlock(ctx, (Object[][]) data[2]); // Generate code for the if block
-        ctx.mv.visitJumpInsn(GOTO, endLabel);
-        ctx.mv.visitLabel(elseLabel);
-        if (data[3] != null) { // Generate code for the else block
-          generateCodeBlock(ctx, (Object[][]) data[3]);
-        }
-        ctx.mv.visitLabel(endLabel); // End of the if/else structure
-        ctx.symbolTable.exitScope();
-        System.out.println("IF end");
-        return Runtime.class; // Class of the result
       } else if (target.equals("WHILE")) { // { "WHILE", cond, body }
         System.out.println("WHILE start");
         ctx.symbolTable.enterScope();
@@ -451,25 +432,6 @@ public class ASMMethodCreator implements Opcodes {
                 {
                   Runtime.class, "print", new Object[] {"PARSE", "$a"},
                 },
-                {
-                  "IF",
-                  new Object[] {Runtime.class, "is_false"}, // if condition
-                  new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
-                  new Object[][] { // else block
-                    {Runtime.class, "print", "if is false"},
-                    // {"PARSE", "@_"},
-                    // {new Object[] {"PARSE", "@_"}, "add", 5}, // call a method in the argument
-                    // {
-                    //   Runtime.class, "print", new Object[] {"PARSE", "$a"},
-                    // },
-                    {"PARSE", "my $a"},
-                    {"SETVAR", "$a", new Object[] {"PARSE", "13"}},
-                    {
-                      Runtime.class, "print", new Object[] {"PARSE", "$a"},
-                    },
-                    {Runtime.class, "print", "end if"},
-                  },
-                },
                 {"PARSE", "$a"},
                 {
                   new Object[] {
@@ -479,15 +441,6 @@ public class ASMMethodCreator implements Opcodes {
                       {System.out, "println", "Inside sub"},
                       {
                         Runtime.class, "print", new Object[] {"PARSE", "$a"}, // closure var
-                      },
-                      {
-                        "IF",
-                        new Object[] {Runtime.class, "is_false"}, // if condition
-                        new Object[][] {{Runtime.class, "print", "if is true"}}, // if block
-                        new Object[][] { // else block
-                          {Runtime.class, "print", "if is false"},
-                          {"PARSE", "return $a"}, // return from block
-                        },
                       },
                       {Runtime.class, "print", new Object[] {"PARSE", "@_"}},
                     }
@@ -499,7 +452,7 @@ public class ASMMethodCreator implements Opcodes {
                   Runtime.class, "print", new Object[] {"PARSE", "$a"},
                 },
                 {Runtime.class, "print", "end"},
-                {Runtime.class, "print", new Object[] {"PARSE", "do { $a; 123 }"}},
+                {Runtime.class, "print", new Object[] {"PARSE", "do { $a; if (1) { 123 } else { 456 } }"}},
                 {"PARSE", "return 5"}
               });
 

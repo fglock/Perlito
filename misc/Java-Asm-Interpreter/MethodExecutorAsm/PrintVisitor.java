@@ -44,6 +44,19 @@ public class PrintVisitor implements Visitor {
     }
 
     @Override
+    public void visit(IfNode node) {
+        appendIndent();
+        sb.append("IfNode:\n");
+        indentLevel++;
+        node.condition.accept(this);
+        node.thenBranch.accept(this);
+        if (node.elseBranch != null) {
+          node.elseBranch.accept(this);
+        }
+        indentLevel--;
+    }
+
+    @Override
     public void visit(TernaryOperatorNode node) {
         appendIndent();
         sb.append("TernaryOperatorNode: ").append(node.operator).append("\n");

@@ -1,5 +1,7 @@
-import org.objectweb.asm.Opcodes;
 import java.util.List;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
 
 public class EmitterVisitor implements Visitor {
   private final EmitterContext ctx;
@@ -132,6 +134,30 @@ public class EmitterVisitor implements Visitor {
       //     ctx.mv.visitInsn(Opcodes.POP);
       // }
     }
+  }
+
+  @Override
+  public void visit(IfNode node) {
+    System.out.println("IF start");
+    ctx.symbolTable.enterScope();
+    Label elseLabel = new Label();
+    Label endLabel = new Label();
+    EmitterVisitor scalarVisitor =
+        new EmitterVisitor(
+        ctx.with(ContextType.SCALAR)); // execute condition in scalar context
+    node.condition.accept(scalarVisitor);
+    ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "toBoolean", "()Z", false);  // Call the toBoolean method
+    ctx.mv.visitJumpInsn(
+        Opcodes.IFEQ, elseLabel); // Assuming the condition leaves a boolean on the stack
+    node.thenBranch.accept(scalarVisitor);
+    ctx.mv.visitJumpInsn(Opcodes.GOTO, endLabel);
+    ctx.mv.visitLabel(elseLabel);
+    if (node.elseBranch != null) { // Generate code for the else block
+      node.elseBranch.accept(scalarVisitor);
+    }
+    ctx.mv.visitLabel(endLabel); // End of the if/else structure
+    ctx.symbolTable.exitScope();
+    System.out.println("IF end");
   }
 
   @Override

@@ -38,6 +38,10 @@ public class Runtime {
     return String.valueOf(this.i);
   }
 
+  public boolean toBoolean() {
+    return this.i != 0;
+  }
+
   public static boolean is_false() {
     return false;
   }

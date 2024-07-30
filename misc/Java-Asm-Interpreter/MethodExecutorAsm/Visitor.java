@@ -81,6 +81,13 @@ public interface Visitor {
     void visit(StringNode node);
 
     /**
+     * Visit a IfNode.
+     *
+     * @param node the IfNode to visit
+     */
+    void visit(IfNode node);
+
+    /**
      * Visit a TernaryOperatorNode.
      *
      * @param node the TernaryOperatorNode to visit

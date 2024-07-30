@@ -48,14 +48,14 @@ public class Parser {
   public Node parseStatement() {
       Token token = peek();
 
-      // if (token.type == IDENTIFIER) {
-      //     switch (token.text) {
-      //       case "if": {
-      //         return ...
-      //       }
-      //    }
-      // }
-      if (token.type == TokenType.OPERATOR && token.text.equals("{")) {
+      if (token.type == TokenType.IDENTIFIER) {
+          switch (token.text) {
+            case "if": {
+              return parseIfStatement();
+            }
+         }
+      }
+      if (token.type == TokenType.OPERATOR && token.text.equals("{")) { // bare-block
         consume(TokenType.OPERATOR, "{");
         Node block = parseBlock();
         consume(TokenType.OPERATOR, "}");
@@ -73,20 +73,27 @@ public class Parser {
       return expression;
   }
 
-  // private Node parseIfStatement() {
-  //   consume(TokenType.IF);
-  //   Node condition = parseExpression(0);
-  //   consume(TokenType.OPERATOR, "{");
-  //   Node thenBranch = parseBlock();
-  //   consume(TokenType.OPERATOR, "}");
-  //   Node elseBranch = null;
-  //   if (match(TokenType.ELSE)) {
-  //       consume(TokenType.OPERATOR, "{");
-  //       elseBranch = parseBlock();
-  //       consume(TokenType.OPERATOR, "}");
-  //   }
-  //   return new IfNode(condition, thenBranch, elseBranch);
-  // }
+  private Node parseIfStatement() {
+    consume(TokenType.IDENTIFIER);  // "if", "elsif"
+    consume(TokenType.OPERATOR, "(");
+    Node condition = parseExpression(0);
+    consume(TokenType.OPERATOR, ")");
+    consume(TokenType.OPERATOR, "{");
+    Node thenBranch = parseBlock();
+    consume(TokenType.OPERATOR, "}");
+    Node elseBranch = null;
+    Token token = peek();
+    if (token.text.equals("else")) {
+        consume(TokenType.IDENTIFIER);  // "else"
+        consume(TokenType.OPERATOR, "{");
+        elseBranch = parseBlock();
+        consume(TokenType.OPERATOR, "}");
+    }
+    else if (token.text.equals("elsif")) {
+        elseBranch = parseIfStatement();
+    }
+    return new IfNode(condition, thenBranch, elseBranch);
+  }
 
   private Node parseExpression(int precedence) {
     Node left = parsePrimary();
