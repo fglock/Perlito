@@ -231,22 +231,23 @@ public class Parser {
       return new TernaryOperatorNode(token.text, left, middle, right);
     }
 
-    Node right = parseExpression(precedence);
-
+    Node right;
     switch (token.text) {
       case "+":
       case "-":
       case "*":
       case "/":
       case "=":
+        right = parseExpression(precedence);
         return new BinaryOperatorNode(token.text, left, right);
       case "->":
-        return new BinaryOperatorNode(token.text, left, right);
-        // return new PostfixOperatorNode(token.text, left);
-        // Handle other infix operators
-      default:
-        throw new RuntimeException("Unexpected infix operator: " + token);
+        if (peek().text.equals("(") ) {
+            right = parseExpression(precedence);
+            return new BinaryOperatorNode(token.text, left, right);
+        }
+        break;
     }
+    throw new RuntimeException("Unexpected infix operator: " + token);
   }
 
   private Token peek() {
