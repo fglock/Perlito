@@ -2,7 +2,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class Runtime {
-  private final long i;
+  long i;
   Method subroutineReference; // used by apply()
 
   public static HashMap<String, Class<?>> anonSubs =
@@ -32,6 +32,12 @@ public class Runtime {
   public Runtime apply(Runtime a, ContextType callContext) throws Exception {
     Runtime result = (Runtime) subroutineReference.invoke(null, a, callContext);
     return result;
+  }
+
+  public Runtime set(Runtime a) {
+    this.i = a.i;
+    this.subroutineReference = a.subroutineReference;
+    return this;
   }
 
   public String toString() {

@@ -404,7 +404,6 @@ public class ASMMethodCreator implements Opcodes {
   - easy wins
         - loops
         - set variable
-        - function call with ->()
         - string
 
   - harder
