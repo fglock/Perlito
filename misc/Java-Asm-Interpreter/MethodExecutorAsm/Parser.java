@@ -242,7 +242,7 @@ public class Parser {
         return new BinaryOperatorNode(token.text, left, right);
       case "->":
         if (peek().text.equals("(") ) {
-            right = parseExpression(precedence);
+            right = parseList();
             return new BinaryOperatorNode(token.text, left, right);
         }
         break;

@@ -65,8 +65,13 @@ public class EmitterVisitor implements Visitor {
       case "/":
         ctx.mv.visitInsn(Opcodes.IDIV);
         break;
+      case "->":
+        if (node.right instanceof ListNode) { // ->()
+
+        }
         // Add other operators as needed
     }
+    throw new RuntimeException("Unexpected infix operator: " + node);
   }
 
   @Override
