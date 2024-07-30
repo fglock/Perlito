@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Map;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -43,12 +44,12 @@ public class EmitterVisitor implements Visitor {
   }
 
   @Override
-  public void visit(IdentifierNode node) {
+  public void visit(IdentifierNode node) throws Exception {
     // Emit code for identifier
   }
 
   @Override
-  public void visit(BinaryOperatorNode node) {
+  public void visit(BinaryOperatorNode node) throws Exception {
     node.left.accept(this);
     node.right.accept(this);
     switch (node.operator) {
@@ -69,7 +70,7 @@ public class EmitterVisitor implements Visitor {
   }
 
   @Override
-  public void visit(UnaryOperatorNode node) {
+  public void visit(UnaryOperatorNode node) throws Exception {
     // Emit code for unary operator
     String operator = node.operator;
     System.out.println("visit(UnaryOperatorNode) " + operator);
@@ -140,7 +141,58 @@ public class EmitterVisitor implements Visitor {
   }
 
   @Override
-  public void visit(IfNode node) {
+  public void visit(AnonSubNode node) throws Exception {
+
+        System.out.println("SUB start");
+
+        // retrieve closure variable list
+        // alternately, scan the AST for variables and capture only the ones that are used
+        Map<Integer, String> visibleVariables = ctx.symbolTable.getAllVisibleVariables();
+        String[] newEnv = new String[visibleVariables.size()];
+        System.out.println(" ctx.symbolTable.getAllVisibleVariables");
+        for (Integer index : visibleVariables.keySet()) {
+          String variableName = visibleVariables.get(index);
+          System.out.println("  " + index + " " + variableName);
+          newEnv[index] = variableName;
+        }
+
+        // create the new method
+        EmitterContext subCtx =
+            new EmitterContext(
+                ctx.fileName, // same source filename
+                null, // java class name
+                ctx.symbolTable, // closure symbolTable
+                null, // return label
+                null, // method visitor
+                null, // call context
+                false // is boxed
+                );
+        Object[][] oldAST = { { "AST", node.block } }; // new AST to old
+        Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(subCtx, newEnv, oldAST);
+        String newClassNameDot = generatedClass.getName();
+        String newClassName = newClassNameDot.replace('.', '/');
+        System.out.println(
+            "Generated class name: " + newClassNameDot + " internal " + newClassName);
+        System.out.println("Generated class env:  " + newEnv);
+
+        // initialize the static fields
+        // skip 0 and 1 because they are the "@_" argument list and the call context
+        for (int i = 2; i < newEnv.length; i++) {
+          ctx.mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
+          ctx.mv.visitFieldInsn(Opcodes.PUTSTATIC, newClassName, newEnv[i], "LRuntime;");
+        }
+
+        // this will be called at runtime: Runtime.make_sub(javaClassName);
+        // TODO move the "make_sub" to ASM
+        Runtime.anonSubs.put(newClassName, generatedClass);
+        ctx.mv.visitLdcInsn(newClassName);
+        ctx.mv.visitMethodInsn(
+            Opcodes.INVOKESTATIC, "Runtime", "make_sub", "(Ljava/lang/String;)LRuntime;", false);
+        System.out.println("SUB end");
+  }
+
+  @Override
+  public void visit(IfNode node) throws Exception {
     System.out.println("IF start");
     ctx.symbolTable.enterScope();
     Label elseLabel = new Label();
@@ -164,19 +216,19 @@ public class EmitterVisitor implements Visitor {
   }
 
   @Override
-  public void visit(TernaryOperatorNode node) {
+  public void visit(TernaryOperatorNode node) throws Exception {
     node.condition.accept(this);
     // Emit code for ternary operator
   }
 
   @Override
-  public void visit(PostfixOperatorNode node) {
+  public void visit(PostfixOperatorNode node) throws Exception {
     node.operand.accept(this);
     // Emit code for postfix operator
   }
 
   @Override
-  public void visit(BlockNode node) {
+  public void visit(BlockNode node) throws Exception {
     System.out.println("generateCodeBlock start");
     ctx.symbolTable.enterScope();
     EmitterVisitor voidVisitor =
@@ -200,7 +252,7 @@ public class EmitterVisitor implements Visitor {
   }
 
   @Override
-  public void visit(ListNode node) {
+  public void visit(ListNode node) throws Exception {
     for (Node element : node.elements) {
       element.accept(this);
     }
@@ -208,7 +260,7 @@ public class EmitterVisitor implements Visitor {
   }
 
   @Override
-  public void visit(StringNode node) {
+  public void visit(StringNode node) throws Exception {
     ctx.mv.visitLdcInsn(node.value); // emit string
   }
 

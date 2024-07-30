@@ -18,6 +18,6 @@ public interface Node {
      *
      * @param visitor the visitor that will perform the operation on the node
      */
-    void accept(Visitor visitor);
+    void accept(Visitor visitor) throws Exception;
 }
 

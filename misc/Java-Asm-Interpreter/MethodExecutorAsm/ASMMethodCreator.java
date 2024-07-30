@@ -226,6 +226,11 @@ public class ASMMethodCreator implements Opcodes {
         }
         System.out.println("SETVAR end " + varIndex);
         return Runtime.class; // Class of the result
+      } else if (target.equals("AST")) { // { "AST", ast }
+        Node ast = (Node) data[1];
+        EmitterVisitor visitor = new EmitterVisitor(ctx);
+        ast.accept(visitor);
+        return Runtime.class; // return Class
       } else if (target.equals("SUB")) { // { "SUB", javaClassName, env, body }
         System.out.println("SUB start");
 
@@ -439,6 +444,7 @@ public class ASMMethodCreator implements Opcodes {
                   "apply",
                   new Object[] {"PARSE", "55555"}, ContextType.SCALAR
                 },
+                {"PARSE", "sub { $a }" },
                 {"PARSE", "print $a"},
                 {Runtime.class, "print", "end"},
                 {"PARSE", "do { $a; if (1) { print 123 } elsif (3) { print 345 } else { print 456 } }"},
@@ -459,6 +465,8 @@ public class ASMMethodCreator implements Opcodes {
 }
 
 /* TODO
+
+  - Parser: low-precedence operators not, or, and
 
   - connect with a Perl parser WIP
 

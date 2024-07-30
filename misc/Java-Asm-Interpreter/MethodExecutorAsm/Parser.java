@@ -73,6 +73,15 @@ public class Parser {
       return expression;
   }
 
+  private Node parseAnonSub(Token token) {
+    // token == "sub"
+    // TODO - optional name, subroutine prototype
+    consume(TokenType.OPERATOR, "{");
+    Node block = parseBlock();
+    consume(TokenType.OPERATOR, "}");
+    return new AnonSubNode(block);
+  }
+
   private Node parseIfStatement() {
     consume(TokenType.IDENTIFIER);  // "if", "elsif"
     consume(TokenType.OPERATOR, "(");
@@ -145,6 +154,9 @@ public class Parser {
             consume(TokenType.OPERATOR, "}");
             return block;
           }
+        }
+        if (token.text.equals("sub")) {
+          return parseAnonSub(token);
         }
         return new IdentifierNode(token.text);
       case NUMBER:
@@ -327,13 +339,13 @@ public class Parser {
     return new ListNode(elements);
   }
 
-  public static String getASTString(Node node) {
+  public static String getASTString(Node node) throws Exception {
     PrintVisitor printVisitor = new PrintVisitor();
     node.accept(printVisitor);
     return printVisitor.getResult();
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     String code = "my $var = 42; 1 ? 2 : 3; print \"Hello, World!\\n\";";
     if (args.length >= 2 && args[0].equals("-e")) {
       code = args[1]; // Read the code from the command line parameter

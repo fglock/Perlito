@@ -30,7 +30,7 @@ public class IdentifierNode implements Node {
      * @param visitor the visitor that will perform the operation on this node
      */
     @Override
-    public void accept(Visitor visitor) {
+    public void accept(Visitor visitor) throws Exception {
         visitor.visit(this);
     }
 }

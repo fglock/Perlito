@@ -36,70 +36,77 @@ public interface Visitor {
      *
      * @param node the BinaryOperatorNode to visit
      */
-    void visit(BinaryOperatorNode node);
+    void visit(BinaryOperatorNode node) throws Exception;
 
     /**
      * Visit an IdentifierNode.
      *
      * @param node the IdentifierNode to visit
      */
-    void visit(IdentifierNode node);
+    void visit(IdentifierNode node) throws Exception;
 
     /**
      * Visit a BlockNode.
      *
      * @param node the BlockNode to visit
      */
-    void visit(BlockNode node);
+    void visit(BlockNode node) throws Exception;
 
     /**
      * Visit a ListNode.
      *
      * @param node the ListNode to visit
      */
-    void visit(ListNode node);
+    void visit(ListNode node) throws Exception;
 
     /**
      * Visit a NumberNode.
      *
      * @param node the NumberNode to visit
      */
-    void visit(NumberNode node);
+    void visit(NumberNode node) throws Exception;
 
     /**
      * Visit a PostfixOperatorNode.
      *
      * @param node the PostfixOperatorNode to visit
      */
-    void visit(PostfixOperatorNode node);
+    void visit(PostfixOperatorNode node) throws Exception;
 
     /**
      * Visit a StringNode.
      *
      * @param node the StringNode to visit
      */
-    void visit(StringNode node);
+    void visit(StringNode node) throws Exception;
 
     /**
      * Visit a IfNode.
      *
      * @param node the IfNode to visit
      */
-    void visit(IfNode node);
+    void visit(IfNode node) throws Exception;
 
     /**
      * Visit a TernaryOperatorNode.
      *
      * @param node the TernaryOperatorNode to visit
      */
-    void visit(TernaryOperatorNode node);
+    void visit(TernaryOperatorNode node) throws Exception;
 
     /**
      * Visit a UnaryOperatorNode.
      *
      * @param node the UnaryOperatorNode to visit
      */
-    void visit(UnaryOperatorNode node);
+    void visit(UnaryOperatorNode node) throws Exception;
+
+    /**
+     * Visit a AnonSubNode.
+     *
+     * @param node the AnonSubNode to visit
+     */
+    void visit(AnonSubNode node) throws Exception;
 
     // Add other node types as needed
 }
