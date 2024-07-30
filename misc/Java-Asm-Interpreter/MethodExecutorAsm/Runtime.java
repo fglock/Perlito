@@ -23,14 +23,14 @@ public class Runtime {
   public static Runtime make_sub(String className) throws Exception {
     // finish setting up a CODE object
     Class<?> clazz = Runtime.anonSubs.remove(className);
-    Method mm = clazz.getMethod("apply", Runtime.class);
+    Method mm = clazz.getMethod("apply", Runtime.class, ContextType.class);
     Runtime rr = new Runtime(-1);
     rr.subroutineReference = mm;
     return rr;
   }
 
-  public Runtime apply(Runtime a) throws Exception {
-    Runtime result = (Runtime) subroutineReference.invoke(null, a);
+  public Runtime apply(Runtime a, ContextType callContext) throws Exception {
+    Runtime result = (Runtime) subroutineReference.invoke(null, a, callContext);
     return result;
   }
 

@@ -73,7 +73,8 @@ public class ASMMethodCreator implements Opcodes {
 
     // Create the method
     System.out.println("Create the method");
-    String return_type = "(LRuntime;)Ljava/lang/Object;"; // takes an Object arg, returns an Object
+    // takes a "Runtime" arg "@_" and a ContextType, returns a "Runtime"
+    String return_type = "(LRuntime;LContextType;)Ljava/lang/Object;"; 
 
     // method is public, static method
     ctx.mv =
@@ -88,8 +89,8 @@ public class ASMMethodCreator implements Opcodes {
     ctx.mv.visitCode();
 
     // initialize local variables with the closure values from the static fields
-    // skip zero because it is the "@_" argument list
-    for (int i = 1; i < env.length; i++) {
+    // skip 0 and 1 because they are the "@_" argument list and the call context
+    for (int i = 2; i < env.length; i++) {
       String fieldName = env[i];
       System.out.println("Init closure variable: " + fieldName);
       ctx.mv.visitFieldInsn(Opcodes.GETSTATIC, javaClassName, fieldName, "LRuntime;");
@@ -278,7 +279,8 @@ public class ASMMethodCreator implements Opcodes {
         System.out.println("Generated class env:  " + newEnv);
 
         // initialize the static fields
-        for (int i = 0; i < newEnv.length; i++) {
+        // skip 0 and 1 because they are the "@_" argument list and the call context
+        for (int i = 2; i < newEnv.length; i++) {
           ctx.mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
           ctx.mv.visitFieldInsn(PUTSTATIC, newClassName, newEnv[i], "LRuntime;");
         }
@@ -327,6 +329,11 @@ public class ASMMethodCreator implements Opcodes {
           ctxScalar.mv.visitLdcInsn(arg);
         } else if (arg instanceof Class<?>) {
           ctxScalar.mv.visitLdcInsn(org.objectweb.asm.Type.getType((Class<?>) arg));
+        } else if (arg instanceof ContextType) {
+            if ( (ContextType) arg == ContextType.SCALAR ) {
+                // Load the ContextType.SCALAR enum constant onto the stack
+                ctxScalar.mv.visitFieldInsn(GETSTATIC, "ContextType", "SCALAR", "LContextType;");
+            }
         } else {
           throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
         }
@@ -416,7 +423,8 @@ public class ASMMethodCreator implements Opcodes {
               false // is boxed
               );
       ctx.symbolTable.enterScope();
-      ctx.symbolTable.addVariable("@_"); // argument is local variable zero
+      ctx.symbolTable.addVariable("@_");        // argument is local variable 0
+      ctx.symbolTable.addVariable("wantarray"); // call context is local variable 1
 
       // Create the class
       System.out.println("createClassWithMethod");
@@ -485,7 +493,7 @@ public class ASMMethodCreator implements Opcodes {
                     }
                   },
                   "apply",
-                  new Object[] {"PARSE", "55555"}
+                  new Object[] {"PARSE", "55555"}, ContextType.SCALAR
                 },
                 {
                   Runtime.class, "print", new Object[] {"PARSE", "$a"},
@@ -498,7 +506,7 @@ public class ASMMethodCreator implements Opcodes {
       String newClassName = generatedClass.getName();
       Runtime.anonSubs.put(newClassName, generatedClass);
       Runtime anonSub = Runtime.make_sub(newClassName);
-      Runtime result = anonSub.apply(new Runtime(999));
+      Runtime result = anonSub.apply(new Runtime(999), ContextType.SCALAR);
 
       System.out.println("Result of generatedMethod: " + result);
     } catch (Exception e) {
