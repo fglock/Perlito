@@ -1,34 +1,29 @@
-public class PerlVariable {
+public class Runtime {
     private enum Type {
-        INTEGER, STRING, REFERENCE, CODE_REFERENCE, OBJECT
+        INTEGER, STRING, REFERENCE, CODE
     }
 
     public Type type;
     public Object value;
 
     // Constructors
-    public PerlVariable(int value) {
+    public Runtime(int value) {
         this.type = Type.INTEGER;
         this.value = value;
     }
 
-    public PerlVariable(String value) {
+    public Runtime(String value) {
         this.type = Type.STRING;
         this.value = value;
     }
 
-    public PerlVariable(PerlVariable value) {
+    public Runtime(Runtime value) {
         this.type = Type.REFERENCE;
         this.value = value;
     }
 
-    public PerlVariable(CodeReference value) {
-        this.type = Type.CODE_REFERENCE;
-        this.value = value;
-    }
-
-    public PerlVariable(Object value) {
-        this.type = Type.OBJECT;
+    public Runtime(CodeReference value) {
+        this.type = Type.CODE;
         this.value = value;
     }
 
@@ -49,15 +44,15 @@ public class PerlVariable {
         }
     }
 
-    public PerlVariable getReference() {
+    public Runtime getReference() {
         if (type == Type.REFERENCE) {
-            return (PerlVariable) value;
+            return (Runtime) value;
         } else {
             throw new IllegalStateException("Variable does not contain a reference");
         }
     }
 
-    public CodeReference getCodeReference() {
+    public CodeReference getCode() {
         if (type == Type.CODE_REFERENCE) {
             return (CodeReference) value;
         } else {
@@ -65,16 +60,8 @@ public class PerlVariable {
         }
     }
 
-    public Object getObject() {
-        if (type == Type.OBJECT) {
-            return value;
-        } else {
-            throw new IllegalStateException("Variable does not contain an object");
-        }
-    }
-
     // Setters
-    public void set(PerlVariable value) {
+    public void set(Runtime value) {
         this.type = value.type;
         this.value = value.value;
     }
@@ -89,18 +76,13 @@ public class PerlVariable {
         this.value = value;
     }
 
-    public void setReference(PerlVariable value) {
+    public void setReference(Runtime value) {
         this.type = Type.REFERENCE;
         this.value = value;
     }
 
-    public void setCodeReference(CodeReference value) {
-        this.type = Type.CODE_REFERENCE;
-        this.value = value;
-    }
-
-    public void setObject(Object value) {
-        this.type = Type.OBJECT;
+    public void setCode(Code value) {
+        this.type = Type.CODE;
         this.value = value;
     }
 
@@ -113,27 +95,23 @@ public class PerlVariable {
                 return (String) value;
             case REFERENCE:
                 return "Reference to: " + value.toString();
-            case CODE_REFERENCE:
+            case CODE:
                 return "Code Reference: " + value.toString();
-            case OBJECT:
-                return "Object of type: " + value.getClass().getName();
             default:
                 return "Undefined";
         }
     }
 
     public static void main(String[] args) {
-        PerlVariable intVar = new PerlVariable(42);
-        PerlVariable strVar = new PerlVariable("Hello, Perl!");
-        PerlVariable refVar = new PerlVariable(intVar);
-        PerlVariable codeVar = new PerlVariable((CodeReference) () -> System.out.println("Executing code reference!"));
-        PerlVariable objVar = new PerlVariable(new CustomObject("MyObject"));
+        Runtime intVar = new Runtime(42);
+        Runtime strVar = new Runtime("Hello, Perl!");
+        Runtime refVar = new Runtime(intVar);
+        Runtime codeVar = new Runtime((CodeReference) () -> System.out.println("Executing code reference!"));
 
         System.out.println(intVar);
         System.out.println(strVar);
         System.out.println(refVar);
         System.out.println(codeVar);
-        System.out.println(objVar);
 
         codeVar.getCodeReference().execute();
     }
@@ -145,16 +123,3 @@ interface CodeReference {
     void execute();
 }
 
-// Example of a custom object
-class CustomObject {
-    private String name;
-
-    public CustomObject(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "CustomObject{name='" + name + "'}";
-    }
-}
