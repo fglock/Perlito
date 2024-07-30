@@ -70,6 +70,17 @@ public class PrintVisitor implements Visitor {
     }
 
     @Override
+    public void visit(BlockNode node) {
+        appendIndent();
+        sb.append("BlockNode:\n");
+        indentLevel++;
+        for (Node element : node.elements) {
+            element.accept(this);
+        }
+        indentLevel--;
+    }
+
+    @Override
     public void visit(ListNode node) {
         appendIndent();
         sb.append("ListNode:\n");

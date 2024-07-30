@@ -27,8 +27,66 @@ public class Parser {
   }
 
   public Node parse() {
-    return parseExpression(0);
+    return parseBlock();
   }
+
+  private Node parseBlock() {
+      List<Node> statements = new ArrayList<>();
+      Token token = peek();
+      while (token.type != TokenType.EOF && !(token.type == TokenType.OPERATOR && token.text.equals("}"))) {
+          if (token.text.equals(";")) {
+            consume();
+          }
+          else {
+            statements.add(parseStatement());
+          }
+          token = peek();
+      }
+      return new BlockNode(statements);
+  }
+
+  public Node parseStatement() {
+      Token token = peek();
+
+      // if (token.type == IDENTIFIER) {
+      //     switch (token.text) {
+      //       case "if": {
+      //         return ...
+      //       }
+      //    }
+      // }
+      if (token.type == TokenType.OPERATOR && token.text.equals("{")) {
+        consume(TokenType.OPERATOR, "{");
+        Node block = parseBlock();
+        consume(TokenType.OPERATOR, "}");
+        return block;
+      }
+      Node expression = parseExpression(0);
+      token = peek();
+      System.out.println("after expression: " + token);
+      if (token.type != TokenType.EOF && !token.text.equals("}") && !token.text.equals(";")) {
+        throw new RuntimeException("Unexpected token: " + token);
+      }
+      if (token.text.equals(";")) {
+        consume();
+      }
+      return expression;
+  }
+
+  // private Node parseIfStatement() {
+  //   consume(TokenType.IF);
+  //   Node condition = parseExpression(0);
+  //   consume(TokenType.OPERATOR, "{");
+  //   Node thenBranch = parseBlock();
+  //   consume(TokenType.OPERATOR, "}");
+  //   Node elseBranch = null;
+  //   if (match(TokenType.ELSE)) {
+  //       consume(TokenType.OPERATOR, "{");
+  //       elseBranch = parseBlock();
+  //       consume(TokenType.OPERATOR, "}");
+  //   }
+  //   return new IfNode(condition, thenBranch, elseBranch);
+  // }
 
   private Node parseExpression(int precedence) {
     Node left = parsePrimary();

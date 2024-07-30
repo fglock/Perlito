@@ -146,6 +146,14 @@ public class EmitterVisitor implements Visitor {
   }
 
   @Override
+  public void visit(BlockNode node) {
+    for (Node element : node.elements) {
+      element.accept(this);
+    }
+    // Emit code for block
+  }
+
+  @Override
   public void visit(ListNode node) {
     for (Node element : node.elements) {
       element.accept(this);

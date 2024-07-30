@@ -46,6 +46,13 @@ public interface Visitor {
     void visit(IdentifierNode node);
 
     /**
+     * Visit a BlockNode.
+     *
+     * @param node the BlockNode to visit
+     */
+    void visit(BlockNode node);
+
+    /**
      * Visit a ListNode.
      *
      * @param node the ListNode to visit
