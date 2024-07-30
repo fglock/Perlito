@@ -27,7 +27,7 @@ public class Parser {
   }
 
   public Node parse() {
-    return parseExpression(0);
+    return parseBlock();
   }
 
   private Node parseBlock() {

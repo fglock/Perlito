@@ -49,6 +49,10 @@ public class EmitterVisitor implements Visitor {
 
   @Override
   public void visit(BinaryOperatorNode node) throws Exception {
+    EmitterVisitor scalarVisitor =
+        new EmitterVisitor(ctx.with(ContextType.SCALAR)); // execute operands in scalar context
+    node.left.accept(scalarVisitor); // target
+    node.right.accept(scalarVisitor); // parameter
     switch (node.operator) {
       case "+":
         node.left.accept(this);
@@ -64,14 +68,20 @@ public class EmitterVisitor implements Visitor {
       case "/":
         ctx.mv.visitInsn(Opcodes.IDIV);
         break;
+      case "=":
+        ctx.mv.visitMethodInsn(
+            Opcodes.INVOKEVIRTUAL,
+            "Runtime",
+            "set",
+            "(LRuntime;)LRuntime;",
+            false); // generate a .set() call
+        if (ctx.contextType == ContextType.VOID) {
+          ctx.mv.visitInsn(Opcodes.POP);
+        }
+        return;
       case "->":
         if (node.right instanceof ListNode) { // ->()
           System.out.println("visit(BinaryOperatorNode) ->() ");
-          EmitterVisitor scalarVisitor =
-              new EmitterVisitor(
-                  ctx.with(ContextType.SCALAR)); // execute operands in scalar context
-          node.left.accept(scalarVisitor); // target
-          node.right.accept(scalarVisitor); // parameter
           ctx.mv.visitFieldInsn(
               Opcodes.GETSTATIC,
               "ContextType",
@@ -190,8 +200,7 @@ public class EmitterVisitor implements Visitor {
             null, // call context
             false // is boxed
             );
-    Object[][] oldAST = {{"AST", node.block}}; // new AST to old
-    Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(subCtx, newEnv, oldAST);
+    Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(subCtx, newEnv, node.block);
     String newClassNameDot = generatedClass.getName();
     String newClassName = newClassNameDot.replace('.', '/');
     System.out.println("Generated class name: " + newClassNameDot + " internal " + newClassName);
