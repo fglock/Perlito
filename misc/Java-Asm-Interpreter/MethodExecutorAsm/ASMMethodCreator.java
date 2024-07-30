@@ -406,9 +406,21 @@ public class ASMMethodCreator implements Opcodes {
 
 /* TODO
 
+  - easy wins
+        - loops
+        - set variable
+        - function call with ->()
+        - string
+
+  - harder
+        - BEGIN block
+        - eval string
+        - eval block, catch error
+
   - Parser: low-precedence operators not, or, and
 
   - connect with a Perl parser WIP
+        - cleanup the old AST
 
   - cleanup the closure code to only add the lexical variables mentioned in the AST
 
@@ -422,6 +434,7 @@ public class ASMMethodCreator implements Opcodes {
 
   - global variables and namespaces
         - named subroutine declaration
+        - Perl classes
 
   - local variables
       set up the cleanup before RETURN
@@ -432,14 +445,9 @@ public class ASMMethodCreator implements Opcodes {
       ctx.mv.visitLabel(thisLabel);
       ctx.mv.visitLineNumber(10, thisLabel); // Associate line number 10 with thisLabel
 
-  - when something is called in void context, we need to POP the JVM stack to cleanup the unused value.
-        - "if" in end of sub should inject a "return" in both blocks
-
   - tests
 
   - implement thread-safety - it may need locking when calling ASM
-
-  - calling constructor with "new"
 
   - create multiple classes; ensure GC works for these classes
 
