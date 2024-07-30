@@ -1,3 +1,11 @@
+/*
+ *
+ * Usage:
+ *
+ *   PrintVisitor printVisitor = new PrintVisitor();
+ *   node.accept(printVisitor);
+ *   return printVisitor.getResult();
+ */
 public class PrintVisitor implements Visitor {
     private final StringBuilder sb = new StringBuilder();
     private int indentLevel = 0;

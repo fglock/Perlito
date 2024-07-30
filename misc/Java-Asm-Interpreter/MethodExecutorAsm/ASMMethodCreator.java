@@ -378,12 +378,7 @@ public class ASMMethodCreator implements Opcodes {
                 {"SETVAR", "$a", new Object[] {"PARSE", "12"}},
                 {"PARSE", "print $a"},
                 
-                { 
-                  new Object[] {"PARSE", "sub { print @_ }" },
-                  "apply",
-                  new Object[] {"PARSE", "77777"}, ContextType.SCALAR
-                },
-                // new Object[] {"PARSE", " ( sub { print @_ } )->(88888) " },
+                {"PARSE", " ( sub { print @_ } )->(88888) " },
 
                 {"PARSE", "print $a"},
                 {Runtime.class, "print", "end"},
