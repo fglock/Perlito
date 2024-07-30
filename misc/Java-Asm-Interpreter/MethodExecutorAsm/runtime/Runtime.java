@@ -1,6 +1,7 @@
 public class Runtime {
     private enum Type {
-        INTEGER, STRING, REFERENCE, CODE
+        INTEGER, DOUBLE, STRING, REFERENCE, CODE, UNDEF, BLESSED
+        // also special literals like filehandles, typeglobs, and regular expressions
     }
 
     public Type type;
