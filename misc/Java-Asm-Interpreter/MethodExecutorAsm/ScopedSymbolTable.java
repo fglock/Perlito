@@ -68,7 +68,7 @@ class ScopedSymbolTable {
 
     /**
      * Retrieves the index of a variable in the current scope.
-     * This method is used to track variable redeclarations.
+     * This method is used to track variable redeclarations in the same scope.
      * 
      * @param name The name of the variable to look up.
      * @return The index of the variable, or -1 if the variable is not found in the current scope.
