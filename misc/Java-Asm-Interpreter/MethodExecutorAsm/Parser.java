@@ -241,7 +241,8 @@ public class Parser {
       case "=":
         return new BinaryOperatorNode(token.text, left, right);
       case "->":
-        return new PostfixOperatorNode(token.text, left);
+        return new BinaryOperatorNode(token.text, left, right);
+        // return new PostfixOperatorNode(token.text, left);
         // Handle other infix operators
       default:
         throw new RuntimeException("Unexpected infix operator: " + token);
