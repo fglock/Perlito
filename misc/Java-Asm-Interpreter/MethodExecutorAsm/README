@@ -8,47 +8,12 @@ it can be recursive:
 
 non-method "statements" have a string as first argument:
 
-{ "MY", "$x" } declare a lexical variable.
-
 { "PARSE", "@_" } parse the argument object.
+
+{ "AST", node } emit the node object.
 
 { "SETVAR", "$x" } set a variable.
 
-{ "IF", { cond }, { ifBlock }, { elseBlock } } if/else statement. The elseBlock can be null.
-
-    { "IF",
-        new Object[] { Runtime.class, "is_false" },                     // if condition
-        new Object[][]{ { Runtime.class, "print", "if is true" } },     // if block
-        new Object[][]{ { Runtime.class, "print", "if is false" } },    // else block
-    },
-
-{ "SUB", className, env, body }   defines a subroutine
-
-    // define and call an anonymous subroutine
-    { new Object[]{ "SUB",
-        "anon.myAnonSub",
-        new Object[][]{     // closed variables  { name }
-            { "env" },
-        },
-        new Object[][]{
-            { Runtime.class, "print", new Object[]{ "ARG" } },
-        }
-    }, "apply", new Object[]{ Runtime.class, "make", 55555 } },
-
-{ GETSTATIC, name } retrieves a captured variable in a closure
-
-    { "GETSTATIC", "env" }
-
-// Example usage
-MathOperations mathOps = new MathOperations();
-Object[] data = {
-    System.out, "println", "Starting execution...",
-    new Object[]{System.out, "println", new Object[]{mathOps, "add", 5, 3}},
-    new Object[]{System.out, "println", new Object[]{mathOps, "multiply", 2, 4}},
-    new Object[]{System.out, "println", "Execution finished."}
-};
-// compile & execute using reflection
- 
 
 Compile:
 

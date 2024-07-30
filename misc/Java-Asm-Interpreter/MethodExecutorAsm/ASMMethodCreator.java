@@ -231,54 +231,6 @@ public class ASMMethodCreator implements Opcodes {
         EmitterVisitor visitor = new EmitterVisitor(ctx);
         ast.accept(visitor);
         return Runtime.class; // return Class
-      } else if (target.equals("SUB")) { // { "SUB", javaClassName, env, body }
-        System.out.println("SUB start");
-
-        // retrieve closure variable list
-        // alternately, scan the AST for variables and capture only the ones that are used
-        Map<Integer, String> visibleVariables = ctx.symbolTable.getAllVisibleVariables();
-        String[] newEnv = new String[visibleVariables.size()];
-        System.out.println(" ctx.symbolTable.getAllVisibleVariables");
-        for (Integer index : visibleVariables.keySet()) {
-          String variableName = visibleVariables.get(index);
-          System.out.println("  " + index + " " + variableName);
-          newEnv[index] = variableName;
-        }
-
-        // create the new method
-        EmitterContext subCtx =
-            new EmitterContext(
-                ctx.fileName, // same source filename
-                null, // java class name
-                ctx.symbolTable, // closure symbolTable
-                null, // return label
-                null, // method visitor
-                null, // call context
-                false // is boxed
-                );
-        Object[][] newData = (Object[][]) data[2]; // AST
-        Class<?> generatedClass = createClassWithMethod(subCtx, newEnv, newData);
-        String newClassNameDot = generatedClass.getName();
-        String newClassName = newClassNameDot.replace('.', '/');
-        System.out.println(
-            "Generated class name: " + newClassNameDot + " internal " + newClassName);
-        System.out.println("Generated class env:  " + newEnv);
-
-        // initialize the static fields
-        // skip 0 and 1 because they are the "@_" argument list and the call context
-        for (int i = 2; i < newEnv.length; i++) {
-          ctx.mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
-          ctx.mv.visitFieldInsn(PUTSTATIC, newClassName, newEnv[i], "LRuntime;");
-        }
-
-        // this will be called at runtime: Runtime.make_sub(javaClassName);
-        // TODO move the "make_sub" to ASM
-        Runtime.anonSubs.put(newClassName, generatedClass);
-        ctx.mv.visitLdcInsn(newClassName);
-        ctx.mv.visitMethodInsn(
-            Opcodes.INVOKESTATIC, "Runtime", "make_sub", "(Ljava/lang/String;)LRuntime;", false);
-        System.out.println("SUB end");
-        return Runtime.class; // Class of the result
       } else {
         throw new IllegalArgumentException("Unsupported target type: " + target);
       }
@@ -419,32 +371,20 @@ public class ASMMethodCreator implements Opcodes {
               ctx,
               new String[] {}, // closure variables  { name }
               new Object[][] {
-                // { Integer.class, "new", 5 },     // calling a constructor with "new"
-                // { System.out, "println", new Object[]{ Runtime.class, "add", 5, 3 } },
-                {"PARSE", "5"},
-                {Runtime.class, "print", 789},
-                {"PARSE", "@_"}, // retrieve the argument
                 {Runtime.class, "print", new Object[] {"PARSE", "5"}},
                 {Runtime.class, "print", new Object[] {"PARSE", "@_"}}, // use the argument
                 {System.out, "println", "123"},
                 {"PARSE", "my $a"},
                 {"SETVAR", "$a", new Object[] {"PARSE", "12"}},
                 {"PARSE", "print $a"},
-                {"PARSE", "$a"},
-                {
-                  new Object[] {
-                    "SUB",
-                    new String[] {}, // closure variables  { name }
-                    new Object[][] {
-                      {System.out, "println", "Inside sub"},
-                      {"PARSE", "print $a"}, // closure var
-                      {"PARSE", "print @_"},
-                    }
-                  },
+                
+                { 
+                  new Object[] {"PARSE", "sub { print @_ }" },
                   "apply",
-                  new Object[] {"PARSE", "55555"}, ContextType.SCALAR
+                  new Object[] {"PARSE", "77777"}, ContextType.SCALAR
                 },
-                {"PARSE", "sub { $a }" },
+                // new Object[] {"PARSE", " ( sub { print @_ } )->(88888) " },
+
                 {"PARSE", "print $a"},
                 {Runtime.class, "print", "end"},
                 {"PARSE", "do { $a; if (1) { print 123 } elsif (3) { print 345 } else { print 456 } }"},
