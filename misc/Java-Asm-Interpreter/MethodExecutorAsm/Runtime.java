@@ -1,6 +1,5 @@
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Runtime {
   long i;
@@ -51,6 +50,18 @@ public class Runtime {
     // retrieve the context that was saved at compile-time
     EmitterContext evalCtx = Runtime.evalContext.get(evalTag);
 
+    // retrieve closure variable list
+    // alternately, scan the AST for variables and capture only the ones that are used
+    Map<Integer, String> visibleVariables = evalCtx.symbolTable.getAllVisibleVariables();
+    String[] newEnv = new String[visibleVariables.size()];
+    System.out.println(" ctx.symbolTable.getAllVisibleVariables");
+    for (Integer index : visibleVariables.keySet()) {
+      String variableName = visibleVariables.get(index);
+      System.out.println("  " + index + " " + variableName);
+      newEnv[index] = variableName;
+    }
+
+
     // Create the Token list
     Lexer lexer = new Lexer(code.toString());
     List<Token> tokens = lexer.tokenize(); // Tokenize the Perl code
@@ -64,7 +75,7 @@ public class Runtime {
     evalCtx.errorUtil = new ErrorMessageUtil(evalCtx.fileName, tokens);
     Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(
             evalCtx,
-            new String[] {}, // Closure variables
+            newEnv, // Closure variables
             ast
     );
 
