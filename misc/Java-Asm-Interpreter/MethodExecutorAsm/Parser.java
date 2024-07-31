@@ -173,6 +173,8 @@ public class Parser {
           return new UnaryOperatorNode(token.text, operand);
         } else if (token.text.equals(".")) {
           return parseFractionalNumber();
+        } else if (token.text.equals("'")) {
+          return parseSingleQuotedString();
         }
         break;
       case EOF:
@@ -181,6 +183,26 @@ public class Parser {
         throw new RuntimeException("Unexpected token: " + token);
     }
     throw new RuntimeException("Unexpected token: " + token);
+  }
+
+  private Node parseSingleQuotedString() {
+      StringBuilder str = new StringBuilder();
+      while (!peek().text.equals("'")) {
+          String text = consume().text;
+          if (text.equals("\\")) {
+              // Handle escaped characters
+              text = consume().text;
+              if (text.equals("\\") || text.equals("'")) {
+                  str.append(text);
+              } else {
+                  str.append("\\").append(text);
+              }
+          } else {
+              str.append(text);
+          }
+      }
+      consume(TokenType.OPERATOR, "'"); // Consume the closing single quote
+      return new StringNode(str.toString());
   }
 
   private Node parseNumber(Token token) {
