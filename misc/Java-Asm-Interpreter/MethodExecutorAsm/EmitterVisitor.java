@@ -45,6 +45,7 @@ public class EmitterVisitor implements Visitor {
   @Override
   public void visit(IdentifierNode node) throws Exception {
     // Emit code for identifier
+    throw new PerlCompilerException(node.tokenIndex, "Not implemented: bare word " + node.name, ctx.errorUtil);
   }
 
   private void emitCallBuiltin(String operator) {
@@ -132,6 +133,7 @@ public class EmitterVisitor implements Visitor {
           ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex);
         }
         System.out.println("GETVAR end " + varIndex);
+        return;
       }
     } else if (operator.equals("print")) {
       EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
@@ -140,6 +142,7 @@ public class EmitterVisitor implements Visitor {
       if (ctx.contextType == ContextType.VOID) {
         ctx.mv.visitInsn(Opcodes.POP);
       }
+      return;
     } else if (operator.equals("my")) {
       Node sigilNode = node.operand;
       if (sigilNode instanceof UnaryOperatorNode) { // my + $ @ %
@@ -170,13 +173,23 @@ public class EmitterVisitor implements Visitor {
             }
             ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
           }
+          return;
         }
       }
     } else if (operator.equals("return")) {
       EmitterContext childCtx = ctx.with(ContextType.RUNTIME, ctx.isBoxed);
       node.operand.accept(new EmitterVisitor(childCtx));
       ctx.mv.visitJumpInsn(Opcodes.GOTO, ctx.returnLabel);
+      return;
+    } else if (operator.equals("eval")) {
+        if (node.operand instanceof BlockNode) { // eval block
+            throw new PerlCompilerException(node.tokenIndex, "Not implemented: eval block", ctx.errorUtil);
+        }
+        else { // eval string
+            throw new PerlCompilerException(node.tokenIndex, "Not implemented: eval string", ctx.errorUtil);
+        }
     }
+    throw new PerlCompilerException(node.tokenIndex, "Not implemented: " + operator, ctx.errorUtil);
   }
 
   @Override
@@ -257,12 +270,14 @@ public class EmitterVisitor implements Visitor {
   public void visit(TernaryOperatorNode node) throws Exception {
     node.condition.accept(this);
     // Emit code for ternary operator
+    throw new PerlCompilerException(node.tokenIndex, "Not implemented: ternary operator", ctx.errorUtil);
   }
 
   @Override
   public void visit(PostfixOperatorNode node) throws Exception {
     node.operand.accept(this);
     // Emit code for postfix operator
+    throw new PerlCompilerException(node.tokenIndex, "Not implemented: postfix operator " + node.operator, ctx.errorUtil);
   }
 
   @Override

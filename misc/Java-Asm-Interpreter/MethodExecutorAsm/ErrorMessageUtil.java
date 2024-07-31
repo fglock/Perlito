@@ -36,9 +36,10 @@ public class ErrorMessageUtil {
 
         // Retrieve the string context around the error by collecting tokens near the specified index
         List<String> near = new ArrayList<>();
-        for (int i = Math.max(0, index - 3); i <= Math.min(tokens.size() - 1, index + 2); i++) {
-            if (tokens.get(i) != null) {
-                near.add(tokens.get(i).text);
+        for (int i = Math.max(0, index - 4); i <= Math.min(tokens.size() - 1, index + 2); i++) {
+            Token tok = tokens.get(i);
+            if (tok != null && tok.type != TokenType.EOF) {
+                near.add(tok.text);
             }
         }
 

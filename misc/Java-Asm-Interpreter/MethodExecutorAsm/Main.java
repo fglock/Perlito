@@ -26,6 +26,7 @@ public class Main {
                     + " ( sub { print @_ } )->(88888) ;"
                     + "print $a ;"
                     + "do { $a; if (1) { print 123 } elsif (3) { print 345 } else { print 456 } } ;"
+                    + "print \"Finished; value is $a\\n\"; "
                     + "return 5;";
 
             // If code is provided as a command-line argument, use it instead of the default code
