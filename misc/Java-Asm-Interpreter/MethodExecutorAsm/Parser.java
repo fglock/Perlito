@@ -2,6 +2,7 @@ import java.util.*;
 
 public class Parser {
   private final List<Token> tokens;
+  private final ErrorMessageUtil errorUtil;
   private int tokenIndex = 0;
   private static final Set<String> TERMINATORS =
       new HashSet<>(Arrays.asList(":", ";", ")", "}", "]"));
@@ -22,7 +23,8 @@ public class Parser {
               "$#" // sigils
               ));
 
-  public Parser(List<Token> tokens) {
+  public Parser(ErrorMessageUtil errorUtil, List<Token> tokens) {
+    this.errorUtil = errorUtil;
     this.tokens = tokens;
   }
 
@@ -64,7 +66,7 @@ public class Parser {
       Node expression = parseExpression(0);
       token = peek();
       if (token.type != TokenType.EOF && !token.text.equals("}") && !token.text.equals(";")) {
-        throw new RuntimeException("Unexpected token: " + token);
+        errorUtil.throwError(tokenIndex, "Unexpected token: " + token);
       }
       if (token.text.equals(";")) {
         consume();
@@ -179,9 +181,10 @@ public class Parser {
       case EOF:
         return null; // End of input
       default:
-        throw new RuntimeException("Unexpected token: " + token);
+        errorUtil.throwError(tokenIndex, "Unexpected token: " + token);
     }
-    throw new RuntimeException("Unexpected token: " + token);
+    errorUtil.throwError(tokenIndex, "Unexpected token: " + token);
+    return new NumberNode("-1", tokenIndex);  // keep java compiler happy
   }
 
   private Node parseSingleQuotedString() {
@@ -239,7 +242,7 @@ public class Parser {
         // Check if the rest of the token contains digits (e.g., "E10")
         while (index < exponentPart.length()) {
             if (!Character.isDigit(exponentPart.charAt(index))) {
-                throw new RuntimeException("Malformed number");
+                errorUtil.throwError(tokenIndex, "Malformed number");
             }
             number.append(exponentPart.charAt(index));
             index++;
@@ -284,7 +287,8 @@ public class Parser {
         }
         break;
     }
-    throw new RuntimeException("Unexpected infix operator: " + token);
+    errorUtil.throwError(tokenIndex, "Unexpected infix operator: " + token);
+    return new NumberNode("-1", tokenIndex);  // keep java compiler happy
   }
 
   private Token peek() {
@@ -314,7 +318,7 @@ public class Parser {
   private Token consume(TokenType type) {
     Token token = consume();
     if (token.type != type) {
-      throw new RuntimeException("Expected token " + type + " but got " + token);
+      errorUtil.throwError(tokenIndex, "Expected token " + type + " but got " + token);
     }
     return token;
   }
@@ -322,8 +326,7 @@ public class Parser {
   private void consume(TokenType type, String text) {
     Token token = consume();
     if (token.type != type || !token.text.equals(text)) {
-      throw new RuntimeException(
-          "Expected token " + type + " with text " + text + " but got " + token);
+      errorUtil.throwError(tokenIndex, "Expected token " + type + " with text " + text + " but got " + token);
     }
   }
 
@@ -391,7 +394,8 @@ public class Parser {
     }
     Lexer lexer = new Lexer(code);
     List<Token> tokens = lexer.tokenize();
-    Parser parser = new Parser(tokens);
+    ErrorMessageUtil errorMessageUtil = new ErrorMessageUtil("example_file.txt", tokens);
+    Parser parser = new Parser(errorMessageUtil, tokens);
     Node ast = parser.parse();
     System.out.println(getASTString(ast));
   }

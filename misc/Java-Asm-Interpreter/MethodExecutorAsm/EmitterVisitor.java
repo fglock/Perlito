@@ -198,7 +198,8 @@ public class EmitterVisitor implements Visitor {
             null, // return label
             null, // method visitor
             null, // call context
-            false // is boxed
+            false, // is boxed
+            ctx.errorUtil  // error message utility
             );
     Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(subCtx, newEnv, node.block);
     String newClassNameDot = generatedClass.getName();

@@ -2,8 +2,9 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 /**
- * The EmitterContext class holds the context information required for emitting bytecode.
- * This includes details about the file, class, symbol table, method visitor, and context type.
+ * The EmitterContext class holds the context information required for parsing and emitting bytecode.
+ * This includes details about the file, class, symbol table, method visitor, context type, 
+ * and context for error messages.
  */
 public class EmitterContext {
   
@@ -28,6 +29,9 @@ public class EmitterContext {
   /** Indicates whether the current context is for a boxed object (true) or a native object (false). */
   public boolean isBoxed;
 
+  /** Formats error messages with source code context */
+  public ErrorMessageUtil errorUtil;
+
   /**
    * Constructs a new EmitterContext with the specified parameters.
    *
@@ -38,6 +42,7 @@ public class EmitterContext {
    * @param mv the MethodVisitor instance used to visit the method instructions
    * @param contextType the type of the context, defined by the ContextType enum
    * @param isBoxed indicates whether the context is for a boxed object (true) or a native object (false)
+   * @param errorUtil formats error messages with source code context
    */
   public EmitterContext(
       String fileName,
@@ -46,7 +51,8 @@ public class EmitterContext {
       Label returnLabel,
       MethodVisitor mv,
       ContextType contextType,
-      boolean isBoxed) {
+      boolean isBoxed,
+      ErrorMessageUtil errorUtil) {
     this.fileName = fileName;
     this.javaClassName = javaClassName;
     this.symbolTable = symbolTable;
@@ -54,6 +60,7 @@ public class EmitterContext {
     this.mv = mv;
     this.contextType = contextType;
     this.isBoxed = isBoxed;
+    this.errorUtil = errorUtil;
   }
 
   /**
@@ -65,7 +72,7 @@ public class EmitterContext {
    * @return a new EmitterContext with the updated context type and isBoxed flag
    */
   public EmitterContext with(ContextType contextType, boolean isBoxed) {
-    return new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, isBoxed);
+    return new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, isBoxed, errorUtil);
   }
 
   /**
@@ -78,7 +85,7 @@ public class EmitterContext {
    * @return a new EmitterContext with the updated context type
    */
   public EmitterContext with(ContextType contextType) {
-    return new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, this.isBoxed);
+    return new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, this.isBoxed, errorUtil);
   }
 }
 

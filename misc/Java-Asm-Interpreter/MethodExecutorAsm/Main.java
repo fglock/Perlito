@@ -40,7 +40,8 @@ public class Main {
                     null, // Return label
                     null, // Method visitor
                     null, // Call context
-                    false // Is boxed
+                    false, // Is boxed
+                    null  // errorUtil
             );
 
             // Enter a new scope in the symbol table and add special Perl variables
@@ -53,7 +54,11 @@ public class Main {
             System.out.println("  call context " + ctx.contextType);
             Lexer lexer = new Lexer(code);
             List<Token> tokens = lexer.tokenize(); // Tokenize the Perl code
-            Parser parser = new Parser(tokens); // Parse the tokens
+
+            // Create an instance of ErrorMessageUtil with the file name and token list
+            ctx.errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
+
+            Parser parser = new Parser(ctx.errorUtil, tokens); // Parse the tokens
             Node ast = parser.parse(); // Generate the abstract syntax tree (AST)
             System.out.println("-- AST:\n" + Parser.getASTString(ast) + "--\n");
 
