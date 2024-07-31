@@ -284,15 +284,26 @@ public class EmitterVisitor implements Visitor {
 
   @Override
   public void visit(ListNode node) throws Exception {
+    // Emit code for list
     for (Node element : node.elements) {
       element.accept(this);
     }
-    // Emit code for list
   }
 
   @Override
   public void visit(StringNode node) throws Exception {
-    ctx.mv.visitLdcInsn(node.value); // emit string
+    if (ctx.contextType == ContextType.VOID) {
+      return;
+    }
+    if (ctx.isBoxed) { // expect a Runtime object
+        ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+        ctx.mv.visitInsn(Opcodes.DUP);
+        ctx.mv.visitLdcInsn(node.value); // emit string
+        ctx.mv.visitMethodInsn(
+            Opcodes.INVOKESPECIAL, "Runtime", "<init>", "(Ljava/lang/String;)V", false); // Call new Runtime(String)
+    } else {
+      ctx.mv.visitLdcInsn(node.value); // emit string
+    }
   }
 
   // Add other visit methods as needed

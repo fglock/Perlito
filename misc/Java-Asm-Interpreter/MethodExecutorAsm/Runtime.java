@@ -3,6 +3,7 @@ import java.util.HashMap;
 
 public class Runtime {
   long i;
+  String s;
   Method subroutineReference; // used by apply()
 
   public static HashMap<String, Class<?>> anonSubs =
@@ -18,6 +19,10 @@ public class Runtime {
 
   public Runtime(int i) {
     this.i = (long) i;
+  }
+
+  public Runtime(String s) {
+    this.s = s;
   }
 
   public static Runtime make_sub(String className) throws Exception {
@@ -36,6 +41,7 @@ public class Runtime {
 
   public Runtime set(Runtime a) {
     this.i = a.i;
+    this.s = a.s;
     this.subroutineReference = a.subroutineReference;
     return this;
   }
@@ -77,7 +83,7 @@ public class Runtime {
   }
 
   public Runtime print() {
-    System.out.println("value=" + this.i);
+    System.out.println("value=" + this.i + " " + this.s);
     return new Runtime(1);
   }
 
