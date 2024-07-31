@@ -189,17 +189,12 @@ public class Parser {
     // Check for fractional part
     if (peek().text.equals(".")) {
       number.append(consume().text); // consume '.'
-      number.append(consume(TokenType.NUMBER).text); // consume digits after '.'
-    }
-
-    // Check for exponent part
-    if (peek().text.equals("e") || peek().text.equals("E")) {
-      number.append(consume().text); // consume 'e' or 'E'
-      if (peek().text.equals("-") || peek().text.equals("+")) {
-        number.append(consume().text); // consume '-' or '+'
+      if (peek().type == TokenType.NUMBER) {
+        number.append(consume().text); // consume digits after '.'
       }
-      number.append(consume(TokenType.NUMBER).text); // consume exponent digits
     }
+    // Check for exponent part
+    checkNumberExponent(number);
 
     return new NumberNode(number.toString());
   }
@@ -208,17 +203,38 @@ public class Parser {
     StringBuilder number = new StringBuilder("0.");
 
     number.append(consume(TokenType.NUMBER).text); // consume digits after '.'
-
     // Check for exponent part
-    if (peek().text.equals("e") || peek().text.equals("E")) {
-      number.append(consume().text); // consume 'e' or 'E'
-      if (peek().text.equals("-") || peek().text.equals("+")) {
-        number.append(consume().text); // consume '-' or '+'
-      }
-      number.append(consume(TokenType.NUMBER).text); // consume exponent digits
-    }
-
+    checkNumberExponent(number);
     return new NumberNode(number.toString());
+  }
+
+  private void checkNumberExponent(StringBuilder number) {
+    // Check for exponent part
+    if (peek().text.startsWith("e") || peek().text.startsWith("E")) {
+        String exponentPart = consume().text; // consume 'e' or 'E' and possibly more 'E10'
+        number.append(exponentPart.charAt(0)); // append 'e' or 'E'
+
+        int index = 1;
+        // Check if the rest of the token contains digits (e.g., "E10")
+        while (index < exponentPart.length()) {
+            if (!Character.isDigit(exponentPart.charAt(index))) {
+                throw new RuntimeException("Malformed number");
+            }
+            number.append(exponentPart.charAt(index));
+            index++;
+        }
+
+        // If the exponent part was not fully consumed, check for separate tokens
+        if (index == 1) {
+            // Check for optional sign
+            if (peek().text.equals("-") || peek().text.equals("+")) {
+                number.append(consume().text); // consume '-' or '+'
+            }
+
+            // Consume exponent digits
+            number.append(consume(TokenType.NUMBER).text);
+        }
+    }
   }
 
   private Node parseInfix(Node left, int precedence) {
