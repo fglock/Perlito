@@ -8,7 +8,7 @@ import java.util.*;
  * <p>The BlockNode class is used to encapsulate a list of child nodes in the AST,
  * providing a way to represent and manipulate collections of nodes within the tree structure.</p>
  */
-public class BlockNode implements Node {
+public class BlockNode extends AbstractNode {
     /**
      * The list of child nodes contained in this BlockNode.
      */
@@ -19,8 +19,9 @@ public class BlockNode implements Node {
      *
      * @param elements the list of child nodes to be stored in this BlockNode
      */
-    BlockNode(List<Node> elements) {
+    BlockNode(List<Node> elements, int tokenIndex) {
         this.elements = elements;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

@@ -6,7 +6,7 @@
  * <p>The PostfixOperatorNode class is used to encapsulate postfix operations in the AST, providing
  * a way to store and manipulate postfix operators and their operands within the tree structure.</p>
  */
-public class PostfixOperatorNode implements Node {
+public class PostfixOperatorNode extends AbstractNode {
     /**
      * The postfix operator represented by this node.
      */
@@ -23,9 +23,10 @@ public class PostfixOperatorNode implements Node {
      * @param operator the postfix operator to be stored in this node
      * @param operand the operand on which the postfix operator is applied
      */
-    PostfixOperatorNode(String operator, Node operand) {
+    PostfixOperatorNode(String operator, Node operand, int tokenIndex) {
         this.operator = operator;
         this.operand = operand;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

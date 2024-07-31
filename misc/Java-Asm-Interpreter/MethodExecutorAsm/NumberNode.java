@@ -6,7 +6,7 @@
  * <p>The NumberNode class is used to encapsulate numeric literals in the AST, providing
  * a way to store and manipulate numeric values within the tree structure.</p>
  */
-public class NumberNode implements Node {
+public class NumberNode extends AbstractNode {
     /**
      * The numeric value represented by this node. It is stored as a string to
      * preserve the exact representation of the number as it appears in the source code.
@@ -18,8 +18,9 @@ public class NumberNode implements Node {
      *
      * @param value the numeric value to be stored in this node
      */
-    public NumberNode(String value) {
+    public NumberNode(String value, int tokenIndex) {
         this.value = value;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

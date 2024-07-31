@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Parser {
   private final List<Token> tokens;
-  private int position = 0;
+  private int tokenIndex = 0;
   private static final Set<String> TERMINATORS =
       new HashSet<>(Arrays.asList(":", ";", ")", "}", "]"));
   private static final Set<String> UNARY_OP =
@@ -42,7 +42,7 @@ public class Parser {
           }
           token = peek();
       }
-      return new BlockNode(statements);
+      return new BlockNode(statements, tokenIndex);
   }
 
   public Node parseStatement() {
@@ -63,7 +63,6 @@ public class Parser {
       }
       Node expression = parseExpression(0);
       token = peek();
-      System.out.println("after expression: " + token);
       if (token.type != TokenType.EOF && !token.text.equals("}") && !token.text.equals(";")) {
         throw new RuntimeException("Unexpected token: " + token);
       }
@@ -79,7 +78,7 @@ public class Parser {
     consume(TokenType.OPERATOR, "{");
     Node block = parseBlock();
     consume(TokenType.OPERATOR, "}");
-    return new AnonSubNode(block);
+    return new AnonSubNode(block, tokenIndex);
   }
 
   private Node parseIfStatement() {
@@ -101,7 +100,7 @@ public class Parser {
     else if (token.text.equals("elsif")) {
         elseBranch = parseIfStatement();
     }
-    return new IfNode(condition, thenBranch, elseBranch);
+    return new IfNode(condition, thenBranch, elseBranch, tokenIndex);
   }
 
   private Node parseExpression(int precedence) {
@@ -136,15 +135,15 @@ public class Parser {
       case IDENTIFIER:
         if (token.text.equals("print")) {
           Node operand = parsePrimary();
-          return new UnaryOperatorNode("print", operand);
+          return new UnaryOperatorNode("print", operand, tokenIndex);
         }
         if (token.text.equals("my")) {
           Node operand = parsePrimary();
-          return new UnaryOperatorNode("my", operand);
+          return new UnaryOperatorNode("my", operand, tokenIndex);
         }
         if (token.text.equals("return")) {
           Node operand = parsePrimary();
-          return new UnaryOperatorNode("return", operand);
+          return new UnaryOperatorNode("return", operand, tokenIndex);
         }
         if (token.text.equals("do")) {
           token = peek();
@@ -158,11 +157,11 @@ public class Parser {
         if (token.text.equals("sub")) {
           return parseAnonSub(token);
         }
-        return new IdentifierNode(token.text);
+        return new IdentifierNode(token.text, tokenIndex);
       case NUMBER:
         return parseNumber(token);
       case STRING:
-        return new StringNode(token.text);
+        return new StringNode(token.text, tokenIndex);
       case OPERATOR:
         if (token.text.equals("(")) {
           Node expr = parseExpression(0);
@@ -170,7 +169,7 @@ public class Parser {
           return expr;
         } else if (UNARY_OP.contains(token.text)) {
           Node operand = parsePrimary();
-          return new UnaryOperatorNode(token.text, operand);
+          return new UnaryOperatorNode(token.text, operand, tokenIndex);
         } else if (token.text.equals(".")) {
           return parseFractionalNumber();
         } else if (token.text.equals("'")) {
@@ -202,7 +201,7 @@ public class Parser {
           }
       }
       consume(TokenType.OPERATOR, "'"); // Consume the closing single quote
-      return new StringNode(str.toString());
+      return new StringNode(str.toString(), tokenIndex);
   }
 
   private Node parseNumber(Token token) {
@@ -218,7 +217,7 @@ public class Parser {
     // Check for exponent part
     checkNumberExponent(number);
 
-    return new NumberNode(number.toString());
+    return new NumberNode(number.toString(), tokenIndex);
   }
 
   private Node parseFractionalNumber() {
@@ -227,7 +226,7 @@ public class Parser {
     number.append(consume(TokenType.NUMBER).text); // consume digits after '.'
     // Check for exponent part
     checkNumberExponent(number);
-    return new NumberNode(number.toString());
+    return new NumberNode(number.toString(), tokenIndex);
   }
 
   private void checkNumberExponent(StringBuilder number) {
@@ -266,7 +265,7 @@ public class Parser {
       Node middle = parseExpression(0);
       consume(TokenType.OPERATOR, ":");
       Node right = parseExpression(precedence);
-      return new TernaryOperatorNode(token.text, left, middle, right);
+      return new TernaryOperatorNode(token.text, left, middle, right, tokenIndex);
     }
 
     Node right;
@@ -277,11 +276,11 @@ public class Parser {
       case "/":
       case "=":
         right = parseExpression(precedence);
-        return new BinaryOperatorNode(token.text, left, right);
+        return new BinaryOperatorNode(token.text, left, right, tokenIndex);
       case "->":
         if (peek().text.equals("(") ) {
             right = parseList();
-            return new BinaryOperatorNode(token.text, left, right);
+            return new BinaryOperatorNode(token.text, left, right, tokenIndex);
         }
         break;
     }
@@ -289,27 +288,27 @@ public class Parser {
   }
 
   private Token peek() {
-    while (position < tokens.size()
-        && (tokens.get(position).type == TokenType.WHITESPACE
-            || tokens.get(position).type == TokenType.NEWLINE)) {
-      position++;
+    while (tokenIndex < tokens.size()
+        && (tokens.get(tokenIndex).type == TokenType.WHITESPACE
+            || tokens.get(tokenIndex).type == TokenType.NEWLINE)) {
+      tokenIndex++;
     }
-    if (position >= tokens.size()) {
+    if (tokenIndex >= tokens.size()) {
       return new Token(TokenType.EOF, "");
     }
-    return tokens.get(position);
+    return tokens.get(tokenIndex);
   }
 
   private Token consume() {
-    while (position < tokens.size()
-        && (tokens.get(position).type == TokenType.WHITESPACE
-            || tokens.get(position).type == TokenType.NEWLINE)) {
-      position++;
+    while (tokenIndex < tokens.size()
+        && (tokens.get(tokenIndex).type == TokenType.WHITESPACE
+            || tokens.get(tokenIndex).type == TokenType.NEWLINE)) {
+      tokenIndex++;
     }
-    if (position >= tokens.size()) {
-      return new Token(TokenType.EOF, "");
-    }
-    return tokens.get(position++);
+    // if (tokenIndex >= tokens.size()) {
+    //   return new Token(TokenType.EOF, "");
+    // }
+    return tokens.get(tokenIndex++);
   }
 
   private Token consume(TokenType type) {
@@ -376,7 +375,7 @@ public class Parser {
       }
     }
     consume(TokenType.OPERATOR, ")");
-    return new ListNode(elements);
+    return new ListNode(elements, tokenIndex);
   }
 
   public static String getASTString(Node node) throws Exception {

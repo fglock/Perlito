@@ -6,7 +6,7 @@
  * <p>The IfNode class is used to encapsulate "if" in the AST, providing
  * a way to store and manipulate "if" and their parts within the tree structure.</p>
  */
-public class IfNode implements Node {
+public class IfNode extends AbstractNode {
     /**
      * The condition operand of the if statement.
      */
@@ -30,10 +30,11 @@ public class IfNode implements Node {
      * @param thenBranch the true block of the if statement
      * @param elseBranch the false block of the if statement
      */
-    public IfNode(Node condition, Node thenBranch, Node elseBranch) {
+    public IfNode(Node condition, Node thenBranch, Node elseBranch, int tokenIndex) {
         this.condition = condition;
         this.thenBranch = thenBranch;
         this.elseBranch = elseBranch;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

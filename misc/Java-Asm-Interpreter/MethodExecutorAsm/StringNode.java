@@ -6,7 +6,7 @@
  * <p>The StringNode class is used to encapsulate string literals in the AST, providing
  * a way to store and manipulate string values within the tree structure.</p>
  */
-public class StringNode implements Node {
+public class StringNode extends AbstractNode {
     /**
      * The string value represented by this node.
      */
@@ -17,8 +17,9 @@ public class StringNode implements Node {
      *
      * @param value the string value to be stored in this node
      */
-    StringNode(String value) {
+    StringNode(String value, int tokenIndex) {
         this.value = value;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

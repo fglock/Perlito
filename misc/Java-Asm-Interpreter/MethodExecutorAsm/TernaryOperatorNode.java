@@ -6,7 +6,7 @@
  * <p>The TernaryOperatorNode class is used to encapsulate ternary operations in the AST, providing
  * a way to store and manipulate ternary operators and their operands within the tree structure.</p>
  */
-public class TernaryOperatorNode implements Node {
+public class TernaryOperatorNode extends AbstractNode {
     /**
      * The ternary operator represented by this node.
      */
@@ -35,11 +35,12 @@ public class TernaryOperatorNode implements Node {
      * @param trueExpr the true expression operand of the ternary operator
      * @param falseExpr the false expression operand of the ternary operator
      */
-    public TernaryOperatorNode(String operator, Node condition, Node trueExpr, Node falseExpr) {
+    public TernaryOperatorNode(String operator, Node condition, Node trueExpr, Node falseExpr, int tokenIndex) {
         this.operator = operator;
         this.condition = condition;
         this.trueExpr = trueExpr;
         this.falseExpr = falseExpr;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

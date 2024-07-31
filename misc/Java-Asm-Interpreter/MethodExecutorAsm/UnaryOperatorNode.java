@@ -6,7 +6,7 @@
  * <p>The UnaryOperatorNode class is used to encapsulate unary operations in the AST, providing
  * a way to store and manipulate unary operators and their operands within the tree structure.</p>
  */
-public class UnaryOperatorNode implements Node {
+public class UnaryOperatorNode extends AbstractNode {
     /**
      * The unary operator represented by this node.
      */
@@ -23,9 +23,10 @@ public class UnaryOperatorNode implements Node {
      * @param operator the unary operator to be stored in this node
      * @param operand the operand on which the unary operator is applied
      */
-    public UnaryOperatorNode(String operator, Node operand) {
+    public UnaryOperatorNode(String operator, Node operand, int tokenIndex) {
         this.operator = operator;
         this.operand = operand;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

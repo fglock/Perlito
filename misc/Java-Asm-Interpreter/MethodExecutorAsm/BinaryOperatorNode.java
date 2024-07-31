@@ -6,7 +6,7 @@
  * <p>The BinaryOperatorNode class is used to encapsulate binary operations in the AST, providing
  * a way to store and manipulate binary operators and their operands within the tree structure.</p>
  */
-public class BinaryOperatorNode implements Node {
+public class BinaryOperatorNode extends AbstractNode {
     /**
      * The binary operator represented by this node.
      */
@@ -29,10 +29,11 @@ public class BinaryOperatorNode implements Node {
      * @param left the left operand of the binary operator
      * @param right the right operand of the binary operator
      */
-    public BinaryOperatorNode(String operator, Node left, Node right) {
+    public BinaryOperatorNode(String operator, Node left, Node right, int tokenIndex) {
         this.operator = operator;
         this.left = left;
         this.right = right;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

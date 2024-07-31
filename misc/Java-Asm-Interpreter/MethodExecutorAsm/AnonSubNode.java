@@ -6,7 +6,7 @@
  * <p>The AnonSubNode class is used to encapsulate "sub" in the AST, providing
  * a way to store and manipulate "sub" and their parts within the tree structure.</p>
  */
-public class AnonSubNode implements Node {
+public class AnonSubNode extends AbstractNode {
     /**
      * The block of the subroutine
      */
@@ -17,8 +17,9 @@ public class AnonSubNode implements Node {
      *
      * @param block the block of the subroutine
      */
-    public AnonSubNode(Node block) {
+    public AnonSubNode(Node block, int tokenIndex) {
         this.block = block;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

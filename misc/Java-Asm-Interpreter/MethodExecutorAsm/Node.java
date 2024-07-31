@@ -19,5 +19,19 @@ public interface Node {
      * @param visitor the visitor that will perform the operation on the node
      */
     void accept(Visitor visitor) throws Exception;
+
+    /**
+     * Gets the index of the node in the token list.
+     *
+     * @return the index of the node
+     */
+    int getIndex();
+
+    /**
+     * Sets the index of the node in the token list.
+     *
+     * @param index the index to set
+     */
+    void setIndex(int index);
 }
 

@@ -6,7 +6,7 @@
  * <p>The IdentifierNode class is used to encapsulate identifiers in the AST, providing
  * a way to store and manipulate identifier names within the tree structure.</p>
  */
-public class IdentifierNode implements Node {
+public class IdentifierNode extends AbstractNode {
     /**
      * The identifier name represented by this node.
      */
@@ -17,8 +17,9 @@ public class IdentifierNode implements Node {
      *
      * @param name the identifier name to be stored in this node
      */
-    public IdentifierNode(String name) {
+    public IdentifierNode(String name, int tokenIndex) {
         this.name = name;
+        this.tokenIndex = tokenIndex;
     }
 
     /**

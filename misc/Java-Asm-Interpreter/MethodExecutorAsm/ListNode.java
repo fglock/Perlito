@@ -8,7 +8,7 @@ import java.util.*;
  * <p>The ListNode class is used to encapsulate a list of child nodes in the AST,
  * providing a way to represent and manipulate collections of nodes within the tree structure.</p>
  */
-public class ListNode implements Node {
+public class ListNode extends AbstractNode {
     /**
      * The list of child nodes contained in this ListNode.
      */
@@ -19,8 +19,9 @@ public class ListNode implements Node {
      *
      * @param elements the list of child nodes to be stored in this ListNode
      */
-    ListNode(List<Node> elements) {
+    ListNode(List<Node> elements, int tokenIndex) {
         this.elements = elements;
+        this.tokenIndex = tokenIndex;
     }
 
     /**
