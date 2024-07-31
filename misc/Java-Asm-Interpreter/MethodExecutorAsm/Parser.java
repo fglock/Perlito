@@ -147,6 +147,19 @@ public class Parser {
           Node operand = parsePrimary();
           return new UnaryOperatorNode("return", operand, tokenIndex);
         }
+        if (token.text.equals("eval")) {
+          Node operand;
+          token = peek();
+          if (token.type == TokenType.OPERATOR && token.text.equals("{")) { // eval block
+            consume(TokenType.OPERATOR, "{");
+            operand = parseBlock();
+            consume(TokenType.OPERATOR, "}");
+          }
+          else { // eval string
+            operand = parsePrimary();
+          }
+          return new UnaryOperatorNode("eval", operand, tokenIndex);
+        }
         if (token.text.equals("do")) {
           token = peek();
           if (token.type == TokenType.OPERATOR && token.text.equals("{")) {
@@ -176,6 +189,8 @@ public class Parser {
           return parseFractionalNumber();
         } else if (token.text.equals("'")) {
           return parseSingleQuotedString();
+        } else if (token.text.equals("\"")) {
+          return parseDoubleQuotedString();
         }
         break;
       case EOF:
@@ -184,6 +199,29 @@ public class Parser {
         throw new PerlCompilerException(tokenIndex, "Unexpected token: " + token, errorUtil);
     }
     throw new PerlCompilerException(tokenIndex, "Unexpected token: " + token, errorUtil);
+  }
+
+  private Node parseDoubleQuotedString() {
+      // XXX TODO placeholder; needs string interpolation and escape sequences
+      StringBuilder str = new StringBuilder();
+      while (!peek().text.equals("\"")) {
+          String text = consume().text;
+          if (text.equals("\\")) {
+              // Handle escaped characters
+              text = consume().text;
+              if (text.equals("\\") || text.equals("\"")) {
+                  str.append(text);
+              } else if (text.equals("\\n")) {
+                  str.append("\n");
+              } else {
+                  str.append("\\").append(text);
+              }
+          } else {
+              str.append(text);
+          }
+      }
+      consume(TokenType.OPERATOR, "\""); // Consume the closing single quote
+      return new StringNode(str.toString(), tokenIndex);
   }
 
   private Node parseSingleQuotedString() {

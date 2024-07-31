@@ -5,12 +5,25 @@ It compiles Perl into Java bytecode and runs it.
 
 Compile:
 
+```
 javac -cp ./asm-9.7.jar:. *.java
+```
 
 Run:
 
+```
 java -cp ./asm-9.7.jar Main -e ' print 123 '
+```
 
+Debugging tools:
+
+```
+java -cp ./asm-9.7.jar Lexer -e ' print 123 '
+```
+
+```
+java -cp ./asm-9.7.jar Parser -e ' print 123 '
+```
 
 Modules
 

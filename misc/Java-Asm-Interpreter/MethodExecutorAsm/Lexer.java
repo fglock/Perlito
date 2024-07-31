@@ -361,6 +361,9 @@ public class Lexer {
     String code =
         "my $var = 42; print \"Hello, World!\\n\"; $a == $b; qq{ x \" y € z }; "
             + " &&= &.= **= ... //= <<= <=> >>= ^.= |.= ||= ";
+    if (args.length >= 2 && args[0].equals("-e")) {
+      code = args[1]; // Read the code from the command line parameter
+    }
     
     // Creating a Lexer instance with the sample code
     Lexer lexer = new Lexer(code); 
