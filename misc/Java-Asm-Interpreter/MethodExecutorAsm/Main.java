@@ -95,6 +95,7 @@ public class Main {
  * - easy wins
  *       - loops
  *       - $_ $@
+ *       - ternary operator
  *
  * - harder to implement
  *       - BEGIN block

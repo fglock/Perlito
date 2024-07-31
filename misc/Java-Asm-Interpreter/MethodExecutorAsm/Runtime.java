@@ -1,5 +1,6 @@
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 
 public class Runtime {
   long i;
@@ -8,6 +9,8 @@ public class Runtime {
 
   public static HashMap<String, Class<?>> anonSubs =
       new HashMap<String, Class<?>>(); // temp storage for make_sub()
+  public static HashMap<String, EmitterContext> evalContext =
+      new HashMap<String, EmitterContext>(); // storage for eval string compiler context
 
   public Runtime() {
     this.i = 0;
@@ -37,6 +40,23 @@ public class Runtime {
   public Runtime apply(Runtime a, ContextType callContext) throws Exception {
     Runtime result = (Runtime) subroutineReference.invoke(null, a, callContext);
     return result;
+  }
+
+  // TODO eval string
+  public static Runtime eval_string(Runtime code, String evalTag) throws Exception {
+    // retrieve the context that was saved at compile-time
+    EmitterContext ctx = Runtime.evalContext.get(evalTag);
+
+    // Create the Token list
+    Lexer lexer = new Lexer(code.toString());
+    List<Token> tokens = lexer.tokenize(); // Tokenize the Perl code
+    // Create the AST
+    // Create an instance of ErrorMessageUtil with the file name and token list
+    ErrorMessageUtil errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
+    Parser parser = new Parser(errorUtil, tokens); // Parse the tokens
+    Node ast = parser.parse(); // Generate the abstract syntax tree (AST)
+    System.out.println("eval_string AST:\n" + ast + "--\n");
+    return code;    // XXX
   }
 
   public Runtime set(Runtime a) {
