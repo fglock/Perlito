@@ -1,26 +1,58 @@
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List; 
 
+/**
+ * The Lexer class is responsible for converting a sequence of characters (input string)
+ * into a sequence of tokens. This process is known as lexical analysis or tokenization.
+ * 
+ * In the context of programming languages, a lexer (or lexical analyzer) is the first
+ * phase of a compiler or interpreter. It reads the input source code and breaks it down
+ * into meaningful elements called tokens. Each token represents a basic building block
+ * of the language, such as keywords, operators, identifiers, literals, and punctuation.
+ * 
+ * The Lexer class in this example is designed to handle a subset of Perl-like syntax,
+ * including identifiers, operators, and string literals. It uses a character array to
+ * process the input string and identifies operators using a boolean array.
+ * 
+ * The main responsibilities of the Lexer class include:
+ * - Reading and processing the input string.
+ * - Identifying and categorizing different types of tokens.
+ * - Handling special characters and operators.
+ * - Providing a list of tokens that can be used by subsequent phases of a compiler or interpreter.
+ */ 
 public class Lexer {
-  public static final char EOF = (char) -1;
+  // End of File character constant
+  public static final String EOF = Character.toString((char) -1);
+  
+  // Input characters to be tokenized
   public final char[] input;
+  
+  // Current position in the input
   public int position;
+  
+  // Length of the input
   public int length;
+  
+  // Array to mark operator characters
   public static boolean isOperator[];
-
+          
+  // Static block to initialize the isOperator array
   static {
     isOperator = new boolean[128];
+    // Marking specific characters as operators
     for (char c : "!\"#$%&'()*+,-./:;<=>?@[\\]^`{|}~".toCharArray()) {
       isOperator[c] = true;
     }
   }
 
+  // Constructor to initialize the Lexer with input string
   public Lexer(String input) {
     this.input = input.toCharArray();
     this.length = this.input.length;
     this.position = 0;
-  }
-
+  } 
+    
+  // Method to tokenize the input string into a list of tokens
   public List<Token> tokenize() {
     List<Token> tokens = new ArrayList<>();
     Token token;
@@ -28,8 +60,8 @@ public class Lexer {
     while ((token = nextToken()) != null) {
       tokens.add(token);
     }
-    tokens.add(new Token(TokenType.EOF, "\n"));
-    tokens.add(new Token(TokenType.EOF, "\n"));
+    tokens.add(new Token(TokenType.EOF, EOF));
+    tokens.add(new Token(TokenType.EOF, EOF));
 
     return tokens;
   }
@@ -323,15 +355,23 @@ public class Lexer {
     return new Token(TokenType.OPERATOR, new String(input, start, 1));
   }
 
+  // Main method for testing the Lexer
   public static void main(String[] args) {
+    // Sample code to be tokenized
     String code =
         "my $var = 42; print \"Hello, World!\\n\"; $a == $b; qq{ x \" y € z }; "
             + " &&= &.= **= ... //= <<= <=> >>= ^.= |.= ||= ";
-    Lexer lexer = new Lexer(code);
+    
+    // Creating a Lexer instance with the sample code
+    Lexer lexer = new Lexer(code); 
+    
+    // Tokenizing the input code
     List<Token> tokens = lexer.tokenize();
-
+    
+    // Printing the tokens
     for (Token token : tokens) {
       System.out.println(token);
     }
-  }
+  } 
 }
+
