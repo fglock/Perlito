@@ -15,6 +15,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             // Default Perl code to be compiled and executed
+            String fileName = "test.pl";
             String code =
                     ""
                     + "my $a = 15 ;"
@@ -30,11 +31,12 @@ public class Main {
             // If code is provided as a command-line argument, use it instead of the default code
             if (args.length >= 2 && args[0].equals("-e")) {
                 code = args[1]; // Read the code from the command line parameter
+                fileName = "-e";
             }
 
             // Create the compiler context
             EmitterContext ctx = new EmitterContext(
-                    "test.pl", // Source filename
+                    fileName, // Source filename
                     null, // Java class name
                     new ScopedSymbolTable(), // Top-level symbol table
                     null, // Return label
@@ -49,21 +51,24 @@ public class Main {
             ctx.symbolTable.addVariable("@_"); // Argument list is local variable 0
             ctx.symbolTable.addVariable("wantarray"); // Call context is local variable 1
 
-            // Parse the provided Perl code
             System.out.println("parse code: " + code);
             System.out.println("  call context " + ctx.contextType);
+
+            // Create the Token list
             Lexer lexer = new Lexer(code);
             List<Token> tokens = lexer.tokenize(); // Tokenize the Perl code
 
+            // Create the AST
             // Create an instance of ErrorMessageUtil with the file name and token list
-            ctx.errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
-
-            Parser parser = new Parser(ctx.errorUtil, tokens); // Parse the tokens
+            ErrorMessageUtil errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
+            Parser parser = new Parser(errorUtil, tokens); // Parse the tokens
             Node ast = parser.parse(); // Generate the abstract syntax tree (AST)
             System.out.println("-- AST:\n" + ast + "--\n");
 
             // Create the Java class from the AST
             System.out.println("createClassWithMethod");
+            // Create a new instance of ErrorMessageUtil, resetting the line counter
+            ctx.errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
             Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(
                     ctx,
                     new String[] {}, // Closure variables
