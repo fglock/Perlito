@@ -103,11 +103,19 @@ public class Runtime {
     return new Runtime(this.i + b.i);
   }
 
+  public Runtime subtract(Runtime b) {
+    return new Runtime(this.i - b.i);
+  }
+
   public Runtime multiply(int b) {
     return new Runtime(this.i * b);
   }
 
   public Runtime multiply(Runtime b) {
     return new Runtime(this.i * b.i);
+  }
+
+  public Runtime divide(Runtime b) {
+    return new Runtime(this.i / b.i);
   }
 }

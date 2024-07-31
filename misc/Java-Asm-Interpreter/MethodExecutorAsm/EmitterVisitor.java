@@ -47,6 +47,19 @@ public class EmitterVisitor implements Visitor {
     // Emit code for identifier
   }
 
+  private void emitCallBuiltin(String operator) {
+     ctx.mv.visitMethodInsn(
+         Opcodes.INVOKEVIRTUAL,
+         "Runtime",
+         operator,
+         "(LRuntime;)LRuntime;",
+         false);
+     if (ctx.contextType == ContextType.VOID) {
+       ctx.mv.visitInsn(Opcodes.POP);
+     }
+     return;
+  }
+
   @Override
   public void visit(BinaryOperatorNode node) throws Exception {
     EmitterVisitor scalarVisitor =
@@ -55,29 +68,19 @@ public class EmitterVisitor implements Visitor {
     node.right.accept(scalarVisitor); // parameter
     switch (node.operator) {
       case "+":
-        node.left.accept(this);
-        node.right.accept(this);
-        ctx.mv.visitInsn(Opcodes.IADD);
-        break;
+        emitCallBuiltin("add");     // TODO optimize use: ctx.mv.visitInsn(Opcodes.IADD)
+        return;
       case "-":
-        ctx.mv.visitInsn(Opcodes.ISUB);
-        break;
+        emitCallBuiltin("subtract");
+        return;
       case "*":
-        ctx.mv.visitInsn(Opcodes.IMUL);
-        break;
+        emitCallBuiltin("multiply");
+        return;
       case "/":
-        ctx.mv.visitInsn(Opcodes.IDIV);
-        break;
+        emitCallBuiltin("divide");
+        return;
       case "=":
-        ctx.mv.visitMethodInsn(
-            Opcodes.INVOKEVIRTUAL,
-            "Runtime",
-            "set",
-            "(LRuntime;)LRuntime;",
-            false); // generate a .set() call
-        if (ctx.contextType == ContextType.VOID) {
-          ctx.mv.visitInsn(Opcodes.POP);
-        }
+        emitCallBuiltin("set");
         return;
       case "->":
         if (node.right instanceof ListNode) { // ->()
