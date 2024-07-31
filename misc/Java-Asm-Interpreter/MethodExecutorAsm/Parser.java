@@ -380,13 +380,15 @@ public class Parser {
   }
 
   public static void main(String[] args) throws Exception {
+    String fileName = "example.pl";
     String code = "my $var = 42; 1 ? 2 : 3; print \"Hello, World!\\n\";";
     if (args.length >= 2 && args[0].equals("-e")) {
       code = args[1]; // Read the code from the command line parameter
+      fileName = "-e";
     }
     Lexer lexer = new Lexer(code);
     List<Token> tokens = lexer.tokenize();
-    ErrorMessageUtil errorMessageUtil = new ErrorMessageUtil("example_file.txt", tokens);
+    ErrorMessageUtil errorMessageUtil = new ErrorMessageUtil(fileName, tokens);
     Parser parser = new Parser(errorMessageUtil, tokens);
     Node ast = parser.parse();
     System.out.println(ast);
