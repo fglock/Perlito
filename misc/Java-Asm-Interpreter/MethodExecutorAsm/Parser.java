@@ -66,7 +66,7 @@ public class Parser {
       Node expression = parseExpression(0);
       token = peek();
       if (token.type != TokenType.EOF && !token.text.equals("}") && !token.text.equals(";")) {
-        errorUtil.throwError(tokenIndex, "Unexpected token: " + token);
+        throw new PerlCompilerException(tokenIndex, "Unexpected token: " + token, errorUtil);
       }
       if (token.text.equals(";")) {
         consume();
@@ -181,10 +181,9 @@ public class Parser {
       case EOF:
         return null; // End of input
       default:
-        errorUtil.throwError(tokenIndex, "Unexpected token: " + token);
+        throw new PerlCompilerException(tokenIndex, "Unexpected token: " + token, errorUtil);
     }
-    errorUtil.throwError(tokenIndex, "Unexpected token: " + token);
-    return new NumberNode("-1", tokenIndex);  // keep java compiler happy
+    throw new PerlCompilerException(tokenIndex, "Unexpected token: " + token, errorUtil);
   }
 
   private Node parseSingleQuotedString() {
@@ -242,7 +241,7 @@ public class Parser {
         // Check if the rest of the token contains digits (e.g., "E10")
         while (index < exponentPart.length()) {
             if (!Character.isDigit(exponentPart.charAt(index))) {
-                errorUtil.throwError(tokenIndex, "Malformed number");
+                throw new PerlCompilerException(tokenIndex, "Malformed number", errorUtil);
             }
             number.append(exponentPart.charAt(index));
             index++;
@@ -287,8 +286,7 @@ public class Parser {
         }
         break;
     }
-    errorUtil.throwError(tokenIndex, "Unexpected infix operator: " + token);
-    return new NumberNode("-1", tokenIndex);  // keep java compiler happy
+    throw new PerlCompilerException(tokenIndex, "Unexpected infix operator: " + token, errorUtil);
   }
 
   private Token peek() {
@@ -318,7 +316,7 @@ public class Parser {
   private Token consume(TokenType type) {
     Token token = consume();
     if (token.type != type) {
-      errorUtil.throwError(tokenIndex, "Expected token " + type + " but got " + token);
+      throw new PerlCompilerException(tokenIndex, "Expected token " + type + " but got " + token, errorUtil);
     }
     return token;
   }
@@ -326,7 +324,7 @@ public class Parser {
   private void consume(TokenType type, String text) {
     Token token = consume();
     if (token.type != type || !token.text.equals(text)) {
-      errorUtil.throwError(tokenIndex, "Expected token " + type + " with text " + text + " but got " + token);
+      throw new PerlCompilerException(tokenIndex, "Expected token " + type + " with text " + text + " but got " + token, errorUtil);
     }
   }
 

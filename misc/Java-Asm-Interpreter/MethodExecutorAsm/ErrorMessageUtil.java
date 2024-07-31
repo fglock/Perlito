@@ -24,17 +24,6 @@ public class ErrorMessageUtil {
     }
 
     /**
-     * Throws an error message with context from the token list.
-     *
-     * @param index the index of the token where the error occurred
-     * @param message the error message
-     * @throws the formatted error message with context
-     */
-    public String throwError(int index, String message) throws RuntimeException {
-      throw new RuntimeException(this.errorMessage(index, message));
-    }
-
-    /**
      * Generates an error message with context from the token list.
      *
      * @param index the index of the token where the error occurred
