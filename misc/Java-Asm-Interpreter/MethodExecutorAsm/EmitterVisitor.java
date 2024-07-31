@@ -201,8 +201,11 @@ public class EmitterVisitor implements Visitor {
             // call Runtime.eval_string()
             ctx.mv.visitMethodInsn(
                 Opcodes.INVOKESTATIC, "Runtime", "eval_string", "(LRuntime;Ljava/lang/String;)LRuntime;", false);
-            // TODO
-            throw new PerlCompilerException(node.tokenIndex, "Not implemented: eval string", ctx.errorUtil);
+
+            if (ctx.contextType == ContextType.VOID) {
+              ctx.mv.visitInsn(Opcodes.POP);
+            }
+            return;
         }
     }
     throw new PerlCompilerException(node.tokenIndex, "Not implemented: " + operator, ctx.errorUtil);

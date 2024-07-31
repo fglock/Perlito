@@ -99,7 +99,6 @@ public class Main {
  *
  * - harder to implement
  *       - BEGIN block
- *       - eval string
  *       - eval block, catch error
  *       - test suite
  *
@@ -149,8 +148,7 @@ public class Main {
  * - goto, macros - control structures
  *       - test FOR, WHILE
  *
- * - eval string
- *     freeze the ctx.symbolTable at eval string, we will need it to compile the string later
+ * - eval string: freeze the ctx.symbolTable at eval string
  *
  * - BEGIN-block
  *

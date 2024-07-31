@@ -42,10 +42,15 @@ public class Runtime {
     return result;
   }
 
-  // TODO eval string
   public static Runtime eval_string(Runtime code, String evalTag) throws Exception {
+
+    // TODO - cleanup duplicate code:
+    //  - Main.java - execute main program
+    //  - EmitterVisitor.java - create anon sub
+
     // retrieve the context that was saved at compile-time
     EmitterContext ctx = Runtime.evalContext.get(evalTag);
+    ctx.fileName = "(eval)";
 
     // Create the Token list
     Lexer lexer = new Lexer(code.toString());
@@ -56,7 +61,21 @@ public class Runtime {
     Parser parser = new Parser(errorUtil, tokens); // Parse the tokens
     Node ast = parser.parse(); // Generate the abstract syntax tree (AST)
     System.out.println("eval_string AST:\n" + ast + "--\n");
-    return code;    // XXX
+
+    ctx.errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
+    Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(
+            ctx,
+            new String[] {}, // Closure variables
+            ast
+    );
+
+    // Convert the generated class into a Runtime object
+    String newClassName = generatedClass.getName();
+    Runtime.anonSubs.put(newClassName, generatedClass); // Store the class in the runtime map
+    Runtime anonSub = Runtime.make_sub(newClassName); // Create a Runtime instance for the generated class
+    Runtime result = anonSub.apply(new Runtime(), ContextType.SCALAR); // Execute the generated method
+
+    return result;
   }
 
   public Runtime set(Runtime a) {
