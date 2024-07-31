@@ -91,6 +91,7 @@ public class Main {
  *       - eval block, catch error
  *
  * - Parser: low-precedence operators not, or, and
+ *       - implement toString in the AST
  *
  * - cleanup the closure code to only add the lexical variables mentioned in the AST
  *
