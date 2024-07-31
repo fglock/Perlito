@@ -224,7 +224,7 @@ public class Parser {
                             str.append("\t");
                             break;
                         default:
-                            str.append("\\").append(text);
+                            str.append(text);
                             break;
                     }
                 } else if (text.equals("$")) {
