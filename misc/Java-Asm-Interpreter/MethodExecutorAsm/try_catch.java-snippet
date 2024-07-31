@@ -1,0 +1,73 @@
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Label;
+
+public class TryCatchExample implements Opcodes {
+
+    public static byte[] generateClass() {
+        ClassWriter cw = new ClassWriter(0);
+        MethodVisitor mv;
+
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "Example", null, "java/lang/Object", null);
+
+        // Constructor
+        mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+
+        // Method with try-catch block
+        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "exampleMethod", "()V", null, null);
+        mv.visitCode();
+
+        Label startTry = new Label();
+        Label endTry = new Label();
+        Label startCatch = new Label();
+        Label endCatch = new Label();
+
+        // Start of try block
+        mv.visitLabel(startTry);
+        mv.visitLdcInsn("Inside try block");
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+
+        // Simulate an exception
+        mv.visitInsn(ICONST_1);
+        mv.visitInsn(ICONST_0);
+        mv.visitInsn(IDIV); // This will cause an ArithmeticException (division by zero)
+
+        // End of try block
+        mv.visitLabel(endTry);
+        mv.visitJumpInsn(GOTO, endCatch);
+
+        // Start of catch block
+        mv.visitLabel(startCatch);
+        mv.visitVarInsn(ASTORE, 0); // Store the exception in local variable 0
+        mv.visitLdcInsn("Inside catch block");
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+
+        // End of catch block
+        mv.visitLabel(endCatch);
+        mv.visitInsn(RETURN);
+
+        // Add exception handler
+        mv.visitTryCatchBlock(startTry, endTry, startCatch, "java/lang/ArithmeticException");
+
+        mv.visitMaxs(2, 1);
+        mv.visitEnd();
+
+        cw.visitEnd();
+
+        return cw.toByteArray();
+    }
+
+    public static void main(String[] args) throws Exception {
+        byte[] classData = generateClass();
+        // Load and use the generated class (omitted for brevity)
+    }
+}
