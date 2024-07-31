@@ -25,16 +25,6 @@ public class ListNode extends AbstractNode {
     }
 
     /**
-     * Returns a string representation of this ListNode.
-     *
-     * @return a string representation of this ListNode
-     */
-    @Override
-    public String toString() {
-        return "List(" + elements + ")";
-    }
-
-    /**
      * Accepts a visitor that performs some operation on this node.
      * This method is part of the Visitor design pattern, which allows
      * for defining new operations on the AST nodes without changing

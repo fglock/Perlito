@@ -60,7 +60,7 @@ public class Main {
 
             Parser parser = new Parser(ctx.errorUtil, tokens); // Parse the tokens
             Node ast = parser.parse(); // Generate the abstract syntax tree (AST)
-            System.out.println("-- AST:\n" + Parser.getASTString(ast) + "--\n");
+            System.out.println("-- AST:\n" + ast + "--\n");
 
             // Create the Java class from the AST
             System.out.println("createClassWithMethod");
@@ -96,7 +96,6 @@ public class Main {
  *       - eval block, catch error
  *
  * - Parser: low-precedence operators not, or, and
- *       - implement toString in the AST
  *
  * - cleanup the closure code to only add the lexical variables mentioned in the AST
  *

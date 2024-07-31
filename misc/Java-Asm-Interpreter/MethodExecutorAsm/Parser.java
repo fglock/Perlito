@@ -381,12 +381,6 @@ public class Parser {
     return new ListNode(elements, tokenIndex);
   }
 
-  public static String getASTString(Node node) throws Exception {
-    PrintVisitor printVisitor = new PrintVisitor();
-    node.accept(printVisitor);
-    return printVisitor.getResult();
-  }
-
   public static void main(String[] args) throws Exception {
     String code = "my $var = 42; 1 ? 2 : 3; print \"Hello, World!\\n\";";
     if (args.length >= 2 && args[0].equals("-e")) {
@@ -397,6 +391,6 @@ public class Parser {
     ErrorMessageUtil errorMessageUtil = new ErrorMessageUtil("example_file.txt", tokens);
     Parser parser = new Parser(errorMessageUtil, tokens);
     Node ast = parser.parse();
-    System.out.println(getASTString(ast));
+    System.out.println(ast);
   }
 }
