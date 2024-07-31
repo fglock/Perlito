@@ -210,9 +210,9 @@ public class Parser {
     StringBuilder number = new StringBuilder(token.text);
 
     // Check for fractional part
-    if (peek().text.equals(".")) {
+    if (tokens.get(tokenIndex).text.equals(".")) {
       number.append(consume().text); // consume '.'
-      if (peek().type == TokenType.NUMBER) {
+      if (tokens.get(tokenIndex).type == TokenType.NUMBER) {
         number.append(consume().text); // consume digits after '.'
       }
     }
@@ -233,7 +233,7 @@ public class Parser {
 
   private void checkNumberExponent(StringBuilder number) {
     // Check for exponent part
-    if (peek().text.startsWith("e") || peek().text.startsWith("E")) {
+    if (tokens.get(tokenIndex).text.startsWith("e") || tokens.get(tokenIndex).text.startsWith("E")) {
         String exponentPart = consume().text; // consume 'e' or 'E' and possibly more 'E10'
         number.append(exponentPart.charAt(0)); // append 'e' or 'E'
 
@@ -250,7 +250,7 @@ public class Parser {
         // If the exponent part was not fully consumed, check for separate tokens
         if (index == 1) {
             // Check for optional sign
-            if (peek().text.equals("-") || peek().text.equals("+")) {
+            if (tokens.get(tokenIndex).text.equals("-") || tokens.get(tokenIndex).text.equals("+")) {
                 number.append(consume().text); // consume '-' or '+'
             }
 
@@ -276,6 +276,7 @@ public class Parser {
       case "-":
       case "*":
       case "/":
+      case ".":
       case "=":
         right = parseExpression(precedence);
         return new BinaryOperatorNode(token.text, left, right, tokenIndex);

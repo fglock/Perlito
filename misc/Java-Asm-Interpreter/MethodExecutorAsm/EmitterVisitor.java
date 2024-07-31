@@ -79,6 +79,9 @@ public class EmitterVisitor implements Visitor {
       case "/":
         emitCallBuiltin("divide");
         return;
+      case ".":
+        emitCallBuiltin("stringConcat");
+        return;
       case "=":
         emitCallBuiltin("set");
         return;

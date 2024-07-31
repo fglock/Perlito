@@ -47,6 +47,9 @@ public class Runtime {
   }
 
   public String toString() {
+    if (this.s != null) {
+        return this.s;
+    }
     return String.valueOf(this.i);
   }
 
@@ -117,5 +120,9 @@ public class Runtime {
 
   public Runtime divide(Runtime b) {
     return new Runtime(this.i / b.i);
+  }
+
+  public Runtime stringConcat(Runtime b) {
+    return new Runtime(this.toString() + b.toString());
   }
 }
