@@ -214,6 +214,24 @@ public class EmitterVisitor implements Visitor {
             ctx.mv.visitMethodInsn(
                 Opcodes.INVOKESTATIC, "Runtime", "eval_string", "(LRuntime;Ljava/lang/String;)LRuntime;", false);
 
+
+            // TODO at compile time ----------------
+            //
+            //  // initialize the static fields
+            //  // skip 0 and 1 because they are the "@_" argument list and the call context
+            //  for (int i = 2; i < newEnv.length; i++) {
+            //    ctx.mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
+            //    ctx.mv.visitFieldInsn(Opcodes.PUTSTATIC, newClassName, newEnv[i], "LRuntime;");
+            //  }
+
+
+            //  // Convert the generated class into a Runtime object
+            //  String newClassName = generatedClass.getName();
+            //  Runtime.anonSubs.put(newClassName, generatedClass); // Store the class in the runtime map
+            //  Runtime anonSub = Runtime.make_sub(newClassName); // Create a Runtime instance for the generated class
+            //  Runtime result = anonSub.apply(new Runtime(), ContextType.SCALAR); // Execute the generated method
+
+
             if (ctx.contextType == ContextType.VOID) {
               ctx.mv.visitInsn(Opcodes.POP);
             }
