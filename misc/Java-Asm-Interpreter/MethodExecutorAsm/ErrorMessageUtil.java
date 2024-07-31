@@ -7,6 +7,8 @@ import java.util.List;
 public class ErrorMessageUtil {
     private String fileName;
     private List<Token> tokens;
+    private int tokenIndex;
+    private int lastLineNumber;
 
     /**
      * Constructs an ErrorMessageUtil with the specified file name and list of tokens.
@@ -17,6 +19,8 @@ public class ErrorMessageUtil {
     public ErrorMessageUtil(String fileName, List<Token> tokens) {
         this.fileName = fileName;
         this.tokens = tokens;
+        this.tokenIndex = -1;
+        this.lastLineNumber = 1;
     }
 
     /**
@@ -38,16 +42,8 @@ public class ErrorMessageUtil {
      * @return the formatted error message with context
      */
     public String errorMessage(int index, String message) {
-        int line = 1;
-        int firstToken = 0;
-
         // Retrieve the line number by counting newlines up to the specified index
-        for (int i = 0; i <= index; i++) {
-            if (tokens.get(i).type == TokenType.NEWLINE) {
-                line++;
-                firstToken = i;
-            }
-        }
+        int line = getLineNumber(index);
 
         // Retrieve the string context around the error by collecting tokens near the specified index
         List<String> near = new ArrayList<>();
@@ -62,6 +58,31 @@ public class ErrorMessageUtil {
 
         // Return the formatted error message with the file name, line number, and context
         return message + " at " + fileName + " line " + line + ", near " + errorMessageQuote(nearString) + "\n";
+    }
+
+    /**
+     * Retrieves the line number by counting newlines up to the specified index.
+     * Uses a simple cache to avoid recalculating line numbers for previously processed indexes.
+     *
+     * @param index the index of the token
+     * @return the line number
+     */
+    private int getLineNumber(int index) {
+        // Start from the last processed index and line number
+        int line = lastLineNumber;
+
+        // Count newlines from the last processed index to the current index
+        for (int i = tokenIndex + 1; i <= index; i++) {
+            if (tokens.get(i).type == TokenType.NEWLINE) {
+                line++;
+            }
+        }
+
+        // Update the cache with the current index and line number
+        tokenIndex = index;
+        lastLineNumber = line;
+
+        return line;
     }
 
     /**
