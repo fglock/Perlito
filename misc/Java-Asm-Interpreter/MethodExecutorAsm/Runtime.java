@@ -49,22 +49,21 @@ public class Runtime {
     //  - EmitterVisitor.java - create anon sub
 
     // retrieve the context that was saved at compile-time
-    EmitterContext ctx = Runtime.evalContext.get(evalTag);
-    ctx.fileName = "(eval)";
+    EmitterContext evalCtx = Runtime.evalContext.get(evalTag);
 
     // Create the Token list
     Lexer lexer = new Lexer(code.toString());
     List<Token> tokens = lexer.tokenize(); // Tokenize the Perl code
     // Create the AST
     // Create an instance of ErrorMessageUtil with the file name and token list
-    ErrorMessageUtil errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
+    ErrorMessageUtil errorUtil = new ErrorMessageUtil(evalCtx.fileName, tokens);
     Parser parser = new Parser(errorUtil, tokens); // Parse the tokens
     Node ast = parser.parse(); // Generate the abstract syntax tree (AST)
     System.out.println("eval_string AST:\n" + ast + "--\n");
 
-    ctx.errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
+    evalCtx.errorUtil = new ErrorMessageUtil(evalCtx.fileName, tokens);
     Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(
-            ctx,
+            evalCtx,
             new String[] {}, // Closure variables
             ast
     );

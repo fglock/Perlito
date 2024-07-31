@@ -114,5 +114,18 @@ class ScopedSymbolTable {
         // Return the TreeMap containing all visible variables sorted by their indices.
         return visibleVariables;
     }
+
+    /**
+     * clones the symbol table to be used at runtime - this is used by eval-string
+     */
+    public ScopedSymbolTable clone() {
+        ScopedSymbolTable st = new ScopedSymbolTable();
+        st.enterScope();
+        Map<Integer, String> visibleVariables = this.getAllVisibleVariables();
+        for (Integer index : visibleVariables.keySet()) {
+            st.addVariable(visibleVariables.get(index));
+        }
+        return st;
+    }
 }
 

@@ -189,13 +189,25 @@ public class EmitterVisitor implements Visitor {
 
             // evaluate the string in scalar context
             // push the code string to the stack
-            EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
+            EmitterContext childCtx = ctx.with(ContextType.SCALAR);
             node.operand.accept(new EmitterVisitor(childCtx));
 
             // save the compiler context in Runtime class
             // push a reference to the compiler content to the stack
             String evalTag = "eval" + Integer.toString(ASMMethodCreator.classCounter++);
-            Runtime.evalContext.put(evalTag, ctx);  // XXX TODO save a deep copy
+            // create the eval context
+            EmitterContext evalCtx =
+                new EmitterContext(
+                    "(eval)", // filename
+                    null, // java class name
+                    ctx.symbolTable.clone(), // clone the symbolTable
+                    null, // return label
+                    null, // method visitor
+                    ctx.contextType, // call context
+                    false, // is boxed
+                    ctx.errorUtil  // error message utility
+                    );
+            Runtime.evalContext.put(evalTag, evalCtx);  // XXX TODO save a deep copy
             ctx.mv.visitLdcInsn(evalTag);   // push the evalTag to the stack
 
             // call Runtime.eval_string()
