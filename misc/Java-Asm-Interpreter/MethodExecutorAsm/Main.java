@@ -93,7 +93,6 @@ public class Main {
  * TODO:
  * - easy wins
  *       - loops
- *       - string
  *       - $_ $@
  *
  * - harder to implement

@@ -201,38 +201,75 @@ public class Parser {
     throw new PerlCompilerException(tokenIndex, "Unexpected token: " + token, errorUtil);
   }
 
-  private Node parseDoubleQuotedString() {
-      // XXX TODO placeholder; needs string interpolation and escape sequences
-      StringBuilder str = new StringBuilder();
-      while (!peek().text.equals("\"")) {
-          Token token = consume();
-          String text = token.text;
-          if (token.type == TokenType.OPERATOR) {
-            if (text.equals("\\")) {
-                // Handle escaped characters
-                text = consume().text;
-                if (text.equals("\\") || text.equals("\"")) {
-                    str.append(text);
-                } else if (text.equals("\\n")) {
-                    str.append("\n");
+    private Node parseDoubleQuotedString() {
+        StringBuilder str = new StringBuilder();
+        List<Node> parts = new ArrayList<>();
+        Token token = tokens.get(tokenIndex);
+        while (!token.text.equals("\"")) {
+            tokenIndex++;
+            String text = token.text;
+            if (token.type == TokenType.OPERATOR) {
+                if (text.equals("\\")) {
+                    // Handle escaped characters
+                    text = consume().text;  // XXX TODO the string is tokenized, we need to check single characters
+                    switch (text) {
+                        case "\\":
+                        case "\"":
+                            str.append(text);
+                            break;
+                        case "n":
+                            str.append("\n");
+                            break;
+                        case "t":
+                            str.append("\t");
+                            break;
+                        default:
+                            str.append("\\").append(text);
+                            break;
+                    }
+                } else if (text.equals("$")) {
+                    if (str.length() > 0) {
+                        System.out.println("add string part " + str.toString());
+                        parts.add(new StringNode(str.toString(), tokenIndex));  // string so far
+                        str = new StringBuilder();  // continue
+                    }
+                    Token nextToken = peek();
+                    if (nextToken.type == TokenType.IDENTIFIER) {
+                        System.out.println("add string variable");
+                        parts.add(new UnaryOperatorNode("$", new IdentifierNode(consume().text, tokenIndex), tokenIndex));
+                    } else if (nextToken.type == TokenType.OPERATOR && nextToken.text.equals("{")) {
+                        consume(); // consume '{'
+                        String varName = consume(TokenType.IDENTIFIER).text;
+                        consume(TokenType.OPERATOR, "}"); // consume '}'
+                        parts.add(new UnaryOperatorNode("$", new IdentifierNode(varName, tokenIndex), tokenIndex));
+                    } else {
+                        throw new RuntimeException("Final $ should be \\$ or $name");
+                    }
                 } else {
-                    str.append("\\").append(text);
+                    str.append(text);
                 }
-            } else if (text.equals("$")) {  // XXX TODO handle more complex cases
-                // TODO
-                // consume();
-                // text = consume().text;
-                // // XXX TODO in case of error, emit this message:
-                // // Final $ should be \$ or $name at -e line 1, within string
-                // return new UnaryOperatorNode("$", new IdentifierNode(token.text, tokenIndex), tokenIndex);
+            } else {
+                str.append(text);
             }
-          } else {
-              str.append(text);
-          }
-      }
-      consume(TokenType.OPERATOR, "\""); // Consume the closing single quote
-      return new StringNode(str.toString(), tokenIndex);
-  }
+            token = tokens.get(tokenIndex);
+        }
+        if (str.length() > 0) {
+            System.out.println("add string last part " + str.toString());
+            parts.add(new StringNode(str.toString(), tokenIndex));
+        }
+        consume(TokenType.OPERATOR, "\""); // Consume the closing double quote
+        
+        // Join the parts
+        if (parts.size() == 1) {
+            return parts.get(0);    // TODO make sure to stringify
+        } else {
+            Node result = parts.get(0);
+            for (int i = 1; i < parts.size(); i++) {
+                result = new BinaryOperatorNode(".", result, parts.get(i), tokenIndex);
+            }
+            return result;
+        }
+    }
 
   private Node parseSingleQuotedString() {
       StringBuilder str = new StringBuilder();
