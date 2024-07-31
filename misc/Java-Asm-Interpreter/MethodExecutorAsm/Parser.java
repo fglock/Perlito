@@ -205,17 +205,27 @@ public class Parser {
       // XXX TODO placeholder; needs string interpolation and escape sequences
       StringBuilder str = new StringBuilder();
       while (!peek().text.equals("\"")) {
-          String text = consume().text;
-          if (text.equals("\\")) {
-              // Handle escaped characters
-              text = consume().text;
-              if (text.equals("\\") || text.equals("\"")) {
-                  str.append(text);
-              } else if (text.equals("\\n")) {
-                  str.append("\n");
-              } else {
-                  str.append("\\").append(text);
-              }
+          Token token = consume();
+          String text = token.text;
+          if (token.type == TokenType.OPERATOR) {
+            if (text.equals("\\")) {
+                // Handle escaped characters
+                text = consume().text;
+                if (text.equals("\\") || text.equals("\"")) {
+                    str.append(text);
+                } else if (text.equals("\\n")) {
+                    str.append("\n");
+                } else {
+                    str.append("\\").append(text);
+                }
+            } else if (text.equals("$")) {  // XXX TODO handle more complex cases
+                // TODO
+                // consume();
+                // text = consume().text;
+                // // XXX TODO in case of error, emit this message:
+                // // Final $ should be \$ or $name at -e line 1, within string
+                // return new UnaryOperatorNode("$", new IdentifierNode(token.text, tokenIndex), tokenIndex);
+            }
           } else {
               str.append(text);
           }
