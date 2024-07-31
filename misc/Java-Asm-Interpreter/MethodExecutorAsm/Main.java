@@ -94,11 +94,25 @@ public class Main {
  * - easy wins
  *       - loops
  *       - string
+ *       - $_ $@
  *
- * - harder
+ * - harder to implement
  *       - BEGIN block
  *       - eval string
  *       - eval block, catch error
+ *       - test suite
+ *
+ * - easy, but low impact
+ *      - wantarray()
+ *      - warn()
+ *      - die()
+ *      - other builtins
+ *
+ * - more difficult, and low impact
+ *      - caller()
+ *      - goto()
+ *      - thread
+ *      - optimizations
  *
  * - Parser: low-precedence operators not, or, and
  *
