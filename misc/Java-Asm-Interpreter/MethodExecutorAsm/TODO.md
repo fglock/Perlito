@@ -36,6 +36,12 @@ ctx.mv.visitLabel(thisLabel);
 ctx.mv.visitLineNumber(10, thisLabel); // Associate line number 10 with thisLabel
 ```
 
+## Move the project
+- move files to src/main/java/org/...
+- create test/
+- move to new github project
+
+
 - catch and reformat errors like division by zero
 
 ## Test Different Perl Data Types
