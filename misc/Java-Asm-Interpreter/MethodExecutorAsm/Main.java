@@ -15,6 +15,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             // Default Perl code to be compiled and executed
+            boolean debugEnabled = false; // Default to debugging off
             String fileName = "test.pl";
             String code =
                     ""
@@ -29,10 +30,16 @@ public class Main {
                     + "print \"Finished; value is $a\\n\"; "
                     + "return 5;";
 
-            // If code is provided as a command-line argument, use it instead of the default code
-            if (args.length >= 2 && args[0].equals("-e")) {
-                code = args[1]; // Read the code from the command line parameter
-                fileName = "-e";
+
+            // Parse command-line arguments
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equals("-e") && i + 1 < args.length) {
+                    code = args[i + 1]; // Read the code from the command line parameter
+                    fileName = "-e";
+                    i++; // Skip the next argument as it is the code
+                } else if (args[i].equals("-debug")) {
+                    debugEnabled = true; // Enable debugging
+                }
             }
 
             // Create the compiler context
@@ -44,7 +51,8 @@ public class Main {
                     null, // Method visitor
                     null, // Call context
                     false, // Is boxed
-                    null  // errorUtil
+                    null,  // errorUtil
+                    debugEnabled   // debugEnabled flag
             );
 
             // Enter a new scope in the symbol table and add special Perl variables

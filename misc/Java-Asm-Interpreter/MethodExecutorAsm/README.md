@@ -16,9 +16,19 @@ java -cp ./asm-9.7.jar Main -e ' print 123 '
 
 ## Debugging Tools
 
+Run emitting debug information
+
+```sh
+java -cp ./asm-9.7.jar Main -debug -e ' print 123 '
+```
+
+Run the Lexer only
+
 ```sh
 java -cp ./asm-9.7.jar Lexer -e ' print 123 '
 ```
+
+Run the Parser only
 
 ```sh
 java -cp ./asm-9.7.jar Parser -e ' print 123 '

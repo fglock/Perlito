@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * The EmitterContext class holds the context information required for parsing and emitting bytecode.
  * This includes details about the file, class, symbol table, method visitor, context type, 
- * and context for error messages.
+ * and context for error messages and debug messages.
  */
 public class EmitterContext {
   
@@ -36,6 +36,9 @@ public class EmitterContext {
   /** Cache for contexts with different ContextTypes */
   private final Map<ContextType, EmitterContext> contextCache = new EnumMap<>(ContextType.class);
 
+  /** Flag to enable or disable debugging */
+  public boolean debugEnabled;
+
   /**
    * Constructs a new EmitterContext with the specified parameters.
    *
@@ -47,6 +50,7 @@ public class EmitterContext {
    * @param contextType the type of the context, defined by the ContextType enum
    * @param isBoxed indicates whether the context is for a boxed object (true) or a native object (false)
    * @param errorUtil formats error messages with source code context
+   * @param debugEnabled enables or disables printing debug messages with ctx.logDebug(message)
    */
   public EmitterContext(
       String fileName,
@@ -56,7 +60,8 @@ public class EmitterContext {
       MethodVisitor mv,
       ContextType contextType,
       boolean isBoxed,
-      ErrorMessageUtil errorUtil) {
+      ErrorMessageUtil errorUtil,
+      boolean debugEnabled) {
     this.fileName = fileName;
     this.javaClassName = javaClassName;
     this.symbolTable = symbolTable;
@@ -65,18 +70,7 @@ public class EmitterContext {
     this.contextType = contextType;
     this.isBoxed = isBoxed;
     this.errorUtil = errorUtil;
-  }
-
-  /**
-   * Creates a new EmitterContext with the specified context type and isBoxed flag.
-   * The other properties are copied from the current context.
-   *
-   * @param contextType the new context type
-   * @param isBoxed the new isBoxed flag
-   * @return a new EmitterContext with the updated context type and isBoxed flag
-   */
-  public EmitterContext with(ContextType contextType, boolean isBoxed) {
-    return new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, isBoxed, errorUtil);
+    this.debugEnabled = debugEnabled;
   }
 
   /**
@@ -94,9 +88,15 @@ public class EmitterContext {
       return contextCache.get(contextType);
     }
     // Create a new context and cache it
-    EmitterContext newContext = new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, this.isBoxed, errorUtil);
+    EmitterContext newContext = new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, this.isBoxed, errorUtil, debugEnabled);
     contextCache.put(contextType, newContext);
     return newContext;
+  }
+
+  public void logDebug(String message) {
+    if (this.debugEnabled) { // Use ctx.debugEnabled
+      System.out.println(message);
+    }
   }
 }
 

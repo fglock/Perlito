@@ -38,14 +38,14 @@ public class EmitterVisitor implements Visitor {
 
   @Override
   public void visit(NumberNode node) {
-    System.out.println("visit(NumberNode) in context " + ctx.contextType);
+    ctx.logDebug("visit(NumberNode) in context " + ctx.contextType);
     if (ctx.contextType == ContextType.VOID) {
       ctx.mv.visitInsn(Opcodes.POP);
     }
     boolean isInteger = !node.value.contains(".");
     if (ctx.isBoxed) { // expect a Runtime object
       if (isInteger) {
-        System.out.println("visit(NumberNode) emit boxed integer");
+        ctx.logDebug("visit(NumberNode) emit boxed integer");
         ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
         ctx.mv.visitInsn(Opcodes.DUP);
         ctx.mv.visitLdcInsn(
@@ -95,7 +95,7 @@ public class EmitterVisitor implements Visitor {
 @Override
   public void visit(BinaryOperatorNode node) throws Exception {
     String operator = node.operator;
-    System.out.println("visit(BinaryOperatorNode) " + operator + " in context " + ctx.contextType);
+    ctx.logDebug("visit(BinaryOperatorNode) " + operator + " in context " + ctx.contextType);
     EmitterVisitor scalarVisitor = this.with(ContextType.SCALAR); // execute operands in scalar context
     node.left.accept(scalarVisitor); // target
     node.right.accept(scalarVisitor); // parameter
@@ -132,7 +132,7 @@ public class EmitterVisitor implements Visitor {
    */
   private void handleArrowOperator(BinaryOperatorNode node) throws Exception {
     if (node.right instanceof ListNode) { // ->()
-        System.out.println("visit(BinaryOperatorNode) ->() ");
+        ctx.logDebug("visit(BinaryOperatorNode) ->() ");
         ctx.mv.visitFieldInsn(
             Opcodes.GETSTATIC,
             "ContextType",
@@ -155,7 +155,7 @@ public class EmitterVisitor implements Visitor {
   @Override
   public void visit(UnaryOperatorNode node) throws Exception {
     String operator = node.operator;
-    System.out.println("visit(UnaryOperatorNode) " + operator + " in context " + ctx.contextType);
+    ctx.logDebug("visit(UnaryOperatorNode) " + operator + " in context " + ctx.contextType);
 
     switch (operator) {
         case "$":
@@ -184,10 +184,10 @@ public class EmitterVisitor implements Visitor {
     String sigil = operator;
     if (node.operand instanceof IdentifierNode) { // $a @a %a
         String var = sigil + ((IdentifierNode) node.operand).name;
-        System.out.println("GETVAR " + var);
+        ctx.logDebug("GETVAR " + var);
         int varIndex = ctx.symbolTable.getVariableIndex(var);
         if (varIndex == -1) {
-            System.out.println(
+            ctx.logDebug(
                 "Warning: Global symbol \""
                 + var
                 + "\" requires explicit package name (did you forget to declare \"my "
@@ -198,7 +198,7 @@ public class EmitterVisitor implements Visitor {
         if (ctx.contextType != ContextType.VOID) {
             ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex);
         }
-        System.out.println("GETVAR end " + varIndex);
+        ctx.logDebug("GETVAR end " + varIndex);
         return;
     }
     // TODO special variables $1 $`
@@ -223,9 +223,9 @@ public class EmitterVisitor implements Visitor {
             Node identifierNode = ((UnaryOperatorNode) sigilNode).operand;
             if (identifierNode instanceof IdentifierNode) { // my $a
                 String var = sigil + ((IdentifierNode) identifierNode).name;
-                System.out.println("MY " + var);
+                ctx.logDebug("MY " + var);
                 if (ctx.symbolTable.getVariableIndexInCurrentScope(var) != -1) {
-                    System.out.println(
+                    ctx.logDebug(
                         "Warning: \"my\" variable "
                         + var
                         + " masks earlier declaration in same ctx.symbolTable"
@@ -276,7 +276,8 @@ public class EmitterVisitor implements Visitor {
                     null, // method visitor
                     ctx.contextType, // call context
                     false, // is boxed
-                    ctx.errorUtil  // error message utility
+                    ctx.errorUtil,  // error message utility
+                    ctx.debugEnabled
                     );
             Runtime.evalContext.put(evalTag, evalCtx);  // XXX TODO save a deep copy
             ctx.mv.visitLdcInsn(evalTag);   // push the evalTag to the stack
@@ -313,16 +314,16 @@ public class EmitterVisitor implements Visitor {
   @Override
   public void visit(AnonSubNode node) throws Exception {
 
-    System.out.println("SUB start");
+    ctx.logDebug("SUB start");
 
     // retrieve closure variable list
     // alternately, scan the AST for variables and capture only the ones that are used
     Map<Integer, String> visibleVariables = ctx.symbolTable.getAllVisibleVariables();
     String[] newEnv = new String[visibleVariables.size()];
-    System.out.println(" ctx.symbolTable.getAllVisibleVariables");
+    ctx.logDebug(" ctx.symbolTable.getAllVisibleVariables");
     for (Integer index : visibleVariables.keySet()) {
       String variableName = visibleVariables.get(index);
-      System.out.println("  " + index + " " + variableName);
+      ctx.logDebug("  " + index + " " + variableName);
       newEnv[index] = variableName;
     }
 
@@ -336,13 +337,14 @@ public class EmitterVisitor implements Visitor {
             null, // method visitor
             null, // call context
             false, // is boxed
-            ctx.errorUtil  // error message utility
+            ctx.errorUtil,  // error message utility
+            ctx.debugEnabled
             );
     Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(subCtx, newEnv, node.block);
     String newClassNameDot = generatedClass.getName();
     String newClassName = newClassNameDot.replace('.', '/');
-    System.out.println("Generated class name: " + newClassNameDot + " internal " + newClassName);
-    System.out.println("Generated class env:  " + newEnv);
+    ctx.logDebug("Generated class name: " + newClassNameDot + " internal " + newClassName);
+    ctx.logDebug("Generated class env:  " + newEnv);
 
     // initialize the static fields
     // skip 0 and 1 because they are the "@_" argument list and the call context
@@ -357,12 +359,12 @@ public class EmitterVisitor implements Visitor {
     ctx.mv.visitLdcInsn(newClassName);
     ctx.mv.visitMethodInsn(
         Opcodes.INVOKESTATIC, "Runtime", "make_sub", "(Ljava/lang/String;)LRuntime;", false);
-    System.out.println("SUB end");
+    ctx.logDebug("SUB end");
   }
 
   @Override
   public void visit(IfNode node) throws Exception {
-    System.out.println("IF start");
+    ctx.logDebug("IF start");
     
     // Enter a new scope in the symbol table
     ctx.symbolTable.enterScope();
@@ -400,7 +402,7 @@ public class EmitterVisitor implements Visitor {
     // Exit the scope in the symbol table
     ctx.symbolTable.exitScope();
     
-    System.out.println("IF end");
+    ctx.logDebug("IF end");
   }
 
 
@@ -420,7 +422,7 @@ public class EmitterVisitor implements Visitor {
 
   @Override
   public void visit(BlockNode node) throws Exception {
-    System.out.println("generateCodeBlock start");
+    ctx.logDebug("generateCodeBlock start");
     ctx.symbolTable.enterScope();
     EmitterVisitor voidVisitor = this.with(ContextType.VOID);  // statements in the middle of the block have context VOID
     List<Node> list = node.elements;
@@ -428,16 +430,16 @@ public class EmitterVisitor implements Visitor {
       Node element = list.get(i);
       if (i == list.size() - 1) {
         // Special case for the last element
-        System.out.println("Last element: " + element);
+        ctx.logDebug("Last element: " + element);
         element.accept(this);
       } else {
         // General case for all other elements
-        System.out.println("Element: " + element);
+        ctx.logDebug("Element: " + element);
         element.accept(voidVisitor);
       }
     }
     ctx.symbolTable.exitScope();
-    System.out.println("generateCodeBlock end");
+    ctx.logDebug("generateCodeBlock end");
   }
 
   @Override
