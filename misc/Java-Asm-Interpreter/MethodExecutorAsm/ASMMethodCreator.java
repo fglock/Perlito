@@ -35,6 +35,12 @@ public class ASMMethodCreator implements Opcodes {
         // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options for automatic frame and max stack size calculation
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
+        // FIXME: this method signature says we return Runtime,
+        // for this reason we can't run the closure in VOID context
+        if (ctx.contextType == ContextType.VOID) {
+            ctx.contextType = ContextType.SCALAR;
+        }
+
         // Create a "Java" class name with dots instead of slash
         String javaClassNameDot = ctx.javaClassName.replace('/', '.');
 

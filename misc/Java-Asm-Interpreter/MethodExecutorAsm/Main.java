@@ -83,7 +83,7 @@ public class Main {
                     new ScopedSymbolTable(), // Top-level symbol table
                     null, // Return label
                     null, // Method visitor
-                    ContextType.SCALAR, // Call context
+                    ContextType.VOID, // Call context
                     true, // Is boxed
                     null,  // errorUtil
                     debugEnabled   // debugEnabled flag
