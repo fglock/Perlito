@@ -259,12 +259,22 @@ public class EmitterVisitor implements Visitor {
         // TODO eval block
         throw new PerlCompilerException(node.tokenIndex, "Not implemented: eval block", ctx.errorUtil);
     } else { // eval string
-            // evaluate the string in scalar context
-            // push the code string to the stack
-            node.operand.accept(this.with(ContextType.SCALAR));
 
-            // save the compiler context in Runtime class
-            // push a reference to the compiler content to the stack
+
+            // TODO - this can be cached and reused at runtime for performance
+            // retrieve the closure variable list into "newEnv" array
+            // we save all variables, because we don't yet what code we are going to compile.
+            Map<Integer, String> visibleVariables = ctx.symbolTable.getAllVisibleVariables();
+            String[] newEnv = new String[visibleVariables.size()];
+            ctx.logDebug("(eval) ctx.symbolTable.getAllVisibleVariables");
+            for (Integer index : visibleVariables.keySet()) {
+              String variableName = visibleVariables.get(index);
+              ctx.logDebug("  " + index + " " + variableName);
+              newEnv[index] = variableName;
+            }
+
+
+            // save the eval context in a HashMap in Runtime class
             String evalTag = "eval" + Integer.toString(ASMMethodCreator.classCounter++);
             // create the eval context
             EmitterContext evalCtx =
@@ -279,31 +289,68 @@ public class EmitterVisitor implements Visitor {
                     ctx.errorUtil,  // error message utility
                     ctx.debugEnabled
                     );
-            Runtime.evalContext.put(evalTag, evalCtx);  // XXX TODO save a deep copy
-            ctx.mv.visitLdcInsn(evalTag);   // push the evalTag to the stack
+            Runtime.evalContext.put(evalTag, evalCtx);
 
-            // call Runtime.eval_string()
-            ctx.mv.visitMethodInsn(
-                Opcodes.INVOKESTATIC, "Runtime", "eval_string", "(LRuntime;Ljava/lang/String;)LRuntime;", false);
-
-
-            // TODO at compile time ----------------
+            // Here the compiled code will call Runtime.eval_string(code, evalTag) method.
+            // It will compile the string and generate a new Class.
             //
-            //  // initialize the static fields
-            //  // skip 0 and 1 because they are the "@_" argument list and the call context
-            //  for (int i = 2; i < newEnv.length; i++) {
-            //    ctx.mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
-            //    ctx.mv.visitFieldInsn(Opcodes.PUTSTATIC, newClassName, newEnv[i], "LRuntime;");
-            //  }
+            // This call returns void.
+            // XXX TODO - We need to catch any errors and set Perl error variable "$@"
+            //
+            // The generated method closure variables are going to be initialized in the next step.
+            // Then we can call the method.
 
+            // Retrieve the eval argument and push to the stack
+            // This is the code string that we will compile into a class.
+            node.operand.accept(this.with(ContextType.SCALAR));
 
-            //  // Convert the generated class into a Runtime object
-            //  String newClassName = generatedClass.getName();
-            //  Runtime.anonSubs.put(newClassName, generatedClass); // Store the class in the runtime map
-            //  Runtime anonSub = Runtime.make_sub(newClassName); // Create a Runtime instance for the generated class
-            //  Runtime result = anonSub.apply(new Runtime(), ContextType.SCALAR); // Execute the generated method
+            // Push the evalTag String to the stack
+            ctx.mv.visitLdcInsn(evalTag);
 
+            // call Runtime.eval_string(code, evalTag)
+            ctx.mv.visitMethodInsn(
+                Opcodes.INVOKESTATIC, 
+                "Runtime", 
+                "eval_string", 
+                "(LRuntime;Ljava/lang/String;)V", 
+                false);
 
+            // From now on, we are generating the code that will call the generated method.
+            // The generated method fields need to be initialized to the content of our local variables
+            //
+            // When the generated method is called, these fields will be copied to it's local variables,
+            // which will then become the actual closure variables
+            
+            // initialize the static fields in the generated class
+            // skip 0 and 1 because they are the "@_" argument list and the call context
+            for (int i = 2; i < newEnv.length; i++) {
+              ctx.mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
+              ctx.mv.visitFieldInsn(Opcodes.PUTSTATIC, evalCtx.javaClassName, newEnv[i], "LRuntime;");
+            }
+
+            // Finally, we can call the generated static method "apply" with argument "@_"
+
+            // Load the first argument (Runtime instance)
+            ctx.mv.visitVarInsn(Opcodes.ALOAD, 0); // 0 is the index of "@_" in local variables
+            
+            // Load the second argument (ContextType enum constant field)
+            ctx.mv.visitFieldInsn(
+                Opcodes.GETSTATIC, 
+                "ContextType",              // internal class name
+                ctx.contextType.name(),     // return context type of the eval (VOID, SCALAR, LIST)
+                "LContextType;"             // descriptor
+            );
+
+            // Call the static method "apply" in the class with name stored in evalCtx.javaClassName
+            ctx.mv.visitMethodInsn(
+                Opcodes.INVOKESTATIC,                // Opcode for calling a static method
+                evalCtx.javaClassName,               // Internal name of the class
+                "apply",                             // Name of the method to be called
+                "(LRuntime;LContextType;)Ljava/lang/Object;", // Method descriptor
+                false                                // Whether the method is an interface method
+            );
+
+            // if the calling context is VOID, we can cleanup the stack
             if (ctx.contextType == ContextType.VOID) {
               ctx.mv.visitInsn(Opcodes.POP);
             }
@@ -315,6 +362,9 @@ public class EmitterVisitor implements Visitor {
   public void visit(AnonSubNode node) throws Exception {
 
     ctx.logDebug("SUB start");
+
+    // XXX TODO - if the sub has an empty block, we return an empty list
+    // XXX TODO - when calling a sub with no arguments, we use an empty list argument
 
     // retrieve closure variable list
     // alternately, scan the AST for variables and capture only the ones that are used

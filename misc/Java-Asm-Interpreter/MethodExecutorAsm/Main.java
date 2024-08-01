@@ -28,7 +28,8 @@ public class Main {
                     + "print $x ;"
                     + "$a = 12 ;"
                     + "print $a ;"
-                    + " ( sub { print @_ } )->(88888) ;"
+                    + " ( sub { print @_ } )->(88888) ;"    // anon sub
+                    + "eval ' $a = $a + 1 '; "    // eval string
                     + "print $a ;"
                     + "do { $a; if (1) { print 123 } elsif (3) { print 345 } else { print 456 } } ;"
                     + "print \"Finished; value is $a\\n\"; "

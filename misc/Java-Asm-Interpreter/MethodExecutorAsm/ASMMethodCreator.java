@@ -37,6 +37,9 @@ public class ASMMethodCreator implements Opcodes {
 
         // FIXME: this method signature says we return Runtime,
         // for this reason we can't run the closure in VOID context
+        //
+        // In order to work around this, the VOID callers will use Opcodes.POP to cleanup the stack.
+        //
         if (ctx.contextType == ContextType.VOID) {
             ctx.contextType = ContextType.SCALAR;
         }

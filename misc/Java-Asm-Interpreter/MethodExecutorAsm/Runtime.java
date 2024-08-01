@@ -41,28 +41,26 @@ public class Runtime {
     return result;
   }
 
-  public static Runtime eval_string(Runtime code, String evalTag) throws Exception {
+  public static void eval_string(Runtime code, String evalTag) throws Exception {
 
-    // TODO - cleanup duplicate code:
+    // TODO - cleanup possible duplicate code in these places:
     //  - Main.java - execute main program
     //  - EmitterVisitor.java - create anon sub
 
-    // retrieve the context that was saved at compile-time
+    // retrieve the eval context that was saved at program compile-time
     EmitterContext evalCtx = Runtime.evalContext.get(evalTag);
 
+    // TODO - this can be cached for performance
     // retrieve closure variable list
     // alternately, scan the AST for variables and capture only the ones that are used
     Map<Integer, String> visibleVariables = evalCtx.symbolTable.getAllVisibleVariables();
     String[] newEnv = new String[visibleVariables.size()];
-    System.out.println(" ctx.symbolTable.getAllVisibleVariables");
     for (Integer index : visibleVariables.keySet()) {
       String variableName = visibleVariables.get(index);
-      System.out.println("  " + index + " " + variableName);
       newEnv[index] = variableName;
     }
 
-
-    // Create the Token list
+    // Process the string source code to create the Token list
     Lexer lexer = new Lexer(code.toString());
     List<Token> tokens = lexer.tokenize(); // Tokenize the Perl code
     // Create the AST
@@ -70,7 +68,6 @@ public class Runtime {
     ErrorMessageUtil errorUtil = new ErrorMessageUtil(evalCtx.fileName, tokens);
     Parser parser = new Parser(errorUtil, tokens); // Parse the tokens
     Node ast = parser.parse(); // Generate the abstract syntax tree (AST)
-    System.out.println("eval_string AST:\n" + ast + "--\n");
 
     evalCtx.errorUtil = new ErrorMessageUtil(evalCtx.fileName, tokens);
     Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(
@@ -78,23 +75,7 @@ public class Runtime {
             newEnv, // Closure variables
             ast
     );
-
-    // TODO at compile time ----------------
-    //
-    //  // initialize the static fields
-    //  // skip 0 and 1 because they are the "@_" argument list and the call context
-    //  for (int i = 2; i < newEnv.length; i++) {
-    //    ctx.mv.visitVarInsn(Opcodes.ALOAD, i); // copy local variable to the new class
-    //    ctx.mv.visitFieldInsn(Opcodes.PUTSTATIC, newClassName, newEnv[i], "LRuntime;");
-    //  }
-
-
-    // Convert the generated class into a Runtime object
-    Runtime.anonSubs.put(evalCtx.javaClassName, generatedClass); // Store the class in the runtime map
-    Runtime anonSub = Runtime.make_sub(evalCtx.javaClassName); // Create a Runtime instance for the generated class
-    Runtime result = anonSub.apply(new Runtime(), ContextType.SCALAR); // Execute the generated method
-
-    return result;
+    return;
   }
 
   public Runtime set(Runtime a) {
