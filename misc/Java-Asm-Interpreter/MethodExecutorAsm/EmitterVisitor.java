@@ -61,53 +61,63 @@ public class EmitterVisitor implements Visitor {
      return;
   }
 
-  @Override
+@Override
   public void visit(BinaryOperatorNode node) throws Exception {
     EmitterVisitor scalarVisitor =
         new EmitterVisitor(ctx.with(ContextType.SCALAR)); // execute operands in scalar context
     node.left.accept(scalarVisitor); // target
     node.right.accept(scalarVisitor); // parameter
+
     switch (node.operator) {
-      case "+":
-        emitCallBuiltin("add");     // TODO optimize use: ctx.mv.visitInsn(Opcodes.IADD)
-        return;
-      case "-":
-        emitCallBuiltin("subtract");
-        return;
-      case "*":
-        emitCallBuiltin("multiply");
-        return;
-      case "/":
-        emitCallBuiltin("divide");
-        return;
-      case ".":
-        emitCallBuiltin("stringConcat");
-        return;
-      case "=":
-        emitCallBuiltin("set");
-        return;
-      case "->":
-        if (node.right instanceof ListNode) { // ->()
-          System.out.println("visit(BinaryOperatorNode) ->() ");
-          ctx.mv.visitFieldInsn(
-              Opcodes.GETSTATIC,
-              "ContextType",
-              ctx.contextType.toString(),
-              "LContextType;"); // call context
-          ctx.mv.visitMethodInsn(
-              Opcodes.INVOKEVIRTUAL,
-              "Runtime",
-              "apply",
-              "(LRuntime;LContextType;)LRuntime;",
-              false); // generate an .apply() call
-          if (ctx.contextType == ContextType.VOID) {
-            ctx.mv.visitInsn(Opcodes.POP);
-          }
-          return;
-        }
-        // Add other operators as needed
+        case "+":
+            emitCallBuiltin("add"); // TODO optimize use: ctx.mv.visitInsn(Opcodes.IADD)
+            break;
+        case "-":
+            emitCallBuiltin("subtract");
+            break;
+        case "*":
+            emitCallBuiltin("multiply");
+            break;
+        case "/":
+            emitCallBuiltin("divide");
+            break;
+        case ".":
+            emitCallBuiltin("stringConcat");
+            break;
+        case "=":
+            emitCallBuiltin("set");
+            break;
+        case "->":
+            handleArrowOperator(node);
+            break;
+        default:
+            throw new RuntimeException("Unexpected infix operator: " + node.operator);
     }
-    throw new RuntimeException("Unexpected infix operator: " + node);
+  }
+
+  /**
+   * Handles the `->` operator.
+   */
+  private void handleArrowOperator(BinaryOperatorNode node) throws Exception {
+    if (node.right instanceof ListNode) { // ->()
+        System.out.println("visit(BinaryOperatorNode) ->() ");
+        ctx.mv.visitFieldInsn(
+            Opcodes.GETSTATIC,
+            "ContextType",
+            ctx.contextType.toString(),
+            "LContextType;"); // call context
+        ctx.mv.visitMethodInsn(
+            Opcodes.INVOKEVIRTUAL,
+            "Runtime",
+            "apply",
+            "(LRuntime;LContextType;)LRuntime;",
+            false); // generate an .apply() call
+        if (ctx.contextType == ContextType.VOID) {
+            ctx.mv.visitInsn(Opcodes.POP);
+        }
+    } else {
+        throw new RuntimeException("Unexpected right operand for `->` operator: " + node.right);
+    }
   }
 
   @Override
