@@ -34,7 +34,17 @@ public class Main {
                     + "print \"Finished; value is $a\\n\"; "
                     + "return 5;";
 
-            // Parse command-line arguments
+            /*
+             * Parse command-line arguments
+             * This loop processes each command-line argument to configure the program's behavior.
+             * Supported arguments:
+             * -e <code>: Specifies the code to be processed, overriding the default code.
+             * --debug: Enables debugging mode.
+             * --tokenize: Sets the program to tokenize the input code. Cannot be combined with --parse or -c.
+             * --parse: Sets the program to parse the input code. Cannot be combined with --tokenize or -c.
+             * -c: Sets the program to compile the input code only. Cannot be combined with --tokenize or --parse.
+             * If an unrecognized argument is encountered, the program will print an error message and exit.
+             */
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals("-e") && i + 1 < args.length) {
                     code = args[i + 1]; // Read the code from the command line parameter
