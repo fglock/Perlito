@@ -1,13 +1,39 @@
-import java.util.List;
-import java.util.Map;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
+import java.util.*;
 
 public class EmitterVisitor implements Visitor {
   private final EmitterContext ctx;
 
+  /** Cache for EmitterVisitor instances with different ContextTypes */
+  private final Map<ContextType, EmitterVisitor> visitorCache = new EnumMap<>(ContextType.class);
+
   public EmitterVisitor(EmitterContext ctx) {
     this.ctx = ctx;
+  }
+
+  /**
+   * Returns an EmitterVisitor with the specified context type.
+   * Uses a cache to avoid creating new instances unnecessarily.
+   *
+   * <p>Example usage:</p>
+   * <pre>
+   *   // emits the condition code in scalar context
+   *   node.condition.accept(this.with(ContextType.SCALAR));
+   * </pre>
+   *
+   * @param contextType The context type for the new EmitterVisitor.
+   * @return An EmitterVisitor with the specified context type.
+   */
+  public EmitterVisitor with(ContextType contextType) {
+    // Check if the visitor is already cached
+    if (visitorCache.containsKey(contextType)) {
+      return visitorCache.get(contextType);
+    }
+    // Create a new visitor and cache it
+    EmitterVisitor newVisitor = new EmitterVisitor(ctx.with(contextType));
+    visitorCache.put(contextType, newVisitor);
+    return newVisitor;
   }
 
   @Override
@@ -68,8 +94,7 @@ public class EmitterVisitor implements Visitor {
 
 @Override
   public void visit(BinaryOperatorNode node) throws Exception {
-    EmitterVisitor scalarVisitor =
-        new EmitterVisitor(ctx.with(ContextType.SCALAR)); // execute operands in scalar context
+    EmitterVisitor scalarVisitor = this.with(ContextType.SCALAR); // execute operands in scalar context
     node.left.accept(scalarVisitor); // target
     node.right.accept(scalarVisitor); // parameter
 
@@ -181,8 +206,7 @@ public class EmitterVisitor implements Visitor {
   }
 
   private void handlePrintOperator(UnaryOperatorNode node) throws Exception {
-    EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
-    node.operand.accept(new EmitterVisitor(childCtx));
+    node.operand.accept(this.with(ContextType.SCALAR));
     ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "print", "()LRuntime;", false);
     if (ctx.contextType == ContextType.VOID) {
         ctx.mv.visitInsn(Opcodes.POP);
@@ -224,8 +248,7 @@ public class EmitterVisitor implements Visitor {
   }
 
   private void handleReturnOperator(UnaryOperatorNode node) throws Exception {
-    EmitterContext childCtx = ctx.with(ContextType.RUNTIME, ctx.isBoxed);
-    node.operand.accept(new EmitterVisitor(childCtx));
+    node.operand.accept(this.with(ContextType.RUNTIME));
     ctx.mv.visitJumpInsn(Opcodes.GOTO, ctx.returnLabel);
     // TODO return (1,2), 3
   }
@@ -237,8 +260,7 @@ public class EmitterVisitor implements Visitor {
     } else { // eval string
             // evaluate the string in scalar context
             // push the code string to the stack
-            EmitterContext childCtx = ctx.with(ContextType.SCALAR);
-            node.operand.accept(new EmitterVisitor(childCtx));
+            node.operand.accept(this.with(ContextType.SCALAR));
 
             // save the compiler context in Runtime class
             // push a reference to the compiler content to the stack
@@ -348,11 +370,8 @@ public class EmitterVisitor implements Visitor {
     Label elseLabel = new Label();
     Label endLabel = new Label();
     
-    // Create a visitor for executing the condition in scalar context
-    EmitterVisitor scalarVisitor = new EmitterVisitor(ctx.with(ContextType.SCALAR));
-    
-    // Visit the condition node
-    node.condition.accept(scalarVisitor);
+    // Visit the condition node in scalar context
+    node.condition.accept(this.with(ContextType.SCALAR));
     
     // Convert the result to a boolean
     ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "toBoolean", "()Z", false);
@@ -361,7 +380,7 @@ public class EmitterVisitor implements Visitor {
     ctx.mv.visitJumpInsn(Opcodes.IFEQ, elseLabel);
     
     // Visit the then branch
-    node.thenBranch.accept(scalarVisitor);
+    node.thenBranch.accept(this);
     
     // Jump to the end label after executing the then branch
     ctx.mv.visitJumpInsn(Opcodes.GOTO, endLabel);
@@ -371,7 +390,7 @@ public class EmitterVisitor implements Visitor {
     
     // Visit the else branch if it exists
     if (node.elseBranch != null) {
-        node.elseBranch.accept(scalarVisitor);
+        node.elseBranch.accept(this);
     }
     
     // Visit the end label
@@ -402,9 +421,7 @@ public class EmitterVisitor implements Visitor {
   public void visit(BlockNode node) throws Exception {
     System.out.println("generateCodeBlock start");
     ctx.symbolTable.enterScope();
-    EmitterVisitor voidVisitor =
-        new EmitterVisitor(
-            ctx.with(ContextType.VOID)); // statements in the middle of the block have context VOID
+    EmitterVisitor voidVisitor = this.with(ContextType.VOID);  // statements in the middle of the block have context VOID
     List<Node> list = node.elements;
     for (int i = 0; i < list.size(); i++) {
       Node element = list.get(i);
