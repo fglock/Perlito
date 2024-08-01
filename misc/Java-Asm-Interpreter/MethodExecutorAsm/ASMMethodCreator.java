@@ -42,7 +42,7 @@ public class ASMMethodCreator implements Opcodes {
 
         // Add static fields to the class for closure variables
         for (String fieldName : env) {
-            System.out.println("Create static field: " + fieldName);
+            ctx.logDebug("Create static field: " + fieldName);
             cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, fieldName, "LRuntime;", null, null).visitEnd();
         }
 
@@ -58,7 +58,7 @@ public class ASMMethodCreator implements Opcodes {
         /*
         for (int i = 0; i < env.length; i++) { // Initialize the static fields
             String fieldName = env[i];
-            System.out.println("Init static field: " + fieldName);
+            ctx.logDebug("Init static field: " + fieldName);
             ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
             ctx.mv.visitInsn(Opcodes.DUP);
             ctx.mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "Runtime", "<init>", "()V", false); // Create a new instance of Runtime
@@ -79,7 +79,7 @@ public class ASMMethodCreator implements Opcodes {
         ctx.mv.visitEnd();
 
         // Create the main method for the generated class
-        System.out.println("Create the method");
+        ctx.logDebug("Create the method");
         String returnType = "(LRuntime;LContextType;)Ljava/lang/Object;";
 
         // Define the method as public and static
@@ -92,7 +92,7 @@ public class ASMMethodCreator implements Opcodes {
         // Skip indices 0 and 1 because they are reserved for special arguments ("@_" and call context)
         for (int i = 2; i < env.length; i++) {
             String fieldName = env[i];
-            System.out.println("Init closure variable: " + fieldName);
+            ctx.logDebug("Init closure variable: " + fieldName);
             ctx.mv.visitFieldInsn(Opcodes.GETSTATIC, javaClassName, fieldName, "LRuntime;");
             ctx.mv.visitVarInsn(Opcodes.ASTORE, i);
         }
@@ -105,7 +105,7 @@ public class ASMMethodCreator implements Opcodes {
         ast.accept(visitor);
 
         // Handle the return value
-        System.out.println("Return the last value");
+        ctx.logDebug("Return the last value");
         ctx.mv.visitLabel(ctx.returnLabel); // "return" from other places arrive here
         ctx.mv.visitInsn(Opcodes.ARETURN); // returns an Object
         ctx.mv.visitMaxs(0, 0); // Automatically computed

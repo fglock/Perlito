@@ -229,13 +229,11 @@ public class Parser {
                     }
                 } else if (text.equals("$")) {
                     if (str.length() > 0) {
-                        System.out.println("add string part " + str.toString());
                         parts.add(new StringNode(str.toString(), tokenIndex));  // string so far
                         str = new StringBuilder();  // continue
                     }
                     Token nextToken = peek();
                     if (nextToken.type == TokenType.IDENTIFIER) {
-                        System.out.println("add string variable");
                         parts.add(new UnaryOperatorNode("$", new IdentifierNode(consume().text, tokenIndex), tokenIndex));
                     } else if (nextToken.type == TokenType.OPERATOR && nextToken.text.equals("{")) {
                         consume(); // consume '{'
@@ -254,7 +252,6 @@ public class Parser {
             token = tokens.get(tokenIndex);
         }
         if (str.length() > 0) {
-            System.out.println("add string last part " + str.toString());
             parts.add(new StringNode(str.toString(), tokenIndex));
         }
         consume(TokenType.OPERATOR, "\""); // Consume the closing double quote

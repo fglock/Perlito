@@ -60,8 +60,8 @@ public class Main {
             ctx.symbolTable.addVariable("@_"); // Argument list is local variable 0
             ctx.symbolTable.addVariable("wantarray"); // Call context is local variable 1
 
-            System.out.println("parse code: " + code);
-            System.out.println("  call context " + ctx.contextType);
+            ctx.logDebug("parse code: " + code);
+            ctx.logDebug("  call context " + ctx.contextType);
 
             // Create the Token list
             Lexer lexer = new Lexer(code);
@@ -72,10 +72,10 @@ public class Main {
             ErrorMessageUtil errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
             Parser parser = new Parser(errorUtil, tokens); // Parse the tokens
             Node ast = parser.parse(); // Generate the abstract syntax tree (AST)
-            System.out.println("-- AST:\n" + ast + "--\n");
+            ctx.logDebug("-- AST:\n" + ast + "--\n");
 
             // Create the Java class from the AST
-            System.out.println("createClassWithMethod");
+            ctx.logDebug("createClassWithMethod");
             // Create a new instance of ErrorMessageUtil, resetting the line counter
             ctx.errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
             Class<?> generatedClass = ASMMethodCreator.createClassWithMethod(
@@ -91,7 +91,7 @@ public class Main {
             Runtime result = anonSub.apply(new Runtime(999), ContextType.SCALAR); // Execute the generated method
 
             // Print the result of the execution
-            System.out.println("Result of generatedMethod: " + result);
+            ctx.logDebug("Result of generatedMethod: " + result);
         } catch (Exception e) {
             e.printStackTrace(); // Print any exceptions that occur during the process
         }
