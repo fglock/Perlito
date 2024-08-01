@@ -16,6 +16,11 @@ public class ASMMethodCreator implements Opcodes {
     // Custom class loader to load generated classes
     static CustomClassLoader loader = new CustomClassLoader();
 
+    // Generate a unique internal class name
+    public static String generateClassName() {
+        return "org/perlito/anon" + classCounter++;
+    }
+
     /**
      * Creates a new class with a method based on the provided context, environment, and abstract
      * syntax tree (AST).
@@ -30,15 +35,17 @@ public class ASMMethodCreator implements Opcodes {
         // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options for automatic frame and max stack size calculation
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
-        // Generate a unique class name
-        String javaClassNameDot = "org.perlito.anon" + classCounter++;
-        String javaClassName = javaClassNameDot.replace('.', '/');
+        if (ctx.javaClassName == null) {
+            // Generate a unique class name
+            ctx.javaClassName = generateClassName();
+        }    
+        String javaClassNameDot = ctx.javaClassName.replace('/', '.');
 
         // Set the source file name for runtime error messages
         cw.visitSource(ctx.fileName, null);
 
         // Define the class with version, access flags, name, signature, superclass, and interfaces
-        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, javaClassName, null, "java/lang/Object", null);
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, ctx.javaClassName, null, "java/lang/Object", null);
 
         // Add static fields to the class for closure variables
         for (String fieldName : env) {
@@ -48,7 +55,6 @@ public class ASMMethodCreator implements Opcodes {
 
         // Set the context type and other context properties
         ctx.contextType = ContextType.RUNTIME;
-        ctx.javaClassName = javaClassName;
         ctx.isBoxed = true;
 
         // Create the class initializer method
@@ -62,7 +68,7 @@ public class ASMMethodCreator implements Opcodes {
             ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
             ctx.mv.visitInsn(Opcodes.DUP);
             ctx.mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "Runtime", "<init>", "()V", false); // Create a new instance of Runtime
-            ctx.mv.visitFieldInsn(Opcodes.PUTSTATIC, javaClassName, fieldName, "LRuntime;"); // Set the static field
+            ctx.mv.visitFieldInsn(Opcodes.PUTSTATIC, ctx.javaClassName, fieldName, "LRuntime;"); // Set the static field
         }
         */
         ctx.mv.visitInsn(Opcodes.RETURN);
@@ -93,7 +99,7 @@ public class ASMMethodCreator implements Opcodes {
         for (int i = 2; i < env.length; i++) {
             String fieldName = env[i];
             ctx.logDebug("Init closure variable: " + fieldName);
-            ctx.mv.visitFieldInsn(Opcodes.GETSTATIC, javaClassName, fieldName, "LRuntime;");
+            ctx.mv.visitFieldInsn(Opcodes.GETSTATIC, ctx.javaClassName, fieldName, "LRuntime;");
             ctx.mv.visitVarInsn(Opcodes.ASTORE, i);
         }
 
