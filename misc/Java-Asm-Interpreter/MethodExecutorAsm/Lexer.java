@@ -19,7 +19,19 @@ import java.util.List;
  * - Identifying and categorizing different types of tokens.
  * - Handling special characters and operators.
  * - Providing a list of tokens that can be used by subsequent phases of a compiler or interpreter.
- */ 
+ *
+ *
+ * NOTE:
+ * The Lexer is optimized for speed rather than accuracy.
+ * 
+ * This can lead to issues in cases such as:
+ * 
+ *    qq<=>   // An equal-sign string is parsed as `qq` and `<=>`
+ * 
+ *    10E10   // A floating-point number is parsed as `10` and `E10`
+ * 
+ * The Parser is aware of these issues and implements workarounds to handle them.
+ */
 public class Lexer {
   // End of File character constant
   public static final String EOF = Character.toString((char) -1);
