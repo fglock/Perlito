@@ -275,7 +275,7 @@ public class EmitterVisitor implements Visitor {
                     null, // return label
                     null, // method visitor
                     ctx.contextType, // call context
-                    false, // is boxed
+                    true, // is boxed
                     ctx.errorUtil,  // error message utility
                     ctx.debugEnabled
                     );
@@ -335,8 +335,8 @@ public class EmitterVisitor implements Visitor {
             ctx.symbolTable, // closure symbolTable
             null, // return label
             null, // method visitor
-            null, // call context
-            false, // is boxed
+            ContextType.RUNTIME, // call context
+            true, // is boxed
             ctx.errorUtil,  // error message utility
             ctx.debugEnabled
             );

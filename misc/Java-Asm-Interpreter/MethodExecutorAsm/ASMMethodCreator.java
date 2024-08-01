@@ -35,10 +35,7 @@ public class ASMMethodCreator implements Opcodes {
         // Create a ClassWriter with COMPUTE_FRAMES and COMPUTE_MAXS options for automatic frame and max stack size calculation
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
-        if (ctx.javaClassName == null) {
-            // Generate a unique class name
-            ctx.javaClassName = generateClassName();
-        }    
+        // Create a "Java" class name with dots instead of slash
         String javaClassNameDot = ctx.javaClassName.replace('/', '.');
 
         // Set the source file name for runtime error messages
@@ -52,10 +49,6 @@ public class ASMMethodCreator implements Opcodes {
             ctx.logDebug("Create static field: " + fieldName);
             cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, fieldName, "LRuntime;", null, null).visitEnd();
         }
-
-        // Set the context type and other context properties
-        ctx.contextType = ContextType.RUNTIME;
-        ctx.isBoxed = true;
 
         // Create the class initializer method
         ctx.mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
