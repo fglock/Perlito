@@ -302,10 +302,22 @@ public class EmitterVisitor implements Visitor {
 
             // Retrieve the eval argument and push to the stack
             // This is the code string that we will compile into a class.
+            // The string is evaluated outside of the try-catch block.
             node.operand.accept(this.with(ContextType.SCALAR));
 
             // Push the evalTag String to the stack
             ctx.mv.visitLdcInsn(evalTag);
+
+            //--------------
+            // Start of the Try-catch block to handle exceptions
+            Label tryStart = new Label();
+            Label tryEnd = new Label();
+            Label catchBlock = new Label();
+            Label endCatch = new Label(); // Label to mark the end of the catch block
+
+            ctx.mv.visitTryCatchBlock(tryStart, tryEnd, catchBlock, "java/lang/Exception");
+            ctx.mv.visitLabel(tryStart);    // Mark the start of the try block
+            //--------------
 
             // call Runtime.eval_string(code, evalTag)
             ctx.mv.visitMethodInsn(
@@ -354,6 +366,41 @@ public class EmitterVisitor implements Visitor {
             if (ctx.contextType == ContextType.VOID) {
               ctx.mv.visitInsn(Opcodes.POP);
             }
+
+            //--------------
+            // Mark the end of the try block
+            ctx.mv.visitLabel(tryEnd);
+            // GOTO to skip the catch block if no exception occurs
+            ctx.mv.visitJumpInsn(Opcodes.GOTO, endCatch);            
+
+            // Handle the exception
+            ctx.mv.visitLabel(catchBlock);  // start of the catch block
+
+            // the exception object is in the stack
+
+            // TODO START   - we need to store the exception string in "$@" variable
+            //
+            // ctx.mv.visitInsn(Opcodes.POP);  // XXX FIXME ignore the exception
+
+            //  int exceptionIndex = ...; // Assign an index to store the exception
+            //  ctx.mv.visitVarInsn(Opcodes.ASTORE, exceptionIndex); // Store the exception in a local variable
+            //  
+            // Print the exception or handle it as needed
+            // ctx.mv.visitVarInsn(Opcodes.ALOAD, exceptionIndex);
+            ctx.mv.visitMethodInsn(
+                Opcodes.INVOKEVIRTUAL,
+                "java/lang/Exception",
+                "printStackTrace",
+                "()V",
+                false
+            );
+            // TODO END
+
+
+            // Mark the end of the catch block
+            ctx.mv.visitLabel(endCatch);
+            //--------------
+            
             return;
     }
   }
