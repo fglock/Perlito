@@ -48,6 +48,12 @@ public class EmitterVisitor implements Visitor {
     throw new PerlCompilerException(node.tokenIndex, "Not implemented: bare word " + node.name, ctx.errorUtil);
   }
 
+  /**
+   * Emits a call to a built-in method on the Runtime class.
+   * It assumes that the parameter to the call is already in the stack.
+   * 
+   * @param operator The name of the built-in method to call.
+   */
   private void emitCallBuiltin(String operator) {
      ctx.mv.visitMethodInsn(
          Opcodes.INVOKEVIRTUAL,
@@ -58,7 +64,6 @@ public class EmitterVisitor implements Visitor {
      if (ctx.contextType == ContextType.VOID) {
        ctx.mv.visitInsn(Opcodes.POP);
      }
-     return;
   }
 
 @Override
@@ -335,26 +340,49 @@ public class EmitterVisitor implements Visitor {
   @Override
   public void visit(IfNode node) throws Exception {
     System.out.println("IF start");
+    
+    // Enter a new scope in the symbol table
     ctx.symbolTable.enterScope();
+    
+    // Create labels for the else and end branches
     Label elseLabel = new Label();
     Label endLabel = new Label();
-    EmitterVisitor scalarVisitor =
-        new EmitterVisitor(ctx.with(ContextType.SCALAR)); // execute condition in scalar context
+    
+    // Create a visitor for executing the condition in scalar context
+    EmitterVisitor scalarVisitor = new EmitterVisitor(ctx.with(ContextType.SCALAR));
+    
+    // Visit the condition node
     node.condition.accept(scalarVisitor);
-    ctx.mv.visitMethodInsn(
-        Opcodes.INVOKEVIRTUAL, "Runtime", "toBoolean", "()Z", false); // Call the toBoolean method
-    ctx.mv.visitJumpInsn(
-        Opcodes.IFEQ, elseLabel); // Assuming the condition leaves a boolean on the stack
+    
+    // Convert the result to a boolean
+    ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "toBoolean", "()Z", false);
+    
+    // Jump to the else label if the condition is false
+    ctx.mv.visitJumpInsn(Opcodes.IFEQ, elseLabel);
+    
+    // Visit the then branch
     node.thenBranch.accept(scalarVisitor);
+    
+    // Jump to the end label after executing the then branch
     ctx.mv.visitJumpInsn(Opcodes.GOTO, endLabel);
+    
+    // Visit the else label
     ctx.mv.visitLabel(elseLabel);
-    if (node.elseBranch != null) { // Generate code for the else block
-      node.elseBranch.accept(scalarVisitor);
+    
+    // Visit the else branch if it exists
+    if (node.elseBranch != null) {
+        node.elseBranch.accept(scalarVisitor);
     }
-    ctx.mv.visitLabel(endLabel); // End of the if/else structure
+    
+    // Visit the end label
+    ctx.mv.visitLabel(endLabel);
+    
+    // Exit the scope in the symbol table
     ctx.symbolTable.exitScope();
+    
     System.out.println("IF end");
   }
+
 
   @Override
   public void visit(TernaryOperatorNode node) throws Exception {
