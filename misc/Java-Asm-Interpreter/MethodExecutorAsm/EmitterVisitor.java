@@ -115,78 +115,111 @@ public class EmitterVisitor implements Visitor {
     // Emit code for unary operator
     String operator = node.operator;
     System.out.println("visit(UnaryOperatorNode) " + operator);
-    if (operator.equals("$") || operator.equals("@") || operator.equals("%")) {
-      String sigil = operator;
-      if (node.operand instanceof IdentifierNode) { // $a
+
+    switch (operator) {
+        case "$":
+        case "@":
+        case "%":
+            handleVariableOperator(node, operator);
+            break;
+        case "print":
+            handlePrintOperator(node);
+            break;
+        case "my":
+            handleMyOperator(node);
+            break;
+        case "return":
+            handleReturnOperator(node);
+            break;
+        case "eval":
+            handleEvalOperator(node);
+            break;
+        default:
+            throw new UnsupportedOperationException("Unsupported operator: " + operator);
+    }
+  }
+
+  private void handleVariableOperator(UnaryOperatorNode node, String operator) throws Exception {
+    String sigil = operator;
+    if (node.operand instanceof IdentifierNode) { // $a @a %a
         String var = sigil + ((IdentifierNode) node.operand).name;
         System.out.println("GETVAR " + var);
         int varIndex = ctx.symbolTable.getVariableIndex(var);
         if (varIndex == -1) {
-          System.out.println(
-              "Warning: Global symbol \""
-                  + var
-                  + "\" requires explicit package name (did you forget to declare \"my "
-                  + var
-                  + "\"?)");
+            System.out.println(
+                "Warning: Global symbol \""
+                + var
+                + "\" requires explicit package name (did you forget to declare \"my "
+                + var
+                + "\"?)"
+            );
         }
         if (ctx.contextType != ContextType.VOID) {
-          ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex);
+            ctx.mv.visitVarInsn(Opcodes.ALOAD, varIndex);
         }
         System.out.println("GETVAR end " + varIndex);
         return;
-      }
-    } else if (operator.equals("print")) {
-      EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
-      node.operand.accept(new EmitterVisitor(childCtx));
-      ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "print", "()LRuntime;", false);
-      if (ctx.contextType == ContextType.VOID) {
+    }
+    // TODO special variables $1 $`
+    // TODO ${a} ${[ 123 ]}
+    throw new PerlCompilerException(node.tokenIndex, "Not implemented: " + operator, ctx.errorUtil);
+  }
+
+  private void handlePrintOperator(UnaryOperatorNode node) throws Exception {
+    EmitterContext childCtx = ctx.with(ContextType.SCALAR, ctx.isBoxed);
+    node.operand.accept(new EmitterVisitor(childCtx));
+    ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "print", "()LRuntime;", false);
+    if (ctx.contextType == ContextType.VOID) {
         ctx.mv.visitInsn(Opcodes.POP);
-      }
-      return;
-    } else if (operator.equals("my")) {
-      Node sigilNode = node.operand;
-      if (sigilNode instanceof UnaryOperatorNode) { // my + $ @ %
+    }
+    // TODO print FILE 123
+  }
+
+  private void handleMyOperator(UnaryOperatorNode node) throws Exception {
+    Node sigilNode = node.operand;
+    if (sigilNode instanceof UnaryOperatorNode) { // my + $ @ %
         String sigil = ((UnaryOperatorNode) sigilNode).operator;
         if (sigil.equals("$") || sigil.equals("@") || sigil.equals("%")) {
-          Node identifierNode = ((UnaryOperatorNode) sigilNode).operand;
-          if (identifierNode instanceof IdentifierNode) { // my $a
-            String var = sigil + ((IdentifierNode) identifierNode).name;
-            System.out.println("MY " + var);
-            if (ctx.symbolTable.getVariableIndexInCurrentScope(var) != -1) {
-              System.out.println(
-                  "Warning: \"my\" variable "
-                      + var
-                      + " masks earlier declaration in same ctx.symbolTable");
+            Node identifierNode = ((UnaryOperatorNode) sigilNode).operand;
+            if (identifierNode instanceof IdentifierNode) { // my $a
+                String var = sigil + ((IdentifierNode) identifierNode).name;
+                System.out.println("MY " + var);
+                if (ctx.symbolTable.getVariableIndexInCurrentScope(var) != -1) {
+                    System.out.println(
+                        "Warning: \"my\" variable "
+                        + var
+                        + " masks earlier declaration in same ctx.symbolTable"
+                    );
+                }
+                int varIndex = ctx.symbolTable.addVariable(var);
+                // TODO optimization - SETVAR+MY can be combined
+                ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
+                ctx.mv.visitInsn(Opcodes.DUP);
+                ctx.mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "Runtime", "<init>", "()V", false); // Create a new instance of Runtime
+                if (ctx.contextType != ContextType.VOID) {
+                    ctx.mv.visitInsn(Opcodes.DUP);
+                }
+                ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
+                return;
             }
-            int varIndex = ctx.symbolTable.addVariable(var);
-            // TODO optimization - SETVAR+MY can be combined
-            ctx.mv.visitTypeInsn(Opcodes.NEW, "Runtime");
-            ctx.mv.visitInsn(Opcodes.DUP);
-            ctx.mv.visitMethodInsn(
-                Opcodes.INVOKESPECIAL,
-                "Runtime",
-                "<init>",
-                "()V",
-                false); // Create a new instance of Runtime
-            if (ctx.contextType != ContextType.VOID) {
-              ctx.mv.visitInsn(Opcodes.DUP);
-            }
-            ctx.mv.visitVarInsn(Opcodes.ASTORE, varIndex);
-          }
-          return;
         }
-      }
-    } else if (operator.equals("return")) {
-      EmitterContext childCtx = ctx.with(ContextType.RUNTIME, ctx.isBoxed);
-      node.operand.accept(new EmitterVisitor(childCtx));
-      ctx.mv.visitJumpInsn(Opcodes.GOTO, ctx.returnLabel);
-      return;
-    } else if (operator.equals("eval")) {
-        if (node.operand instanceof BlockNode) { // eval block
-            throw new PerlCompilerException(node.tokenIndex, "Not implemented: eval block", ctx.errorUtil);
-        }
-        else { // eval string
+    }
+    // TODO my ($a, $b)
+    throw new PerlCompilerException(node.tokenIndex, "Not implemented: " + node.operator, ctx.errorUtil);
+  }
 
+  private void handleReturnOperator(UnaryOperatorNode node) throws Exception {
+    EmitterContext childCtx = ctx.with(ContextType.RUNTIME, ctx.isBoxed);
+    node.operand.accept(new EmitterVisitor(childCtx));
+    ctx.mv.visitJumpInsn(Opcodes.GOTO, ctx.returnLabel);
+    // TODO return (1,2), 3
+  }
+
+  private void handleEvalOperator(UnaryOperatorNode node) throws Exception {
+    if (node.operand instanceof BlockNode) { // eval block
+        // TODO eval block
+        throw new PerlCompilerException(node.tokenIndex, "Not implemented: eval block", ctx.errorUtil);
+    } else { // eval string
             // evaluate the string in scalar context
             // push the code string to the stack
             EmitterContext childCtx = ctx.with(ContextType.SCALAR);
@@ -236,9 +269,7 @@ public class EmitterVisitor implements Visitor {
               ctx.mv.visitInsn(Opcodes.POP);
             }
             return;
-        }
     }
-    throw new PerlCompilerException(node.tokenIndex, "Not implemented: " + operator, ctx.errorUtil);
   }
 
   @Override
