@@ -30,7 +30,6 @@ public class Main {
                     + "print \"Finished; value is $a\\n\"; "
                     + "return 5;";
 
-
             // Parse command-line arguments
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals("-e") && i + 1 < args.length) {
