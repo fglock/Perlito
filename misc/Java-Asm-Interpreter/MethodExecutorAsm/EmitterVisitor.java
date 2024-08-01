@@ -40,7 +40,7 @@ public class EmitterVisitor implements Visitor {
   public void visit(NumberNode node) {
     ctx.logDebug("visit(NumberNode) in context " + ctx.contextType);
     if (ctx.contextType == ContextType.VOID) {
-      ctx.mv.visitInsn(Opcodes.POP);
+      return;
     }
     boolean isInteger = !node.value.contains(".");
     if (ctx.isBoxed) { // expect a Runtime object
