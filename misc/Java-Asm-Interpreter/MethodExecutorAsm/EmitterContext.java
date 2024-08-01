@@ -1,5 +1,6 @@
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import java.util.*;
 
 /**
  * The EmitterContext class holds the context information required for parsing and emitting bytecode.
@@ -31,6 +32,9 @@ public class EmitterContext {
 
   /** Formats error messages with source code context */
   public ErrorMessageUtil errorUtil;
+
+  /** Cache for contexts with different ContextTypes */
+  private final Map<ContextType, EmitterContext> contextCache = new EnumMap<>(ContextType.class);
 
   /**
    * Constructs a new EmitterContext with the specified parameters.
@@ -85,7 +89,14 @@ public class EmitterContext {
    * @return a new EmitterContext with the updated context type
    */
   public EmitterContext with(ContextType contextType) {
-    return new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, this.isBoxed, errorUtil);
+    // Check if the context is already cached
+    if (contextCache.containsKey(contextType)) {
+      return contextCache.get(contextType);
+    }
+    // Create a new context and cache it
+    EmitterContext newContext = new EmitterContext(this.fileName, this.javaClassName, this.symbolTable, this.returnLabel, this.mv, contextType, this.isBoxed, errorUtil);
+    contextCache.put(contextType, newContext);
+    return newContext;
   }
 }
 
