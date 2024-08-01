@@ -38,6 +38,10 @@ public class EmitterVisitor implements Visitor {
 
   @Override
   public void visit(NumberNode node) {
+    System.out.println("visit(NumberNode) in context " + ctx.contextType);
+    if (ctx.contextType == ContextType.VOID) {
+      ctx.mv.visitInsn(Opcodes.POP);
+    }
     boolean isInteger = !node.value.contains(".");
     if (ctx.isBoxed) { // expect a Runtime object
       if (isInteger) {
@@ -62,10 +66,6 @@ public class EmitterVisitor implements Visitor {
         ctx.mv.visitLdcInsn(Double.parseDouble(node.value)); // emit native double
       }
     }
-    System.out.println("Emit context " + (ctx.contextType == ContextType.VOID ? "void" : "scalar"));
-    if (ctx.contextType == ContextType.VOID) {
-      ctx.mv.visitInsn(Opcodes.POP);
-    }
   }
 
   @Override
@@ -80,8 +80,8 @@ public class EmitterVisitor implements Visitor {
    * 
    * @param operator The name of the built-in method to call.
    */
-  private void emitCallBuiltin(String operator) {
-     ctx.mv.visitMethodInsn(
+  private void handleBinaryBuiltin(String operator) {
+    ctx.mv.visitMethodInsn(
          Opcodes.INVOKEVIRTUAL,
          "Runtime",
          operator,
@@ -94,34 +94,36 @@ public class EmitterVisitor implements Visitor {
 
 @Override
   public void visit(BinaryOperatorNode node) throws Exception {
+    String operator = node.operator;
+    System.out.println("visit(BinaryOperatorNode) " + operator + " in context " + ctx.contextType);
     EmitterVisitor scalarVisitor = this.with(ContextType.SCALAR); // execute operands in scalar context
     node.left.accept(scalarVisitor); // target
     node.right.accept(scalarVisitor); // parameter
 
-    switch (node.operator) {
+    switch (operator) {
         case "+":
-            emitCallBuiltin("add"); // TODO optimize use: ctx.mv.visitInsn(Opcodes.IADD)
+            handleBinaryBuiltin("add"); // TODO optimize use: ctx.mv.visitInsn(Opcodes.IADD)
             break;
         case "-":
-            emitCallBuiltin("subtract");
+            handleBinaryBuiltin("subtract");
             break;
         case "*":
-            emitCallBuiltin("multiply");
+            handleBinaryBuiltin("multiply");
             break;
         case "/":
-            emitCallBuiltin("divide");
+            handleBinaryBuiltin("divide");
             break;
         case ".":
-            emitCallBuiltin("stringConcat");
+            handleBinaryBuiltin("stringConcat");
             break;
         case "=":
-            emitCallBuiltin("set");
+            handleBinaryBuiltin("set");
             break;
         case "->":
             handleArrowOperator(node);
             break;
         default:
-            throw new RuntimeException("Unexpected infix operator: " + node.operator);
+            throw new RuntimeException("Unexpected infix operator: " + operator);
     }
   }
 
@@ -152,9 +154,8 @@ public class EmitterVisitor implements Visitor {
 
   @Override
   public void visit(UnaryOperatorNode node) throws Exception {
-    // Emit code for unary operator
     String operator = node.operator;
-    System.out.println("visit(UnaryOperatorNode) " + operator);
+    System.out.println("visit(UnaryOperatorNode) " + operator + " in context " + ctx.contextType);
 
     switch (operator) {
         case "$":
