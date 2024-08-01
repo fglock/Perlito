@@ -1,0 +1,12 @@
+
+    JPerl: Simple and straightforward, combining "Java" and "Perl".
+    PerlJVM: Clearly indicates that it's Perl running on the JVM.
+    JavaPerl: Emphasizes the Java aspect while retaining the Perl name.
+    PerlFusion: Suggests a fusion of Perl and Java technologies.
+    PerlVM: Indicates that it's Perl running on a virtual machine, specifically the JVM.
+    Javarl: A portmanteau of Java and Perl.
+    PerlJ: A concise name that combines Perl and Java.
+    PerlJava: Directly indicates the integration of Perl with Java.
+    JPerlScript: Highlights the scripting nature of Perl on the JVM.
+    PerlOnJVM: Explicitly states that it's Perl running on the JVM.
+
