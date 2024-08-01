@@ -270,7 +270,7 @@ public class EmitterVisitor implements Visitor {
             EmitterContext evalCtx =
                 new EmitterContext(
                     "(eval)", // filename
-                    null, // java class name
+                    ASMMethodCreator.generateClassName(), // internal java class name
                     ctx.symbolTable.clone(), // clone the symbolTable
                     null, // return label
                     null, // method visitor
@@ -331,7 +331,7 @@ public class EmitterVisitor implements Visitor {
     EmitterContext subCtx =
         new EmitterContext(
             ctx.fileName, // same source filename
-            null, // java class name
+            ASMMethodCreator.generateClassName(), // internal java class name
             ctx.symbolTable, // closure symbolTable
             null, // return label
             null, // method visitor

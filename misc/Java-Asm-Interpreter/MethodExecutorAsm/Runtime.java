@@ -90,9 +90,8 @@ public class Runtime {
 
 
     // Convert the generated class into a Runtime object
-    String newClassName = generatedClass.getName();
-    Runtime.anonSubs.put(newClassName, generatedClass); // Store the class in the runtime map
-    Runtime anonSub = Runtime.make_sub(newClassName); // Create a Runtime instance for the generated class
+    Runtime.anonSubs.put(evalCtx.javaClassName, generatedClass); // Store the class in the runtime map
+    Runtime anonSub = Runtime.make_sub(evalCtx.javaClassName); // Create a Runtime instance for the generated class
     Runtime result = anonSub.apply(new Runtime(), ContextType.SCALAR); // Execute the generated method
 
     return result;

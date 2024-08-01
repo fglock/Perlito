@@ -79,7 +79,7 @@ public class Main {
             // Create the compiler context
             EmitterContext ctx = new EmitterContext(
                     fileName, // Source filename
-                    null, // Java class name
+                    ASMMethodCreator.generateClassName(), // internal java class name
                     new ScopedSymbolTable(), // Top-level symbol table
                     null, // Return label
                     null, // Method visitor
@@ -134,9 +134,8 @@ public class Main {
             }
 
             // Convert the generated class into a Runtime object
-            String newClassName = generatedClass.getName();
-            Runtime.anonSubs.put(newClassName, generatedClass); // Store the class in the runtime map
-            Runtime anonSub = Runtime.make_sub(newClassName); // Create a Runtime instance for the generated class
+            Runtime.anonSubs.put(ctx.javaClassName, generatedClass); // Store the class in the runtime map
+            Runtime anonSub = Runtime.make_sub(ctx.javaClassName); // Create a Runtime instance for the generated class
             Runtime result = anonSub.apply(new Runtime(999), ContextType.SCALAR); // Execute the generated method
 
             // Print the result of the execution
