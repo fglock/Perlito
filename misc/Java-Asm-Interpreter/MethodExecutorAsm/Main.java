@@ -14,8 +14,12 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-            // Default Perl code to be compiled and executed
             boolean debugEnabled = false; // Default to debugging off
+            boolean tokenizeOnly = false;
+            boolean parseOnly = false;
+            boolean compileOnly = false;
+
+            // Default Perl code to be compiled and executed
             String fileName = "test.pl";
             String code =
                     ""
@@ -36,8 +40,29 @@ public class Main {
                     code = args[i + 1]; // Read the code from the command line parameter
                     fileName = "-e";
                     i++; // Skip the next argument as it is the code
-                } else if (args[i].equals("-debug")) {
+                } else if (args[i].equals("--debug")) {
                     debugEnabled = true; // Enable debugging
+                } else if (args[i].equals("--tokenize")) {
+                    if (parseOnly || compileOnly) {
+                        System.err.println("Error: --tokenize cannot be combined with --parse or -c");
+                        System.exit(1);
+                    }
+                    tokenizeOnly = true;
+                } else if (args[i].equals("--parse")) {
+                    if (tokenizeOnly || compileOnly) {
+                        System.err.println("Error: --parse cannot be combined with --tokenize or -c");
+                        System.exit(1);
+                    }
+                    parseOnly = true;
+                } else if (args[i].equals("-c")) {
+                    if (tokenizeOnly || parseOnly) {
+                        System.err.println("Error: -c cannot be combined with --tokenize or --parse");
+                        System.exit(1);
+                    }
+                    compileOnly = true;
+                } else {
+                    System.err.println("Error: Unrecognized command-line parameter: " + args[i]);
+                    System.exit(1); // Exit with status code 1 to indicate an error
                 }
             }
 
@@ -65,12 +90,24 @@ public class Main {
             // Create the Token list
             Lexer lexer = new Lexer(code);
             List<Token> tokens = lexer.tokenize(); // Tokenize the Perl code
+            if (tokenizeOnly) {
+                // Printing the tokens
+                for (Token token : tokens) {
+                  System.out.println(token);
+                }
+                System.exit(0); // success
+            }
 
             // Create the AST
             // Create an instance of ErrorMessageUtil with the file name and token list
             ErrorMessageUtil errorUtil = new ErrorMessageUtil(ctx.fileName, tokens);
             Parser parser = new Parser(errorUtil, tokens); // Parse the tokens
             Node ast = parser.parse(); // Generate the abstract syntax tree (AST)
+            if (parseOnly) {
+                // Printing the ast
+                System.out.println(ast);
+                System.exit(0); // success
+            }
             ctx.logDebug("-- AST:\n" + ast + "--\n");
 
             // Create the Java class from the AST
@@ -82,6 +119,9 @@ public class Main {
                     new String[] {}, // Closure variables
                     ast
             );
+            if (compileOnly) {
+                System.exit(0); // success
+            }
 
             // Convert the generated class into a Runtime object
             String newClassName = generatedClass.getName();

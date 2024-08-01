@@ -19,19 +19,29 @@ java -cp ./asm-9.7.jar Main -e ' print 123 '
 Run emitting debug information
 
 ```sh
-java -cp ./asm-9.7.jar Main -debug -e ' print 123 '
+java -cp ./asm-9.7.jar Main --debug -e ' print 123 '
+```
+
+Compile only; can be combined with --debug
+
+```sh
+java -cp ./asm-9.7.jar Main -c -e ' print 123 '
+```
+
+```sh
+java -cp ./asm-9.7.jar Main --debug -c -e ' print 123 '
 ```
 
 Run the Lexer only
 
 ```sh
-java -cp ./asm-9.7.jar Lexer -e ' print 123 '
+java -cp ./asm-9.7.jar Main --tokenize -e ' print 123 '
 ```
 
 Run the Parser only
 
 ```sh
-java -cp ./asm-9.7.jar Parser -e ' print 123 '
+java -cp ./asm-9.7.jar Main --parse -e ' print 123 '
 ```
 
 ## Modules
