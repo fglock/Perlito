@@ -60,11 +60,7 @@ public class Runtime {
             case DOUBLE:
                 return (long) ((double) value);
             case STRING:
-                try {
-                    return Long.parseLong((String) value);
-                } catch (NumberFormatException e) {
-                    return 0;
-                }
+                return this.parseNumber().getLong();
             case CODE:
                 return ((Method) this.value).hashCode(); // Use Method's hashCode as the ID
             default:
@@ -79,11 +75,7 @@ public class Runtime {
             case DOUBLE:
                 return (double) this.value;
             case STRING:
-                try {
-                    return Double.parseDouble((String) this.value);
-                } catch (NumberFormatException e) {
-                    return 0.0; // Return zero if the string cannot be converted
-                }
+                return this.parseNumber().getDouble();
             case CODE:
                 return ((Method) this.value).hashCode(); // Use Method's hashCode as the ID
             default:
@@ -206,27 +198,78 @@ public class Runtime {
     return new Runtime(this.toString() + b.toString());
   }
 
-    public Runtime add(Runtime arg) {
-        if (this.type == Type.STRING || arg.type == Type.STRING) {
-            // Try to parse both values as long
-            try {
-                long val1 = Long.parseLong((String) this.value);
-                long val2 = Long.parseLong((String) arg.value);
-                return new Runtime(val1 + val2);
-            } catch (NumberFormatException e) {
-                // If parsing fails, fall back to double addition
-                double val1 = this.getDouble();
-                double val2 = arg.getDouble();
-                return new Runtime(val1 + val2);
-            }
-        } else if (this.type == Type.DOUBLE || arg.type == Type.DOUBLE) {
-            double val1 = this.getDouble();
-            double val2 = arg.getDouble();
+    public Runtime add(Runtime arg2) {
+        Runtime arg1 = this;
+        if (arg1.type == Type.STRING) {
+            arg1 = this.parseNumber();
+        }
+        if (arg2.type == Type.STRING) {
+            arg2 = this.parseNumber();
+        }
+        if (arg1.type == Type.DOUBLE || arg2.type == Type.DOUBLE) {
+            double val1 = arg1.getDouble();
+            double val2 = arg2.getDouble();
             return new Runtime(val1 + val2);
         } else {
-            long val1 = this.getLong();
-            long val2 = arg.getLong();
+            long val1 = arg1.getLong();
+            long val2 = arg2.getLong();
             return new Runtime(val1 + val2);
+        }
+    }
+
+    private Runtime parseNumber() {
+        String str = (String) this.value;
+
+        // Remove leading and trailing spaces from the input string
+        str = str.trim();
+    
+        // StringBuilder to accumulate the numeric part of the string
+        StringBuilder number = new StringBuilder();
+    
+        // Flags to track the presence of a decimal point, exponent, and sign
+        boolean hasDecimal = false;
+        boolean hasExponent = false;
+        boolean hasSign = false;
+    
+        // Iterate through each character in the string
+        for (char c : str.toCharArray()) {
+            // Check if the character is a digit, decimal point, exponent, or sign
+            if (Character.isDigit(c) || (c == '.' && !hasDecimal) || (c == 'e' && !hasExponent) || (c == '-' && !hasSign)) {
+                // Append the character to the number StringBuilder
+                number.append(c);
+    
+                // Update flags based on the character
+                if (c == '.') {
+                    hasDecimal = true; // Mark that a decimal point has been encountered
+                } else if (c == 'e') {
+                    hasExponent = true; // Mark that an exponent has been encountered
+                    hasSign = false; // Reset the sign flag for the exponent part
+                } else if (c == '-') {
+                    hasSign = true; // Mark that a sign has been encountered
+                }
+            } else {
+                // Stop parsing at the first non-numeric character
+                break;
+            }
+        }
+    
+        try {
+            // Convert the accumulated numeric part to a string
+            String numberStr = number.toString();
+    
+            // Determine if the number should be parsed as a double or long
+            if (hasDecimal || hasExponent) {
+                // Parse as a double if it contains a decimal point or exponent
+                double parsedValue = Double.parseDouble(numberStr);
+                return new Runtime(parsedValue);
+            } else {
+                // Parse as a long if it does not contain a decimal point or exponent
+                long parsedValue = Long.parseLong(numberStr);
+                return new Runtime(parsedValue);
+            }
+        } catch (NumberFormatException e) {
+            // Return a Runtime object with value of 0 if parsing fails
+            return new Runtime(0);
         }
     }
 }
