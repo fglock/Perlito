@@ -42,16 +42,6 @@ public class Runtime {
         this.value = value;
     }
 
-    public Runtime(Runtime value) {
-        this.type = Type.REFERENCE;
-        this.value = value;
-    }
-
-    public Runtime(Method value) {
-        this.type = Type.CODE;
-        this.value = value;
-    }
-
     // Getters
     public long getLong() {
         switch (type) {
@@ -92,7 +82,7 @@ public class Runtime {
             case INTEGER:
                 return (long) value != 0;
             case DOUBLE:
-                return (long) ((double) value) != 0;
+                return (double) value != 0.0;
             case STRING:
                 String s = (String) value;
                 return !s.equals("") && !s.equals("0");
@@ -134,9 +124,9 @@ public class Runtime {
             case STRING:
                 return (String) value;
             case REFERENCE:
-                return "Reference to: " + value.toString();
+                return "CODE(" + value.toString() + ")";
             case CODE:
-                return "Code Reference: " + value.toString();
+                return "REF(" + value.toString() + ")";
             case UNDEF:
                 return "";
             default:
@@ -148,7 +138,10 @@ public class Runtime {
     // finish setting up a CODE object
     Class<?> clazz = Runtime.anonSubs.remove(className);
     Method mm = clazz.getMethod("apply", Runtime.class, ContextType.class);
-    return new Runtime(mm);
+    Runtime r = new Runtime();
+    r.value = mm;
+    r.type = Type.CODE;
+    return r;
   }
 
   public Runtime apply(Runtime a, ContextType callContext) throws Exception {
@@ -201,7 +194,7 @@ public class Runtime {
   }
 
   public Runtime unaryMinus() {
-    return new Runtime(new Runtime(0).subtract(this));
+    return new Runtime(0).subtract(this);
   }
 
     public Runtime add(Runtime arg2) {
@@ -334,8 +327,8 @@ public class Runtime {
                 return new Runtime(parsedValue);
             }
         } catch (NumberFormatException e) {
-            // Return a Runtime object with a double value of 0.0 if parsing fails
-            return new Runtime(0.0);
+            // Return a Runtime object with value of 0 if parsing fails
+            return new Runtime(0);
         }
     }
 }
