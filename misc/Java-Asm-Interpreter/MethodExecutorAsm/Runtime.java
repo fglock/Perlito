@@ -63,6 +63,8 @@ public class Runtime {
                 return this.parseNumber().getLong();
             case CODE:
                 return ((Method) this.value).hashCode(); // Use Method's hashCode as the ID
+            case UNDEF:
+                return 0;
             default:
                 return 0;
         }
@@ -78,6 +80,8 @@ public class Runtime {
                 return this.parseNumber().getDouble();
             case CODE:
                 return ((Method) this.value).hashCode(); // Use Method's hashCode as the ID
+            case UNDEF:
+                return 0.0;
             default:
                 return 0.0;
         }
@@ -92,16 +96,12 @@ public class Runtime {
             case STRING:
                 String s = (String) value;
                 return !s.equals("") && !s.equals("0");
+            case CODE:
+                return true;
+            case UNDEF:
+                return false;
             default:
                 return true;
-        }
-    }
-
-    public String getString() {
-        if (type == Type.STRING) {
-            return (String) value;
-        } else {
-            throw new IllegalStateException("Variable does not contain a string");
         }
     }
 
@@ -137,6 +137,8 @@ public class Runtime {
                 return "Reference to: " + value.toString();
             case CODE:
                 return "Code Reference: " + value.toString();
+            case UNDEF:
+                return "";
             default:
                 return "Undefined";
         }
@@ -201,19 +203,60 @@ public class Runtime {
     public Runtime add(Runtime arg2) {
         Runtime arg1 = this;
         if (arg1.type == Type.STRING) {
-            arg1 = this.parseNumber();
+            arg1 = arg1.parseNumber();
         }
         if (arg2.type == Type.STRING) {
-            arg2 = this.parseNumber();
+            arg2 = arg2.parseNumber();
         }
         if (arg1.type == Type.DOUBLE || arg2.type == Type.DOUBLE) {
-            double val1 = arg1.getDouble();
-            double val2 = arg2.getDouble();
-            return new Runtime(val1 + val2);
+            return new Runtime(arg1.getDouble() + arg2.getDouble());
         } else {
-            long val1 = arg1.getLong();
-            long val2 = arg2.getLong();
-            return new Runtime(val1 + val2);
+            return new Runtime(arg1.getLong() + arg2.getLong());
+        }
+    }
+
+    public Runtime subtract(Runtime arg2) {
+        Runtime arg1 = this;
+        if (arg1.type == Type.STRING) {
+            arg1 = arg1.parseNumber();
+        }
+        if (arg2.type == Type.STRING) {
+            arg2 = arg2.parseNumber();
+        }
+        if (arg1.type == Type.DOUBLE || arg2.type == Type.DOUBLE) {
+            return new Runtime(arg1.getDouble() - arg2.getDouble());
+        } else {
+            return new Runtime(arg1.getLong() - arg2.getLong());
+        }
+    }
+
+    public Runtime multiply(Runtime arg2) {
+        Runtime arg1 = this;
+        if (arg1.type == Type.STRING) {
+            arg1 = arg1.parseNumber();
+        }
+        if (arg2.type == Type.STRING) {
+            arg2 = arg2.parseNumber();
+        }
+        if (arg1.type == Type.DOUBLE || arg2.type == Type.DOUBLE) {
+            return new Runtime(arg1.getDouble() * arg2.getDouble());
+        } else {
+            return new Runtime(arg1.getLong() * arg2.getLong());
+        }
+    }
+
+    public Runtime divide(Runtime arg2) {
+        Runtime arg1 = this;
+        if (arg1.type == Type.STRING) {
+            arg1 = arg1.parseNumber();
+        }
+        if (arg2.type == Type.STRING) {
+            arg2 = arg2.parseNumber();
+        }
+        if (arg1.type == Type.DOUBLE || arg2.type == Type.DOUBLE) {
+            return new Runtime(arg1.getDouble() / arg2.getDouble());
+        } else {
+            return new Runtime(arg1.getLong() / arg2.getLong());
         }
     }
 
@@ -225,51 +268,70 @@ public class Runtime {
     
         // StringBuilder to accumulate the numeric part of the string
         StringBuilder number = new StringBuilder();
-    
-        // Flags to track the presence of a decimal point, exponent, and sign
         boolean hasDecimal = false;
         boolean hasExponent = false;
         boolean hasSign = false;
-    
+        boolean inExponent = false;
+        boolean validExponent = false;
+
         // Iterate through each character in the string
         for (char c : str.toCharArray()) {
             // Check if the character is a digit, decimal point, exponent, or sign
-            if (Character.isDigit(c) || (c == '.' && !hasDecimal) || (c == 'e' && !hasExponent) || (c == '-' && !hasSign)) {
-                // Append the character to the number StringBuilder
+            if (Character.isDigit(c) || (c == '.' && !hasDecimal) || ((c == 'e' || c == 'E') && !hasExponent) || (c == '-' && !hasSign)) {
                 number.append(c);
-    
+
                 // Update flags based on the character
                 if (c == '.') {
                     hasDecimal = true; // Mark that a decimal point has been encountered
-                } else if (c == 'e') {
+                } else if (c == 'e' || c == 'E') {
                     hasExponent = true; // Mark that an exponent has been encountered
                     hasSign = false; // Reset the sign flag for the exponent part
+                    inExponent = true; // Mark that we are now in the exponent part
                 } else if (c == '-') {
-                    hasSign = true; // Mark that a sign has been encountered
+                    if (!inExponent) {
+                        hasSign = true; // Mark that a sign has been encountered
+                    }
+                } else if (Character.isDigit(c) && inExponent) {
+                    validExponent = true; // Mark that the exponent part has valid digits
                 }
             } else {
+                // Stop parsing at the first invalid character in the exponent part
+                if (inExponent && !Character.isDigit(c) && c != '-') {
+                    break;
+                }
                 // Stop parsing at the first non-numeric character
-                break;
+                if (!inExponent) {
+                    break;
+                }
             }
         }
-    
+        
+        // If the exponent part is invalid, remove it
+        if (hasExponent && !validExponent) {
+            int exponentIndex = number.indexOf("e");
+            if (exponentIndex == -1) {
+                exponentIndex = number.indexOf("E");
+            }
+            if (exponentIndex != -1) {
+                number.setLength(exponentIndex); // Truncate the string at the exponent
+            }
+        }
+
         try {
             // Convert the accumulated numeric part to a string
             String numberStr = number.toString();
     
             // Determine if the number should be parsed as a double or long
             if (hasDecimal || hasExponent) {
-                // Parse as a double if it contains a decimal point or exponent
                 double parsedValue = Double.parseDouble(numberStr);
                 return new Runtime(parsedValue);
             } else {
-                // Parse as a long if it does not contain a decimal point or exponent
                 long parsedValue = Long.parseLong(numberStr);
                 return new Runtime(parsedValue);
             }
         } catch (NumberFormatException e) {
-            // Return a Runtime object with value of 0 if parsing fails
-            return new Runtime(0);
+            // Return a Runtime object with a double value of 0.0 if parsing fails
+            return new Runtime(0.0);
         }
     }
 }
