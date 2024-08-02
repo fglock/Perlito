@@ -400,6 +400,9 @@ public class Parser {
         }
         right = parseExpression(precedence);
         return new BinaryOperatorNode(token.text, left, right, tokenIndex);
+      case "--":
+      case "++":
+        return new PostfixOperatorNode(token.text, left, tokenIndex);
     }
     throw new PerlCompilerException(tokenIndex, "Unexpected infix operator: " + token, errorUtil);
   }
