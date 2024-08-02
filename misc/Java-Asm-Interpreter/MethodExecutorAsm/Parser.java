@@ -135,6 +135,10 @@ public class Parser {
 
     switch (token.type) {
       case IDENTIFIER:
+        if (token.text.equals("not")) {
+          Node operand = parseExpression(getPrecedence(token) + 1);
+          return new UnaryOperatorNode("not", operand, tokenIndex);
+        }
         if (token.text.equals("print")) {
           Node operand = parsePrimary();
           return new UnaryOperatorNode("print", operand, tokenIndex);
@@ -183,7 +187,7 @@ public class Parser {
           consume(TokenType.OPERATOR, ")");
           return expr;
         } else if (UNARY_OP.contains(token.text)) {
-          Node operand = parsePrimary();
+          Node operand = parseExpression(getPrecedence(token) + 1);
           return new UnaryOperatorNode(token.text, operand, tokenIndex);
         } else if (token.text.equals(".")) {
           return parseFractionalNumber();
@@ -394,7 +398,8 @@ public class Parser {
             right = parseList();
             return new BinaryOperatorNode(token.text, left, right, tokenIndex);
         }
-        break;
+        right = parseExpression(precedence);
+        return new BinaryOperatorNode(token.text, left, right, tokenIndex);
     }
     throw new PerlCompilerException(tokenIndex, "Unexpected infix operator: " + token, errorUtil);
   }
