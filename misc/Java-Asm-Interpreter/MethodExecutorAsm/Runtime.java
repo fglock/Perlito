@@ -124,9 +124,9 @@ public class Runtime {
             case STRING:
                 return (String) value;
             case REFERENCE:
-                return "CODE(" + value.toString() + ")";
+                return "CODE(" + value.hashCode() + ")";
             case CODE:
-                return "REF(" + value.toString() + ")";
+                return "REF(" + value.hashCode() + ")";
             case UNDEF:
                 return "";
             default:
