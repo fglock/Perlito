@@ -175,8 +175,29 @@ public class EmitterVisitor implements Visitor {
         case "eval":
             handleEvalOperator(node);
             break;
+        case "-":
+            handleUnaryMinusOperator(node);
+            break;
+        case "+":
+            handleUnaryPlusOperator(node);
+            break;
         default:
             throw new UnsupportedOperationException("Unsupported operator: " + operator);
+    }
+  }
+
+  private void handleUnaryMinusOperator(UnaryOperatorNode node) throws Exception {
+    node.operand.accept(this.with(ContextType.SCALAR));
+    ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "unaryMinus", "()LRuntime;", false);
+    if (ctx.contextType == ContextType.VOID) {
+        ctx.mv.visitInsn(Opcodes.POP);
+    }
+  }
+
+  private void handleUnaryPlusOperator(UnaryOperatorNode node) throws Exception {
+    node.operand.accept(this.with(ContextType.SCALAR));
+    if (ctx.contextType == ContextType.VOID) {
+        ctx.mv.visitInsn(Opcodes.POP);
     }
   }
 

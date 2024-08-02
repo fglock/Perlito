@@ -200,6 +200,10 @@ public class Runtime {
     return new Runtime(this.toString() + b.toString());
   }
 
+  public Runtime unaryMinus() {
+    return new Runtime(new Runtime(0).subtract(this));
+  }
+
     public Runtime add(Runtime arg2) {
         Runtime arg1 = this;
         if (arg1.type == Type.STRING) {
