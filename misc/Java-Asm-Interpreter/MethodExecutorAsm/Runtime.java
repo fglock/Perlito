@@ -185,7 +185,7 @@ public class Runtime {
   }
 
   public Runtime print() {
-    System.out.println(this.toString());
+    System.out.print(this.toString());
     return new Runtime(1);
   }
 

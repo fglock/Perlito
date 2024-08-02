@@ -354,12 +354,39 @@ public class Parser {
 
     Node right;
     switch (token.text) {
+      case "or":
+      case "xor":
+      case "and":
+      case "||":
+      case "//":
+      case "&&":
+      case "==":
+      case "!=":
+      case "<=>":
+      case "eq":
+      case "ne":
+      case "cmp":
+      case "<":
+      case ">":
+      case "<=":
+      case ">=":
+      case "lt":
+      case "gt":
+      case "le":
+      case "ge":
       case "+":
       case "-":
       case "*":
+      case "**":
       case "/":
+      case "%":
       case ".":
       case "=":
+      case "=~":
+      case "!~":
+      case "x":
+      case "..":
+      case "...":
         right = parseExpression(precedence);
         return new BinaryOperatorNode(token.text, left, right, tokenIndex);
       case "->":
@@ -414,20 +441,42 @@ public class Parser {
   private int getPrecedence(Token token) {
     // Define precedence levels for operators
     switch (token.text) {
+      case "or":
+      case "xor":
+        return 1;
+      case "and":
+        return 2;
+      case "not":
+        return 3;
+
       case "=":
-        return 1; // Lower precedence for assignment
+        return 6; // Lower precedence for assignment
       case "?":
-        return 2; // Precedence for ternary operator
+        return 7; // Precedence for ternary operator
+
+      case "||":
+      case "^^":
+      case "//":
+        return 9;
+      case "&&":
+        return 10;
+
       case "+":
       case "-":
-        return 3;
+        return 13;
       case "*":
       case "/":
-        return 4;
+        return 14;
+
+      case "**":
+        return 17;
+      case "++":
+      case "--":
+        return 18;
       case "->":
-        return 5;
+        return 19;
       case "$":
-        return 6; // Higher precedence for prefix operator
+        return 20; // Higher precedence for prefix operator
       default:
         return 0;
     }
@@ -437,6 +486,9 @@ public class Parser {
     // Define right associative operators
     switch (token.text) {
       case "=":
+      case "-=":
+      case "+=":
+      case "**":
       case "?":
         return true;
       default:
