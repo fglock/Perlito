@@ -474,7 +474,7 @@ public class EmitterVisitor implements Visitor {
     node.condition.accept(this.with(ContextType.SCALAR));
     
     // Convert the result to a boolean
-    ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "toBoolean", "()Z", false);
+    ctx.mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "Runtime", "getBoolean", "()Z", false);
     
     // Jump to the else label if the condition is false
     ctx.mv.visitJumpInsn(Opcodes.IFEQ, elseLabel);

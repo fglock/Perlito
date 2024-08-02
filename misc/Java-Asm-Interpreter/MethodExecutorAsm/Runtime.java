@@ -2,51 +2,170 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class Runtime {
-  long i;
-  String s;
-  Method subroutineReference; // used by apply()
+    private enum Type {
+        INTEGER, DOUBLE, STRING, CODE, UNDEF, REFERENCE
+        // also BLESSED and special literals like filehandles, typeglobs, and regular expressions
+    }
 
-  public static HashMap<String, Class<?>> anonSubs =
-      new HashMap<String, Class<?>>(); // temp storage for make_sub()
-  public static HashMap<String, EmitterContext> evalContext =
-      new HashMap<String, EmitterContext>(); // storage for eval string compiler context
+    // TODO add cache for integer/string values
+    public Type type;
+    public Object value;
 
-  public Runtime() {
-    this.i = 0;
-  }
+    public static HashMap<String, Class<?>> anonSubs =
+        new HashMap<String, Class<?>>(); // temp storage for make_sub()
+    public static HashMap<String, EmitterContext> evalContext =
+        new HashMap<String, EmitterContext>(); // storage for eval string compiler context
 
-  public Runtime(long i) {
-    this.i = i;
-  }
+    // Constructors
+    public Runtime() {
+        this.type = Type.UNDEF;
+        this.value = value;
+    }
 
-  public Runtime(int i) {
-    this.i = (long) i;
-  }
+    public Runtime(long value) {
+        this.type = Type.INTEGER;
+        this.value = value;
+    }
 
-  public Runtime(String s) {
-    this.s = s;
-  }
+    public Runtime(int value) {
+        this.type = Type.INTEGER;
+        this.value = (long) value;
+    }
+
+    public Runtime(double value) {
+        this.type = Type.DOUBLE;
+        this.value = value;
+    }
+
+    public Runtime(String value) {
+        this.type = Type.STRING;
+        this.value = value;
+    }
+
+    public Runtime(Runtime value) {
+        this.type = Type.REFERENCE;
+        this.value = value;
+    }
+
+    public Runtime(Method value) {
+        this.type = Type.CODE;
+        this.value = value;
+    }
+
+    // Getters
+    public long getLong() {
+        switch (type) {
+            case INTEGER:
+                return (long) value;
+            case DOUBLE:
+                return (long) ((double) value);
+            case STRING:
+                try {
+                    return Long.parseLong((String) value);
+                } catch (NumberFormatException e) {
+                    return 0;
+                }
+            case CODE:
+                return ((Method) this.value).hashCode(); // Use Method's hashCode as the ID
+            default:
+                return 0;
+        }
+    }
+
+    private double getDouble() {
+        switch (this.type) {
+            case INTEGER:
+                return (long) this.value;
+            case DOUBLE:
+                return (double) this.value;
+            case STRING:
+                try {
+                    return Double.parseDouble((String) this.value);
+                } catch (NumberFormatException e) {
+                    return 0.0; // Return zero if the string cannot be converted
+                }
+            case CODE:
+                return ((Method) this.value).hashCode(); // Use Method's hashCode as the ID
+            default:
+                return 0.0;
+        }
+    }
+
+    public boolean getBoolean() {
+        switch (type) {
+            case INTEGER:
+                return (long) value != 0;
+            case DOUBLE:
+                return (long) ((double) value) != 0;
+            case STRING:
+                String s = (String) value;
+                return !s.equals("") && !s.equals("0");
+            default:
+                return true;
+        }
+    }
+
+    public String getString() {
+        if (type == Type.STRING) {
+            return (String) value;
+        } else {
+            throw new IllegalStateException("Variable does not contain a string");
+        }
+    }
+
+    // Setters
+    public Runtime set(Runtime value) {
+        this.type = value.type;
+        this.value = value.value;
+        return this;
+    }
+
+    public Runtime set(long value) {
+        this.type = Type.INTEGER;
+        this.value = value;
+        return this;
+    }
+
+    public Runtime set(String value) {
+        this.type = Type.STRING;
+        this.value = value;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        switch (type) {
+            case INTEGER:
+                return Long.toString((long) value);
+            case DOUBLE:
+                return Double.toString((double) value);
+            case STRING:
+                return (String) value;
+            case REFERENCE:
+                return "Reference to: " + value.toString();
+            case CODE:
+                return "Code Reference: " + value.toString();
+            default:
+                return "Undefined";
+        }
+    }
 
   public static Runtime make_sub(String className) throws Exception {
     // finish setting up a CODE object
     Class<?> clazz = Runtime.anonSubs.remove(className);
     Method mm = clazz.getMethod("apply", Runtime.class, ContextType.class);
-    Runtime rr = new Runtime(-1);
-    rr.subroutineReference = mm;
-    return rr;
+    return new Runtime(mm);
   }
 
   public Runtime apply(Runtime a, ContextType callContext) throws Exception {
-    Runtime result = (Runtime) subroutineReference.invoke(null, a, callContext);
-    return result;
+    if (type == Type.CODE) {
+        return (Runtime) ((Method) value).invoke(null, a, callContext);
+    } else {
+        throw new IllegalStateException("Variable does not contain a code reference");
+    }
   }
 
   public static void eval_string(Runtime code, String evalTag) throws Exception {
-
-    // TODO - cleanup possible duplicate code in these places:
-    //  - Main.java - execute main program
-    //  - EmitterVisitor.java - create anon sub
-
     // retrieve the eval context that was saved at program compile-time
     EmitterContext evalCtx = Runtime.evalContext.get(evalTag);
 
@@ -78,90 +197,36 @@ public class Runtime {
     return;
   }
 
-  public Runtime set(Runtime a) {
-    this.i = a.i;
-    this.s = a.s;
-    this.subroutineReference = a.subroutineReference;
-    return this;
-  }
-
-  public String toString() {
-    if (this.s != null) {
-        return this.s;
-    }
-    return String.valueOf(this.i);
-  }
-
-  public boolean toBoolean() {
-    return this.i != 0;
-  }
-
-  public static boolean is_false() {
-    return false;
-  }
-
-  public static boolean is_true() {
-    return true;
-  }
-
-  public static Runtime print(String a) {
-    System.out.println("value=" + a);
-    return new Runtime(1);
-  }
-
-  public static Runtime print(int a) {
-    System.out.println("value=" + a);
-    return new Runtime(1);
-  }
-
-  public static Runtime print(Object a) {
-    Runtime.print((Runtime) a);
-    return new Runtime(1);
-  }
-
-  public static Runtime print(Runtime a) {
-    a.print();
-    return new Runtime(1);
-  }
-
   public Runtime print() {
-    System.out.println("value=" + this.i + " " + this.s);
+    System.out.println(this.toString());
     return new Runtime(1);
-  }
-
-  public static Runtime make(int a) {
-    return new Runtime(a);
-  }
-
-  public Runtime add(int a, int b) {
-    return new Runtime(a + b);
-  }
-
-  public Runtime add(int b) {
-    return new Runtime(this.i + b);
-  }
-
-  public Runtime add(Runtime b) {
-    return new Runtime(this.i + b.i);
-  }
-
-  public Runtime subtract(Runtime b) {
-    return new Runtime(this.i - b.i);
-  }
-
-  public Runtime multiply(int b) {
-    return new Runtime(this.i * b);
-  }
-
-  public Runtime multiply(Runtime b) {
-    return new Runtime(this.i * b.i);
-  }
-
-  public Runtime divide(Runtime b) {
-    return new Runtime(this.i / b.i);
   }
 
   public Runtime stringConcat(Runtime b) {
     return new Runtime(this.toString() + b.toString());
   }
+
+    public Runtime add(Runtime arg) {
+        if (this.type == Type.STRING || arg.type == Type.STRING) {
+            // Try to parse both values as long
+            try {
+                long val1 = Long.parseLong((String) this.value);
+                long val2 = Long.parseLong((String) arg.value);
+                return new Runtime(val1 + val2);
+            } catch (NumberFormatException e) {
+                // If parsing fails, fall back to double addition
+                double val1 = this.getDouble();
+                double val2 = arg.getDouble();
+                return new Runtime(val1 + val2);
+            }
+        } else if (this.type == Type.DOUBLE || arg.type == Type.DOUBLE) {
+            double val1 = this.getDouble();
+            double val2 = arg.getDouble();
+            return new Runtime(val1 + val2);
+        } else {
+            long val1 = this.getLong();
+            long val2 = arg.getLong();
+            return new Runtime(val1 + val2);
+        }
+    }
 }
