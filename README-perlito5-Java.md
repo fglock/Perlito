@@ -904,7 +904,7 @@ JVM and Java compiler related
       - http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
       - http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
 
-      - "The workaround is to compile at Java 7-compatibility level: javac -source 7, or just to use simpler constructions.
+      - "The workaround is to compile at Java 7-compatibility level: javac , or just to use simpler constructions.
       - "the workaround is to introduce local variables when there are nested generic method calls that use generic type inference
 
 
@@ -1833,7 +1833,7 @@ Bootstrapping using `perlito5-lib.jar`
   ```sh
   $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > Main.java
 
-  $ javac -J-Xms2000m -J-Xmx2000m -J-Xss1000m -source 7 Main.java
+  $ javac -J-Xms2000m -J-Xmx2000m -J-Xss1000m  Main.java
   # errors - TODO - fixme
   #   this is because the compiler uses eval-string
   #   try: --nojava_eval

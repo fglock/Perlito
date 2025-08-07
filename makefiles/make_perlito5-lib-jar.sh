@@ -23,7 +23,7 @@ mkdir META-INF/services
 
 perl -I src5/lib makefiles/make_perlito5-lib-jar_.pl perlito5-javalib.java
 
-time javac -J-Xms2000m -J-Xmx2000m -J-Xss1000m -source 7 org/perlito/Perlito5/LibPerl.java 
+time javac -J-Xms2000m -J-Xmx2000m -J-Xss1000m  org/perlito/Perlito5/LibPerl.java 
 jar -cfe \
     perlito5-lib.jar \
     org.perlito.Perlito5.LibPerl \
@@ -40,7 +40,7 @@ perl perlito5.pl --bootstrapping --java_eval -Isrc5/lib -Cjava src5/util/jperl.p
 perl -I src5/lib makefiles/make_perlito5-lib-jar_.pl jperl.java 
 
 # Note: compile with perlito5-lib.jar so eval-string works
-javac -cp .:perlito5-lib.jar -source 7 org/perlito/Perlito5/Main.java
+javac -cp .:perlito5-lib.jar  org/perlito/Perlito5/Main.java
 javac -cp .:perlito5-lib.jar org/perlito/Perlito5/Perlito5ScriptEngineFactory.java
 javac -cp .:perlito5-lib.jar org/perlito/Perlito5/Perlito5ScriptEngine.java
 

@@ -45,7 +45,7 @@ if [[ ! -e "$CLASS_OUT" ]]; then
     mkdir -p $CLASS_OUT
 fi
 
-javac -source 7 -target 7 -cp "$DEPS/*"  $JAVA_OUT/$PUBLIC_CLASS.java -d $CLASS_OUT;
+javac  -target 7 -cp "$DEPS/*"  $JAVA_OUT/$PUBLIC_CLASS.java -d $CLASS_OUT;
 
 ##########################
 # TODO:

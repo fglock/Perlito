@@ -96,7 +96,6 @@ class PlJavaCompiler {
             cp.append(systemCp);
         }
         optionList.addAll(Arrays.asList("-classpath", cp.toString()));
-        optionList.addAll(Arrays.asList("-source",    "8"));
         // optionList.addAll(Arrays.asList("-Xlint:deprecation"));
     }
 
